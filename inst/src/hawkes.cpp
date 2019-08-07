@@ -12,23 +12,19 @@ Type objective_function<Type>::operator() ()
   PARAMETER(alpha);
   PARAMETER(beta);
   Type last = times[times.size() - 1];
-  std::cout << last << "\n";
   Type term_1 = -mu*last;
-  std::cout << term_1 << "\n";
   vector<Type> term_2vec = alpha/beta*(exp(-beta * (last - times)) - 1);
-  std::cout << term_2vec << "\n";
   Type term_2 = sum(term_2vec);
   vector<Type> A;
   Type nll = 0;
-  for(int i = 1; i <times.size(); i++){
-    Type sub = times[0];
-    std::cout << sub << "\n";
-    // vector<Type> temp = -beta*sub;
-    // A(i) += sum(exp(temp));
+  for(int i = 1; i <=times.size(); i++){
+    vector<Type> sub = times.head(i-1);
+    vector<Type> temp = -beta*sub;
+    Type etemp = sum(exp(temp));
+    Type mualphaA = mu + alpha*etemp;
+    Type term_3 = log(mualphaA);
+    nll += -term_1 - term_2 - term_3;
   }
-  // vector<Type> mualphaA = mu + alpha*A;
-  // Type term_3 = sum(log(mualphaA));
-  // nll = -term_1 - term_2 - term_3;
   std::cout << nll << "\n";
   return nll;
 }
