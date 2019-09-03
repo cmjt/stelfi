@@ -17,7 +17,8 @@ Type objective_function<Type>::operator() ()
   vector<Type> term_2vec = exp(-beta * (last - times)) - 1;
   Type term_2 = alpha/beta*sum(term_2vec);
   vector<Type> A(times.size());
-  Type ll = 0;
+  // initialize negative log-likelihood
+  Type nll = 0;
   for(int i = 1; i <= times.size(); i++){
     vector<Type> sub = times(i - 1) - times.head(i - 1);
     vector<Type> temp = -beta*sub;
@@ -25,7 +26,7 @@ Type objective_function<Type>::operator() ()
   }
   vector<Type> As = log(mu + alpha*A);
   Type term_3 =  sum(As);
-  ll = -term_1 - term_2 - term_3;
-  return ll;
+  nll = -term_1 - term_2 - term_3;
+  return nll;
 }
 
