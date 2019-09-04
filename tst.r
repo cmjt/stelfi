@@ -1,6 +1,8 @@
 TMB::compile("inst/src/hawkes.cpp")
+TMB::compile("inst/src/lgcphawkes.cpp")
 
 dyn.load(TMB::dynlib("inst/src/hawkes"))
+dyn.load(TMB::dynlib("inst/src/lgcphawkes"))
 
 
 source("~/Git/selfE/R/sim_hawkes.r")
