@@ -41,7 +41,7 @@ par
 ```
 
 
-```{r plot, echo = FALSE}
+```{r plot, echo = FALSE,fig.height=7.5,fig.width=10}
 ## NIWA seal first tweet according to Twitter
 start <- lubridate::ymd_hms("2019-02-05 02:27:07")
 ## NIWA seal found owner tweet according to Twitter
@@ -62,9 +62,9 @@ arrows(35,const + 45, 35,const,length = 0.05)
 day2 <- start + 24*60*60
 day3 <- day2 + 24*60*60
 abline(v = as.numeric(difftime(day2,min(time),unit = "hours")))
-text(as.numeric(difftime(day2,min(time),unit = "hours")) - 1,150,"24hrs since tweet",srt = 90)
+text(as.numeric(difftime(day2,min(time),unit = "hours")) - 1,130,"24hrs since tweet",srt = 90)
 abline(v = as.numeric(difftime(day3,min(time),unit = "hours")))
-text(as.numeric(difftime(day3,min(time),unit = "hours")) - 1,150,"48hrs since tweet",srt = 90)
+text(as.numeric(difftime(day3,min(time),unit = "hours")) - 1,130,"48hrs since tweet",srt = 90)
 par(mar = c(2,5,0,2))
 ## hist
 hist(time, breaks = "hours", axes = FALSE, xlab = "", ylab = "",main = "", col = "grey",border = "grey",freq = TRUE)
