@@ -12,7 +12,7 @@ fit.hawkes(times, parameters, ...)
 \item{parameters}{a vector of named parmeters for the hawkes process: "mu"--base rate of the hawkes process,
 "alpha"--intensity jump after an event occurence, and "beta"--exponential intensity decay}
 
-\item{...}{arguments to pass into nlminb}
+\item{...}{arguments to pass into \code{nlminb()}}
 }
 \description{
 Function to fit a self-exciting Hawkes process

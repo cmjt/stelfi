@@ -3,5 +3,6 @@
 export(compile.stelfi)
 export(dll.stelfi)
 export(fit.hawkes)
+export(fit.lgcp)
 export(plot_hawkes)
 export(sim.hawkes)
