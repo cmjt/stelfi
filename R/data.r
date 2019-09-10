@@ -79,3 +79,11 @@ NULL
 #' }
 #' @docType data
 #' @usage data(terrorism)
+#' A dataset of IS attacks in Iraq in 2017 taken from the global terrorism database
+#' (GTD) (http://www.start.umd.edu/gtd/)
+#' @name iraq
+#' @format a list with two elements occ (occurances of IS attacks) and covs.mesh
+#' (a list of monthly covariates at set locations in over Iraq, only used as an illustration of
+#' a model in Python et al. (TODO))
+#' @docType data
+#' @usage data(iraq)
