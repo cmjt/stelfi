@@ -5,7 +5,7 @@
 \title{Function to fit a spatiotemporal log-Gaussian Cox process using TMB and the
 R_inla namespace for the spde construction of the latent field}
 \usage{
-fit.lgcp(locs, temp.idx, mesh, parameters, sp, tmb = TRUE, ...)
+fit.lgcp(locs, temp.idx, mesh, parameters, covs, sp, tmb = TRUE, ...)
 }
 \arguments{
 \item{locs}{a matrix of locations 2xn}
@@ -14,9 +14,11 @@ fit.lgcp(locs, temp.idx, mesh, parameters, sp, tmb = TRUE, ...)
 
 \item{mesh}{a Delaney triangulation of the study area created using \code{INLA::inla.mesh.2d()}}
 
-\item{parameters}{a named vector of parameters. Must include "beta" the regression coefficients of fixed effects,
+\item{parameters}{a named list of parameters. Must include "beta" the regression coefficients of fixed effects,
 "log_kappa" the smoothness parameter of the random field, if an AR(1) process for time is being fitted then
 "rho" must also be included as the temporal dependence parameter}
+
+\item{covs}{a list of covariates at the mesh nodes for each time index}
 
 \item{sp}{optional spatial polygon of the domain. Should be supplied for lgcp as spde
 should set weigths to 0 outside of domain}
@@ -25,8 +27,6 @@ should set weigths to 0 outside of domain}
 
 \item{...}{arguments to pass into \code{nlminb()} if using TMB, if using INLA framework arguments passed into
 \code{inla()}}
-
-\item{covs}{a}
 }
 \description{
 Function to fit a spatiotemporal log-Gaussian Cox process using TMB and the
