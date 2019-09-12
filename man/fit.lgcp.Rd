@@ -20,7 +20,7 @@ fit.lgcp(locs, temp.idx, mesh, parameters, covs, sp, tmb = TRUE, ...)
 
 \item{covs}{a list of covariates at the mesh nodes for each time index}
 
-\item{sp}{optional spatial polygon of the domain. Should be supplied for lgcp as spde
+\item{sp}{optional spatial polygon of the domain
 should set weigths to 0 outside of domain}
 
 \item{tmb}{logical if TRUE will use \code{TMB} framework to fit model (default), otherwise \code{INLA}}

@@ -10,7 +10,7 @@ setClassUnion("missing_or_spatialpolygon", c("missing", "SpatialPolygonsDataFram
 #' @param parameters a named list of parameters. Must include "beta" the regression coefficients of fixed effects,
 #' "log_kappa" the smoothness parameter of the random field, if an AR(1) process for time is being fitted then
 #' "rho" must also be included as the temporal dependence parameter
-#' @param sp  optional spatial polygon of the domain. Should be supplied for lgcp as spde
+#' @param sp  optional spatial polygon of the domain
 #' should set weigths to 0 outside of domain
 #' @param tmb logical if TRUE will use \code{TMB} framework to fit model (default), otherwise \code{INLA}
 #' @param ... arguments to pass into \code{nlminb()} if using TMB, if using INLA framework arguments passed into
@@ -23,7 +23,7 @@ setGeneric("fit.lgcp",
 
 setMethod("fit.lgcp",
           c(locs = "matrix",temp.idx = "factor",mesh = "inla.mesh",parameters = "list",
-            covs = "list",sp = "missing_or_spatialpolygon" ,
+            covs = "list",sp = "missing_or_spatialpolygon",
             tmb = "logical"),
           function(locs, temp.idx, mesh, parameters, covs, sp, tmb, ...){
               if(tmb == TRUE){
