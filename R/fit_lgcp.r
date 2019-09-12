@@ -50,7 +50,7 @@ setMethod("fit.lgcp",
                   }
                   ## params
                   params <- list(beta = parameters[["beta"]],log_kappa = parameters[["log_kappa"]],
-                                 x = matrix(0,nrow = mesh$n, ncol = 12),
+                                 x = matrix(0,nrow = mesh$n, ncol = length(table(temp.idx))),
                                  rho = parameters[["rho"]])
                   fit <- TMB::MakeADFun(data,params,DLL = "lgcpar1",random = c("x"))
                   opt <- stats::nlminb(fit$par,fit$fn,fit$gr, ...)
