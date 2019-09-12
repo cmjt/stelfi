@@ -12,8 +12,6 @@ hawke.intensity(mu, alpha, beta, times, p = NULL)
 \item{alpha}{numeric integer specifying intensity jump after an event occurence}
 
 \item{beta}{numeric integer specifying exponential intensity decay}
-
-\item{times}{a vector of numeric observation time points}
 }
 \description{
 Hawkes intensty function with decay historical dependence
