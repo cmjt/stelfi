@@ -1,7 +1,7 @@
 Summary
 -------
 
-R package for fitting a range of **s**patio**te**mporal models that
+**R** package for fitting a range of **s**patio**te**mporal models that
 include **l**atent **fi**elds.
 
 This package is under construction. It will eventually replace the
@@ -39,14 +39,9 @@ Fitting a spatio-temporal log-Gaussian Cox process
 
      ## load data used in Python et. al. "The fall of the Islamic State in Iraq captured through a point process approach."
     data(iraq)
-    ## create mesh using INLA functionality
-    bdry <- INLA::inla.sp2segment(iraq$sp)
-    locs <- cbind(x = iraq$occ$longitude, y =  iraq$occ$latitude)
-    mesh <- INLA::inla.mesh.2d(loc = locs,boundary = bdry,
-                         max.edge = c(0.2,0.4), cutoff = 0.15)
     ## must have compiled TMB templates first use compile.stelfi()
     ## will take a while
-    fit <- fit.lgcp(locs = locs,temp.idx = as.factor(iraq$occ$imonth),mesh = mesh,
+    fit <- fit.lgcp(locs = locs,temp.idx = as.factor(iraq$occ$imonth),mesh = iraq$mesh,
                     covs = iraq$covs.mesh,
                     parameters = list(beta = c(-1.066,-1.476,-5.622,0.05,0.01),
                                       log_kappa = -1.432, rho = 0.9),
