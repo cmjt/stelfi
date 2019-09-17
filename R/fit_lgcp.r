@@ -1,4 +1,4 @@
-#' creates a virtual class that is a superclass to the component classes so then both
+#' Creates a virtual class that is a superclass to the component classes so then both
 #' children inherit from that class
 setClassUnion("missing_or_spatialpolygon", c("missing", "SpatialPolygonsDataFrame","SpatialPolygons")) 
 #' Function to fit a spatiotemporal log-Gaussian Cox process using TMB and the
@@ -58,3 +58,59 @@ setMethod("fit.lgcp",
               return(fit)
           })
               
+#' Function to simulate a spatiotemporal log-Gaussian Cox process using TMB and the
+#' R_inla namespace for the spde construction of the latent field from a fitted model
+#' or from a template
+#' @param x a fitted model from a call to \code{fit.lgcp} 
+#' @inheritParams fit.lgcp
+#' @export
+setGeneric("sim.lgcp",
+           function(x,locs, temp.idx, mesh, parameters, covs, sp){
+               standardGeneric("sim.lgcp")
+           })
+setMethod("sim.lgcp",
+          c(x = "list",locs = "missing", temp.idx = "missing", mesh = "missing", parameters = "missing",covs = "missing",
+            sp = "missing"),
+          function(x, locs, temp.idx, mesh, parameters, covs, sp){
+              simdata = x$simulate(par = x$obj,complete = TRUE)
+              return(simdata)
+          })
+setMethod("sim.lgcp",
+          c(x = "list", locs = "missing", temp.idx = "missing", mesh = "missing", parameters = "list", covs = "missing",
+            sp = "missing"),
+          function(x, locs, temp.idx, mesh, parameters, covs, sp){
+              simdata = x$simulate(par = parameters,complete = TRUE)
+              return(simdata)
+          })
+setMethod("sim.lgcp",
+          c(x = "missing", locs = "matrix",temp.idx = "factor",mesh = "inla.mesh",parameters = "list",covs = "list",
+            sp = "missing_or_spatialpolygon"),
+          function(x, locs, temp.idx, mesh, parameters, covs, sp){
+              if(!"lgcpar1"%in%getLoadedDLLs()){
+                  dll.stelfi()
+              }
+              resp <- list()
+              w.loc <- split(mesh$idx$loc,temp.idx)
+              w.c <- lapply(w.loc,table)
+              for(i in 1:length(w.c)){
+                  resp[[i]] <- numeric(mesh$n)
+                  count <- as.vector(w.c[[i]])
+                  resp[[i]][unique(w.loc[[i]])] <- count
+              }
+              data <- list(resp = resp, ID = as.factor(temp.idx),covariates = covs)
+              spde <- inla.spde2.matern(mesh = mesh,alpha = 2)
+              data$spde <- spde$param.inla[c("M0","M1","M2")]
+              if(class(sp) == "SpatialPolygonsDataFrame"){
+                  w <- outwith(mesh = mesh, boundary = sp)
+                  data$area <- w*c(Matrix::diag(data$spde$M0))
+              }else{
+                  data$area <- c(Matrix::diag(data$spde$M0))
+              }
+              ## params
+              params <- list(beta = parameters[["beta"]],log_kappa = parameters[["log_kappa"]],
+                             x = matrix(0,nrow = mesh$n, ncol = length(table(temp.idx))),
+                             rho = parameters[["rho"]])
+              onj <- TMB::MakeADFun(data,params,DLL = "lgcpar1",random = c("x"))
+              simdata = x$simulate(par = parameters,complete = TRUE)
+              return(simdata)
+          })
