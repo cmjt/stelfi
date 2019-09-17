@@ -81,7 +81,8 @@ mtext(1,line = 1, at = c(start,end),text = c("NIWA \n tweeted","USB owner \n fou
 data(iraq)
 ## must have compiled TMB templates first use compile.stelfi()
 ## will take a while
-fit <- fit.lgcp(locs = locs,temp.idx = as.factor(iraq$occ$imonth),mesh = iraq$mesh,
+fit <- fit.lgcp(locs = cbind(x = iraq$occ$longitude, y =  iraq$occ$latitude),
+                temp.idx = as.factor(iraq$occ$imonth),mesh = iraq$mesh,
                 covs = iraq$covs.mesh,
                 parameters = list(beta = c(-1.066,-1.476,-5.622,0.05,0.01),
                                   log_kappa = -1.432, rho = 0.9),

@@ -37,11 +37,12 @@ Fitting a hawkes process to Twitter data
 Fitting a spatio-temporal log-Gaussian Cox process
 --------------------------------------------------
 
-     ## load data used in Python et. al. "The fall of the Islamic State in Iraq captured through a point process approach."
+    ## load data used in Python et. al. "The fall of the Islamic State in Iraq captured through a point process approach."
     data(iraq)
     ## must have compiled TMB templates first use compile.stelfi()
     ## will take a while
-    fit <- fit.lgcp(locs = locs,temp.idx = as.factor(iraq$occ$imonth),mesh = iraq$mesh,
+    fit <- fit.lgcp(locs = cbind(x = iraq$occ$longitude, y =  iraq$occ$latitude),
+                    temp.idx = as.factor(iraq$occ$imonth),mesh = iraq$mesh,
                     covs = iraq$covs.mesh,
                     parameters = list(beta = c(-1.066,-1.476,-5.622,0.05,0.01),
                                       log_kappa = -1.432, rho = 0.9),
