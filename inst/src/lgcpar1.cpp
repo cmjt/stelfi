@@ -49,7 +49,7 @@ Type objective_function<Type>::operator() ()
   Type kappa = exp(log_kappa); // return the kappa parameter of the Random field
   Type nll = 0;
   SparseMatrix<Type> Q = Q_spde(spde,kappa); // create the precision matrix from the spde model for the GMRF
-  nll = SEPARABLE(AR1(rho), GMRF(Q))(x); // x the random effect is a GMRF with precision Q
+  nll = SEPARABL(AER1(rho), GMRF(Q))(x); // x the random effect is a GMRF with precision Q
   for(int i = 0; i< (tsteps - 1); i++){
     vector<Type> eta = covariates(i)*beta; // design matrix and regression coeffs. (fixed effects)
     vector<Type> gmrf = (vector<Type> (x.col(i)));
