@@ -18,7 +18,7 @@ NULL
 #' A dataset of recorded murder cases in New Zealand 2004--2019
 #' scraped from the online database https://interactives.stuff.co.nz/2019/the-homicide-report/
 #' @name murdersNZ
-#' @format A dataframe with 1019 rows and 9 variables
+#' @format A dataframe with 967 rows and 13 variables
 #' \describe{
 #' \item{Latitude}{approximate latitude of murder}
 #' \item{Longitude}{approximate longitude of murder}
@@ -29,6 +29,10 @@ NULL
 #' \item{Cause}{cause of death}
 #' \item{Killer}{killer}
 #' \item{Name}{name of victim}
+#' \item{Full_date}{date object of observation on single days}
+#' \item{Month}{month name of observation}
+#' \item{Cause_cat}{cause of death as category}
+#' \item{Region}{NZ region}
 #' }
 #' @docType data
 #' @usage data(murdersNZ)
