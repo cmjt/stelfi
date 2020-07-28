@@ -1,6 +1,6 @@
 #' A dataset of recorded serial killers in the UK
 #' constructed from http://www.murderuk.com/
-#' @name serialUK
+#' @name serial_uk
 #' @format A dataframe with 62 rows and 8 variables
 #' \describe{
 #' \item{Number.of.kills}{approximate number of murders committed by each person}
@@ -13,11 +13,11 @@
 #' \item{population..M.}{Estimated population of UK in millions at time of first murder}
 #' }
 #' @docType data
-#' @usage data(serialUK)
+#' @usage data(serial_uk)
 NULL
 #' A dataset of recorded murder cases in New Zealand 2004--2019
 #' scraped from the online database https://interactives.stuff.co.nz/2019/the-homicide-report/
-#' @name murdersNZ
+#' @name murders_nz
 #' @format A dataframe with 967 rows and 13 variables
 #' \describe{
 #' \item{Latitude}{approximate latitude of murder}
@@ -35,11 +35,11 @@ NULL
 #' \item{Region}{NZ region}
 #' }
 #' @docType data
-#' @usage data(murdersNZ)
+#' @usage data(murders_nz)
 NULL
 #' A dataset of retweets of NIWA's "viral" leopard seal tweet https://twitter.com/niwa_nz/status/1092610541401587712
 #' on the 5th Feb 2019
-#' @name retweetsNIWA
+#' @name retweets_niwa
 #' @format A vector of length 4890
 #' \describe{
 #' \item{}{date and time of retweet}
