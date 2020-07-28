@@ -1,10 +1,12 @@
 ---
 title: ""
-output: md_document
+output: 
+  md_document:
+    variant: markdown_github
 ---
 
 ```{r setup, include=FALSE,message=FALSE,results='asis'}
-knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE,cache = TRUE)
 ```
 
 
