@@ -1,0 +1,34 @@
+---
+title: ""
+output: md_document
+---
+
+```{r setup, include=FALSE,message=FALSE,results='asis'}
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE,cache = TRUE, message = FALSE)
+```
+
+```{r lib}
+library(stelfi)
+```
+
+## NZ murders
+
+
+```{r data}
+data(murders_nz)
+head(murders_nz)
+```
+
+## Transform to NZTM
+
+Transform `data.frame` to `SpatialPointsDataFrame`
+
+```{r sp}
+murders_sp <- murders_nz
+## project longitude & latitude to NZTMs
+coordinates(murders_sp) <- c("Longitude","Latitude")
+proj4string(murders_sp) <- CRS("+proj=longlat +datum=WGS84")
+murders_sp <-  spTransform(murders_sp, CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
+plot(murders_sp)
+plot(nz, add = TRUE)
+```

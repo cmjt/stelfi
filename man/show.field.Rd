@@ -5,8 +5,17 @@
 \alias{show.field}
 \title{Function to plot or create raster of a given field defined over a mesh}
 \usage{
-show.field(x, mesh, dims = c(300, 300), col = terrain.colors(100),
-  sp = NULL, rast = FALSE, legend = TRUE, legend.only = FALSE, ...)
+show.field(
+  x,
+  mesh,
+  dims = c(300, 300),
+  col = terrain.colors(100),
+  sp = NULL,
+  rast = FALSE,
+  legend = TRUE,
+  legend.only = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{vector of length \link{mesh$n} of values at each \link{mesh} node}

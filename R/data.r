@@ -1,6 +1,8 @@
-#' A dataset of recorded serial killers in the UK
-#' constructed from http://www.murderuk.com/
-#' @name serial_uk
+#' Serial killers of the UK
+#'
+#' A dataset containing the names and number of recorded
+#' murders commited by UK serial killers
+#'
 #' @format A dataframe with 62 rows and 8 variables
 #' \describe{
 #' \item{Number.of.kills}{approximate number of murders committed by each person}
@@ -12,12 +14,13 @@
 #' \item{Date.of.first.kill}{Date, if known, first murder was committed}
 #' \item{population..M.}{Estimated population of UK in millions at time of first murder}
 #' }
-#' @docType data
-#' @usage data(serial_uk)
+#' @source \url{http://www.murderuk.com/}
+#' @name serial_uk
 NULL
+#' Murders of NZ
+#' 
 #' A dataset of recorded murder cases in New Zealand 2004--2019
-#' scraped from the online database https://interactives.stuff.co.nz/2019/the-homicide-report/
-#' @name murders_nz
+#' 
 #' @format A dataframe with 967 rows and 13 variables
 #' \describe{
 #' \item{Latitude}{approximate latitude of murder}
@@ -34,20 +37,28 @@ NULL
 #' \item{Cause_cat}{cause of death as category}
 #' \item{Region}{NZ region}
 #' }
-#' @docType data
-#' @usage data(murders_nz)
+#' @references \href{https://interactives.stuff.co.nz/2019/the-homicide-report/}{Homicide Report}
+#'
+#' @source Data scraped and cleaned by Charlie Timmings, honours student at the University of Auckland.
+#' 
+#' @name murders_nz
 NULL
-#' A dataset of retweets of NIWA's "viral" leopard seal tweet https://twitter.com/niwa_nz/status/1092610541401587712
+#' NIWA's viral leopard seal Tweet
+#' 
+#' A dataset of retweet times of NIWA's viral leopard seal tweet 
 #' on the 5th Feb 2019
-#' @name retweets_niwa
+#'
 #' @format A vector of length 4890
 #' \describe{
 #' \item{}{date and time of retweet}
 #' }
+#' @source \url{https://twitter.com/niwa_nz/status/1092610541401587712}
+#' @name retweets_niwa
 NULL
-#' A dataset taken from the GeoNet Quake (http://quakesearch.geonet.org.nz/)
-#' containing earthquake information in Canterbury, New Zealand 16-Jan-2010--24-Dec-2014
-#' @name earthquakes
+#' Canterbury, NZ earthquakes
+#'
+#' A dataset taken containing earthquake information in Canterbury, New Zealand 16-Jan-2010--24-Dec-2014
+#'
 #' @format A data frame containing 3824 rows and 5 variables:
 #' \describe{
 #' \item{origintime}{The UTC time of the event's occurrence}
@@ -56,12 +67,13 @@ NULL
 #' \item{magnitude}{The magnitude of the earthquake}
 #' \item{depth}{The focal depth of the event (km)}
 #' }
-#' @docType data
-#' @usage data(earthquakes)
+#' @source \url{http://quakesearch.geonet.org.nz/}
+#' @name earthquakes
 NULL
-#' A dataset taken from the global terrorism database (GTD) (http://www.start.umd.edu/gtd/)
-#' containing information of terrorism activity 2010--2017
-#' @name terrorism
+#' Terrorism 2010--2017
+#' 
+#' A dataset containing information of terrorism activity 2010--2017
+#' 
 #' @format A data frame with 72366 rows and 16 variables:
 #' \describe{
 #' \item{iyear}{numeric year 2010--2017}
@@ -81,14 +93,23 @@ NULL
 #' \item{luminosity}{scaled: luminosity}
 #' \item{tt}{scaled: time to nearest city in minutes}
 #' }
-#' @docType data
-#' @usage data(terrorism)
+#' @source \url{http://www.start.umd.edu/gtd/}
+#' @name terrorism
 NULL
-#' A dataset of IS attacks in Iraq in 2017 taken from the global terrorism database
-#' (GTD) (http://www.start.umd.edu/gtd/)
-#' @name iraq
+#' IS terrorism
+#' 
+#' A dataset of IS attacks in Iraq in 2017 
+#' 
 #' @format a list with two elements occ (occurances of IS attacks) and covs.mesh
 #' (a list of monthly covariates at set locations in over Iraq, only used as an illustration of
 #' a model in Python et al. (TODO)). The third element is a spatial polygon of Iraq.
-#' @docType data
-#' @usage data(iraq)
+#' @source \url{http://www.start.umd.edu/gtd/}
+#' @name iraq
+NULL
+#' New Zealand
+#'
+#' Spatial Polygon of NZ
+#' 
+#' @format  A \code{SpatialPolygonsDataFrame} of New Zeland in NZTM
+#' @name nz
+NULL

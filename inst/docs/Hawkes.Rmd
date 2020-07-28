@@ -7,23 +7,16 @@ output: md_document
 knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
 ```
 
-## Summary
 
-**R** package for fitting a range of  **s**patio**te**mporal models that include **l**atent **fi**elds.
-
-This package is under construction. It will eventually replace the functionality offered by [`lgcpSPDE`](https://github.com/cmjt/lgcpSPDE).
-
-To install run `devtools::install_github("cmjt/stelfi")`.
-
-## Fitting a hawkes process to Twitter data
+## Fitting a Hawkes process to Twitter data
 
 ```{r load data,results='hide',message=FALSE}
 library(stelfi)
-data(retweetsNIWA)
+data(retweets_niwa)
 ```
 
 ```{r sort data}
-time <- retweetsNIWA
+time <- retweets_niwa
 ## numeric time stamps
 times <- as.numeric(difftime(time,min(time),units = "hour"))
 ```
@@ -73,38 +66,3 @@ axis(2,at = c(0,250))
 mtext(2, line = 0, text = "Number of retweets per hour",cex = 0.8)
 mtext(1,line = 1, at = c(start,end),text = c("NIWA \n tweeted","USB owner \n found"),cex = 0.9)
 ```
-
-## Fitting a spatio-temporal log-Gaussian Cox process
-
-```{r lgcp tmb,eval = FALSE}
- ## load data used in Python et. al. "The fall of the Islamic State in Iraq captured through a point process approach."
-data(iraq)
-## must have compiled TMB templates first use compile.stelfi()
-## will take a while
-fit <- fit.lgcp(locs = cbind(x = iraq$occ$longitude, y =  iraq$occ$latitude),
-                temp.idx = as.factor(iraq$occ$imonth),mesh = iraq$mesh,
-                covs = iraq$covs.mesh,
-                parameters = list(beta = c(-1.066,-1.476,-5.622,0.05,0.01),
-                                  log_kappa = -1.432, rho = 0.9),
-                sp = iraq$sp, tmb = TRUE)
-## summary
-rep <- TMB::sdreport(fit)
-```
-
-```{r plot field, eval = FALSE}
-## elements of random field
-random <- rep$par.random
-## estimated parameters
-fixed <- rep$par.fixed
-## plot 
-par(mfrow = c(3,4),mar = c(1,1,3,0))
-for(i in 1:12){
-    x <- iraq$covs.mesh[[i]]%*%fixed[1:5] +  random[1:mesh$n + (i - 1)*mesh$n]
-    show.field(exp(x[,1]), mesh,legend = FALSE,sp = iraq$sp,
-               axes = FALSE)
-    title(main = names(table(lubridate::month(iraq$occ$imonth,abbr = FALSE,label = TRUE)))[i])
-}
-
-```
-
-![](README_files/iraq_fields.png)

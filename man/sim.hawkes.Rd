@@ -5,8 +5,7 @@
 \alias{sim.hawkes}
 \title{Function to simulate a self-exciting Hawkes process.}
 \usage{
-sim.hawkes(mu, alpha, beta, n, plot = FALSE, seed = 123,
-  method = "1")
+sim.hawkes(mu, alpha, beta, n, plot = FALSE, seed = 123, method = "1")
 }
 \arguments{
 \item{mu}{numeric integer specifying base rate of the hawkes process}
