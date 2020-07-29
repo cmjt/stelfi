@@ -87,6 +87,12 @@ head(murders_nz)
 data(nz) ## SpatialPolygonsDataFrame of NZ (NZTM projection)
 area_nz <- sum(raster::area(nz)) ## (m)
 area_nzkm2 <- area_nz/1000^2 ## according to Google NZ is 268,021 km2
+area_nzkm2
+```
+
+    ## [1] 268856.4
+
+``` r
 spatial_murder_rate <- nrow(murders_nz)/area_nzkm2 
 temporal_murder_rate <- nrow(murders_nz)/length(table(murders_nz$Year)) 
 st_murder_rate <- (nrow(murders_nz)/area_nzkm2)/length(table(murders_nz$Year)) 
@@ -192,48 +198,3 @@ sum(en) ## expected number across NZ, observed 967
 ![Voronoi diagram of the expected number of murders per mesh node.](LGCP_files/figure-markdown_github/inference-1.png)
 
 #### Spatio-tempoal LGCP
-
-``` r
-## space time SPDE
-## A set of knots over time needs to be defined in order to fit a
-## SPDE spatio-temporal model. It is then used to build a temporal mesh, as follows:
-
-k <- length(table(data$Year))
-## tknots <- seq(min(data$Year), max(data$Year), length = k) ## don't need this as year already discrete
-mesh.t <- inla.mesh.1d(1:k)
-## spatial spde
-spde <- inla.spde2.pcmatern(mesh = mesh,
-  prior.range = c(5, 0.01), # P(practic.range < 5) = 0.01
-  prior.sigma = c(1, 0.01)) # P(sigma > 1) = 0.01
-m <- spde$n.spde
-## spatio-temporal projection matrix
-Ast <- inla.spde.make.A(mesh = mesh, loc = locs[-968,],
-                        n.group = length(mesh.t$n), group = temp,
-                        group.mesh = mesh.t)
-## index set
-idx <- inla.spde.make.index('s', spde$n.spde, n.group = mesh.t$n)
-## spatio-temporal volume
-st.vol <- rep(w, k) * rep(diag(inla.mesh.fem(mesh.t)$c0), m)
-y <- rep(0:1, c(k * m, nrow(data)))
-expected <- c(st.vol, rep(0, nrow(data)))
-stk <- inla.stack(
-    data = list(y = y, expect = expected), 
-    A = list(rbind(Diagonal(n = k * m), Ast), 1), 
-    effects = list(idx, list(a0 = rep(1, k * m + nrow(data)))))
-## formula
-pcrho <- list(prior = 'pccor1', param = c(0.7, 0.7))
-form <- y ~ 0 + a0 + f(s, model = spde, group = s.group, 
-                       control.group = list(model = 'ar1',
-                                            hyper = list(theta = pcrho)))
-res <- inla(form, family = 'poisson', 
-            data = inla.stack.data(stk), E = expect,
-            control.predictor = list(A = inla.stack.A(stk)),
-            control.inla = list(strategy = 'adaptive'))
-## The exponential of the intercept plus the random effect at each space-time
-## integration point is the relative risk at each of these points. This relative
-## risk times the space-time volume will give the expected number of points (E(n))
-## at each one of these space-time locations. Summing over them will give a value
-## that approaches the number of observations:
-eta.at.integration.points <- res$summary.fix[1,1] + res$summary.ran$s$mean
-c(n = nrow(data), 'E(n)' = sum(st.vol * exp(eta.at.integration.points))) 
-```

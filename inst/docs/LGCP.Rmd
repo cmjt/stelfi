@@ -34,6 +34,7 @@ kable(table(murders_nz$Region), format = "pipe", col.names = c("Region","Number"
 data(nz) ## SpatialPolygonsDataFrame of NZ (NZTM projection)
 area_nz <- sum(raster::area(nz)) ## (m)
 area_nzkm2 <- area_nz/1000^2 ## according to Google NZ is 268,021 km2
+area_nzkm2
 spatial_murder_rate <- nrow(murders_nz)/area_nzkm2 
 temporal_murder_rate <- nrow(murders_nz)/length(table(murders_nz$Year)) 
 st_murder_rate <- (nrow(murders_nz)/area_nzkm2)/length(table(murders_nz$Year)) 
@@ -88,7 +89,7 @@ weights <- stelfi:::get_weights(mesh, nz)
 ```
 
 
-```{r plot dual mesh, echo = FALSE, fig.width=15,fig.height=15,fig.cap="Delauney triangulation of the domain (white) overlain on the Voronoi diagram representing the weights (area surrounding) of each mesh node (diamonds). Observations are plotted as circles, mesh nodes outwith the domain are shown in grey."}
+```{r plot dual mesh, echo = FALSE, fig.width=10,fig.height=10,fig.cap="Delauney triangulation of the domain (white) overlain on the Voronoi diagram representing the weights (area surrounding) of each mesh node (diamonds). Observations are plotted as circles, mesh nodes outwith the domain are shown in grey."}
 ## function below is a wrapper for
 ## the book.dual.mesh() function supplied
 ## in the INLA-SPDE tutorial mentioned above
@@ -101,7 +102,7 @@ points(mesh$loc,pch = 18)
 points(mesh$loc[weights == 0,],col = "grey", pch = 18)
 ```
 
-```{r plot weights,echo = FALSE, fig.width=15,fig.height=15,fig.cap="Voronoi diagram of the weights (areas in km2 around each mesh node)."}
+```{r plot weights,echo = FALSE, fig.width=10,fig.height=10,fig.cap="Voronoi diagram of the weights (areas in km2 around each mesh node)."}
 ## expected number per mesh node
 ins <- which(weights != 0)
 pal <- scales::col_numeric("Blues",weights[ins])
@@ -156,18 +157,18 @@ sum(en) ## expected number across NZ, observed 967
 ## expected number per mesh node
 ins <- which(weights != 0)
 pal <- scales::col_numeric("Blues",
-                           exp(as.numeric(pp.res$summary.fixed[1]))*weights[ins]/1000^2)
-cols <- pal(exp(as.numeric(pp.res$summary.fixed[1]))*weights[ins]/1000^2)
+                           exp(as.numeric(pp.res$summary.fixed[1]))*weights[ins])
+cols <- pal(exp(as.numeric(pp.res$summary.fixed[1]))*weights[ins])
 plot(dual_mesh[ins], col = cols)
 plot(nz, add = TRUE)
-fields::image.plot(zlim = range(exp(as.numeric(pp.res$summary.fixed[1]))*weights[ins]/1000^2),
+fields::image.plot(zlim = range(exp(as.numeric(pp.res$summary.fixed[1]))*weights[ins]),
                    col = sort(cols, TRUE), legend.only = TRUE, 
                    legend.width = 2, nlevel = 10, legend.shrink = 0.5)
 ```
 
 #### Spatio-tempoal LGCP
 
-```{r st model,eval = FALSE}
+```{r st model,eval = FALSE, echo = FALSE}
 ## space time SPDE
 ## A set of knots over time needs to be defined in order to fit a
 ## SPDE spatio-temporal model. It is then used to build a temporal mesh, as follows:
