@@ -113,7 +113,7 @@ murders_sp <-  spTransform(murders_sp,
                            CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
 ```
 
-![Locations of recorded (n = 967) murders in NZ 2004--2019](LGCP_files/figure-markdown_github/plot-1.png)
+![](LGCP_files/figure-markdown_github/plot-1.png) *Locations of recorded (n = 967) murders in NZ 2004--2019*
 
 log-Gaussian Cox process
 ------------------------
@@ -143,9 +143,9 @@ weights <- stelfi:::get_weights(mesh, nz)
 ## the sum of the weights is the area of the study region
 ```
 
-![Delauney triangulation of the domain (white) overlain on the Voronoi diagram representing the weights (area surrounding) of each mesh node (diamonds). Observations are plotted as circles, mesh nodes outwith the domain are shown in grey.](LGCP_files/figure-markdown_github/plot%20dual%20mesh-1.png)
+![](LGCP_files/figure-markdown_github/plot%20dual%20mesh-1.png) *Delauney triangulation of the domain (white) overlain on the Voronoi diagram representing the weights (area surrounding) of each mesh node (diamonds). Observations are plotted as circles, mesh nodes outwith the domain are shown in grey.*
 
-![Voronoi diagram of the weights (areas in km2 around each mesh node).](LGCP_files/figure-markdown_github/plot%20weights-1.png)
+![](LGCP_files/figure-markdown_github/plot%20weights-1.png) *Voronoi diagram of the weights (areas in km2 around each mesh node).*
 
 #### Spatial only LGCP
 
@@ -195,6 +195,6 @@ sum(en) ## expected number across NZ, observed 967
 
     ## [1] 967.0586
 
-![Voronoi diagram of the expected number of murders per mesh node.](LGCP_files/figure-markdown_github/inference-1.png)
+![](LGCP_files/figure-markdown_github/inference-1.png) *Voronoi diagram of the expected number of murders per mesh node.*
 
 #### Spatio-tempoal LGCP

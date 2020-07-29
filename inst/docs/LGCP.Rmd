@@ -55,10 +55,11 @@ murders_sp <-  spTransform(murders_sp,
                            CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
 ```
 
-```{r plot,results='asis',fig.width=10,fig.height=10,fig.cap="Locations of recorded (n = 967) murders in NZ 2004--2019",echo = FALSE,warning=FALSE,message=FALSE}
+```{r plot,results='asis',fig.width=10,fig.height=10,echo = FALSE,warning=FALSE,message=FALSE}
 plot(murders_sp)
 plot(nz, add = TRUE)
 ```
+*Locations of recorded (n = 967) murders in NZ 2004--2019*
 
 ## log-Gaussian Cox process
 
@@ -89,7 +90,7 @@ weights <- stelfi:::get_weights(mesh, nz)
 ```
 
 
-```{r plot dual mesh, echo = FALSE, fig.width=10,fig.height=10,fig.cap="Delauney triangulation of the domain (white) overlain on the Voronoi diagram representing the weights (area surrounding) of each mesh node (diamonds). Observations are plotted as circles, mesh nodes outwith the domain are shown in grey."}
+```{r plot dual mesh, echo = FALSE, fig.width=10,fig.height=10}
 ## function below is a wrapper for
 ## the book.dual.mesh() function supplied
 ## in the INLA-SPDE tutorial mentioned above
@@ -101,8 +102,10 @@ plot(nz,add = TRUE)
 points(mesh$loc,pch = 18)
 points(mesh$loc[weights == 0,],col = "grey", pch = 18)
 ```
+*Delauney triangulation of the domain (white) overlain on the Voronoi diagram representing the weights (area surrounding) of each mesh node (diamonds). Observations are plotted as circles, mesh nodes outwith the domain are shown in grey.*
 
-```{r plot weights,echo = FALSE, fig.width=10,fig.height=10,fig.cap="Voronoi diagram of the weights (areas in km2 around each mesh node)."}
+
+```{r plot weights,echo = FALSE, fig.width=10,fig.height=10}
 ## expected number per mesh node
 ins <- which(weights != 0)
 pal <- scales::col_numeric("Blues",weights[ins])
@@ -111,7 +114,7 @@ plot(dual_mesh[ins], col = cols)
 plot(nz, add = TRUE)
 fields::image.plot(zlim = range(weights[ins]/1000^2),col = sort(cols, TRUE), legend.only = TRUE, legend.width = 2, nlevel = 10, legend.shrink = 0.5)
 ```
-
+*Voronoi diagram of the weights (areas in km2 around each mesh node).*
 
 #### Spatial only LGCP
 
@@ -153,7 +156,7 @@ en <- exp(as.numeric(pp.res$summary.fixed[1]))*weights[ins]
 sum(en) ## expected number across NZ, observed 967
 ```
 
-```{r inference,echo = FALSE, fig.width=15,fig.height=15,fig.cap="Voronoi diagram of the expected number of murders per mesh node."}
+```{r inference,echo = FALSE, fig.width=15,fig.height=15}
 ## expected number per mesh node
 ins <- which(weights != 0)
 pal <- scales::col_numeric("Blues",
@@ -165,6 +168,7 @@ fields::image.plot(zlim = range(exp(as.numeric(pp.res$summary.fixed[1]))*weights
                    col = sort(cols, TRUE), legend.only = TRUE, 
                    legend.width = 2, nlevel = 10, legend.shrink = 0.5)
 ```
+*Voronoi diagram of the expected number of murders per mesh node.*
 
 #### Spatio-tempoal LGCP
 
