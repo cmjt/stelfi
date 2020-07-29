@@ -3,23 +3,46 @@ title: ""
 output: md_document
 ---
 
-```{r setup, include=FALSE,message=FALSE,results='asis'}
+```{r setup, include=FALSE,message=FALSE,results='asis',warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE, eval = TRUE,cache = TRUE, message = FALSE)
+library(kableExtra)
 ```
 
 ```{r lib}
 library(stelfi)
 ```
 
-## NZ murders
+# NZ murders
 
+## The Data
 
-```{r data}
+```{r data,results='asis'}
 data(murders_nz)
+dim(murders_nz)
 head(murders_nz)
 ```
 
-## Transform to NZTM
+```{r eda, echo = FALSE}
+kable(table(murders_nz$Cause_cat), format = "pipe",col.names = c("Cause","Number"),caption = "Number of murders by category")%>%
+  kable_styling(bootstrap_options = "striped", full_width = FALSE)
+kable(table(murders_nz$Year),format = "pipe", col.names = c("Year","Number"),caption = "Number of murders by year")%>%
+  kable_styling(bootstrap_options = "striped", full_width = FALSE)
+kable(table(murders_nz$Region), format = "pipe", col.names = c("Region","Number"),caption = "Number of murders by province") %>%
+  kable_styling(bootstrap_options = "striped", full_width = FALSE)
+```
+
+```{r rate}
+data(nz) ## SpatialPolygonsDataFrame of NZ (NZTM projection)
+area_nz <- raster::area(nz) ## (m)
+area_nzkm2 <- area_nz/1000^2 ## according to Google NZ is 268,021 km2
+spatial_murder_rate <- nrow(murders_nz)/area_nzkm2 
+temporal_murder_rate <- nrow(murders_nz)/length(table(murders_nz$Year)) 
+st_murder_rate <- (nrow(murders_nz)/area_nzkm2)/length(table(murders_nz$Year)) 
+```
+
+Rate of murders per km$^2$ across NZ is calculated as `r round(spatial_murder_rate,3)`; there are roughly `r round(temporal_murder_rate,3)`. The spatio-temporal murder rate across NZ 2004--2019 is `r round(st_murder_rate,3)` (rate per km$^2$ per year).
+
+### Transform to NZTM
 
 Transform `data.frame` to `SpatialPointsDataFrame`
 
@@ -28,7 +51,28 @@ murders_sp <- murders_nz
 ## project longitude & latitude to NZTMs
 coordinates(murders_sp) <- c("Longitude","Latitude")
 proj4string(murders_sp) <- CRS("+proj=longlat +datum=WGS84")
-murders_sp <-  spTransform(murders_sp, CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
+murders_sp <-  spTransform(murders_sp, 
+                           CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
+```
+
+```{r plot,results='asis',fig.width=10,fig.height=10,fig.cap="Locations of recorded (n = 967) murders in NZ 2004--2019",echo = FALSE}
 plot(murders_sp)
 plot(nz, add = TRUE)
 ```
+
+## log-Gaussian Cox process
+
+### Using INLA
+
+**Steps below closely follow this [INLA-SPDE tutorial](https://becarioprecario.bitbucket.io/spde-gitbook/ch-lcox.html)**.
+
+
+#### Creating the mesh
+
+Typically when analysing point pattern data the point locations are not specified as the mesh nodes (i.e., locations are not given as an argument to `inla.mesh.2d()`). Instad we can supply the coordinates of the point pattern window (domain).
+
+```{r create mesh}
+mesh <- inla.mesh.2d(loc.domain = coordinates(nz) ,
+                     max.edge = c(86000, 100000), cutoff = 5000)
+```
+
