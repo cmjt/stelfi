@@ -60,14 +60,16 @@ inla.mesh.dual <- function(mesh) {
     }
     else stop("It only works for R2!")
 }
-#' Function to find mesh nodes outwith some spatial polygon
-#' relies on inla.mesh.dual function from INLA spde-tutorial
-outwith <- function(mesh = NULL,boundary = NULL){
+#' Function to find areas (weights) around the mesh nodes which are
+#' within the specified spatial polygon.
+#' Relies on inla.mesh.dual function from INLA spde-tutorial
+get_weights <- function(mesh = NULL,boundary = NULL){
     dmesh <- inla.mesh.dual(mesh)
     proj4string(dmesh) <- proj4string(boundary)
     w <- sapply(1:length(dmesh), function(i) {
         if (rgeos::gIntersects(dmesh[i,], boundary))
-            return(rgeos::gArea(rgeos::gIntersection(dmesh[i,], boundary)))
+            return(sf::st_area(sf::st_intersection(sf::st_as_sf(dmesh[i, ]),
+                                                   sf::st_as_sf(boundary))))
         else return(0)
     })
     return(w)
