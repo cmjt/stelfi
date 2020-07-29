@@ -67,10 +67,11 @@ get_weights <- function(mesh = NULL,boundary = NULL){
     dmesh <- inla.mesh.dual(mesh)
     proj4string(dmesh) <- proj4string(boundary)
     w <- sapply(1:length(dmesh), function(i) {
-        if (rgeos::gIntersects(dmesh[i,], boundary))
-            return(sf::st_area(sf::st_intersection(sf::st_as_sf(dmesh[i, ]),
-                                                   sf::st_as_sf(boundary))))
+        if (rgeos::gIntersects(dmesh[i,], boundary)){
+            return(as.numeric(sum(sf::st_area(sf::st_intersection(sf::st_as_sf(dmesh[i, ]),
+                                                                  sf::st_as_sf(boundary))))))
+        }
         else return(0)
     })
-    return(w)
+    return(unlist(w))
 }
