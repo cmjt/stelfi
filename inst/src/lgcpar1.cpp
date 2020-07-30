@@ -45,14 +45,16 @@ Type objective_function<Type>::operator() ()
   PARAMETER(log_kappa); // kappa of random field
   PARAMETER_ARRAY(x); //the random field/effect each matrix row is a time step
   PARAMETER(rho); // parameter of the AR(1) temporal process (only applicable for spatio-temporal model)
+  PARAMETER(sigma); // scale parameter for the AR(1) temporal process (only applicable for spatio-temporal model)
   int tsteps =  NLEVELS(ID); // number of time steps
   Type kappa = exp(log_kappa); // return the kappa parameter of the Random field
   Type nll = 0;
   SparseMatrix<Type> Q = Q_spde(spde,kappa); // create the precision matrix from the spde model for the GMRF
-  nll = SEPARABLE(AR1(rho), GMRF(Q))(x); // x the random effect is a GMRF with precision Q
+  nll = SEPARABLE(SCALE(AR1(rho),sigma), GMRF(Q))(x); // x the random effect is a GMRF with precision Q
   for(int i = 0; i< (tsteps - 1); i++){
     vector<Type> eta = covariates(i)*beta; // design matrix and regression coeffs. (fixed effects)
     vector<Type> gmrf = (vector<Type> (x.col(i)));
+    
     vector<Type> respi = resp(i);
     for(int j = 0; j <respi.size(); j++){
       Type mu;
@@ -67,20 +69,20 @@ Type objective_function<Type>::operator() ()
   ADREPORT(sigma2);
   Type range = sqrt(8)/kappa;   //Distance at which correlation has dropped to 0.1, see p. 4 in Lindgren et al. (2011)
   ADREPORT(range);
-  SIMULATE {
-    SEPARABLE(AR1(rho), GMRF(Q)).simulate(x);
-    for(int i = 0; i< (tsteps - 1); i++){
-      vector<Type> eta_s = covariates(i)*beta; // design matrix and regression coeffs. (fixed effects)
-      vector<Type> gmrf_s = (vector<Type> (x.col(i)));
-      //vector<Type> respi_s = resp(i);
-      for(int j = 0; j <resp(i).size(); j++){
-	Type mu_s;
-	mu_s = eta_s(j) +  gmrf_s(j);
-	Type lam_s = area(j)*exp(mu_s); // intensity
-	resp(i)(j)= rpois(lam_s);
-      }
-      REPORT(resp);          // Report the simulation
-    }
-  }
+  // SIMULATE {
+  //   SEPARABLE(AR1(rho), GMRF(Q)).simulate(x);
+  //   for(int i = 0; i< (tsteps - 1); i++){
+  //     vector<Type> eta_s = covariates(i)*beta; // design matrix and regression coeffs. (fixed effects)
+  //     vector<Type> gmrf_s = (vector<Type> (x.col(i)));
+  //     //vector<Type> respi_s = resp(i);
+  //     for(int j = 0; j <resp(i).size(); j++){
+  // 	Type mu_s;
+  // 	mu_s = eta_s(j) +  gmrf_s(j);
+  // 	Type lam_s = area(j)*exp(mu_s); // intensity
+  // 	resp(i)(j)= rpois(lam_s);
+  //     }
+  // REPORT(resp);          // Report the simulation
+  // }
+  // }
   return nll;
 }

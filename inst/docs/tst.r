@@ -109,11 +109,12 @@ data <- list(resp = resp, ID = as.factor(temp.idx),covariates = covs)
 spde <- inla.spde2.matern(mesh = mesh,alpha = 2)
 data$spde <- spde$param.inla[c("M0","M1","M2")]
 w <- get_weights(mesh = mesh,sp = nz,FALSE)
-data$area <- w*c(Matrix::diag(data$spde$M0))
+data$area <- w#*c(Matrix::diag(data$spde$M0))
 
 ## params
 parameters <- list(beta = 1, log_kappa = -0.05, rho = 0.6)
 params <- list(beta = parameters[["beta"]],log_kappa = parameters[["log_kappa"]],
                x = as.matrix(matrix(0,nrow = mesh$n, ncol = length(table(temp.idx)))),
                rho = parameters[["rho"]])
-fit <- TMB::MakeADFun(data,params,DLL = "lgcpar1",random = c("x"))
+dll.stelfi()
+fit <- TMB::MakeADFun(data,params,DLL = "lgcpar1")#,random = c("x"))
