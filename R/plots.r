@@ -1,16 +1,16 @@
 #' Plots the Hawkes intensty function with decay historical dependence
 #' @docType methods
-#' @rdname show.hawkes
+#' @rdname show_hawkes
 #' @inheritParams sim.hawkes
 #' @param times a vector of numeric observation time points
 #' @export
 #'
-setGeneric("show.hawkes",
+setGeneric("show_hawkes",
            function(times,mu, alpha, beta){
-               standardGeneric("show.hawkes")
+               standardGeneric("show_hawkes")
            })
 
-setMethod("show.hawkes",
+setMethod("show_hawkes",
           c(times = "vector", mu = "numeric", alpha = "numeric", beta  = "numeric"),
           function(times, mu, alpha, beta){
               n = length(times)
@@ -26,7 +26,7 @@ setMethod("show.hawkes",
           })
 #' Function to plot or create raster of a given field defined over a mesh
 #' @docType methods
-#' @rdname show.field
+#' @rdname show_field
 #' @param x vector of length \link{mesh$n} of values at each \link{mesh} node
 #' @param dims vector of length 2 defining how fine a projection; default c(300,300)
 #' @param col colours of plot; default terrain.colors(100)
@@ -36,12 +36,12 @@ setMethod("show.hawkes",
 #' @param legend.only logical; legend only to be plotted; default FALSE
 #' @param ... arguments to pass into raster (if rast = TRUE) or image()
 #' @export
-setGeneric("show.field",
+setGeneric("show_field",
            function(x, mesh, dims = c(300,300), col = terrain.colors(100),
                     sp = NULL,rast = FALSE,legend = TRUE,legend.only = FALSE,...){
-               standardGeneric("show.field")
+               standardGeneric("show_field")
            })
-setMethod("show.field",
+setMethod("show_field",
           c(x = "numeric", mesh = "inla.mesh", dims = "numeric", col = "character",
             sp = "missing_or_spatialpolygon",rast = "logical",legend = "logical",legend.only = "logical"),
           function(x, mesh, dims, col, sp ,rast, legend, legend.only,...){
@@ -63,9 +63,11 @@ setMethod("show.field",
                                          legend.only = TRUE, col = col,add = TRUE,legend.width = 4,
                                          legend.mar = 0)
                   }else{
-                      image(list(x = proj$x, y=proj$y, z = field.proj),col = col,...)
-                      if(legend){fields::image.plot(list(x = proj$x, y=proj$y, z = field.proj)
-                                                   ,legend.only = TRUE, col = col)}
+                      image(list(x = proj$x, y=proj$y, z = field.proj),col = col, ...)
+                      if(legend){fields::image.plot(list(x = proj$x, y=proj$y, z = field.proj),
+                                                    legend.only = TRUE, col = col,
+                                                    legend.shrink = 0.5)}
+                      if(!is.null(sp)){plot(sp, add = TRUE)}
                   }
               }
           })

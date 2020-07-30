@@ -2,10 +2,14 @@
 % Please edit documentation in R/helpers.r
 \name{inla.mesh.dual}
 \alias{inla.mesh.dual}
-\title{Function copied from http://inla.r-inla-download.org/r-inla.org/tutorials/spde/R/spde-tutorial-functions.R}
+\title{Function copied from \url{http://www.r-inla.org/spde-book}
+which is suppied alongside the
+\href{SPDE gitbook}{https://becarioprecario.bitbucket.io/spde-gitbook/}}
 \usage{
 inla.mesh.dual(mesh)
 }
 \description{
-Function copied from http://inla.r-inla-download.org/r-inla.org/tutorials/spde/R/spde-tutorial-functions.R
+Function copied from \url{http://www.r-inla.org/spde-book}
+which is suppied alongside the
+\href{SPDE gitbook}{https://becarioprecario.bitbucket.io/spde-gitbook/}
 }

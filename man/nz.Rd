@@ -3,9 +3,7 @@
 \name{nz}
 \alias{nz}
 \title{New Zealand}
-\format{
-A \code{SpatialPolygonsDataFrame} of New Zeland in NZTM
-}
+\format{A \code{SpatialPolygonsDataFrame} of New Zeland in NZTM}
 \description{
 Spatial Polygon of NZ
 }

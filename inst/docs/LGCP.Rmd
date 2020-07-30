@@ -9,6 +9,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE, eval = TRUE,cache = TRUE, message = FALSE,warning=FALSE)
 library(kableExtra)
 ```
+To install the `R` packahe `stelfi` run `devtools::install_github("cmjt/stelfi")`.
 
 ```{r lib}
 library(stelfi)
@@ -79,33 +80,22 @@ mesh <- inla.mesh.2d(loc.domain = coordinates(nz) ,
 
  The SPDE approach for point pattern analysis defines the model at the nodes of the mesh. To fit the log-Cox point process model these points are considered as integration points. The method in Simpson et al. (2016) defines the expected number of events to be proportional to the area around the node (the areas of the polygons in the dual mesh, see below). This means that at the nodes of the mesh with larger triangles, there are also larger expected values.
 
-```{r dual mesh,cache = TRUE,message=FALSE}
-## intersection between mesh and study area
-weights <- stelfi:::get_weights(mesh, nz)
+```{r dual mesh,cache = TRUE,message = FALSE, fig.width=10,fig.height=10}
+weights <- stelfi::get_weights(mesh = mesh, sp = nz, plot = TRUE)
 ## these weights are the areas of each mesh triangle,
 ## required for the "exposure" aspect of the LGCP.
 ## the weights are set to zero if outside the study region
 ## as here the they should have no contribution. 
 ## the sum of the weights is the area of the study region
 ```
+*Delauney triangulation of the domain (white) overlain on the Voronoi diagram representing the weights (area surrounding) of each mesh node (diamonds). Observations are plotted as circles, mesh nodes outwith the domain are shown in white.*
 
 
-```{r plot dual mesh, echo = FALSE, fig.width=10,fig.height=10}
+```{r plot weights,echo = FALSE, fig.width=10,fig.height=10}
 ## function below is a wrapper for
 ## the book.dual.mesh() function supplied
 ## in the INLA-SPDE tutorial mentioned above
 dual_mesh <- stelfi:::inla.mesh.dual(mesh)
-plot(dual_mesh, col = "grey")
-plot(mesh, add = TRUE, edge.color = "white")
-points(murders_sp, pch = 20)
-plot(nz,add = TRUE)
-points(mesh$loc,pch = 18)
-points(mesh$loc[weights == 0,],col = "grey", pch = 18)
-```
-*Delauney triangulation of the domain (white) overlain on the Voronoi diagram representing the weights (area surrounding) of each mesh node (diamonds). Observations are plotted as circles, mesh nodes outwith the domain are shown in grey.*
-
-
-```{r plot weights,echo = FALSE, fig.width=10,fig.height=10}
 ## expected number per mesh node
 ins <- which(weights != 0)
 pal <- scales::col_numeric("Blues",weights[ins])
@@ -152,16 +142,17 @@ pp.res <- inla(y ~ 0 + b0 + f(i, model = spde),
 ## fixed effects
 pp.res$summary.fixed
 ## expected number of murders at each mesh node
+ins <- which(weights != 0)
 en <- exp(as.numeric(pp.res$summary.fixed[1]))*weights[ins]
 sum(en) ## expected number across NZ, observed 967
 ```
 
 ```{r inference,echo = FALSE, fig.width=15,fig.height=15}
 ## expected number per mesh node
-ins <- which(weights != 0)
-pal <- scales::col_numeric("Blues",
-                           exp(as.numeric(pp.res$summary.fixed[1]))*weights[ins])
-cols <- pal(exp(as.numeric(pp.res$summary.fixed[1]))*weights[ins])
+fields <- stelfi::get_fields(pp.res, mesh)
+response <-  exp(fields[[1]][ins] + as.numeric(pp.res$summary.fixed[1]))*weights[ins]
+pal <- scales::col_numeric("Blues", response)
+cols <- pal(response)
 plot(dual_mesh[ins], col = cols)
 plot(nz, add = TRUE)
 fields::image.plot(zlim = range(exp(as.numeric(pp.res$summary.fixed[1]))*weights[ins]),
@@ -170,6 +161,17 @@ fields::image.plot(zlim = range(exp(as.numeric(pp.res$summary.fixed[1]))*weights
 ```
 *Voronoi diagram of the expected number of murders per mesh node.*
 
+```{r resp,echo = FALSE, fig.width=15,fig.height=15}
+## projected
+resp <- exp(fields[[1]] + as.numeric(pp.res$summary.fixed[1]))*weights
+show_field(resp, mesh, dims = c(300,300),
+		 col = RColorBrewer::brewer.pal(9, "Blues"), sp = nz,
+           	 rast = FALSE, legend = TRUE, FALSE)
+```
+*Voronoi diagram of the expected number of murders per mesh node.*
+
+
+
 #### Spatio-tempoal LGCP
 
 ```{r st model,eval = FALSE, echo = FALSE}
@@ -177,7 +179,9 @@ fields::image.plot(zlim = range(exp(as.numeric(pp.res$summary.fixed[1]))*weights
 ## A set of knots over time needs to be defined in order to fit a
 ## SPDE spatio-temporal model. It is then used to build a temporal mesh, as follows:
 
-k <- length(table(data$Year))
+## spatio temporal
+k <- length(table(murders_sp$Year))
+temp <- murders_sp$Year - min(murders_sp$Year) + 1
 ## tknots <- seq(min(data$Year), max(data$Year), length = k) ## don't need this as year already discrete
 mesh.t <- inla.mesh.1d(1:k)
 ## spatial spde
@@ -186,19 +190,19 @@ spde <- inla.spde2.pcmatern(mesh = mesh,
   prior.sigma = c(1, 0.01)) # P(sigma > 1) = 0.01
 m <- spde$n.spde
 ## spatio-temporal projection matrix
-Ast <- inla.spde.make.A(mesh = mesh, loc = locs[-968,],
+Ast <- inla.spde.make.A(mesh = mesh, loc = coordinates(murders_sp),
                         n.group = length(mesh.t$n), group = temp,
                         group.mesh = mesh.t)
 ## index set
 idx <- inla.spde.make.index('s', spde$n.spde, n.group = mesh.t$n)
 ## spatio-temporal volume
-st.vol <- rep(w, k) * rep(diag(inla.mesh.fem(mesh.t)$c0), m)
-y <- rep(0:1, c(k * m, nrow(data)))
-expected <- c(st.vol, rep(0, nrow(data)))
+st.vol <- rep(weights, k) * rep(diag(inla.mesh.fem(mesh.t)$c0), m)
+y <- rep(0:1, c(k * m, nrow(murders_sp)))
+expected <- c(st.vol, rep(0, nrow(murders_sp)))
 stk <- inla.stack(
     data = list(y = y, expect = expected), 
     A = list(rbind(Diagonal(n = k * m), Ast), 1), 
-    effects = list(idx, list(a0 = rep(1, k * m + nrow(data)))))
+    effects = list(idx, list(a0 = rep(1, k * m + nrow(murders_sp)))))
 ## formula
 pcrho <- list(prior = 'pccor1', param = c(0.7, 0.7))
 form <- y ~ 0 + a0 + f(s, model = spde, group = s.group, 
@@ -215,4 +219,25 @@ res <- inla(form, family = 'poisson',
 ## that approaches the number of observations:
 eta.at.integration.points <- res$summary.fix[1,1] + res$summary.ran$s$mean
 c(n = nrow(data), 'E(n)' = sum(st.vol * exp(eta.at.integration.points))) 
+```
+
+## Model fitting using `stelfi`
+
+### As a wrapper for `INLA`
+
+```{r using stelfi}
+## Spatial only
+fit <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = nz)
+## Spatiotemporal
+temp <- murders_sp$Year - min(murders_sp$Year) + 1
+fit_temp <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = nz,
+	 temp = temp)
+
+```
+
+### Using `TMB`
+
+```{r using TMB}
+## ensure you've run compile.stelfi()
+
 ```

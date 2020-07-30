@@ -134,8 +134,12 @@ mesh <- inla.mesh.2d(loc.domain = coordinates(nz) ,
 The SPDE approach for point pattern analysis defines the model at the nodes of the mesh. To fit the log-Cox point process model these points are considered as integration points. The method in Simpson et al. (2016) defines the expected number of events to be proportional to the area around the node (the areas of the polygons in the dual mesh, see below). This means that at the nodes of the mesh with larger triangles, there are also larger expected values.
 
 ``` r
-## intersection between mesh and study area
-weights <- stelfi:::get_weights(mesh, nz)
+weights <- stelfi::get_weights(mesh = mesh, sp = nz, plot = TRUE)
+```
+
+![](LGCP_files/figure-markdown_github/dual%20mesh-1.png)
+
+``` r
 ## these weights are the areas of each mesh triangle,
 ## required for the "exposure" aspect of the LGCP.
 ## the weights are set to zero if outside the study region
@@ -143,7 +147,7 @@ weights <- stelfi:::get_weights(mesh, nz)
 ## the sum of the weights is the area of the study region
 ```
 
-![](LGCP_files/figure-markdown_github/plot%20dual%20mesh-1.png) *Delauney triangulation of the domain (white) overlain on the Voronoi diagram representing the weights (area surrounding) of each mesh node (diamonds). Observations are plotted as circles, mesh nodes outwith the domain are shown in grey.*
+*Delauney triangulation of the domain (white) overlain on the Voronoi diagram representing the weights (area surrounding) of each mesh node (diamonds). Observations are plotted as circles, mesh nodes outwith the domain are shown in white.*
 
 ![](LGCP_files/figure-markdown_github/plot%20weights-1.png) *Voronoi diagram of the weights (areas in km2 around each mesh node).*
 
@@ -185,10 +189,11 @@ pp.res$summary.fixed
 ```
 
     ##         mean         sd 0.025quant  0.5quant 0.975quant      mode          kld
-    ## b0 -19.44029 0.03226553  -19.50422 -19.44009  -19.37752 -19.43969 4.754885e-07
+    ## b0 -19.44029 0.03226553  -19.50422 -19.44009  -19.37752 -19.43969 4.755158e-07
 
 ``` r
 ## expected number of murders at each mesh node
+ins <- which(weights != 0)
 en <- exp(as.numeric(pp.res$summary.fixed[1]))*weights[ins]
 sum(en) ## expected number across NZ, observed 967
 ```
@@ -196,5 +201,7 @@ sum(en) ## expected number across NZ, observed 967
     ## [1] 967.0586
 
 ![](LGCP_files/figure-markdown_github/inference-1.png) *Voronoi diagram of the expected number of murders per mesh node.*
+
+![](LGCP_files/figure-markdown_github/resp-1.png) *Voronoi diagram of the expected number of murders per mesh node.*
 
 #### Spatio-tempoal LGCP

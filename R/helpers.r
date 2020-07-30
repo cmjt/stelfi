@@ -21,7 +21,9 @@ setMethod("hawke.intensity",
               }
               lam.p
           })
-#' Function copied from http://inla.r-inla-download.org/r-inla.org/tutorials/spde/R/spde-tutorial-functions.R
+#' Function copied from \url{http://www.r-inla.org/spde-book}
+#' which is suppied alongside the
+#' \href{SPDE gitbook}{https://becarioprecario.bitbucket.io/spde-gitbook/}
 inla.mesh.dual <- function(mesh) {
     if (mesh$manifold=='R2') {
         ce <- t(sapply(1:nrow(mesh$graph$tv), function(i)
@@ -63,15 +65,43 @@ inla.mesh.dual <- function(mesh) {
 #' Function to find areas (weights) around the mesh nodes which are
 #' within the specified spatial polygon.
 #' Relies on inla.mesh.dual function from INLA spde-tutorial
-get_weights <- function(mesh = NULL,boundary = NULL){
-    dmesh <- inla.mesh.dual(mesh)
-    proj4string(dmesh) <- proj4string(boundary)
-    w <- sapply(1:length(dmesh), function(i) {
-        if (rgeos::gIntersects(dmesh[i,], boundary)){
-            return(as.numeric(sum(sf::st_area(sf::st_intersection(sf::st_as_sf(dmesh[i, ]),
-                                                                  sf::st_as_sf(boundary))))))
-        }
-        else return(0)
-    })
-    return(unlist(w))
-}
+#' \href{SPDE gitbook}{https://becarioprecario.bitbucket.io/spde-gitbook/}
+#' @export
+setGeneric("get_weights",
+           function(mesh, sp, plot = FALSE){
+           })
+
+setMethod("get_weights",
+          c(mesh = "inla.mesh", sp = "SpatialPolygonsDataFrame", plot = "logical"),
+          function(mesh, sp, plot = FALSE){
+              dmesh <- inla.mesh.dual(mesh)
+              proj4string(dmesh) <- proj4string(sp)
+              w <- sapply(1:length(dmesh), function(i) {
+                  if (rgeos::gIntersects(dmesh[i,], sp)){
+                      return(as.numeric(sum(sf::st_area(sf::st_intersection(sf::st_as_sf(dmesh[i, ]),
+                                                                            sf::st_as_sf(sp))))))
+                  }
+                  else return(0)
+              })
+              if(plot){
+                  plot(dmesh, col = "grey")
+                  plot(mesh, add = TRUE, edge.color = "white")
+                  plot(nz,add = TRUE)
+                  points(mesh$loc,pch = 18)
+                  points(mesh$loc[unlist(w) == 0,],col = "white", pch = 18)
+              }
+              return(unlist(w))
+          })
+#' Function to extract fields from a fitted model (INLA only ATM) (spatial only ATM)
+#' @export
+setGeneric("get_fields",
+           function(x, mesh){
+           })
+setGeneric("get_fields",
+           function(x = "inla",mesh = "inla.mesh"){
+               field.names <- names(x$summary.random)
+               fields <- lapply(1:length(field.names),
+                                function(f) x$summary.random[[field.names[f]]]$mean)
+               names(fields) <- field.names
+               return(fields)
+           })
