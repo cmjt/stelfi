@@ -82,39 +82,45 @@ mesh <- inla.mesh.2d(loc.domain = coordinates(nz) ,
 ##             control.inla = list(strategy = 'adaptive'))
 
 ## stelfi
-st <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = nz)
+## st <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = nz) 
 
 temp <- murders_sp$Year - min(murders_sp$Year) + 1
-stemp <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = nz,
-                       temp = temp)
+## stemp <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = nz,
+##                        temp = temp)
 
 int <- split(x <- replicate(max(temp), rep(1,mesh$n)),col(x)); names(int) <- rep("intercept",length(int))
-fit <- fit_lgcp_tmb(locs = coordinates(murders_sp), temp.idx = as.factor(temp),
-                    mesh = mesh, parameters = list(beta = 1, log_kappa = -0.05, rho = 0.6),
-                    covs = int,
-                    sp = nz)
+## fit <- fit_lgcp_tmb(locs = coordinates(murders_sp), temp.idx = as.factor(temp),
+##                     mesh = mesh, parameters = list(beta = 1, log_kappa = -0.05, rho = 0.6),
+##                     covs = int,
+##                     sp = nz)
 
-
-resp <- list()
-temp.idx <- as.factor(temp)
+##****************### need to make mesh with locs
+mesh <- inla.mesh.2d(loc = coordinates(murders_sp),loc.domain = coordinates(nz) ,
+                     max.edge = c(86000, 100000), cutoff = 5000)
+resp <- matrix(NA,ncol = length(table(temp)), nrow = mesh$n)
+temp.idx <- rep(1:2, times = c(500,467)) #as.factor(temp)
 w.loc <- split(mesh$idx$loc,temp.idx)
 w.c <- lapply(w.loc,table)
 for(i in 1:length(w.c)){
-    resp[[i]] <- numeric(mesh$n)
+    resp[,i] <- numeric(mesh$n)
     count <- as.vector(w.c[[i]])
-    resp[[i]][unique(w.loc[[i]])] <- count
+    resp[,i][unique(w.loc[[i]])] <- count
 }
-covs <- int
-data <- list(resp = resp, ID = as.factor(temp.idx),covariates = covs)
+covs <- lapply(int, as.matrix)
+data <- list(y = resp, covariates = covs, tsteps = length(table(temp)))
 spde <- inla.spde2.matern(mesh = mesh,alpha = 2)
 data$spde <- spde$param.inla[c("M0","M1","M2")]
 w <- get_weights(mesh = mesh,sp = nz,FALSE)
 data$area <- w#*c(Matrix::diag(data$spde$M0))
 
 ## params
-parameters <- list(beta = 1, log_kappa = -0.05, rho = 0.6)
-params <- list(beta = parameters[["beta"]],log_kappa = parameters[["log_kappa"]],
-               x = as.matrix(matrix(0,nrow = mesh$n, ncol = length(table(temp.idx)))),
-               rho = parameters[["rho"]])
-dll.stelfi()
-fit <- TMB::MakeADFun(data,params,DLL = "lgcpar1")#,random = c("x"))
+parameters <- list(beta = c(2), log_rho = -0.1, log_sigma = -0.02 , log_kappa = -1.5,
+                   field =  as.matrix(matrix(0,nrow = mesh$n, ncol = length(table(temp.idx)))))
+
+## compile.stelfi()
+## dll.stelfi()
+fit <- TMB::MakeADFun(data, parameters, DLL = "lgcpar1", random = c("field"))
+## Fitting the model.
+fit.fixed <- optim(fit$par, fit$fn, fit$gr)
+## Getting sdreport.
+sdrep.fixed <- sdreport(obj.fixed)
