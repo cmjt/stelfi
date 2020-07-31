@@ -37,7 +37,7 @@ weights at the mesh nodes outwith this will be set to zero.}
 
 \item{control.fixed}{a list as per inla by default sets prior for precision intercept}
 
-\item{...}{other arguments taken by inla}
+\item{...}{other arguments taken by \code{inla}}
 }
 \description{
 Wrapper for \code{INLA} to fit a LGCP
