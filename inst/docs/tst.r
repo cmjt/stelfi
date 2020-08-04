@@ -22,8 +22,7 @@ pop_obs <- sp::over(murders_sp,pop)
 ## population density covariate c at mesh nodes and then obs locations 
 covs <- data.frame(pop = c(pop_mesh$pop_densit, pop_obs$pop_densit))
 ##########################################
-library(sf)
-weights <- stelfi:::get_weights(mesh, nz, TRUE)
+weights <- stelfi:::get_weights(mesh, nz, FALSE)
 ## number of mesh nodes
 nodes <- mesh$n
 ## define model
