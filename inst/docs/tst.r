@@ -7,37 +7,53 @@ murders_sp <-  spTransform(murders_sp,
                            CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
 mesh <- inla.mesh.2d(loc.domain = coordinates(nz) ,
                      max.edge = c(86000, 100000), cutoff = 5000)
-## weights <- stelfi:::get_weights(mesh, nz, TRUE)
-## ## number of mesh nodes
-## nodes <- mesh$n
-## ## define model
-## spde <- inla.spde2.pcmatern(mesh = mesh,
-##   # PC-prior on range: P(practic.range < 0.05) = 0.01
-##   prior.range = c(0.05, 0.01),
-##   # PC-prior on sigma: P(sigma > 1) = 0.01
-##   prior.sigma = c(1, 0.01))
-## ## vector for observations
-## y.pp <- rep(0:1, c(nodes, nrow(murders_sp)))
-## ## exposure (E)
-## e.pp <- c(weights, rep(0, nrow(murders_sp)))
-## ## integration points
-## imat <- Diagonal(nodes, rep(1, nodes))
-## ## projection matrix for observed points
-## lmat <- inla.spde.make.A(mesh, coordinates(murders_sp))
-## ## entire projection matrix
-## A.pp <- rbind(imat, lmat)
-## ## data stack
-## stk.pp <- inla.stack(
-##   data = list(y = y.pp, e = e.pp), 
-##   A = list(1, A.pp),
-##   effects = list(list(b0 = rep(1, nodes + nrow(murders_sp))), 
-##                  list(i = 1:nodes)),
-##   tag = 'pp')
-## ## fit model
-## pp.res <- inla(y ~ 0 + b0 + f(i, model = spde), 
-##   family = 'poisson', data = inla.stack.data(stk.pp), 
-##   control.predictor = list(A = inla.stack.A(stk.pp)), 
-##   E = inla.stack.data(stk.pp)$e)
+##########################################
+## covariate
+## include covariates
+## let's assume you have a covariate shapefile
+## shape file from https://koordinates.com/layer/7322-new-zealand-population-density-by-meshblock/
+file <- list.files("~/Desktop",pattern = ".shp", full = TRUE)
+layer <- rgdal::ogrListLayers(file)
+pop <- rgdal::readOGR(file, layer = layer)
+pop <- spTransform(pop, CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
+pop_mesh <- sp::over(SpatialPoints(mesh$loc[,1:2], proj4string = CRS(proj4string(murders_sp))),pop)
+## will ovviously be NA at mesh nodes outside NZ, don't worry
+pop_obs <- sp::over(murders_sp,pop)
+## population density covariate c at mesh nodes and then obs locations 
+covs <- data.frame(pop = c(pop_mesh$pop_densit, pop_obs$pop_densit))
+##########################################
+library(sf)
+weights <- stelfi:::get_weights(mesh, nz, TRUE)
+## number of mesh nodes
+nodes <- mesh$n
+## define model
+spde <- inla.spde2.pcmatern(mesh = mesh,
+  # PC-prior on range: P(practic.range < 0.05) = 0.01
+  prior.range = c(0.05, 0.01),
+  # PC-prior on sigma: P(sigma > 1) = 0.01
+  prior.sigma = c(1, 0.01))
+## vector for observations
+y.pp <- rep(0:1, c(nodes, nrow(murders_sp)))
+## exposure (E)
+e.pp <- c(weights, rep(0, nrow(murders_sp)))
+## integration points
+imat <- Diagonal(nodes, rep(1, nodes))
+## projection matrix for observed points
+lmat <- inla.spde.make.A(mesh, coordinates(murders_sp))
+## entire projection matrix
+A.pp <- rbind(imat, lmat)
+## data stack
+stk.pp <- inla.stack(
+  data = list(y = y.pp, e = e.pp), 
+  A = list(1, A.pp),
+  effects = list(list(b0 = rep(1, nodes + nrow(murders_sp)), pop = covs$pop), 
+                 list(i = 1:nodes)),
+  tag = 'pp')
+## fit model
+pp.res <- inla(y ~ 0 + b0 + pop + f(i, model = spde), 
+  family = 'poisson', data = inla.stack.data(stk.pp), 
+  control.predictor = list(A = inla.stack.A(stk.pp)), 
+  E = inla.stack.data(stk.pp)$e)
 ## ## fixed effects
 ## pp.res$summary.fixed
 ## ## expected number of murders at each mesh node
@@ -82,7 +98,11 @@ mesh <- inla.mesh.2d(loc.domain = coordinates(nz) ,
 ##             control.inla = list(strategy = 'adaptive'))
 
 ## stelfi
-## st <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = nz) 
+st <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = nz)
+
+## fit model with covariate
+scov <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp),covariate =  covs,sp = nz)
+
 
 temp <- murders_sp$Year - min(murders_sp$Year) + 1
 ## stemp <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = nz,
