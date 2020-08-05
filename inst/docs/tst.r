@@ -12,17 +12,17 @@ mesh <- inla.mesh.2d(loc.domain = coordinates(nz) ,
 ## include covariates
 ## let's assume you have a covariate shapefile
 ## shape file from https://koordinates.com/layer/7322-new-zealand-population-density-by-meshblock/
-file <- list.files("~/Desktop",pattern = ".shp", full = TRUE)
+file <- list.files("data",pattern = ".shp", full = TRUE)
 layer <- rgdal::ogrListLayers(file)
 pop <- rgdal::readOGR(file, layer = layer)
 pop <- spTransform(pop, CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
 pop_mesh <- sp::over(SpatialPoints(mesh$loc[,1:2], proj4string = CRS(proj4string(murders_sp))),pop)
-## will ovviously be NA at mesh nodes outside NZ, don't worry
+## will obviously be NA at mesh nodes outside NZ, don't worry
 pop_obs <- sp::over(murders_sp,pop)
 ## population density covariate c at mesh nodes and then obs locations 
 covs <- data.frame(pop = c(pop_mesh$pop_densit, pop_obs$pop_densit))
 ##########################################
-weights <- stelfi:::get_weights(mesh, nz, FALSE)
+weights <- stelfi:::get_weights(mesh, nz, TRUE)
 ## number of mesh nodes
 nodes <- mesh$n
 ## define model
