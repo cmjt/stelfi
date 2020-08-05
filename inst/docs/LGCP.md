@@ -1,3 +1,5 @@
+To install the `R` packahe `stelfi` run `devtools::install_github("cmjt/stelfi")`.
+
 ``` r
 library(stelfi)
 ```
@@ -189,7 +191,7 @@ pp.res$summary.fixed
 ```
 
     ##         mean         sd 0.025quant  0.5quant 0.975quant      mode          kld
-    ## b0 -19.44029 0.03226553  -19.50422 -19.44009  -19.37752 -19.43969 4.755158e-07
+    ## b0 -19.44029 0.03226553  -19.50422 -19.44009  -19.37752 -19.43969 4.754885e-07
 
 ``` r
 ## expected number of murders at each mesh node
@@ -204,4 +206,117 @@ sum(en) ## expected number across NZ, observed 967
 
 ![](LGCP_files/figure-markdown_github/resp-1.png) *Voronoi diagram of the expected number of murders per mesh node.*
 
+##### Adding a covariate
+
+``` r
+## include covariates
+## The covariate shapefile used can be downloaded from
+## https://koordinates.com/layer/7322-new-zealand-population-density-by-meshblock/
+## the code below assumes a single .shp (above) file is
+## in a directory data/ relative to your working directory
+file <- list.files("data",pattern = ".shp", full = TRUE)
+layer <- rgdal::ogrListLayers(file)
+pop <- rgdal::readOGR(file, layer = layer)
+```
+
+    ## OGR data source with driver: ESRI Shapefile 
+    ## Source: "/home/charlotte/Git/stelfi/inst/docs/data/new-zealand-population-density-by-meshblock.shp", layer: "new-zealand-population-density-by-meshblock"
+    ## with 46629 features
+    ## It has 5 fields
+
+``` r
+pop <- spTransform(pop, CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
+pop_mesh <- sp::over(SpatialPoints(mesh$loc[,1:2], proj4string = CRS(proj4string(murders_sp))),pop)
+## will obviously be NA at mesh nodes outside NZ
+pop_obs <- sp::over(murders_sp,pop)
+## population density covariate c at mesh nodes and then obs locations 
+covs <- data.frame(pop = c(pop_mesh$pop_densit, pop_obs$pop_densit))
+```
+
+``` r
+## data stack
+stk.cov <- inla.stack(
+  data = list(y = y.pp, e = e.pp), 
+  A = list(1, A.pp),
+  effects = list(list(b0 = rep(1, nodes + nrow(murders_sp)), pop = covs$pop), 
+                 list(i = 1:nodes)),
+  tag = 'pp')
+## fit model
+pp.cov <- inla(y ~ 0 + b0 + pop + f(i, model = spde), 
+  family = 'poisson', data = inla.stack.data(stk.cov), 
+  control.predictor = list(A = inla.stack.A(stk.cov)), 
+  E = inla.stack.data(stk.pp)$e)
+```
+
 #### Spatio-tempoal LGCP
+
+``` r
+## space time SPDE
+## A set of knots over time needs to be defined in order to fit a
+## SPDE spatio-temporal model. It is then used to build a temporal mesh, as follows:
+
+## spatio temporal
+k <- length(table(murders_sp$Year))
+temp <- murders_sp$Year - min(murders_sp$Year) + 1
+## tknots <- seq(min(data$Year), max(data$Year), length = k) ## don't need this as year already discrete
+mesh.t <- inla.mesh.1d(1:k)
+## spatial spde
+spde <- inla.spde2.pcmatern(mesh = mesh,
+  prior.range = c(5, 0.01), # P(practic.range < 5) = 0.01
+  prior.sigma = c(1, 0.01)) # P(sigma > 1) = 0.01
+m <- spde$n.spde
+## spatio-temporal projection matrix
+Ast <- inla.spde.make.A(mesh = mesh, loc = coordinates(murders_sp),
+                        n.group = length(mesh.t$n), group = temp,
+                        group.mesh = mesh.t)
+## index set
+idx <- inla.spde.make.index('s', spde$n.spde, n.group = mesh.t$n)
+## spatio-temporal volume
+st.vol <- rep(weights, k) * rep(diag(inla.mesh.fem(mesh.t)$c0), m)
+y <- rep(0:1, c(k * m, nrow(murders_sp)))
+expected <- c(st.vol, rep(0, nrow(murders_sp)))
+stk <- inla.stack(
+    data = list(y = y, expect = expected), 
+    A = list(rbind(Diagonal(n = k * m), Ast), 1), 
+    effects = list(idx, list(a0 = rep(1, k * m + nrow(murders_sp)))))
+## formula
+pcrho <- list(prior = 'pccor1', param = c(0.7, 0.7))
+form <- y ~ 0 + a0 + f(s, model = spde, group = s.group, 
+                       control.group = list(model = 'ar1',
+                                            hyper = list(theta = pcrho)))
+res <- inla(form, family = 'poisson', 
+            data = inla.stack.data(stk), E = expect,
+            control.predictor = list(A = inla.stack.A(stk)),
+            control.inla = list(strategy = 'adaptive'))
+## The exponential of the intercept plus the random effect at each space-time
+## integration point is the relative risk at each of these points. This relative
+## risk times the space-time volume will give the expected number of points (E(n))
+## at each one of these space-time locations. Summing over them will give a value
+## that approaches the number of observations:
+eta.at.integration.points <- res$summary.fix[1,1] + res$summary.ran$s$mean
+c(n = nrow(data), 'E(n)' = sum(st.vol * exp(eta.at.integration.points))) 
+```
+
+Model fitting using `stelfi`
+----------------------------
+
+### As a wrapper for `INLA`
+
+``` r
+## Spatial only
+fit <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = nz)
+summary(fit)
+## Spatiotemporal
+temp <- murders_sp$Year - min(murders_sp$Year) + 1
+fit_temp <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = nz,
+     temp = temp)
+summary(fit_temp)
+```
+
+#### With a covariate
+
+### Using `TMB` TODO
+
+``` r
+## ensure you've run compile.stelfi()
+```
