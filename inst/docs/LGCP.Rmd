@@ -170,11 +170,43 @@ show_field(resp, mesh, dims = c(300,300),
 ```
 *Voronoi diagram of the expected number of murders per mesh node.*
 
+##### Adding a covariate
 
+```{r}
+## include covariates
+## The covariate shapefile used can be downloaded from
+## https://koordinates.com/layer/7322-new-zealand-population-density-by-meshblock/
+## the code below assumes a single .shp (above) file is
+## in a directory data/ relative to your working directory
+file <- list.files("data",pattern = ".shp", full = TRUE)
+layer <- rgdal::ogrListLayers(file)
+pop <- rgdal::readOGR(file, layer = layer)
+pop <- spTransform(pop, CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
+pop_mesh <- sp::over(SpatialPoints(mesh$loc[,1:2], proj4string = CRS(proj4string(murders_sp))),pop)
+## will obviously be NA at mesh nodes outside NZ
+pop_obs <- sp::over(murders_sp,pop)
+## population density covariate c at mesh nodes and then obs locations 
+covs <- data.frame(pop = c(pop_mesh$pop_densit, pop_obs$pop_densit))
+```
+
+```{r fir cov model}
+## data stack
+stk.cov <- inla.stack(
+  data = list(y = y.pp, e = e.pp), 
+  A = list(1, A.pp),
+  effects = list(list(b0 = rep(1, nodes + nrow(murders_sp)), pop = covs$pop), 
+                 list(i = 1:nodes)),
+  tag = 'pp')
+## fit model
+pp.cov <- inla(y ~ 0 + b0 + pop + f(i, model = spde), 
+  family = 'poisson', data = inla.stack.data(stk.cov), 
+  control.predictor = list(A = inla.stack.A(stk.cov)), 
+  E = inla.stack.data(stk.pp)$e)
+```
 
 #### Spatio-tempoal LGCP
 
-```{r st model,eval = FALSE, echo = FALSE}
+```{r st model,eval = FALSE, echo = TRUE}
 ## space time SPDE
 ## A set of knots over time needs to be defined in order to fit a
 ## SPDE spatio-temporal model. It is then used to build a temporal mesh, as follows:
@@ -225,17 +257,20 @@ c(n = nrow(data), 'E(n)' = sum(st.vol * exp(eta.at.integration.points)))
 
 ### As a wrapper for `INLA`
 
-```{r using stelfi}
+```{r using stelfi, eval = FALSE}
 ## Spatial only
 fit <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = nz)
+summary(fit)
 ## Spatiotemporal
 temp <- murders_sp$Year - min(murders_sp$Year) + 1
 fit_temp <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = nz,
 	 temp = temp)
-
+summary(fit_temp)
 ```
 
-### Using `TMB`
+#### With a covariate
+
+### Using `TMB` TODO
 
 ```{r using TMB}
 ## ensure you've run compile.stelfi()
