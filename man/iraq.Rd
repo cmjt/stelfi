@@ -3,9 +3,11 @@
 \name{iraq}
 \alias{iraq}
 \title{IS terrorism}
-\format{a list with two elements occ (occurances of IS attacks) and covs.mesh
+\format{
+a list with two elements occ (occurances of IS attacks) and covs.mesh
 (a list of monthly covariates at set locations in over Iraq, only used as an illustration of
-a model in Python et al. (TODO)). The third element is a spatial polygon of Iraq.}
+a model in Python et al. (TODO)). The third element is a spatial polygon of Iraq.
+}
 \source{
 \url{http://www.start.umd.edu/gtd/}
 }

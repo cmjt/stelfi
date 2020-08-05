@@ -3,7 +3,8 @@
 \name{serial_uk}
 \alias{serial_uk}
 \title{Serial killers of the UK}
-\format{A dataframe with 62 rows and 8 variables
+\format{
+A dataframe with 62 rows and 8 variables
 \describe{
 \item{Number.of.kills}{approximate number of murders committed by each person}
 \item{Years}{The years of operation}
@@ -13,7 +14,8 @@
 \item{Year.End}{Year the murders ended}
 \item{Date.of.first.kill}{Date, if known, first murder was committed}
 \item{population..M.}{Estimated population of UK in millions at time of first murder}
-}}
+}
+}
 \source{
 \url{http://www.murderuk.com/}
 }
