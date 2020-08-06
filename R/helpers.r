@@ -79,7 +79,7 @@ setMethod("get_weights",
               w <- sapply(1:length(dmesh), function(i) {
                   if (rgeos::gIntersects(dmesh[i,], sp)){
                       return(as.numeric(sum(sf::st_area(sf::st_intersection(sf::st_as_sf(dmesh[i, ]),
-                                                                            sf::st_as_sf(sp))))))
+                                                                            sf::st_make_valid(sf::st_as_sf(sp)))))))
                   }
                   else return(0)
               })
