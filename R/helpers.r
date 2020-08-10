@@ -2,7 +2,7 @@
 setClassUnion("numeric_or_NULL", c("numeric", "NULL")) 
 #' Hawkes intensty function with decay historical dependence
 #' @inheritParams sim.hawkes
-#' @inheritParams plot_hawkes
+#' @inheritParams show_hawkes
 setGeneric("hawke.intensity",
            function(mu, alpha, beta,times,p = NULL){
            })
@@ -92,16 +92,27 @@ setMethod("get_weights",
               }
               return(unlist(w))
           })
-#' Function to extract fields from a fitted model (INLA only ATM) (spatial only ATM)
+#' Function to extract fields from a fitted model (INLA only ATM)
+#' @param x an \code{inla} object
+#' @param mesh an object of class \code{inla.mesh}
+#' @param t optional, if supplied specifies the number of time steps
+#' @param mean logical, if TRUE extracts point estimates of the fields,
+#' else returns the standard errors
 #' @export
 setGeneric("get_fields",
-           function(x, mesh){
+           function(x, mesh, t = NULL, mean){
            })
 setGeneric("get_fields",
-           function(x = "inla",mesh = "inla.mesh"){
+           function(x = "inla",mesh = "inla.mesh", t = "numeric_or_NULL", mean = "logical"){
                field.names <- names(x$summary.random)
-               fields <- lapply(1:length(field.names),
-                                function(f) x$summary.random[[field.names[f]]]$mean)
+               if(mean){
+                   fields <- lapply(1:length(field.names),
+                                    function(f) x$summary.random[[field.names[f]]]$mean)
+               }else{
+                   fields <- lapply(1:length(field.names),
+                                    function(f) x$summary.random[[field.names[f]]]$sd)
+               }
+               if(is.numeric(t))  fields <- lapply(fields, split, rep(1:t,each = mesh$n))
                names(fields) <- field.names
                return(fields)
            })

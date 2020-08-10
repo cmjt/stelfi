@@ -30,7 +30,7 @@ setMethod("show_hawkes",
 #' @param x vector of length \link{mesh$n} of values at each \link{mesh} node
 #' @param dims vector of length 2 defining how fine a projection; default c(300,300)
 #' @param col colours of plot; default terrain.colors(100)
-#' @inheritParams fit.lgcp
+#' @inheritParams fit_lgcp_inla
 #' @param rast logical; if TRUE create raster object; default FALSE
 #' @param legend logical; plot legend; default TRUE
 #' @param legend.only logical; legend only to be plotted; default FALSE
@@ -63,7 +63,7 @@ setMethod("show_field",
                                          legend.only = TRUE, col = col,add = TRUE,legend.width = 4,
                                          legend.mar = 0)
                   }else{
-                      image(list(x = proj$x, y=proj$y, z = field.proj),col = col, ...)
+                      image(list(x = proj$x, y=proj$y, z = field.proj),col = col, axes = FALSE, ...)
                       if(legend){fields::image.plot(list(x = proj$x, y=proj$y, z = field.proj),
                                                     legend.only = TRUE, col = col,
                                                     legend.shrink = 0.5)}

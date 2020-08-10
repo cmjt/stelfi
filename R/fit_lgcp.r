@@ -1,13 +1,15 @@
 #' Creates a virtual class that is a superclass to the component classes so then both
 #' children inherit from that class
 setClassUnion("missing_or_spatialpolygon", c("missing", "SpatialPolygonsDataFrame","SpatialPolygons"))
-setClassUnion("null_or_factor", c("NULL", "factor")) 
+setClassUnion("null_or_factor", c("NULL", "factor"))
+# Needed for registerin S4 methods
+setClass("inla.mesh")
 #' Function to fit a spatiotemporal log-Gaussian Cox process using TMB and the
 #' R_inla namespace for the spde construction of the latent field
 #' @param temp.idx numeric aggregated temporal index 1,...,n
 #' @inheritParams fit_lgcp_inla
 #' @param covs a list of covariates at the mesh nodes for each time index
-#' @param parameters a named list of parameters. Must include "beta" the regression coefficients of fixed effects,
+#' @param parameters a named list of parameters. Must include \code{beta} the regression coefficients of fixed effects,
 #' "log_kappa" the smoothness parameter of the random field, if an AR(1) process for time is being fitted then
 #' "rho" must also be included as the temporal dependence parameter
 #' @param sp  optional spatial polygon of the domain
@@ -57,8 +59,8 @@ setMethod("fit_lgcp_tmb",
 #' Function to simulate a spatiotemporal log-Gaussian Cox process using TMB and the
 #' R_inla namespace for the spde construction of the latent field from a fitted model
 #' or from a template
-#' @param x a fitted model from a call to \code{fit_lgcp} 
-#' @inheritParams fit_lgcp
+#' @param x a fitted model from a call to \code{fit_lgcp_tmb} 
+#' @inheritParams fit_lgcp_tmb
 #' @export
 setGeneric("sim_lgcp",
            function(x,locs, temp.idx, mesh, parameters, covs, sp){
