@@ -15,7 +15,7 @@ fit_lgcp_tmb(locs, temp.idx, mesh, parameters, covs, sp, ...)
 \item{mesh}{an `inla.mesh` object i.e. delauney triangulation of the domain, an
 object returned by \link{INLA::inla.mesh.2d}.}
 
-\item{parameters}{a named list of parameters. Must include "beta" the regression coefficients of fixed effects,
+\item{parameters}{a named list of parameters. Must include \code{beta} the regression coefficients of fixed effects,
 "log_kappa" the smoothness parameter of the random field, if an AR(1) process for time is being fitted then
 "rho" must also be included as the temporal dependence parameter}
 

@@ -9,7 +9,23 @@ or from a template}
 sim_lgcp(x, locs, temp.idx, mesh, parameters, covs, sp)
 }
 \arguments{
-\item{x}{a fitted model from a call to \code{fit_lgcp}}
+\item{x}{a fitted model from a call to \code{fit_lgcp_tmb}}
+
+\item{locs}{a matrix of observation locations, where each row corresponds to the observation.}
+
+\item{temp.idx}{numeric aggregated temporal index 1,...,n}
+
+\item{mesh}{an `inla.mesh` object i.e. delauney triangulation of the domain, an
+object returned by \link{INLA::inla.mesh.2d}.}
+
+\item{parameters}{a named list of parameters. Must include \code{beta} the regression coefficients of fixed effects,
+"log_kappa" the smoothness parameter of the random field, if an AR(1) process for time is being fitted then
+"rho" must also be included as the temporal dependence parameter}
+
+\item{covs}{a list of covariates at the mesh nodes for each time index}
+
+\item{sp}{optional spatial polygon of the domain
+should set weigths to 0 outside of domain}
 }
 \description{
 Function to simulate a spatiotemporal log-Gaussian Cox process using TMB and the

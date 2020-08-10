@@ -20,9 +20,15 @@ show_field(
 \arguments{
 \item{x}{vector of length \link{mesh$n} of values at each \link{mesh} node}
 
+\item{mesh}{an `inla.mesh` object i.e. delauney triangulation of the domain, an
+object returned by \link{INLA::inla.mesh.2d}.}
+
 \item{dims}{vector of length 2 defining how fine a projection; default c(300,300)}
 
 \item{col}{colours of plot; default terrain.colors(100)}
+
+\item{sp}{spatial polygon of the point pattern observation window (optional). if supplied
+weights at the mesh nodes outwith this will be set to zero.}
 
 \item{rast}{logical; if TRUE create raster object; default FALSE}
 
