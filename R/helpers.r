@@ -86,7 +86,7 @@ setMethod("get_weights",
               if(plot){
                   sp::plot(dmesh, col = "grey")
                   sp::plot(mesh, add = TRUE, edge.color = "white")
-                  sp::plot(nz,add = TRUE)
+                  sp::plot(sp,add = TRUE)
                   points(mesh$loc,pch = 18)
                   points(mesh$loc[unlist(w) == 0,],col = "white", pch = 18)
               }
