@@ -1,4 +1,4 @@
-To install the `R` packahe `stelfi` run `devtools::install_github("cmjt/stelfi")`.
+To install the `R` package `stelfi` run `devtools::install_github("cmjt/stelfi")`.
 
 ``` r
 library(stelfi)
@@ -36,36 +36,6 @@ head(murders_nz)
     ## 5         Te Hau OCarroll 2004-02-02 February     Violent weapon Wellington
     ## 6        Ngamata OCarroll 2004-02-02 February     Violent weapon Wellington
 
-| Cause              |  Number|
-|:-------------------|-------:|
-| Asphyxia           |      47|
-| Blunt force trauma |     285|
-| Car crash          |     112|
-| Drowning           |      16|
-| Drugs              |      10|
-| Fire               |      16|
-| Other              |      72|
-| Violent weapon     |     409|
-
-| Year |  Number|
-|:-----|-------:|
-| 2004 |      38|
-| 2005 |      72|
-| 2006 |      66|
-| 2007 |      55|
-| 2008 |      71|
-| 2009 |      94|
-| 2010 |      71|
-| 2011 |      62|
-| 2012 |      64|
-| 2013 |      59|
-| 2014 |      55|
-| 2015 |      65|
-| 2016 |      56|
-| 2017 |      45|
-| 2018 |      76|
-| 2019 |      18|
-
 | Region            |  Number|
 |:------------------|-------:|
 | Auckland          |     267|
@@ -100,43 +70,53 @@ temporal_murder_rate <- nrow(murders_nz)/length(table(murders_nz$Year))
 st_murder_rate <- (nrow(murders_nz)/area_nzkm2)/length(table(murders_nz$Year)) 
 ```
 
-Rate of murders per km<sup>2</sup> across NZ is calculated as 0.0036; there are roughly 60.438. The spatio-temporal murder rate across NZ 2004--2019 is 2.210^{-4} (rate per km<sup>2</sup> per year).
+Rate of murders per km<sup>2</sup> across NZ is calculated as 0.0036; there are roughly 60.438 per year. The spatio-temporal murder rate across NZ 2004--2019 is 2.2510^{-4} (rate per km<sup>2</sup> per year).
 
-### Transform to NZTM
+### Subset to Auckland & transform to NZTM
 
 Transform `data.frame` to `SpatialPointsDataFrame`
 
 ``` r
-murders_sp <- murders_nz
+murders_sp <- subset(murders_nz, murders_nz$Region == "Waikato")
 ## project longitude & latitude to NZTMs
 coordinates(murders_sp) <- c("Longitude","Latitude")
 proj4string(murders_sp) <- CRS("+proj=longlat +datum=WGS84")
 murders_sp <-  spTransform(murders_sp, 
                            CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
+waikato <- nz[nz$NAME_1 == "Waikato",]
 ```
 
-![](LGCP_files/figure-markdown_github/plot-1.png) *Locations of recorded (n = 967) murders in NZ 2004--2019*
+| Region             |  Number|
+|:-------------------|-------:|
+| Asphyxia           |       2|
+| Blunt force trauma |      35|
+| Car crash          |      13|
+| Drowning           |       1|
+| Fire               |       4|
+| Other              |      13|
+| Violent weapon     |      40|
+
+![](LGCP_files/figure-markdown_github/plot-1.png) *Locations of recorded (n = 108) murders in Waikato 2004--2019*
 
 log-Gaussian Cox process
 ------------------------
 
-### Using INLA
-
-**Steps below closely follow this [INLA-SPDE tutorial](https://becarioprecario.bitbucket.io/spde-gitbook/ch-lcox.html)**.
+### `stelfi` as a wrapper for `INLA`
 
 #### Creating the mesh
 
 Typically when analysing point pattern data the point locations are not specified as the mesh nodes (i.e., locations are not given as an argument to `inla.mesh.2d()`). Instad we can supply the coordinates of the point pattern window (domain).
 
 ``` r
-mesh <- inla.mesh.2d(loc.domain = coordinates(nz) ,
-                     max.edge = c(86000, 100000), cutoff = 5000)
+## mesh max.edge on the same scale as the coords (NZTMs)
+mesh <- inla.mesh.2d(loc.domain = broom::tidy(waikato)[,1:2],
+                     max.edge = c(9000,15000), cutoff = 9000)
 ```
 
 The SPDE approach for point pattern analysis defines the model at the nodes of the mesh. To fit the log-Cox point process model these points are considered as integration points. The method in Simpson et al. (2016) defines the expected number of events to be proportional to the area around the node (the areas of the polygons in the dual mesh, see below). This means that at the nodes of the mesh with larger triangles, there are also larger expected values.
 
 ``` r
-weights <- stelfi::get_weights(mesh = mesh, sp = nz, plot = TRUE)
+weights <- stelfi::get_weights(mesh = mesh, sp = waikato, plot = TRUE)
 ```
 
 ![](LGCP_files/figure-markdown_github/dual%20mesh-1.png)
@@ -151,7 +131,79 @@ weights <- stelfi::get_weights(mesh = mesh, sp = nz, plot = TRUE)
 
 *Delauney triangulation of the domain (white) overlain on the Voronoi diagram representing the weights (area surrounding) of each mesh node (diamonds). Observations are plotted as circles, mesh nodes outwith the domain are shown in white.*
 
-![](LGCP_files/figure-markdown_github/plot%20weights-1.png) *Voronoi diagram of the weights (areas in km2 around each mesh node).*
+![](LGCP_files/figure-markdown_github/plot%20weights-1.png) *Voronoi diagram of the weights (shown as areas in km2 around each mesh node).*
+
+``` r
+## Spatial only
+fit <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = waikato)
+summary(fit)
+```
+
+    ## 
+    ## Call:
+    ##    c("inla(formula = as.formula(formula), family = \"poisson\", data = 
+    ##    inla.stack.data(stack), ", " E = inla.stack.data(stack)$e, verbose = 
+    ##    verbose, control.predictor = list(A = inla.stack.A(stack), ", " compute 
+    ##    = TRUE), control.inla = control.inla, control.fixed = control.fixed)" ) 
+    ## Time used:
+    ##     Pre = 4.94, Running = 14.2, Post = 0.426, Total = 19.5 
+    ## Fixed effects:
+    ##      mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+    ## b0 -19.24 0.096    -19.429   -19.24    -19.051 -19.24   0
+    ## 
+    ## Random effects:
+    ##   Name     Model
+    ##     field SPDE2 model
+    ## 
+    ## Model hyperparameters:
+    ##                  mean    sd 0.025quant 0.5quant 0.975quant  mode
+    ## Range for field 1.251 1.940      0.116    0.688      5.872 0.281
+    ## Stdev for field 0.234 0.269      0.020    0.153      0.939 0.055
+    ## 
+    ## Expected number of effective parameters(stdev): 1.00(0.00)
+    ## Number of equivalent replicates : 1468.99 
+    ## 
+    ## Marginal log-Likelihood:  -2192.33 
+    ## Posterior marginals for the linear predictor and
+    ##  the fitted values are computed
+
+``` r
+## fixed effects
+fit$summary.fixed
+```
+
+    ##         mean         sd 0.025quant  0.5quant 0.975quant      mode          kld
+    ## b0 -19.23967 0.09624808  -19.42864 -19.23968  -19.05086 -19.23967 6.208903e-25
+
+``` r
+## expected number of murders at each mesh node
+ins <- which(weights != 0)
+en <- exp(as.numeric(fit$summary.fixed[1]))*weights[ins]
+sum(en) ## expected number across Waikato, observed 108
+```
+
+    ## [1] 108.0193
+
+``` r
+fields <- stelfi::get_fields(fit, mesh, mean = TRUE)
+grfs <- fields[[1]]
+show_field(grfs, mesh, dims = c(300,300),
+         col = RColorBrewer::brewer.pal(9, "Blues"), sp = waikato,
+             rast = FALSE, legend = TRUE, FALSE)
+```
+
+![](LGCP_files/figure-markdown_github/random%20fields-1.png) *Estimated mean of the assumed Gaussian Markov Random Field*
+
+``` r
+## Spatiotemporal
+temp <- murders_sp$Year - min(murders_sp$Year) + 1
+fit_temp <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = waikato,
+     temp = temp)
+```
+
+### "Raw" `INLA`
+
+**Steps below closely follow this [INLA-SPDE tutorial](https://becarioprecario.bitbucket.io/spde-gitbook/ch-lcox.html)**.
 
 #### Spatial only LGCP
 
@@ -191,27 +243,25 @@ pp.res$summary.fixed
 ```
 
     ##         mean         sd 0.025quant  0.5quant 0.975quant      mode          kld
-    ## b0 -19.44029 0.03226553  -19.50422 -19.44009  -19.37752 -19.43969 4.754885e-07
+    ## b0 -19.23973 0.09621838  -19.43379 -19.23792  -19.05585 -19.23433 2.156986e-07
 
 ``` r
 ## expected number of murders at each mesh node
 ins <- which(weights != 0)
 en <- exp(as.numeric(pp.res$summary.fixed[1]))*weights[ins]
-sum(en) ## expected number across NZ, observed 967
+sum(en) ## expected number across Waikato, observed 108
 ```
 
-    ## [1] 967.0586
+    ## [1] 108.0135
 
-![](LGCP_files/figure-markdown_github/inference-1.png) *Voronoi diagram of the expected number of murders per mesh node.*
-
-![](LGCP_files/figure-markdown_github/resp-1.png) *Voronoi diagram of the expected number of murders per mesh node.*
+![](LGCP_files/figure-markdown_github/resp-1.png) *Estimated mean of the assumed Gaussian Markov Random Field*
 
 ##### Adding a covariate
 
 ``` r
 ## include covariates
 ## The covariate shapefile used can be downloaded from
-## https://koordinates.com/layer/7322-new-zealand-population-density-by-meshblock/
+## https://koordinates.com/from/datafinder.stats.govt.nz/layer/8437/data/
 ## the code below assumes a single .shp (above) file is
 ## in a directory data/ relative to your working directory
 file <- list.files("data",pattern = ".shp", full = TRUE)
@@ -220,20 +270,22 @@ pop <- rgdal::readOGR(file, layer = layer)
 ```
 
     ## OGR data source with driver: ESRI Shapefile 
-    ## Source: "/home/charlotte/Git/stelfi/inst/docs/data/new-zealand-population-density-by-meshblock.shp", layer: "new-zealand-population-density-by-meshblock"
-    ## with 46629 features
-    ## It has 5 fields
+    ## Source: "/home/charlotte/Git/stelfi/inst/docs/data/population-by-meshblock-2013-census.shp", layer: "population-by-meshblock-2013-census"
+    ## with 46621 features
+    ## It has 4 fields
 
 ``` r
 pop <- spTransform(pop, CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
-pop_mesh <- sp::over(SpatialPoints(mesh$loc[,1:2], proj4string = CRS(proj4string(murders_sp))),pop)
+pop_mesh <- sp::over(SpatialPoints(mesh$loc[,1:2], proj4string = CRS(proj4string(murders_sp))),pop)$Population
 ## will obviously be NA at mesh nodes outside NZ
-pop_obs <- sp::over(murders_sp,pop)
-## population density covariate c at mesh nodes and then obs locations 
-covs <- data.frame(pop = c(pop_mesh$pop_densit, pop_obs$pop_densit))
 ```
 
+![](LGCP_files/figure-markdown_github/inference-1.png) *Voronoi diagram of the covariate (population) per mesh node.*
+
 ``` r
+pop_obs <- sp::over(murders_sp,pop)$Population
+## population density covariate c at mesh nodes and then obs locations 
+covs <- data.frame(pop = c(pop_mesh, pop_obs))
 ## data stack
 stk.cov <- inla.stack(
   data = list(y = y.pp, e = e.pp), 
@@ -246,7 +298,26 @@ pp.cov <- inla(y ~ 0 + b0 + pop + f(i, model = spde),
   family = 'poisson', data = inla.stack.data(stk.cov), 
   control.predictor = list(A = inla.stack.A(stk.cov)), 
   E = inla.stack.data(stk.pp)$e)
+## coefficients of the fixed effects
+pp.cov$summary.fixed
 ```
+
+    ##              mean           sd    0.025quant      0.5quant    0.975quant
+    ## b0  -19.686379656 0.1265888536 -19.940116344 -19.684573519 -19.442881792
+    ## pop   0.005619561 0.0007521601   0.004053218   0.005650749   0.007009032
+    ##              mode          kld
+    ## b0  -19.680987262 9.994579e-09
+    ## pop   0.005713182 2.379353e-06
+
+``` r
+## expected number of murders at each mesh node
+ins <- which(weights != 0)
+en <- exp(as.numeric(pp.cov$summary.fixed[1,1]) +
+          as.numeric(pp.cov$summary.fixed[2,1])*covs$pop[1:mesh$n][ins])*weights[ins]
+sum(en) ## expected number 
+```
+
+    ## [1] 108.5103
 
 #### Spatio-tempoal LGCP
 
@@ -288,32 +359,7 @@ res <- inla(form, family = 'poisson',
             data = inla.stack.data(stk), E = expect,
             control.predictor = list(A = inla.stack.A(stk)),
             control.inla = list(strategy = 'adaptive'))
-## The exponential of the intercept plus the random effect at each space-time
-## integration point is the relative risk at each of these points. This relative
-## risk times the space-time volume will give the expected number of points (E(n))
-## at each one of these space-time locations. Summing over them will give a value
-## that approaches the number of observations:
-eta.at.integration.points <- res$summary.fix[1,1] + res$summary.ran$s$mean
-c(n = nrow(data), 'E(n)' = sum(st.vol * exp(eta.at.integration.points))) 
 ```
-
-Model fitting using `stelfi`
-----------------------------
-
-### As a wrapper for `INLA`
-
-``` r
-## Spatial only
-fit <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = nz)
-summary(fit)
-## Spatiotemporal
-temp <- murders_sp$Year - min(murders_sp$Year) + 1
-fit_temp <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = nz,
-     temp = temp)
-summary(fit_temp)
-```
-
-#### With a covariate
 
 ### Using `TMB` TODO
 

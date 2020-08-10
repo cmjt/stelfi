@@ -1,28 +1,30 @@
 library(stelfi)
-murders_sp <- murders_nz
+murders_sp <- subset(murders_nz, murders_nz$Region == "Waikato")
 ## project longitude & latitude to NZTMs
 coordinates(murders_sp) <- c("Longitude","Latitude")
 proj4string(murders_sp) <- CRS("+proj=longlat +datum=WGS84")
 murders_sp <-  spTransform(murders_sp, 
                            CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
-mesh <- inla.mesh.2d(loc.domain = coordinates(nz) ,
-                     max.edge = c(86000, 100000), cutoff = 5000)
+waikato <- nz[nz$NAME_1 == "Waikato",]
+## mesh max.edge on the same scale as the coords (NZTMs)
+mesh <- inla.mesh.2d(loc.domain = broom::tidy(waikato)[,1:2],
+                     max.edge = c(9000,15000), cutoff = 9000)
 ##########################################
 ## covariate
 ## include covariates
 ## let's assume you have a covariate shapefile
-## shape file from https://koordinates.com/layer/7322-new-zealand-population-density-by-meshblock/
+## shape file from https://koordinates.com/from/datafinder.stats.govt.nz/layer/8437/data/
 file <- list.files("data",pattern = ".shp", full = TRUE)
 layer <- rgdal::ogrListLayers(file)
 pop <- rgdal::readOGR(file, layer = layer)
 pop <- spTransform(pop, CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
-pop_mesh <- sp::over(SpatialPoints(mesh$loc[,1:2], proj4string = CRS(proj4string(murders_sp))),pop)
+pop_mesh <- sp::over(SpatialPoints(mesh$loc[,1:2], proj4string = CRS(proj4string(murders_sp))),pop)$Population
 ## will obviously be NA at mesh nodes outside NZ, don't worry
-pop_obs <- sp::over(murders_sp,pop)
+pop_obs <- sp::over(murders_sp,pop)$Population
 ## population density covariate c at mesh nodes and then obs locations 
-covs <- data.frame(pop = c(pop_mesh$pop_densit, pop_obs$pop_densit))
+covs <- data.frame(pop = c(pop_mesh, pop_obs))
 ##########################################
-weights <- stelfi:::get_weights(mesh, nz, TRUE)
+weights <- stelfi:::get_weights(mesh, waikato, TRUE)
 ## number of mesh nodes
 nodes <- mesh$n
 ## define model
@@ -54,47 +56,54 @@ pp.res <- inla(y ~ 0 + b0 + pop + f(i, model = spde),
   control.predictor = list(A = inla.stack.A(stk.pp)), 
   E = inla.stack.data(stk.pp)$e)
 ## ## fixed effects
-## pp.res$summary.fixed
+pp.res$summary.fixed
 ## ## expected number of murders at each mesh node
-## ins <- which(weights != 0)
-## en <- exp(as.numeric(pp.res$summary.fixed[1]))*weights[ins]
-## sum(en) ## expected number across NZ, observed 967
+ins <- which(weights != 0)
+en <- exp(as.numeric(pp.res$summary.fixed[1,1]) +
+          as.numeric(pp.res$summary.fixed[2,1])*covs$pop[1:mesh$n][ins])*weights[ins]
+sum(en) ## expected number 
 ## dual_mesh <- stelfi:::inla.mesh.dual(mesh)
 
+## projected
+fields <- stelfi::get_fields(pp.res, mesh)
+resp <- fields[[1]]
+show_field(resp, mesh, dims = c(300,300),
+		 col = RColorBrewer::brewer.pal(9, "Blues"), sp = waikato,
+           	 rast = FALSE, legend = TRUE, FALSE)
 
 ## ## spatio temporal
-## k <- length(table(murders_sp$Year))
-## temp <- murders_sp$Year - min(murders_sp$Year) + 1
-## ## tknots <- seq(min(data$Year), max(data$Year), length = k) ## don't need this as year already discrete
-## mesh.t <- inla.mesh.1d(1:k)
-## ## spatial spde
-## spde <- inla.spde2.pcmatern(mesh = mesh,
-##   prior.range = c(5, 0.01), # P(practic.range < 5) = 0.01
-##   prior.sigma = c(1, 0.01)) # P(sigma > 1) = 0.01
-## m <- spde$n.spde
-## ## spatio-temporal projection matrix
-## Ast <- inla.spde.make.A(mesh = mesh, loc = coordinates(murders_sp),
-##                         n.group = length(mesh.t$n), group = temp,
-##                         group.mesh = mesh.t)
-## ## index set
-## idx <- inla.spde.make.index('s', spde$n.spde, n.group = mesh.t$n)
-## ## spatio-temporal volume
-## st.vol <- rep(weights, k) * rep(diag(inla.mesh.fem(mesh.t)$c0), m)
-## y <- rep(0:1, c(k * m, nrow(murders_sp)))
-## expected <- c(st.vol, rep(0, nrow(murders_sp)))
-## stk <- inla.stack(
-##     data = list(y = y, expect = expected), 
-##     A = list(rbind(Diagonal(n = k * m), Ast), 1), 
-##     effects = list(idx, list(a0 = rep(1, k * m + nrow(murders_sp)))))
-## ## formula
-## pcrho <- list(prior = 'pccor1', param = c(0.7, 0.7))
-## form <- y ~ 0 + a0 + f(s, model = spde, group = s.group, 
-##                        control.group = list(model = 'ar1',
-##                                             hyper = list(theta = pcrho)))
-## res <- inla(form, family = 'poisson', 
-##             data = inla.stack.data(stk), E = expect,
-##             control.predictor = list(A = inla.stack.A(stk)),
-##             control.inla = list(strategy = 'adaptive'))
+k <- length(table(murders_sp$Year))
+temp <- murders_sp$Year - min(murders_sp$Year) + 1
+## tknots <- seq(min(data$Year), max(data$Year), length = k) ## don't need this as year already discrete
+mesh.t <- inla.mesh.1d(1:k)
+## spatial spde
+spde <- inla.spde2.pcmatern(mesh = mesh,
+  prior.range = c(5, 0.01), # P(practic.range < 5) = 0.01
+  prior.sigma = c(1, 0.01)) # P(sigma > 1) = 0.01
+m <- spde$n.spde
+## spatio-temporal projection matrix
+Ast <- inla.spde.make.A(mesh = mesh, loc = coordinates(murders_sp),
+                        n.group = length(mesh.t$n), group = temp,
+                        group.mesh = mesh.t)
+## index set
+idx <- inla.spde.make.index('s', spde$n.spde, n.group = mesh.t$n)
+## spatio-temporal volume
+st.vol <- rep(weights, k) * rep(diag(inla.mesh.fem(mesh.t)$c0), m)
+y <- rep(0:1, c(k * m, nrow(murders_sp)))
+expected <- c(st.vol, rep(0, nrow(murders_sp)))
+stk <- inla.stack(
+    data = list(y = y, expect = expected), 
+    A = list(rbind(Diagonal(n = k * m), Ast), 1), 
+    effects = list(idx, list(a0 = rep(1, k * m + nrow(murders_sp)))))
+## formula
+pcrho <- list(prior = 'pccor1', param = c(0.7, 0.7))
+form <- y ~ 0 + a0 + f(s, model = spde, group = s.group, 
+                       control.group = list(model = 'ar1',
+                                            hyper = list(theta = pcrho)))
+res <- inla(form, family = 'poisson', 
+            data = inla.stack.data(stk), E = expect,
+            control.predictor = list(A = inla.stack.A(stk)),
+            control.inla = list(strategy = 'adaptive'))
 
 ## stelfi
 st <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = nz)
