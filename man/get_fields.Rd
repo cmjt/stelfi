@@ -4,12 +4,8 @@
 \alias{get_fields}
 \title{Function to extract fields from a fitted model (INLA only ATM)}
 \usage{
-get_fields(
-  x = "inla",
-  mesh = "inla.mesh",
-  t = "numeric_or_NULL",
-  mean = "logical"
-)
+get_fields(x = "inla", mesh = "inla.mesh", t = "numeric_or_NULL",
+  mean = "logical")
 }
 \arguments{
 \item{x}{an \code{inla} object}

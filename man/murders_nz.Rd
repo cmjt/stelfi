@@ -3,8 +3,7 @@
 \name{murders_nz}
 \alias{murders_nz}
 \title{Murders of NZ}
-\format{
-A dataframe with 967 rows and 13 variables
+\format{A dataframe with 967 rows and 13 variables
 \describe{
 \item{Latitude}{approximate latitude of murder}
 \item{Longitude}{approximate longitude of murder}
@@ -19,8 +18,7 @@ A dataframe with 967 rows and 13 variables
 \item{Month}{month name of observation}
 \item{Cause_cat}{cause of death as category}
 \item{Region}{NZ region}
-}
-}
+}}
 \source{
 Data scraped and cleaned by Charlie Timmings, honours student at the University of Auckland.
 }

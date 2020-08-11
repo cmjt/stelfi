@@ -3,8 +3,7 @@
 \name{terrorism}
 \alias{terrorism}
 \title{Terrorism 2010--2017}
-\format{
-A data frame with 72366 rows and 16 variables:
+\format{A data frame with 72366 rows and 16 variables:
 \describe{
 \item{iyear}{numeric year 2010--2017}
 \item{imonth}{numeric month index 1--12}
@@ -22,8 +21,7 @@ A data frame with 72366 rows and 16 variables:
 \item{popdensity}{scaled: number of people per kilometer squared}
 \item{luminosity}{scaled: luminosity}
 \item{tt}{scaled: time to nearest city in minutes}
-}
-}
+}}
 \source{
 \url{http://www.start.umd.edu/gtd/}
 }
