@@ -179,12 +179,12 @@ fit_lgcp_inla <- function(mesh, locs, sp, temp = NULL, covariates = NULL,
         A.pp <- rbind(imat, lmat)
     }
     if(!is.null(covariates)){
-        m <- make.covs(covariates)
+        m <- stelfi:::make.covs(covariates)
         cov.effects <- m[[1]]
         cov.form <- m[[2]]
         stack <- inla.stack(data=list(y=y.pp, e=expected),
                             A=list(A.pp,1,1),
-                            effects=list(field = field,
+                            effects=list(field = 1:nv,
                                          b0 = rep(1,length(y.pp)),
                                          cov.effects = cov.effects))
         if(!is.null(temp)){
