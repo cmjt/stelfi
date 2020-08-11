@@ -9,3 +9,8 @@ functionality offered by [`lgcpSPDE`](https://github.com/cmjt/lgcpSPDE).
 
 To install run `devtools::install_github("cmjt/stelfi")`.
 
+Examples
+-------
+
+  - [Fitting a log-Gaussian Cox process with covariates](https://github.com/cmjt/stelfi/blob/master/inst/docs/LGCP.md)
+  - [Fitting a Hawkes process to Twitter data](https://github.com/cmjt/stelfi/blob/master/inst/docs/Hawkes.md)
