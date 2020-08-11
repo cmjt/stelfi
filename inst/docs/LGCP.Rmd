@@ -29,6 +29,7 @@ head(murders_nz)
 ```{r eda, echo = FALSE,results='asis'}
 kable(table(murders_nz$Region), format = "pipe", col.names = c("Region","Number"),caption = "Number of murders by province") 
 ```
+*Number of murders by province.*
 
 
 ```{r rate}
@@ -41,11 +42,11 @@ temporal_murder_rate <- nrow(murders_nz)/length(table(murders_nz$Year))
 st_murder_rate <- (nrow(murders_nz)/area_nzkm2)/length(table(murders_nz$Year)) 
 ```
 
-Rate of murders per $\text{km}^2$ across NZ is calculated as `r round(spatial_murder_rate,4)`; there are roughly `r round(temporal_murder_rate,3)` per year. The spatio-temporal murder rate across NZ 2004--2019 is `r round(st_murder_rate,6)` (rate per $\text{km}^2$ per year).
+There are on average `r round(temporal_murder_rate,1)` murders per year. The rate of murders per $\text{km}^2$ across NZ is roughly `r round(spatial_murder_rate,3)`. 
 
-### Subset to Auckland & transform to NZTM
+### Subset data to Waikato & transform to NZTM
 
-Transform `data.frame` to `SpatialPointsDataFrame`
+Transform `data.frame` to `SpatialPointsDataFrame` and project Longitude and Latitude to NZTM.
 
 ```{r sp}
 murders_sp <- subset(murders_nz, murders_nz$Region == "Waikato")
@@ -60,6 +61,7 @@ waikato <- nz[nz$NAME_1 == "Waikato",]
 ```{r edatable, echo = FALSE,results='asis'}
 kable(table(murders_sp$Cause_cat), format = "pipe", col.names = c("Region","Number"),caption = "Number of murders by category in Waikato 2004--2019") 
 ```
+*Number of murders by category in Waikato 2004--2019.*
 
 ```{r plot,results='asis',fig.width=10,fig.height=10,echo = FALSE,warning=FALSE,message=FALSE}
 plot(waikato)
@@ -78,18 +80,61 @@ Typically when analysing point pattern data the point locations are not specifie
 ```{r create mesh}
 ## mesh max.edge on the same scale as the coords (NZTMs)
 mesh <- inla.mesh.2d(loc.domain = broom::tidy(waikato)[,1:2],
-                     max.edge = c(9000,15000), cutoff = 9000)
+                     max.edge = c(11000,20000), cutoff = 15000)
+## areas/weights at each mesh nodes
+weights <- stelfi::get_weights(mesh = mesh, sp = waikato, plot = FALSE)
 ```
 
- The SPDE approach for point pattern analysis defines the model at the nodes of the mesh. To fit the log-Cox point process model these points are considered as integration points. The method in Simpson et al. (2016) defines the expected number of events to be proportional to the area around the node (the areas of the polygons in the dual mesh, see below). This means that at the nodes of the mesh with larger triangles, there are also larger expected values.
+```{r using stelfi}
+## Spatial only
+fit <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = waikato)
+summary(fit)
+## fixed effects
+fit$summary.fixed
+## expected number of murders at each mesh node
+ins <- which(weights != 0)
+en <- exp(as.numeric(fit$summary.fixed[1]))*weights[ins]
+sum(en) ## expected number across Waikato, observed 108
+```
+
+```{r random fields, fig.width=15,fig.height=15}
+fields <- stelfi::get_fields(fit, mesh, mean = TRUE)
+grfs <- fields[[1]]
+show_field(grfs, mesh, dims = c(300,300),
+		 col = RColorBrewer::brewer.pal(9, "Blues"), sp = waikato,
+           	 rast = FALSE, legend = TRUE, legend.only = FALSE)
+
+```
+*Estimated mean of the assumed Gaussian Markov Random Field* 
+
+
+```{r random fields sd, fig.width=15,fig.height=15}
+fields <- stelfi::get_fields(fit, mesh, mean = FALSE)
+grfsd <- fields[[1]]
+show_field(grfsd, mesh, dims = c(300,300),
+		 col = RColorBrewer::brewer.pal(9, "Blues"), sp = waikato,
+           	 rast = FALSE, legend = TRUE, legend.only = FALSE)
+
+```
+*Standard error of the assumed Gaussian Markov Random Field* 
+
+
+### "Raw" `INLA`
+
+**Steps below closely follow this [INLA-SPDE tutorial](https://becarioprecario.bitbucket.io/spde-gitbook/ch-lcox.html)**.
+
+The SPDE approach for point pattern analysis defines the model at the nodes of the mesh. To fit the log-Cox point process model these points are considered as integration points. The method in Simpson et al. (2016) defines the expected number of events to be proportional to the area around the node (the areas of the polygons in the dual mesh, see below). This means that at the nodes of the mesh with larger triangles, there are also larger expected values.
+
+
+
 
 ```{r dual mesh,cache = TRUE,message = FALSE, fig.width=10,fig.height=10}
-weights <- stelfi::get_weights(mesh = mesh, sp = waikato, plot = TRUE)
 ## these weights are the areas of each mesh triangle,
 ## required for the "exposure" aspect of the LGCP.
 ## the weights are set to zero if outside the study region
 ## as here the they should have no contribution. 
 ## the sum of the weights is the area of the study region
+weights <- stelfi::get_weights(mesh = mesh, sp = waikato, plot = TRUE)
 ```
 *Delauney triangulation of the domain (white) overlain on the Voronoi diagram representing the weights (area surrounding) of each mesh node (diamonds). Observations are plotted as circles, mesh nodes outwith the domain are shown in white.*
 
@@ -109,51 +154,15 @@ fields::image.plot(zlim = range(weights[ins]/1000^2),col = sort(cols, TRUE), leg
 ```
 *Voronoi diagram of the weights (shown as areas in km2 around each mesh node).*
 
-```{r using stelfi}
-## Spatial only
-fit <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = waikato)
-summary(fit)
-## fixed effects
-fit$summary.fixed
-## expected number of murders at each mesh node
-ins <- which(weights != 0)
-en <- exp(as.numeric(fit$summary.fixed[1]))*weights[ins]
-sum(en) ## expected number across Waikato, observed 108
-```
-
-```{r random fields, fig.width=15,fig.height=15}
-fields <- stelfi::get_fields(fit, mesh, mean = TRUE)
-grfs <- fields[[1]]
-show_field(grfs, mesh, dims = c(300,300),
-		 col = RColorBrewer::brewer.pal(9, "Blues"), sp = waikato,
-           	 rast = FALSE, legend = TRUE, FALSE)
-
-```
-*Estimated mean of the assumed Gaussian Markov Random Field* 
-
-```{r stelfi spatiotemp, eval = FALSE}
-## Spatiotemporal
-temp <- murders_sp$Year - min(murders_sp$Year) + 1
-fit_temp <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = waikato,
-	 temp = temp)
-```
-
-### "Raw" `INLA`
-
-**Steps below closely follow this [INLA-SPDE tutorial](https://becarioprecario.bitbucket.io/spde-gitbook/ch-lcox.html)**.
-
-
-#### Spatial only LGCP
-
 ```{r model fitting}
 ## number of mesh nodes
 nodes <- mesh$n
 ## define model
 spde <- inla.spde2.pcmatern(mesh = mesh,
-  # PC-prior on range: P(practic.range < 0.05) = 0.01
-  prior.range = c(0.05, 0.01),
-  # PC-prior on sigma: P(sigma > 1) = 0.01
-  prior.sigma = c(1, 0.01))
+  # PC-prior on range: P(practic.range < 5) = 0.9
+  prior.range = c(5, 0.9),
+  # PC-prior on sigma: P(sigma > 1) = 0.005
+  prior.sigma = c(1, 0.005))
 ## vector for observations
 y.pp <- rep(0:1, c(nodes, nrow(murders_sp)))
 ## exposure (E)
@@ -176,6 +185,7 @@ pp.res <- inla(y ~ 0 + b0 + f(i, model = spde),
   family = 'poisson', data = inla.stack.data(stk.pp), 
   control.predictor = list(A = inla.stack.A(stk.pp)), 
   E = inla.stack.data(stk.pp)$e)
+summary(pp.res)
 ## fixed effects
 pp.res$summary.fixed
 ## expected number of murders at each mesh node
@@ -188,8 +198,8 @@ sum(en) ## expected number across Waikato, observed 108
 ```{r resp,echo = FALSE, fig.width=15,fig.height=15}
 ## projected
 fields <- stelfi::get_fields(pp.res, mesh, mean = TRUE)
-resp <- fields[[1]]
-show_field(resp, mesh, dims = c(300,300),
+grfs <- fields[[1]]
+show_field(grfs, mesh, dims = c(300,300),
 		 col = RColorBrewer::brewer.pal(9, "Blues"), sp = waikato,
            	 rast = FALSE, legend = TRUE, FALSE)
 ```
@@ -197,7 +207,7 @@ show_field(resp, mesh, dims = c(300,300),
 
 ##### Adding a covariate
 
-```{r}
+```{r, message = FALSE}
 ## include covariates
 ## The covariate shapefile used can be downloaded from
 ## https://koordinates.com/from/datafinder.stats.govt.nz/layer/8437/data/
@@ -246,48 +256,6 @@ ins <- which(weights != 0)
 en <- exp(as.numeric(pp.cov$summary.fixed[1,1]) +
           as.numeric(pp.cov$summary.fixed[2,1])*covs$pop[1:mesh$n][ins])*weights[ins]
 sum(en) ## expected number 
-```
-
-#### Spatio-tempoal LGCP
-
-```{r st model,eval = FALSE, echo = TRUE}
-## space time SPDE
-## A set of knots over time needs to be defined in order to fit a
-## SPDE spatio-temporal model. It is then used to build a temporal mesh, as follows:
-
-## spatio temporal
-k <- length(table(murders_sp$Year))
-temp <- murders_sp$Year - min(murders_sp$Year) + 1
-## tknots <- seq(min(data$Year), max(data$Year), length = k) ## don't need this as year already discrete
-mesh.t <- inla.mesh.1d(1:k)
-## spatial spde
-spde <- inla.spde2.pcmatern(mesh = mesh,
-  prior.range = c(5, 0.01), # P(practic.range < 5) = 0.01
-  prior.sigma = c(1, 0.01)) # P(sigma > 1) = 0.01
-m <- spde$n.spde
-## spatio-temporal projection matrix
-Ast <- inla.spde.make.A(mesh = mesh, loc = coordinates(murders_sp),
-                        n.group = length(mesh.t$n), group = temp,
-                        group.mesh = mesh.t)
-## index set
-idx <- inla.spde.make.index('s', spde$n.spde, n.group = mesh.t$n)
-## spatio-temporal volume
-st.vol <- rep(weights, k) * rep(diag(inla.mesh.fem(mesh.t)$c0), m)
-y <- rep(0:1, c(k * m, nrow(murders_sp)))
-expected <- c(st.vol, rep(0, nrow(murders_sp)))
-stk <- inla.stack(
-    data = list(y = y, expect = expected), 
-    A = list(rbind(Diagonal(n = k * m), Ast), 1), 
-    effects = list(idx, list(a0 = rep(1, k * m + nrow(murders_sp)))))
-## formula
-pcrho <- list(prior = 'pccor1', param = c(0.7, 0.7))
-form <- y ~ 0 + a0 + f(s, model = spde, group = s.group, 
-                       control.group = list(model = 'ar1',
-                                            hyper = list(theta = pcrho)))
-res <- inla(form, family = 'poisson', 
-            data = inla.stack.data(stk), E = expect,
-            control.predictor = list(A = inla.stack.A(stk)),
-            control.inla = list(strategy = 'adaptive'))
 ```
 
 

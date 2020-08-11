@@ -1,4 +1,5 @@
-To install the `R` package `stelfi` run `devtools::install_github("cmjt/stelfi")`.
+To install the `R` package `stelfi` run
+`devtools::install_github("cmjt/stelfi")`.
 
 ``` r
 library(stelfi)
@@ -42,7 +43,7 @@ head(murders_nz)
 | Bay of Plenty     |      94|
 | Canterbury        |     116|
 | Gisborne          |      17|
-| Hawke's Bay       |      44|
+| Hawke’s Bay       |      44|
 | Manawatu-Wanganui |      65|
 | Marlborough       |       6|
 | Nelson            |      16|
@@ -54,6 +55,8 @@ head(murders_nz)
 | Waikato           |     108|
 | Wellington        |      89|
 | West Coast        |      11|
+
+*Number of murders by province.*
 
 ``` r
 data(nz) ## SpatialPolygonsDataFrame of NZ (NZTM projection)
@@ -70,11 +73,13 @@ temporal_murder_rate <- nrow(murders_nz)/length(table(murders_nz$Year))
 st_murder_rate <- (nrow(murders_nz)/area_nzkm2)/length(table(murders_nz$Year)) 
 ```
 
-Rate of murders per km<sup>2</sup> across NZ is calculated as 0.0036; there are roughly 60.438 per year. The spatio-temporal murder rate across NZ 2004--2019 is 2.2510^{-4} (rate per km<sup>2</sup> per year).
+There are on average 60.4 murders per year. The rate of murders per
+km<sup>2</sup> across NZ is roughly 0.004.
 
-### Subset to Auckland & transform to NZTM
+### Subset data to Waikato & transform to NZTM
 
-Transform `data.frame` to `SpatialPointsDataFrame`
+Transform `data.frame` to `SpatialPointsDataFrame` and project Longitude
+and Latitude to NZTM.
 
 ``` r
 murders_sp <- subset(murders_nz, murders_nz$Region == "Waikato")
@@ -96,7 +101,10 @@ waikato <- nz[nz$NAME_1 == "Waikato",]
 | Other              |      13|
 | Violent weapon     |      40|
 
-![](LGCP_files/figure-markdown_github/plot-1.png) *Locations of recorded (n = 108) murders in Waikato 2004--2019*
+*Number of murders by category in Waikato 2004–2019.*
+
+![](LGCP_files/figure-markdown_github/plot-1.png) *Locations of recorded
+(n = 108) murders in Waikato 2004–2019*
 
 log-Gaussian Cox process
 ------------------------
@@ -105,33 +113,18 @@ log-Gaussian Cox process
 
 #### Creating the mesh
 
-Typically when analysing point pattern data the point locations are not specified as the mesh nodes (i.e., locations are not given as an argument to `inla.mesh.2d()`). Instad we can supply the coordinates of the point pattern window (domain).
+Typically when analysing point pattern data the point locations are not
+specified as the mesh nodes (i.e., locations are not given as an
+argument to `inla.mesh.2d()`). Instad we can supply the coordinates of
+the point pattern window (domain).
 
 ``` r
 ## mesh max.edge on the same scale as the coords (NZTMs)
 mesh <- inla.mesh.2d(loc.domain = broom::tidy(waikato)[,1:2],
-                     max.edge = c(9000,15000), cutoff = 9000)
+                     max.edge = c(11000,20000), cutoff = 15000)
+## areas/weights at each mesh nodes
+weights <- stelfi::get_weights(mesh = mesh, sp = waikato, plot = FALSE)
 ```
-
-The SPDE approach for point pattern analysis defines the model at the nodes of the mesh. To fit the log-Cox point process model these points are considered as integration points. The method in Simpson et al. (2016) defines the expected number of events to be proportional to the area around the node (the areas of the polygons in the dual mesh, see below). This means that at the nodes of the mesh with larger triangles, there are also larger expected values.
-
-``` r
-weights <- stelfi::get_weights(mesh = mesh, sp = waikato, plot = TRUE)
-```
-
-![](LGCP_files/figure-markdown_github/dual%20mesh-1.png)
-
-``` r
-## these weights are the areas of each mesh triangle,
-## required for the "exposure" aspect of the LGCP.
-## the weights are set to zero if outside the study region
-## as here the they should have no contribution. 
-## the sum of the weights is the area of the study region
-```
-
-*Delauney triangulation of the domain (white) overlain on the Voronoi diagram representing the weights (area surrounding) of each mesh node (diamonds). Observations are plotted as circles, mesh nodes outwith the domain are shown in white.*
-
-![](LGCP_files/figure-markdown_github/plot%20weights-1.png) *Voronoi diagram of the weights (shown as areas in km2 around each mesh node).*
 
 ``` r
 ## Spatial only
@@ -146,7 +139,7 @@ summary(fit)
     ##    verbose, control.predictor = list(A = inla.stack.A(stack), ", " compute 
     ##    = TRUE), control.inla = control.inla, control.fixed = control.fixed)" ) 
     ## Time used:
-    ##     Pre = 4.94, Running = 14.2, Post = 0.426, Total = 19.5 
+    ##     Pre = 0.542, Running = 1.29, Post = 0.197, Total = 2.03 
     ## Fixed effects:
     ##      mean    sd 0.025quant 0.5quant 0.975quant   mode kld
     ## b0 -19.24 0.096    -19.429   -19.24    -19.051 -19.24   0
@@ -157,11 +150,11 @@ summary(fit)
     ## 
     ## Model hyperparameters:
     ##                  mean    sd 0.025quant 0.5quant 0.975quant  mode
-    ## Range for field 1.251 1.940      0.116    0.688      5.872 0.281
-    ## Stdev for field 0.234 0.269      0.020    0.153      0.939 0.055
+    ## Range for field 0.886 1.063      0.100    0.567       3.62 0.255
+    ## Stdev for field 0.272 0.294      0.029    0.185       1.05 0.078
     ## 
     ## Expected number of effective parameters(stdev): 1.00(0.00)
-    ## Number of equivalent replicates : 1468.99 
+    ## Number of equivalent replicates : 876.40 
     ## 
     ## Marginal log-Likelihood:  -2192.33 
     ## Posterior marginals for the linear predictor and
@@ -173,7 +166,7 @@ fit$summary.fixed
 ```
 
     ##         mean         sd 0.025quant  0.5quant 0.975quant      mode          kld
-    ## b0 -19.23967 0.09624808  -19.42864 -19.23968  -19.05086 -19.23967 6.208903e-25
+    ## b0 -19.23967 0.09624817  -19.42864 -19.23968  -19.05086 -19.23967 6.982366e-26
 
 ``` r
 ## expected number of murders at each mesh node
@@ -189,33 +182,63 @@ fields <- stelfi::get_fields(fit, mesh, mean = TRUE)
 grfs <- fields[[1]]
 show_field(grfs, mesh, dims = c(300,300),
          col = RColorBrewer::brewer.pal(9, "Blues"), sp = waikato,
-             rast = FALSE, legend = TRUE, FALSE)
+             rast = FALSE, legend = TRUE, legend.only = FALSE)
 ```
 
-![](LGCP_files/figure-markdown_github/random%20fields-1.png) *Estimated mean of the assumed Gaussian Markov Random Field*
+![](LGCP_files/figure-markdown_github/random%20fields-1.png) *Estimated
+mean of the assumed Gaussian Markov Random Field*
 
 ``` r
-## Spatiotemporal
-temp <- murders_sp$Year - min(murders_sp$Year) + 1
-fit_temp <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = waikato,
-     temp = temp)
+fields <- stelfi::get_fields(fit, mesh, mean = FALSE)
+grfsd <- fields[[1]]
+show_field(grfsd, mesh, dims = c(300,300),
+         col = RColorBrewer::brewer.pal(9, "Blues"), sp = waikato,
+             rast = FALSE, legend = TRUE, legend.only = FALSE)
 ```
 
-### "Raw" `INLA`
+![](LGCP_files/figure-markdown_github/random%20fields%20sd-1.png)
+*Standard error of the assumed Gaussian Markov Random Field*
 
-**Steps below closely follow this [INLA-SPDE tutorial](https://becarioprecario.bitbucket.io/spde-gitbook/ch-lcox.html)**.
+### “Raw” `INLA`
 
-#### Spatial only LGCP
+**Steps below closely follow this [INLA-SPDE
+tutorial](https://becarioprecario.bitbucket.io/spde-gitbook/ch-lcox.html)**.
+
+The SPDE approach for point pattern analysis defines the model at the
+nodes of the mesh. To fit the log-Cox point process model these points
+are considered as integration points. The method in Simpson et al.
+(2016) defines the expected number of events to be proportional to the
+area around the node (the areas of the polygons in the dual mesh, see
+below). This means that at the nodes of the mesh with larger triangles,
+there are also larger expected values.
+
+``` r
+## these weights are the areas of each mesh triangle,
+## required for the "exposure" aspect of the LGCP.
+## the weights are set to zero if outside the study region
+## as here the they should have no contribution. 
+## the sum of the weights is the area of the study region
+weights <- stelfi::get_weights(mesh = mesh, sp = waikato, plot = TRUE)
+```
+
+![](LGCP_files/figure-markdown_github/dual%20mesh-1.png) *Delauney
+triangulation of the domain (white) overlain on the Voronoi diagram
+representing the weights (area surrounding) of each mesh node
+(diamonds). Observations are plotted as circles, mesh nodes outwith the
+domain are shown in white.*
+
+![](LGCP_files/figure-markdown_github/plot%20weights-1.png) *Voronoi
+diagram of the weights (shown as areas in km2 around each mesh node).*
 
 ``` r
 ## number of mesh nodes
 nodes <- mesh$n
 ## define model
 spde <- inla.spde2.pcmatern(mesh = mesh,
-  # PC-prior on range: P(practic.range < 0.05) = 0.01
-  prior.range = c(0.05, 0.01),
-  # PC-prior on sigma: P(sigma > 1) = 0.01
-  prior.sigma = c(1, 0.01))
+  # PC-prior on range: P(practic.range < 5) = 0.9
+  prior.range = c(5, 0.9),
+  # PC-prior on sigma: P(sigma > 1) = 0.005
+  prior.sigma = c(1, 0.005))
 ## vector for observations
 y.pp <- rep(0:1, c(nodes, nrow(murders_sp)))
 ## exposure (E)
@@ -238,12 +261,42 @@ pp.res <- inla(y ~ 0 + b0 + f(i, model = spde),
   family = 'poisson', data = inla.stack.data(stk.pp), 
   control.predictor = list(A = inla.stack.A(stk.pp)), 
   E = inla.stack.data(stk.pp)$e)
+summary(pp.res)
+```
+
+    ## 
+    ## Call:
+    ##    c("inla(formula = y ~ 0 + b0 + f(i, model = spde), family = 
+    ##    \"poisson\", ", " data = inla.stack.data(stk.pp), E = 
+    ##    inla.stack.data(stk.pp)$e, ", " control.predictor = list(A = 
+    ##    inla.stack.A(stk.pp)))") 
+    ## Time used:
+    ##     Pre = 1.46, Running = 3.11, Post = 0.171, Total = 4.74 
+    ## Fixed effects:
+    ##      mean    sd 0.025quant 0.5quant 0.975quant    mode kld
+    ## b0 -19.24 0.096    -19.434  -19.238    -19.056 -19.234   0
+    ## 
+    ## Random effects:
+    ##   Name     Model
+    ##     i SPDE2 model
+    ## 
+    ## Model hyperparameters:
+    ##              mean    sd 0.025quant 0.5quant 0.975quant  mode
+    ## Range for i 0.886 1.063      0.100    0.567       3.62 0.255
+    ## Stdev for i 0.272 0.294      0.029    0.185       1.05 0.078
+    ## 
+    ## Expected number of effective parameters(stdev): 1.00(0.00)
+    ## Number of equivalent replicates : 876.40 
+    ## 
+    ## Marginal log-Likelihood:  -2192.33
+
+``` r
 ## fixed effects
 pp.res$summary.fixed
 ```
 
     ##         mean         sd 0.025quant  0.5quant 0.975quant      mode          kld
-    ## b0 -19.23973 0.09621838  -19.43379 -19.23792  -19.05585 -19.23433 2.156986e-07
+    ## b0 -19.23973 0.09621868  -19.43378 -19.23792  -19.05584 -19.23435 2.125857e-07
 
 ``` r
 ## expected number of murders at each mesh node
@@ -252,9 +305,10 @@ en <- exp(as.numeric(pp.res$summary.fixed[1]))*weights[ins]
 sum(en) ## expected number across Waikato, observed 108
 ```
 
-    ## [1] 108.0135
+    ## [1] 108.0136
 
-![](LGCP_files/figure-markdown_github/resp-1.png) *Estimated mean of the assumed Gaussian Markov Random Field*
+![](LGCP_files/figure-markdown_github/resp-1.png) *Estimated mean of the
+assumed Gaussian Markov Random Field*
 
 ##### Adding a covariate
 
@@ -270,7 +324,7 @@ pop <- rgdal::readOGR(file, layer = layer)
 ```
 
     ## OGR data source with driver: ESRI Shapefile 
-    ## Source: "/home/charlotte/Git/stelfi/inst/docs/data/population-by-meshblock-2013-census.shp", layer: "population-by-meshblock-2013-census"
+    ## Source: "/home/cjon911/Git/stelfi/inst/docs/data/population-by-meshblock-2013-census.shp", layer: "population-by-meshblock-2013-census"
     ## with 46621 features
     ## It has 4 fields
 
@@ -280,7 +334,8 @@ pop_mesh <- sp::over(SpatialPoints(mesh$loc[,1:2], proj4string = CRS(proj4string
 ## will obviously be NA at mesh nodes outside NZ
 ```
 
-![](LGCP_files/figure-markdown_github/inference-1.png) *Voronoi diagram of the covariate (population) per mesh node.*
+![](LGCP_files/figure-markdown_github/inference-1.png) *Voronoi diagram
+of the covariate (population) per mesh node.*
 
 ``` r
 pop_obs <- sp::over(murders_sp,pop)$Population
@@ -302,12 +357,12 @@ pp.cov <- inla(y ~ 0 + b0 + pop + f(i, model = spde),
 pp.cov$summary.fixed
 ```
 
-    ##              mean           sd    0.025quant      0.5quant    0.975quant
-    ## b0  -19.686379656 0.1265888536 -19.940116344 -19.684573519 -19.442881792
-    ## pop   0.005619561 0.0007521601   0.004053218   0.005650749   0.007009032
-    ##              mode          kld
-    ## b0  -19.680987262 9.994579e-09
-    ## pop   0.005713182 2.379353e-06
+    ##             mean          sd    0.025quant     0.5quant   0.975quant
+    ## b0  -20.20124160 0.181506685 -20.569371855 -20.19706947 -19.85652164
+    ## pop   0.01139917 0.001410219   0.008623022   0.01140167   0.01415872
+    ##             mode          kld
+    ## b0  -20.18879100 5.625604e-07
+    ## pop   0.01140678 1.027059e-06
 
 ``` r
 ## expected number of murders at each mesh node
@@ -317,49 +372,7 @@ en <- exp(as.numeric(pp.cov$summary.fixed[1,1]) +
 sum(en) ## expected number 
 ```
 
-    ## [1] 108.5103
-
-#### Spatio-tempoal LGCP
-
-``` r
-## space time SPDE
-## A set of knots over time needs to be defined in order to fit a
-## SPDE spatio-temporal model. It is then used to build a temporal mesh, as follows:
-
-## spatio temporal
-k <- length(table(murders_sp$Year))
-temp <- murders_sp$Year - min(murders_sp$Year) + 1
-## tknots <- seq(min(data$Year), max(data$Year), length = k) ## don't need this as year already discrete
-mesh.t <- inla.mesh.1d(1:k)
-## spatial spde
-spde <- inla.spde2.pcmatern(mesh = mesh,
-  prior.range = c(5, 0.01), # P(practic.range < 5) = 0.01
-  prior.sigma = c(1, 0.01)) # P(sigma > 1) = 0.01
-m <- spde$n.spde
-## spatio-temporal projection matrix
-Ast <- inla.spde.make.A(mesh = mesh, loc = coordinates(murders_sp),
-                        n.group = length(mesh.t$n), group = temp,
-                        group.mesh = mesh.t)
-## index set
-idx <- inla.spde.make.index('s', spde$n.spde, n.group = mesh.t$n)
-## spatio-temporal volume
-st.vol <- rep(weights, k) * rep(diag(inla.mesh.fem(mesh.t)$c0), m)
-y <- rep(0:1, c(k * m, nrow(murders_sp)))
-expected <- c(st.vol, rep(0, nrow(murders_sp)))
-stk <- inla.stack(
-    data = list(y = y, expect = expected), 
-    A = list(rbind(Diagonal(n = k * m), Ast), 1), 
-    effects = list(idx, list(a0 = rep(1, k * m + nrow(murders_sp)))))
-## formula
-pcrho <- list(prior = 'pccor1', param = c(0.7, 0.7))
-form <- y ~ 0 + a0 + f(s, model = spde, group = s.group, 
-                       control.group = list(model = 'ar1',
-                                            hyper = list(theta = pcrho)))
-res <- inla(form, family = 'poisson', 
-            data = inla.stack.data(stk), E = expect,
-            control.predictor = list(A = inla.stack.A(stk)),
-            control.inla = list(strategy = 'adaptive'))
-```
+    ## [1] 108.2688
 
 ### Using `TMB` TODO
 
