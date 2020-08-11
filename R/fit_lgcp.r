@@ -140,6 +140,9 @@ fit_lgcp_inla <- function(mesh, locs, sp, temp = NULL, covariates = NULL,
                           control.fixed = list(prec.intercept = 0.001),
                           return.attributes = FALSE,
                           ...){
+    if(class(sp) == "SpatialPolygons"){
+        sp <- SpatialPolygonsDataFrame(sp,data = data.frame(rep(1,length(sp))))
+    }
     mesh <- mesh
     spde <- inla.spde2.pcmatern(mesh = mesh,
                                 prior.range = prior.range,

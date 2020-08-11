@@ -1,3 +1,4 @@
+setClassUnion("logical_or_missing", c("logical", "missing")) 
 #' Plots the Hawkes intensty function with decay historical dependence
 #' @docType methods
 #' @rdname show_hawkes
@@ -43,8 +44,8 @@ setGeneric("show_field",
            })
 setMethod("show_field",
           c(x = "numeric", mesh = "inla.mesh", dims = "numeric", col = "character",
-            sp = "missing_or_spatialpolygon",rast = "logical",legend = "logical",legend.only = "logical"),
-          function(x, mesh, dims, col, sp ,rast, legend, legend.only,...){
+            sp = "missing_or_spatialpolygon",rast = "logical",legend = "logical_or_missing",legend.only = "logical_or_missing"),
+          function(x, mesh, dims = c(300,300), col, sp ,rast, legend = TRUE, legend.only = FALSE,...){
               stopifnot(length(x) == mesh$n)
               proj = INLA::inla.mesh.projector(mesh, dims = dims)
               field.proj = INLA::inla.mesh.project(proj, x)
