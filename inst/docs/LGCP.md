@@ -122,13 +122,14 @@ the point pattern window (domain).
 ## mesh max.edge on the same scale as the coords (NZTMs)
 mesh <- inla.mesh.2d(loc.domain = broom::tidy(waikato)[,1:2],
                      max.edge = c(11000,20000), cutoff = 15000)
-## areas/weights at each mesh nodes
-weights <- stelfi::get_weights(mesh = mesh, sp = waikato, plot = FALSE)
 ```
+
+#### Model fitting
 
 ``` r
 ## Spatial only
-fit <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = waikato)
+fit <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = waikato,
+                     return.attributes = TRUE)
 summary(fit)
 ```
 
@@ -139,7 +140,7 @@ summary(fit)
     ##    verbose, control.predictor = list(A = inla.stack.A(stack), ", " compute 
     ##    = TRUE), control.inla = control.inla, control.fixed = control.fixed)" ) 
     ## Time used:
-    ##     Pre = 0.542, Running = 1.29, Post = 0.197, Total = 2.03 
+    ##     Pre = 0.542, Running = 1.28, Post = 0.167, Total = 1.99 
     ## Fixed effects:
     ##      mean    sd 0.025quant 0.5quant 0.975quant   mode kld
     ## b0 -19.24 0.096    -19.429   -19.24    -19.051 -19.24   0
@@ -170,6 +171,8 @@ fit$summary.fixed
 
 ``` r
 ## expected number of murders at each mesh node
+## areas/weights at each mesh nodes, only returned if return.attribures = TRUE
+weights <- attributes(fit)$weights
 ins <- which(weights != 0)
 en <- exp(as.numeric(fit$summary.fixed[1]))*weights[ins]
 sum(en) ## expected number across Waikato, observed 108
@@ -193,11 +196,53 @@ fields <- stelfi::get_fields(fit, mesh, mean = FALSE)
 grfsd <- fields[[1]]
 show_field(grfsd, mesh, dims = c(300,300),
          col = RColorBrewer::brewer.pal(9, "Blues"), sp = waikato,
-             rast = FALSE, legend = TRUE, legend.only = FALSE)
+             rast = FALSE)
 ```
 
 ![](LGCP_files/figure-markdown_github/random%20fields%20sd-1.png)
 *Standard error of the assumed Gaussian Markov Random Field*
+
+##### Including a covariate
+
+``` r
+## include covariates
+## The covariate shapefile used can be downloaded from
+## https://koordinates.com/from/datafinder.stats.govt.nz/layer/8437/data/
+## the code below assumes a single .shp (above) file is
+## in a directory data/ relative to your working directory
+file <- list.files("data",pattern = ".shp", full = TRUE)
+layer <- rgdal::ogrListLayers(file)
+pop <- rgdal::readOGR(file, layer = layer)
+pop <- spTransform(pop, CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
+pop_mesh <- sp::over(SpatialPoints(mesh$loc[,1:2], proj4string = CRS(proj4string(murders_sp))),pop)$Population
+## will obviously be NA at mesh nodes outside NZ
+pop_obs <- sp::over(murders_sp,pop)$Population
+## population density covariate c at mesh nodes and then obs locations 
+covs <- data.frame(pop = c(pop_mesh, pop_obs))
+```
+
+``` r
+fit <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp),covariates = covs, sp = waikato,
+                     return.attributes = TRUE)
+weights <- attributes(fit)$weights
+ins <- which(weights != 0)
+en <- exp(as.numeric(fit$summary.fixed[1,1]) +
+          as.numeric(fit$summary.fixed[2,1])*covs$pop[1:mesh$n][ins])*weights[ins]
+sum(en) ## expected number 
+```
+
+    ## [1] 108.021
+
+``` r
+fields <- stelfi::get_fields(fit, mesh, mean = TRUE)
+grfs <- fields[[1]]
+show_field(grfs, mesh, dims = c(300,300),
+         col = RColorBrewer::brewer.pal(9, "Blues"), sp = waikato,
+             rast = FALSE)
+```
+
+![](LGCP_files/figure-markdown_github/random%20fields%20cov-1.png)
+*Estimated mean of the assumed Gaussian Markov Random Field*
 
 ### “Raw” `INLA`
 
@@ -271,7 +316,7 @@ summary(pp.res)
     ##    inla.stack.data(stk.pp)$e, ", " control.predictor = list(A = 
     ##    inla.stack.A(stk.pp)))") 
     ## Time used:
-    ##     Pre = 1.46, Running = 3.11, Post = 0.171, Total = 4.74 
+    ##     Pre = 1.51, Running = 2.72, Post = 0.153, Total = 4.39 
     ## Fixed effects:
     ##      mean    sd 0.025quant 0.5quant 0.975quant    mode kld
     ## b0 -19.24 0.096    -19.434  -19.238    -19.056 -19.234   0
@@ -296,7 +341,7 @@ pp.res$summary.fixed
 ```
 
     ##         mean         sd 0.025quant  0.5quant 0.975quant      mode          kld
-    ## b0 -19.23973 0.09621868  -19.43378 -19.23792  -19.05584 -19.23435 2.125857e-07
+    ## b0 -19.23973 0.09621868  -19.43378 -19.23792  -19.05584 -19.23435 2.125873e-07
 
 ``` r
 ## expected number of murders at each mesh node
@@ -313,34 +358,6 @@ assumed Gaussian Markov Random Field*
 ##### Adding a covariate
 
 ``` r
-## include covariates
-## The covariate shapefile used can be downloaded from
-## https://koordinates.com/from/datafinder.stats.govt.nz/layer/8437/data/
-## the code below assumes a single .shp (above) file is
-## in a directory data/ relative to your working directory
-file <- list.files("data",pattern = ".shp", full = TRUE)
-layer <- rgdal::ogrListLayers(file)
-pop <- rgdal::readOGR(file, layer = layer)
-```
-
-    ## OGR data source with driver: ESRI Shapefile 
-    ## Source: "/home/cjon911/Git/stelfi/inst/docs/data/population-by-meshblock-2013-census.shp", layer: "population-by-meshblock-2013-census"
-    ## with 46621 features
-    ## It has 4 fields
-
-``` r
-pop <- spTransform(pop, CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
-pop_mesh <- sp::over(SpatialPoints(mesh$loc[,1:2], proj4string = CRS(proj4string(murders_sp))),pop)$Population
-## will obviously be NA at mesh nodes outside NZ
-```
-
-![](LGCP_files/figure-markdown_github/inference-1.png) *Voronoi diagram
-of the covariate (population) per mesh node.*
-
-``` r
-pop_obs <- sp::over(murders_sp,pop)$Population
-## population density covariate c at mesh nodes and then obs locations 
-covs <- data.frame(pop = c(pop_mesh, pop_obs))
 ## data stack
 stk.cov <- inla.stack(
   data = list(y = y.pp, e = e.pp), 
@@ -358,11 +375,11 @@ pp.cov$summary.fixed
 ```
 
     ##             mean          sd    0.025quant     0.5quant   0.975quant
-    ## b0  -20.20124160 0.181506685 -20.569371855 -20.19706947 -19.85652164
-    ## pop   0.01139917 0.001410219   0.008623022   0.01140167   0.01415872
+    ## b0  -20.20124163 0.181506672 -20.569372105 -20.19706941 -19.85652196
+    ## pop   0.01139917 0.001410218   0.008623026   0.01140167   0.01415873
     ##             mode          kld
-    ## b0  -20.18879100 5.625604e-07
-    ## pop   0.01140678 1.027059e-06
+    ## b0  -20.18879075 5.628601e-07
+    ## pop   0.01140677 1.027338e-06
 
 ``` r
 ## expected number of murders at each mesh node

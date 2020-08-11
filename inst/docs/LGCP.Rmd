@@ -81,17 +81,20 @@ Typically when analysing point pattern data the point locations are not specifie
 ## mesh max.edge on the same scale as the coords (NZTMs)
 mesh <- inla.mesh.2d(loc.domain = broom::tidy(waikato)[,1:2],
                      max.edge = c(11000,20000), cutoff = 15000)
-## areas/weights at each mesh nodes
-weights <- stelfi::get_weights(mesh = mesh, sp = waikato, plot = FALSE)
 ```
+
+#### Model fitting
 
 ```{r using stelfi}
 ## Spatial only
-fit <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = waikato)
+fit <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp), sp = waikato,
+                     return.attributes = TRUE)
 summary(fit)
 ## fixed effects
 fit$summary.fixed
 ## expected number of murders at each mesh node
+## areas/weights at each mesh nodes, only returned if return.attribures = TRUE
+weights <- attributes(fit)$weights
 ins <- which(weights != 0)
 en <- exp(as.numeric(fit$summary.fixed[1]))*weights[ins]
 sum(en) ## expected number across Waikato, observed 108
@@ -113,10 +116,49 @@ fields <- stelfi::get_fields(fit, mesh, mean = FALSE)
 grfsd <- fields[[1]]
 show_field(grfsd, mesh, dims = c(300,300),
 		 col = RColorBrewer::brewer.pal(9, "Blues"), sp = waikato,
-           	 rast = FALSE, legend = TRUE, legend.only = FALSE)
+           	 rast = FALSE)
 
 ```
 *Standard error of the assumed Gaussian Markov Random Field* 
+
+##### Including a covariate
+
+```{r, message = FALSE, results='hide'}
+## include covariates
+## The covariate shapefile used can be downloaded from
+## https://koordinates.com/from/datafinder.stats.govt.nz/layer/8437/data/
+## the code below assumes a single .shp (above) file is
+## in a directory data/ relative to your working directory
+file <- list.files("data",pattern = ".shp", full = TRUE)
+layer <- rgdal::ogrListLayers(file)
+pop <- rgdal::readOGR(file, layer = layer)
+pop <- spTransform(pop, CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
+pop_mesh <- sp::over(SpatialPoints(mesh$loc[,1:2], proj4string = CRS(proj4string(murders_sp))),pop)$Population
+## will obviously be NA at mesh nodes outside NZ
+pop_obs <- sp::over(murders_sp,pop)$Population
+## population density covariate c at mesh nodes and then obs locations 
+covs <- data.frame(pop = c(pop_mesh, pop_obs))
+```
+
+```{r stelfi cov}
+fit <- fit_lgcp_inla(mesh = mesh, locs = coordinates(murders_sp),covariates = covs, sp = waikato,
+                     return.attributes = TRUE)
+weights <- attributes(fit)$weights
+ins <- which(weights != 0)
+en <- exp(as.numeric(fit$summary.fixed[1,1]) +
+          as.numeric(fit$summary.fixed[2,1])*covs$pop[1:mesh$n][ins])*weights[ins]
+sum(en) ## expected number 
+```
+
+```{r random fields cov, fig.width=15,fig.height=15}
+fields <- stelfi::get_fields(fit, mesh, mean = TRUE)
+grfs <- fields[[1]]
+show_field(grfs, mesh, dims = c(300,300),
+		 col = RColorBrewer::brewer.pal(9, "Blues"), sp = waikato,
+           	 rast = FALSE)
+
+```
+*Estimated mean of the assumed Gaussian Markov Random Field* 
 
 
 ### "Raw" `INLA`
@@ -201,42 +243,14 @@ fields <- stelfi::get_fields(pp.res, mesh, mean = TRUE)
 grfs <- fields[[1]]
 show_field(grfs, mesh, dims = c(300,300),
 		 col = RColorBrewer::brewer.pal(9, "Blues"), sp = waikato,
-           	 rast = FALSE, legend = TRUE, FALSE)
+           	 rast = FALSE)
 ```
 *Estimated mean of the assumed Gaussian Markov Random Field*
 
 ##### Adding a covariate
 
-```{r, message = FALSE}
-## include covariates
-## The covariate shapefile used can be downloaded from
-## https://koordinates.com/from/datafinder.stats.govt.nz/layer/8437/data/
-## the code below assumes a single .shp (above) file is
-## in a directory data/ relative to your working directory
-file <- list.files("data",pattern = ".shp", full = TRUE)
-layer <- rgdal::ogrListLayers(file)
-pop <- rgdal::readOGR(file, layer = layer)
-pop <- spTransform(pop, CRS("+proj=nzmg +lat_0=-41.0 +lon_0=173.0 +x_0=2510000.0 +y_0=6023150.0 +ellps=intl +units=m"))
-pop_mesh <- sp::over(SpatialPoints(mesh$loc[,1:2], proj4string = CRS(proj4string(murders_sp))),pop)$Population
-## will obviously be NA at mesh nodes outside NZ
-```
-
-```{r inference,echo = FALSE, fig.width=15,fig.height=15}
-pal <- scales::col_numeric("Blues", pop_mesh[ins])
-cols <- pal(pop_mesh[ins])
-plot(dual_mesh[ins], col = cols)
-plot(waikato, add = TRUE)
-fields::image.plot(zlim = range(pop_mesh[ins], na.rm = TRUE),
-                   col = sort(cols, TRUE), legend.only = TRUE, 
-                   legend.width = 2, nlevel = 10, legend.shrink = 0.5)
-```
-*Voronoi diagram of the covariate (population) per mesh node.*
-
 
 ```{r fit cov model}
-pop_obs <- sp::over(murders_sp,pop)$Population
-## population density covariate c at mesh nodes and then obs locations 
-covs <- data.frame(pop = c(pop_mesh, pop_obs))
 ## data stack
 stk.cov <- inla.stack(
   data = list(y = y.pp, e = e.pp), 
