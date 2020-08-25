@@ -3,11 +3,12 @@ setClassUnion("numeric_or_NULL", c("numeric", "NULL"))
 #' Hawkes intensty function with decay historical dependence
 #' @inheritParams sim.hawkes
 #' @inheritParams show_hawkes
-setGeneric("hawke.intensity",
+#' @export
+setGeneric("hawke_intensity",
            function(mu, alpha, beta,times,p = NULL){
            })
 
-setMethod("hawke.intensity",
+setMethod("hawke_intensity",
           c(mu = "numeric",alpha = "numeric" ,beta  = "numeric",times = "vector",
             p = "numeric_or_NULL"),
           function(mu, alpha, beta, times, p){
@@ -67,6 +68,8 @@ inla.mesh.dual <- function(mesh) {
 #' Relies on inla.mesh.dual function from INLA spde-tutorial
 #' \href{SPDE gitbook}{https://becarioprecario.bitbucket.io/spde-gitbook/}
 #' @export
+#' @importFrom sf st_area st_intersection st_as_sf st_make_valid
+#' @importFrom rgeos gIntersects
 setGeneric("get_weights",
            function(mesh, sp, plot = FALSE){
            })
@@ -77,9 +80,9 @@ setMethod("get_weights",
               dmesh <- inla.mesh.dual(mesh)
               proj4string(dmesh) <- proj4string(sp)
               w <- sapply(1:length(dmesh), function(i) {
-                  if (rgeos::gIntersects(dmesh[i,], sp)){
-                      return(as.numeric(sum(sf::st_area(sf::st_intersection(sf::st_as_sf(dmesh[i, ]),
-                                                                            lwgeom::st_make_valid(sf::st_as_sf(sp)))))))
+                  if (gIntersects(dmesh[i,], sp)){
+                      return(as.numeric(sum(st_area(st_intersection(st_as_sf(dmesh[i, ]),
+                                                                    st_make_valid(st_as_sf(sp)))))))
                   }
                   else return(0)
               })
@@ -116,11 +119,8 @@ setGeneric("get_fields",
                names(fields) <- field.names
                return(fields)
            })
-#' convert spatstat \code{owin} object to sp classes
-#' \url{https://stat.ethz.ch/pipermail/r-sig-geo/2009-May/005781.html}
-
-owin_to_polygons <- function(x, id="1") {
-    require(spatstat.utils)
+#'  \url{https://stat.ethz.ch/pipermail/r-sig-geo/2009-May/005781.html}
+owin_to_polygons <- function(x, id = "1") {
     stopifnot(is.owin(x))
     x <- as.polygonal(x)
     closering <- function(df) { df[c(seq(nrow(df)), 1), ] }
@@ -129,14 +129,21 @@ owin_to_polygons <- function(x, id="1") {
                          Polygon(coords = closering(cbind(p$x,p$y)),
                                  hole = is.hole.xypolygon(p))  })
     z <- Polygons(pieces, id)
+    
     return(z)
 }
-
+#' Function to convert a\code{spatstat} \code{owin} object to
+#' a \code{SpatialPolygonsDataFrame}
+#' @source \url{https://stat.ethz.ch/pipermail/r-sig-geo/2009-May/005781.html}
+#' @param x an object of class \code{owin}
+#' @return a \code{SpatialPolygonsDataFrame}
+#' @export
 owin_to_sp <- function(x) {
     require(spatstat.utils)
     stopifnot(is.owin(x))
     y <- owin_to_polygons(x)
-    z <- SpatialPolygonsDataFrame(SpatialPolygons(list(y)),data = data.frame(rep(1,length(list(y)))))
+    z <- SpatialPolygonsDataFrame(SpatialPolygons(list(y)),
+                                  data = data.frame(rep(1,length(list(y)))))
     return(z)
 }
 #' Function that takes in a named  matrix of covariates with

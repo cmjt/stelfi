@@ -1,27 +1,30 @@
 #' Function to simulate a self-exciting Hawkes process.
 #'
 #' There are two methods to simulate the process 1) sumiualtes a univariate hawkes process as
-#' R  package 'hawkes' 2) as per algorithm defined https://radhakrishna.typepad.com/mle-of-hawkes-self-exciting-process.pdf
+#' R  package 'hawkes' 2) as per algorithm defined in
+#' \url{https://radhakrishna.typepad.com/mle-of-hawkes-self-exciting-process.pdf}
 #'
 #' @docType methods
-#' @rdname sim.hawkes
+#' @rdname sim_hawkes
 #' @param mu numeric integer specifying base rate of the hawkes process
 #' @param alpha numeric integer specifying intensity jump after an event occurence
 #' @param beta numeric integer specifying exponential intensity decay
-#' @param n numeric depending on method 1) specifying end of the time line within which to simulate the proces, or 2)
+#' @param n numeric depending on method 1) specifying end of the time
+#' line within which to simulate the proces, or 2)
 #' specifying the number of timepoints to simulate.
 #' @param plot logical if TRUE the process is plotted along with the intensity, by default is FALSE
 #' @param seed seed by default = 123
 #' @param method a character "1" or "2" specifying the method (see above) to simulate hawkes process
 #' @export
 #'
-setGeneric("sim.hawkes",
+setGeneric("sim_hawkes",
            function(mu, alpha, beta, n, plot = FALSE, seed = 123, method = "1"){
-               standardGeneric("sim.hawkes")
+               standardGeneric("sim_hawkes")
            })
 
-setMethod("sim.hawkes",
-          c(mu = "numeric",alpha = "numeric" ,beta  = "numeric",n = "numeric" , plot = "logical" ,seed = "numeric",
+setMethod("sim_hawkes",
+          c(mu = "numeric",alpha = "numeric" ,
+            beta  = "numeric",n = "numeric" , plot = "logical" ,seed = "numeric",
             method = "character"),
           function(mu, alpha ,beta, n, plot, seed, method){
               if(alpha >= beta){
@@ -84,11 +87,12 @@ setMethod("sim.hawkes",
                   }
                   return(times)
               }
-    if(plot){
-        plot.hawkes(times, mu, alpha, beta)
-    }
-    return(times)
-})
+              if(plot){
+                  plot.hawkes(times, mu, alpha, beta)
+              }
+              return(times)
+          }
+          )
 
 
 

@@ -4,19 +4,22 @@
 #' "alpha"--intensity jump after an event occurence, and "beta"--exponential intensity decay
 #' @param ... arguments to pass into \code{nlminb()}
 #' @export
-#'
-setGeneric("fit.hawkes",
+#' @importFrom stats optim
+#' @importFrom TMB MakeADFun sdreport
+setGeneric("fit_hawkes",
            function(times,parameters,...){
-               standardGeneric("fit.hawkes")
+               standardGeneric("fit_hawkes")
            })
 
-setMethod("fit.hawkes",
+setMethod("fit_hawkes",
           c(times = "numeric",parameters = "vector"),
           function(times, parameters,...){
               if(!"hawkes"%in%getLoadedDLLs()){
                   dll.stelfi()
               }
-              obj = TMB::MakeADFun(data = list(times = times), parameters = parameters,DLL = "hawkes")
-              opt = stats::nlminb(obj$par,obj$fn,obj$gr,...)
-              return(obj)
+              obj = MakeADFun(data = list(times = times),
+                              parameters = parameters,DLL = "hawkes")
+              obj$hessian <- TRUE
+              opt <- do.call("optim", obj)
+              return(sdreport(obj))
           })
