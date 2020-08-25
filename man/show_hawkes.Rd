@@ -9,12 +9,6 @@ show_hawkes(times, mu, alpha, beta)
 }
 \arguments{
 \item{times}{a vector of numeric observation time points}
-
-\item{mu}{numeric integer specifying base rate of the hawkes process}
-
-\item{alpha}{numeric integer specifying intensity jump after an event occurence}
-
-\item{beta}{numeric integer specifying exponential intensity decay}
 }
 \description{
 Plots the Hawkes intensty function with decay historical dependence

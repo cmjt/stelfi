@@ -3,14 +3,16 @@
 \name{earthquakes}
 \alias{earthquakes}
 \title{Canterbury, NZ earthquakes}
-\format{A data frame containing 3824 rows and 5 variables:
+\format{
+A data frame containing 3824 rows and 5 variables:
 \describe{
 \item{origintime}{The UTC time of the event's occurrence}
 \item{longitude}{longitude location}
 \item{latitude}{latitude location}
 \item{magnitude}{The magnitude of the earthquake}
 \item{depth}{The focal depth of the event (km)}
-}}
+}
+}
 \source{
 \url{http://quakesearch.geonet.org.nz/}
 }

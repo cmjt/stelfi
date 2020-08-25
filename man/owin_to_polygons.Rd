@@ -2,12 +2,10 @@
 % Please edit documentation in R/helpers.r
 \name{owin_to_polygons}
 \alias{owin_to_polygons}
-\title{convert spatstat \code{owin} object to sp classes
-\url{https://stat.ethz.ch/pipermail/r-sig-geo/2009-May/005781.html}}
+\title{\url{https://stat.ethz.ch/pipermail/r-sig-geo/2009-May/005781.html}}
 \usage{
 owin_to_polygons(x, id = "1")
 }
 \description{
-convert spatstat \code{owin} object to sp classes
 \url{https://stat.ethz.ch/pipermail/r-sig-geo/2009-May/005781.html}
 }

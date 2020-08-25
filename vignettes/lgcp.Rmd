@@ -1,21 +1,25 @@
 ---
-title: ""
-output: 
-  md_document:
-    variant: markdown_github
+title: "log-Gaussian Cox Process using INLA"
+author: "Charlotte M. Jones-Todd"
+date: ""
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{log-Gaussian Cox Process using INLA}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
 
 ```{r setup, include=FALSE,message=FALSE,results='asis'}
 knitr::opts_chunk$set(echo = TRUE, eval = TRUE,cache = TRUE, message = FALSE,warning=FALSE)
 library(kableExtra)
 ```
-To install the `R` package `stelfi` run `devtools::install_github("cmjt/stelfi")`.
+To install the `R` package `stelfi` run `devtools::install_github("cmjt/stelfi")`, Use `devtools::install_github("cmjt/stelfi",build_vignettes = TRUE)` if you want to build vignettes at the same time.
 
 ```{r lib}
 library(stelfi)
 ```
 
-# NZ murders
+# Modelling NZ murder locations as a log-Gaussian Cox process
 
 ## The Data
 
@@ -100,7 +104,7 @@ en <- exp(as.numeric(fit$summary.fixed[1]))*weights[ins]
 sum(en) ## expected number across Waikato, observed 108
 ```
 
-```{r random fields, fig.width=15,fig.height=15}
+```{r random fields, fig.width=10,fig.height=10}
 fields <- stelfi::get_fields(fit, mesh, mean = TRUE)
 grfs <- fields[[1]]
 show_field(grfs, mesh, dims = c(300,300),
@@ -111,7 +115,7 @@ show_field(grfs, mesh, dims = c(300,300),
 *Estimated mean of the assumed Gaussian Markov Random Field* 
 
 
-```{r random fields sd, fig.width=15,fig.height=15}
+```{r random fields sd, fig.width=10,fig.height=10}
 fields <- stelfi::get_fields(fit, mesh, mean = FALSE)
 grfsd <- fields[[1]]
 show_field(grfsd, mesh, dims = c(300,300),
@@ -150,7 +154,7 @@ en <- exp(as.numeric(fit$summary.fixed[1,1]) +
 sum(en) ## expected number 
 ```
 
-```{r random fields cov, fig.width=15,fig.height=15}
+```{r random fields cov, fig.width=10,fig.height=10}
 fields <- stelfi::get_fields(fit, mesh, mean = TRUE)
 grfs <- fields[[1]]
 show_field(grfs, mesh, dims = c(300,300),
@@ -237,7 +241,7 @@ sum(en) ## expected number across Waikato, observed 108
 ```
 
 
-```{r resp,echo = FALSE, fig.width=15,fig.height=15}
+```{r resp,echo = FALSE, fig.width=10,fig.height=10}
 ## projected
 fields <- stelfi::get_fields(pp.res, mesh, mean = TRUE)
 grfs <- fields[[1]]
@@ -272,10 +276,3 @@ en <- exp(as.numeric(pp.cov$summary.fixed[1,1]) +
 sum(en) ## expected number 
 ```
 
-
-### Using `TMB` TODO
-
-```{r using TMB}
-## ensure you've run compile.stelfi()
-
-```

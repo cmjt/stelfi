@@ -5,12 +5,21 @@
 \title{Wrapper for \code{INLA} to fit a LGCP
 #' @return A \code{INLA::inla} result object}
 \usage{
-fit_lgcp_inla(mesh, locs, sp, temp = NULL, covariates = NULL,
+fit_lgcp_inla(
+  mesh,
+  locs,
+  sp,
+  temp = NULL,
+  covariates = NULL,
   prior.rho = list(theta = list(prior = "pccor1", param = c(0, 0.9))),
-  prior.range = c(5, 0.9), prior.sigma = c(1, 0.005),
-  verbose = FALSE, control.inla = list(strategy = "gaussian",
-  int.strategy = "eb"), control.fixed = list(prec.intercept = 0.001),
-  return.attributes = FALSE, ...)
+  prior.range = c(5, 0.9),
+  prior.sigma = c(1, 0.005),
+  verbose = FALSE,
+  control.inla = list(strategy = "gaussian", int.strategy = "eb"),
+  control.fixed = list(prec.intercept = 0.001),
+  return.attributes = FALSE,
+  ...
+)
 }
 \arguments{
 \item{mesh}{an `inla.mesh` object i.e. delauney triangulation of the domain, an
