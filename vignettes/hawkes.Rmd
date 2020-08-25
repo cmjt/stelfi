@@ -48,6 +48,10 @@ mtext(1,line = 1, at = c(start,end),text = c("NIWA \n tweeted","USB owner \n fou
 
 Before using the  `TMB` templates in `stelfi` you should use `compile.stelfi()` to compile them.
 
+```{r compile,results = "hide"}
+compile.stelfi()
+```
+
 ```{r fit model,results='hide',cache=TRUE}
 params <- c(mu = 9,alpha = 3,beta = 10)
 ## must have compiled TMB templates first use compile.stelfi()
