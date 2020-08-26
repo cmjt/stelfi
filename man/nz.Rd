@@ -2,7 +2,7 @@
 % Please edit documentation in R/data.r
 \name{nz}
 \alias{nz}
-\title{New Zealand}
+\title{New Zealand polygon}
 \format{
 A \code{SpatialPolygonsDataFrame} of New Zeland in NZTM
 }

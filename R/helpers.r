@@ -1,7 +1,7 @@
 #' creates a virtual class that is a superclass to the component classes so then both children inherit from that class
 setClassUnion("numeric_or_NULL", c("numeric", "NULL")) 
 #' Hawkes intensty function with decay historical dependence
-#' @inheritParams sim.hawkes
+#' @inheritParams sim_hawkes
 #' @inheritParams show_hawkes
 #' @export
 setGeneric("hawke_intensity",

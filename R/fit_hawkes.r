@@ -20,6 +20,6 @@ setMethod("fit_hawkes",
               obj = MakeADFun(data = list(times = times),
                               parameters = parameters,DLL = "hawkes")
               obj$hessian <- TRUE
-              opt <- do.call("optim", obj)
+              opt <- optim(obj$par, obj$fn, obj$gr,...)
               return(sdreport(obj))
           })
