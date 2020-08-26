@@ -1,0 +1,50 @@
+---
+title: "Self-exciting point process models"
+author: "Charlotte M. Jones-Todd"
+date: ""
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Self-exciting process models}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE,message=FALSE,results='asis'}
+knitr::opts_chunk$set(eval = TRUE, warning = FALSE, message = FALSE, cache = TRUE)
+knitr::read_chunk("self-exciting.r")
+```
+
+To install the `R` package `stelfi` run `devtools::install_github("cmjt/stelfi")`, Use `devtools::install_github("cmjt/stelfi",build_vignettes = TRUE)` if you want to build vignettes at the same time.
+
+```{r,libs,echo = TRUE}
+```
+
+
+## ETAS model for earthquake data
+
+```{r,earthquakes,echo = TRUE}
+```
+
+```{r,hist_earth,echo = FALSE, fig.width=8,fig.height=5,fig.cap="Daily rate of earthquakes in Canterbury in 2012"}
+```
+
+```{r, fit_earth, echo = TRUE, message=FALSE,results='hide'}
+```
+
+```{r,inference_earth,echo = TRUE,fig.width=8,fig.height=5,fig.cap="Fitted model for daily occurence of earthquakes in Canterbury, 2012"}
+```
+
+## Self-exciting models for terrorism attacks perpetrated by ISIL in Iraq, 2013--2017
+
+
+```{r,data_iq,echo = TRUE}
+```
+
+```{r,hist_iq,echo = FALSE, fig.width=8,fig.height=5,fig.cap="Daily attack rates by ISIL in Iraq 2013--2017"}
+```
+
+```{r,2016,echo = TRUE}
+```
+
+```{r,hist2_iq,echo = FALSE, fig.width=8,fig.height=5,fig.cap="Daily attack rates by ISIL in Iraq 2016"}
+```
