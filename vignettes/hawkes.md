@@ -30,7 +30,7 @@ self-exciting (Hawkes) process.
     mtext(1,line = 1, at = c(start,end),text = c("NIWA \n tweeted","USB owner \n found"),cex = 0.9)
 
 ![Observed counts of retweet
-times.](../inst/docs/hawkes_files/figure-markdown_strict/plot%20hist-1.png)
+times.](hawkes_files/figure-markdown_strict/plot%20hist-1.png)
 
 ### Model fitting using `TMB`
 
@@ -60,4 +60,4 @@ Before using the `TMB` templates in `stelfi` you should use
     ## 0.06461416 0.08026173 0.08355835
 
 ![Fitted intensity (top plot) and observed counts of retweets
-(bottom).](../inst/docs/hawkes_files/figure-markdown_strict/plot-1.png)
+(bottom).](hawkes_files/figure-markdown_strict/plot-1.png)

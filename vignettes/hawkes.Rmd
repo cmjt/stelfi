@@ -55,7 +55,7 @@ compile.stelfi()
 ```{r fit model,results='hide',cache=TRUE}
 params <- c(mu = 9,alpha = 3,beta = 10)
 ## must have compiled TMB templates first use compile.stelfi()
-fit <- fit_hawkes(times = times,parameters = params,upper = c(500,5,15),lower = c(0,0,0))
+fit <- fit_hawkes(times = times,parameters = params) 
 ```
 
 

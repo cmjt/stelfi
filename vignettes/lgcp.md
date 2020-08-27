@@ -180,8 +180,8 @@ and Latitude to NZTM.
 
 *Number of murders by category in Waikato 2004--2019.*
 
-![](../inst/docs/lgcp_files/figure-markdown_strict/plot-1.png)
-*Locations of recorded (n = 108) murders in Waikato 2004--2019*
+![](lgcp_files/figure-markdown_strict/plot-1.png) *Locations of recorded
+(n = 108) murders in Waikato 2004--2019*
 
 log-Gaussian Cox process
 ------------------------
@@ -213,7 +213,7 @@ the point pattern window (domain).
     ##    verbose, control.predictor = list(A = inla.stack.A(stack), ", " compute 
     ##    = TRUE), control.inla = control.inla, control.fixed = control.fixed)" ) 
     ## Time used:
-    ##     Pre = 1.03, Running = 4.43, Post = 0.152, Total = 5.61 
+    ##     Pre = 0.902, Running = 4.45, Post = 0.201, Total = 5.55 
     ## Fixed effects:
     ##      mean    sd 0.025quant 0.5quant 0.975quant   mode kld
     ## b0 -19.24 0.096    -19.429   -19.24    -19.051 -19.24   0
@@ -255,8 +255,8 @@ the point pattern window (domain).
              col = RColorBrewer::brewer.pal(9, "Blues"), sp = waikato,
                  rast = FALSE, legend = TRUE, legend.only = FALSE)
 
-![](../inst/docs/lgcp_files/figure-markdown_strict/random%20fields-1.png)
-*Estimated mean of the assumed Gaussian Markov Random Field*
+![](lgcp_files/figure-markdown_strict/random%20fields-1.png) *Estimated
+mean of the assumed Gaussian Markov Random Field*
 
     fields <- stelfi::get_fields(fit, mesh, mean = FALSE)
     grfsd <- fields[[1]]
@@ -264,7 +264,7 @@ the point pattern window (domain).
              col = RColorBrewer::brewer.pal(9, "Blues"), sp = waikato,
                  rast = FALSE)
 
-![](../inst/docs/lgcp_files/figure-markdown_strict/random%20fields%20sd-1.png)
+![](lgcp_files/figure-markdown_strict/random%20fields%20sd-1.png)
 *Standard error of the assumed Gaussian Markov Random Field*
 
 ##### Including a covariate
@@ -300,7 +300,7 @@ the point pattern window (domain).
              col = RColorBrewer::brewer.pal(9, "Blues"), sp = waikato,
                  rast = FALSE)
 
-![](../inst/docs/lgcp_files/figure-markdown_strict/random%20fields%20cov-1.png)
+![](lgcp_files/figure-markdown_strict/random%20fields%20cov-1.png)
 *Estimated mean of the assumed Gaussian Markov Random Field*
 
 ### "Raw" `INLA`
@@ -323,15 +323,14 @@ there are also larger expected values.
     ## the sum of the weights is the area of the study region
     weights <- stelfi::get_weights(mesh = mesh, sp = waikato, plot = TRUE)
 
-![](../inst/docs/lgcp_files/figure-markdown_strict/dual%20mesh-1.png)
-*Delauney triangulation of the domain (white) overlain on the Voronoi
-diagram representing the weights (area surrounding) of each mesh node
+![](lgcp_files/figure-markdown_strict/dual%20mesh-1.png) *Delauney
+triangulation of the domain (white) overlain on the Voronoi diagram
+representing the weights (area surrounding) of each mesh node
 (diamonds). Observations are plotted as circles, mesh nodes outwith the
 domain are shown in white.*
 
-![](../inst/docs/lgcp_files/figure-markdown_strict/plot%20weights-1.png)
-*Voronoi diagram of the weights (shown as areas in km2 around each mesh
-node).*
+![](lgcp_files/figure-markdown_strict/plot%20weights-1.png) *Voronoi
+diagram of the weights (shown as areas in km2 around each mesh node).*
 
     ## number of mesh nodes
     nodes <- mesh$n
@@ -372,7 +371,7 @@ node).*
     ##    inla.stack.data(stk.pp)$e, ", " control.predictor = list(A = 
     ##    inla.stack.A(stk.pp)))") 
     ## Time used:
-    ##     Pre = 3.97, Running = 8.89, Post = 0.228, Total = 13.1 
+    ##     Pre = 2.25, Running = 7.46, Post = 0.165, Total = 9.88 
     ## Fixed effects:
     ##      mean    sd 0.025quant 0.5quant 0.975quant    mode kld
     ## b0 -19.24 0.096    -19.434  -19.238    -19.056 -19.234   0
@@ -394,8 +393,8 @@ node).*
     ## fixed effects
     pp.res$summary.fixed
 
-    ##         mean         sd 0.025quant  0.5quant 0.975quant      mode         kld
-    ## b0 -19.23973 0.09621845  -19.43379 -19.23792  -19.05585 -19.23433 2.15686e-07
+    ##         mean         sd 0.025quant  0.5quant 0.975quant      mode          kld
+    ## b0 -19.23973 0.09621845  -19.43379 -19.23792  -19.05585 -19.23433 2.156844e-07
 
     ## expected number of murders at each mesh node
     ins <- which(weights != 0)
@@ -404,8 +403,8 @@ node).*
 
     ## [1] 108.0135
 
-![](../inst/docs/lgcp_files/figure-markdown_strict/resp-1.png)
-*Estimated mean of the assumed Gaussian Markov Random Field*
+![](lgcp_files/figure-markdown_strict/resp-1.png) *Estimated mean of the
+assumed Gaussian Markov Random Field*
 
 ##### Adding a covariate
 
@@ -425,11 +424,11 @@ node).*
     pp.cov$summary.fixed
 
     ##             mean          sd    0.025quant     0.5quant   0.975quant
-    ## b0  -20.20123667 0.181506213 -20.569392395 -20.19705461 -19.85654595
+    ## b0  -20.20123667 0.181506218 -20.569392388 -20.19705462 -19.85654591
     ## pop   0.01139917 0.001410219   0.008623004   0.01140167   0.01415871
     ##             mode          kld
-    ## b0  -20.18875650 5.679299e-07
-    ## pop   0.01140679 1.027376e-06
+    ## b0  -20.18875653 5.675940e-07
+    ## pop   0.01140679 1.026914e-06
 
     ## expected number of murders at each mesh node
     ins <- which(weights != 0)

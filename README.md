@@ -12,5 +12,5 @@ To install run `devtools::install_github("cmjt/stelfi")`.
 Examples
 -------
 
-  - [Fitting a log-Gaussian Cox process with covariates](https://github.com/cmjt/stelfi/blob/master/inst/docs/lgcp.md)
-  - [Fitting a Hawkes process to Twitter data](https://github.com/cmjt/stelfi/blob/master/inst/docs/hawkes.md)
+  - [Fitting a log-Gaussian Cox process with covariates](https://github.com/cmjt/stelfi/blob/master/vignettes/lgcp.md)
+  - [Fitting a Hawkes process to Twitter data](https://github.com/cmjt/stelfi/blob/master/vignettes/hawkes.md)
