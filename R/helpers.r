@@ -120,7 +120,10 @@ setGeneric("get_fields",
                return(fields)
            })
 #'  \url{https://stat.ethz.ch/pipermail/r-sig-geo/2009-May/005781.html}
+#' @importFrom spatstat as.polygonal
 owin_to_polygons <- function(x, id = "1") {
+    require(maptools)
+    require(spatstat.utils)
     stopifnot(is.owin(x))
     x <- as.polygonal(x)
     closering <- function(df) { df[c(seq(nrow(df)), 1), ] }
@@ -138,8 +141,9 @@ owin_to_polygons <- function(x, id = "1") {
 #' @param x an object of class \code{owin}
 #' @return a \code{SpatialPolygonsDataFrame}
 #' @export
+#' @importFrom spatstat is.owin
+#' @importFrom sp SpatialPolygonsDataFrame SpatialPolygons
 owin_to_sp <- function(x) {
-    require(spatstat.utils)
     stopifnot(is.owin(x))
     y <- owin_to_polygons(x)
     z <- SpatialPolygonsDataFrame(SpatialPolygons(list(y)),
