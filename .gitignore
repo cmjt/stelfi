@@ -1,4 +1,5 @@
 vignettes/*.html
 vignettes/data/*
+vignettes/*_cache/*
 doc
 Meta
