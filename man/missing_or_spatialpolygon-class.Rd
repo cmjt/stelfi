@@ -3,9 +3,11 @@
 \docType{class}
 \name{missing_or_spatialpolygon-class}
 \alias{missing_or_spatialpolygon-class}
-\title{Creates a virtual class that is a superclass to the component classes so then both
+\title{Creates a virtual class that is a superclass
+to the component classes so then both
 children inherit from that class}
 \description{
-Creates a virtual class that is a superclass to the component classes so then both
+Creates a virtual class that is a superclass
+to the component classes so then both
 children inherit from that class
 }

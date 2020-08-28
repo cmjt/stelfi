@@ -6,8 +6,8 @@
 #' @return A \code{INLA::inla} result object}
 \usage{
 fit_lgcp_inla(
-  mesh,
   locs,
+  mesh,
   sp,
   temp = NULL,
   covariates = NULL,
@@ -22,23 +22,29 @@ fit_lgcp_inla(
 )
 }
 \arguments{
+\item{locs}{a matrix of observation locations, where each row corresponds to the observation.}
+
 \item{mesh}{an `inla.mesh` object i.e. delauney triangulation of the domain, an
 object returned by \link{INLA::inla.mesh.2d}.}
-
-\item{locs}{a matrix of observation locations, where each row corresponds to the observation.}
 
 \item{sp}{spatial polygon of the point pattern observation window (optional). if supplied
 weights at the mesh nodes outwith this will be set to zero.}
 
-\item{temp}{a numeric vector specifying a temporal index for each observation (starting at 1.....T) (optional).}
+\item{temp}{a numeric vector specifying a temporal index for each observation
+(starting at 1.....T) (optional).}
 
-\item{covariates}{a named data.frame of covariates (optional)}
+\item{covariates}{a named data.frame of covariates (optional). Note that these must
+be specified at the mesh nodes as well as at the point pattern locations.}
 
-\item{prior.rho}{prior for the temporal correlation coefficient, by default a \code{INLA:::pcprior} is used with \code{param = c(0.9,0.9)}.}
+\item{prior.rho}{prior for the temporal correlation coefficient, by default a
+\code{INLA:::pcprior} is used with \code{param = c(0.9,0.9)}.}
 
-\item{prior.range}{pc prior for the range of the latent field supplied as the vector c(range0,Prange)  (i.e., P(range < range0) = Prange), by default is \code{ c(5,0.9)}. NOTE should be changed to reflect range of the domain.}
+\item{prior.range}{pc prior for the range of the latent field supplied as the
+vector c(range0,Prange)  (i.e., P(range < range0) = Prange), by default is
+\code{ c(5,0.9)}. NOTE should be changed to reflect range of the domain.}
 
-\item{prior.sigma}{pc prior for the sd of the latent field supplied as a vector (sigma0,Psigma) (i.e., P(sigma > sigma0) = Psigma), by default is \code{ c(1,0.005)}.}
+\item{prior.sigma}{pc prior for the sd of the latent field supplied as a
+vector (sigma0,Psigma) (i.e., P(sigma > sigma0) = Psigma), by default is \code{ c(1,0.005)}.}
 
 \item{verbose}{Logical if \code{TRUE} model fit is output to screen.}
 
