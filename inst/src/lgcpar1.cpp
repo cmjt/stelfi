@@ -72,25 +72,10 @@ Type objective_function<Type>::operator() ()
     }
    
   }
-  // ADREPORT(kappa);
-  // Type sigma2 = 1/(4*M_PI*pow(kappa,2));   // sigma2 = 1/(4*pi*k^2) with tau = 1
-  // ADREPORT(sigma2);
-  // Type range = sqrt(8)/kappa;   //Distance at which correlation has dropped to 0.1, see p. 4 in Lindgren et al. (2011)
-  // ADREPORT(range);
-  // SIMULATE {
-  //   SEPARABLE(AR1(rho), GMRF(Q)).simulate(x);
-  //   for(int i = 0; i< (tsteps - 1); i++){
-  //     vector<Type> eta_s = covariates(i)*beta; // design matrix and regression coeffs. (fixed effects)
-  //     vector<Type> gmrf_s = (vector<Type> (x.col(i)));
-  //     //vector<Type> respi_s = resp(i);
-  //     for(int j = 0; j <resp(i).size(); j++){
-  // 	Type mu_s;
-  // 	mu_s = eta_s(j) +  gmrf_s(j);
-  // 	Type lam_s = area(j)*exp(mu_s); // intensity
-  // 	resp(i)(j)= rpois(lam_s);
-  //     }
-  // REPORT(resp);          // Report the simulation
-  // }
-  // }
+  ADREPORT(kappa);
+  ADREPORT(sigma);
+  Type range = sqrt(8)/kappa;//dist at which correlation drops to 0.1, see p. 4 in Lindgren et al. (2011)
+  ADREPORT(range);
+  ADREPORT(rho);
   return nll;
 }

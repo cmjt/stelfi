@@ -1,5 +1,7 @@
 #' creates a virtual class that is a superclass to the component classes so then both children inherit from that class
-setClassUnion("numeric_or_NULL", c("numeric", "NULL")) 
+setClassUnion("numeric_or_NULL", c("numeric", "NULL"))
+setClassUnion("SpatialPolygonsDataFrame_or_SpatialPolygons",
+              c("SpatialPolygonsDataFrame", "SpatialPolygons"))
 #' Hawkes intensty function with decay historical dependence
 #' @inheritParams sim_hawkes
 #' @inheritParams show_hawkes
@@ -75,7 +77,9 @@ setGeneric("get_weights",
            })
 
 setMethod("get_weights",
-          c(mesh = "inla.mesh", sp = "SpatialPolygonsDataFrame", plot = "logical"),
+          c(mesh = "inla.mesh",
+            sp = "SpatialPolygonsDataFrame_or_SpatialPolygons",
+            plot = "logical"),
           function(mesh, sp, plot = FALSE){
               dmesh <- inla.mesh.dual(mesh)
               proj4string(dmesh) <- proj4string(sp)
