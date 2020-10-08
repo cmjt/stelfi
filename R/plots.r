@@ -37,8 +37,8 @@ setMethod("show_hawkes",
 #' @param ... arguments to pass into raster (if rast = TRUE) or image()
 #' @export
 setGeneric("show_field",
-           function(x, mesh, dims = c(300,300), col = terrain.colors(100),
-                    sp = NULL,rast = FALSE,legend = TRUE,legend.only = FALSE,...){
+           function(x, mesh, dims, col,
+                    sp , rast, legend, legend.only, ...){
                standardGeneric("show_field")
            })
 setMethod("show_field",
