@@ -1,5 +1,6 @@
 #' creates a virtual class that is a superclass to the component classes so then both children inherit from that class
 setClassUnion("numeric_or_NULL", c("numeric", "NULL"))
+setClassUnion("missing_or_logical", c("missing", "logical"))
 setClassUnion("SpatialPolygonsDataFrame_or_SpatialPolygons",
               c("SpatialPolygonsDataFrame", "SpatialPolygons"))
 #' Hawkes intensty function with decay historical dependence
@@ -73,14 +74,14 @@ inla.mesh.dual <- function(mesh) {
 #' @importFrom sf st_area st_intersection st_as_sf st_make_valid
 #' @importFrom rgeos gIntersects
 setGeneric("get_weights",
-           function(mesh, sp, plot = FALSE){
+           function(mesh, sp, plot){
            })
 
 setMethod("get_weights",
           c(mesh = "inla.mesh",
             sp = "SpatialPolygonsDataFrame_or_SpatialPolygons",
-            plot = "logical"),
-          function(mesh, sp, plot = FALSE){
+            plot = "missing_or_logical"),
+          function(mesh, sp, plot){
               dmesh <- inla.mesh.dual(mesh)
               proj4string(dmesh) <- proj4string(sp)
               w <- sapply(1:length(dmesh), function(i) {
@@ -90,6 +91,7 @@ setMethod("get_weights",
                   }
                   else return(0)
               })
+              if(missing(plot)) plot = FALSE
               if(plot){
                   sp::plot(dmesh, col = "grey")
                   sp::plot(mesh, add = TRUE, edge.color = "white")
