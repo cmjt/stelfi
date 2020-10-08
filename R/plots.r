@@ -71,7 +71,7 @@ setMethod("show_field",
                       if(legend){fields::image.plot(list(x = proj$x, y=proj$y, z = field.proj),
                                                     legend.only = TRUE, col = col,
                                                     legend.shrink = 0.5)}
-                      if(!is.null(sp)){sp::plot(sp, add = TRUE)}
+                      if(!missing(sp)){sp::plot(sp, add = TRUE)}
                   }
               }
           })
