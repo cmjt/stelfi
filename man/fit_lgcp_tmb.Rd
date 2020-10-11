@@ -5,26 +5,30 @@
 \title{Function to fit a spatiotemporal log-Gaussian Cox process using TMB and the
 R_inla namespace for the spde construction of the latent field}
 \usage{
-fit_lgcp_tmb(locs, temp.idx, mesh, parameters, covs, sp, ...)
+fit_lgcp_tmb(locs, mesh, sp, temp, parameters, covariates, ...)
 }
 \arguments{
 \item{locs}{a matrix of observation locations, where each row corresponds to the observation.}
 
-\item{temp.idx}{numeric aggregated temporal index 1,...,n}
-
 \item{mesh}{an `inla.mesh` object i.e. delauney triangulation of the domain, an
 object returned by \link{INLA::inla.mesh.2d}.}
 
-\item{parameters}{a named list of parameters. Must include "beta" the regression coefficients of fixed effects,
-"log_kappa" the smoothness parameter of the random field, if an AR(1) process for time is being fitted then
+\item{sp}{spatial polygon of the point pattern observation window (optional). if supplied
+weights at the mesh nodes outwith this will be set to zero.}
+
+\item{temp}{a numeric vector specifying a temporal index for each observation
+(starting at 1.....T) (optional).}
+
+\item{parameters}{a named list of starting values for each parameter.
+Must include \code{beta}, the regression coefficients of fixed effects,
+"log_kappa" the smoothness parameter of the random field, if an
+AR(1) process for time is being fitted then
 "rho" must also be included as the temporal dependence parameter}
 
-\item{covs}{a list of covariates at the mesh nodes for each time index}
+\item{covariates}{a named data.frame of covariates (optional). Note that these must
+be specified at the mesh nodes as well as at the point pattern locations.}
 
-\item{sp}{optional spatial polygon of the domain
-should set weigths to 0 outside of domain}
-
-\item{...}{arguments to pass into \code{nlminb()}}
+\item{...}{arguments to pass into \code{optim()}}
 }
 \description{
 Function to fit a spatiotemporal log-Gaussian Cox process using TMB and the

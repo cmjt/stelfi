@@ -1,0 +1,98 @@
+---
+title: "Modelling retweets with a Hawkes process"
+author: "Charlotte M. Jones-Todd"
+date: ""
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Modelling retweets with a Hawkes process}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE,message=FALSE,results='asis'}
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE,cache = TRUE)
+```
+
+
+## Fitting a Hawkes process to Twitter data
+
+A [NIWA](https://niwa.co.nz/) scientist [found a working USB in the scat of a leopard seal](https://www.nzherald.co.nz/nz/news/article.cfm?c_id=1&objectid=12201147), they then [tweeted about it](https://twitter.com/niwa_nz/status/1092610541401587712) in the hopes of finding its owner.
+
+Below we use the `stelfi` package to model the times of retweets as a self-exciting (Hawkes) process.
+
+```{r load data,results='hide',message=FALSE}
+library(stelfi)
+data(retweets_niwa)
+head(retweets_niwa)
+```
+
+```{r sort data}
+## numeric time stamps
+times <- sort(as.numeric(difftime(retweets_niwa ,min(retweets_niwa),units = "mins")))
+```
+
+```{r plot hist, echo = TRUE, fig.cap="Observed counts of retweet times.",fig.height=5,fig.width=8}
+# NIWA seal first tweet according to Twitter
+start <- lubridate::ymd_hms("2019-02-05 02:27:07")
+## NIWA seal found owner tweet according to Twitter
+end <- lubridate::ymd_hms("2019-02-07 06:50:08")
+## hist
+hist(retweets_niwa, breaks = "hours", axes = FALSE, 
+     xlab = "", ylab = "",main = "", col = "grey",border = "grey",freq = TRUE)
+axis(2,at = c(0,250))
+mtext(2, line = 0, text = "Number of retweets per hour",cex = 0.8)
+mtext(1,line = 1, at = c(start,end),text = c("NIWA \n tweeted","USB owner \n found"),cex = 0.9)
+```
+
+### Model fitting using `TMB`
+
+Before using the  `TMB` templates in `stelfi` you should use `compile.stelfi()` to compile them.
+
+```{r compile,results = "hide"}
+compile.stelfi()
+```
+
+```{r fit model,results='hide',cache=TRUE}
+params <- c(mu = 9,alpha = 3,beta = 10)
+## must have compiled TMB templates first use compile.stelfi()
+fit <- fit_hawkes(times = times,parameters = params) 
+```
+
+
+```{r params}
+## print out estimated parameters
+fit
+par <- fit$par.fixed
+par
+```
+
+
+
+```{r plot, echo = FALSE,fig.height=7,fig.width=9,fig.cap="Fitted intensity (top plot) and observed counts of retweets (bottom)."}
+p <- seq(min(times),max(times),length.out = 1000)
+intenst <- hawke_intensity(mu = par[1],alpha = par[2],beta = par[3],times = times, p = p)
+layout(matrix(c(1,1,1,1,1,1,2,2,2),byrow = TRUE, ncol = 3))
+par(mar = c(1,5,1,2))
+plot(times,rep(0,length(retweets_niwa)),pch = "|", yaxt = "n",ylab = "", xlab = "", ylim = c(0,max(intenst)),
+     xaxt = "n",cex = 0.6)
+mtext(2,line = 0,text = "Rate of retweets per minute", cex = 0.9)
+lines(p,intenst,col = "grey")
+axis(2,at = round(c(0,max(intenst)),2),las = 2)
+const <- length(times)/max(times)
+abline(h = const, lty = 2)
+text(1000,const + 0.5, paste("Constant rate of",round(const,2),"retweets per minute"))
+arrows(1000,const + 0.45, 1000,const,length = 0.05)
+day2 <- start + 24*60*60
+day3 <- day2 + 24*60*60
+abline(v = as.numeric(difftime(day2,min(retweets_niwa),unit = "mins")))
+text(as.numeric(difftime(day2,min(retweets_niwa),unit = "mins")) - 100,4,"24hrs since tweet",srt = 90)
+abline(v = as.numeric(difftime(day3,min(retweets_niwa),unit = "mins")))
+text(as.numeric(difftime(day3,min(retweets_niwa),unit = "mins")) - 100,4,"48hrs since tweet",srt = 90)
+par(mar = c(2,5,0,2))
+## hist
+hist(retweets_niwa, breaks = "mins", axes = FALSE, 
+     xlab = "", ylab = "",main = "", col = "grey",border = "grey",freq = TRUE)
+axis(2,at = c(0,11))
+mtext(2, line = 0, text = "Number of retweets per minute",cex = 0.8)
+mtext(1,line = 1, at = c(start,end),text = c("NIWA \n tweeted","USB owner \n found"),cex = 0.9)
+```

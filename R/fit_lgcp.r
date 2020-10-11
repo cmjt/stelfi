@@ -1,115 +1,78 @@
-#' Creates a virtual class that is a superclass to the component classes so then both
+#' Creates a virtual class that is a superclass
+#' to the component classes so then both
 #' children inherit from that class
 setClassUnion("missing_or_spatialpolygon", c("missing", "SpatialPolygonsDataFrame","SpatialPolygons"))
-setClassUnion("null_or_factor", c("NULL", "factor")) 
+setClassUnion("null_or_factor_or_numeric", c("NULL", "factor","numeric"))
+setClassUnion("missing_or_dataframe", c("missing", "data.frame"))
+# Needed for registerin S4 methods
+setClass("inla.mesh")
+
 #' Function to fit a spatiotemporal log-Gaussian Cox process using TMB and the
 #' R_inla namespace for the spde construction of the latent field
-#' @param temp.idx numeric aggregated temporal index 1,...,n
+#' 
 #' @inheritParams fit_lgcp_inla
-#' @param covs a list of covariates at the mesh nodes for each time index
-#' @param parameters a named list of parameters. Must include "beta" the regression coefficients of fixed effects,
-#' "log_kappa" the smoothness parameter of the random field, if an AR(1) process for time is being fitted then
+#' @param parameters a named list of starting values for each parameter.
+#' Must include \code{beta}, the regression coefficients of fixed effects,
+#' "log_kappa" the smoothness parameter of the random field, if an
+#' AR(1) process for time is being fitted then
 #' "rho" must also be included as the temporal dependence parameter
-#' @param sp  optional spatial polygon of the domain
-#' should set weigths to 0 outside of domain
-#' @param ... arguments to pass into \code{nlminb()}
+#' @param ... arguments to pass into \code{optim()}
 #' @export
+#' @importFrom Matrix diag
+#' @importFrom stats optim
+#' @importFrom TMB MakeADFun
 setGeneric("fit_lgcp_tmb",
-           function(locs,temp.idx, mesh, parameters, covs, sp, ...){
+           function(locs, mesh, sp, temp, parameters, covariates, ...){
                standardGeneric("fit_lgcp_tmb")
            })
 
 setMethod("fit_lgcp_tmb",
-          c(locs = "matrix",temp.idx = "null_or_factor",mesh = "inla.mesh",parameters = "list",
-            covs = "list",sp = "missing_or_spatialpolygon"),
-          function(locs, temp.idx, mesh, parameters, covs, sp, ...){
+          c(locs = "matrix", mesh = "inla.mesh",sp = "missing_or_spatialpolygon",
+            temp = "null_or_factor_or_numeric",parameters = "list",
+            covariates = "missing_or_dataframe"),
+          function(locs, mesh, sp, temp, parameters, covariates,  ...){
               ## check for templates
               if(!"lgcpar1"%in%getLoadedDLLs()){
                   dll.stelfi()
               }
               resp <- list()
-              w.loc <- split(mesh$idx$loc,temp.idx)
+              w.loc <- split(mesh$idx$loc,temp)
               w.c <- lapply(w.loc,table)
               for(i in 1:length(w.c)){
                   resp[[i]] <- numeric(mesh$n)
                   count <- as.vector(w.c[[i]])
                   resp[[i]][unique(w.loc[[i]])] <- count
               }
-              data <- list(resp = resp, ID = as.factor(temp.idx),covariates = covs)
+              if(missing(covariates)) {
+                  ## creating intercept
+                  covariates <- resp
+                  covariates <- lapply(covariates, function(x) x = rep(1,length(x)))
+                  covariates <- lapply(covariates, as.matrix, ncol = 1)
+              }
+              data <- list(y = do.call('cbind',resp),
+                           tsteps = length(table(temp)),
+                           covariates = covariates)
               spde <- inla.spde2.matern(mesh = mesh,alpha = 2)
               data$spde <- spde$param.inla[c("M0","M1","M2")]
-              if(class(sp) == "SpatialPolygonsDataFrame"){
-                  w <- get_weights(mesh = mesh,sp,FALSE)
-                  data$area <- w*c(Matrix::diag(data$spde$M0))
+              if(class(sp) == "SpatialPolygonsDataFrame" | class(sp) == "SpatialPolygons"){
+                  w <- get_weights(mesh = mesh, sp, FALSE)
+                  data$area <- w*c(diag(data$spde$M0))
               }else{
-                  data$area <- c(Matrix::diag(data$spde$M0))
+                  data$area <- c(diag(data$spde$M0))
               }
-              ## params
-              params <- list(beta = parameters[["beta"]],log_kappa = parameters[["log_kappa"]],
-                             x = matrix(0,nrow = mesh$n, ncol = length(table(temp.idx))),
-                             rho = parameters[["rho"]])
-              fit <- TMB::MakeADFun(data,params,DLL = "lgcpar1",random = c("x"))
-              opt <- stats::nlminb(fit$par,fit$fn,fit$gr, ...)
-              
-              return(fit)
+              params <- list(beta = parameters[["beta"]],
+                             log_rho = parameters[["log_rho"]],
+                             log_sigma = parameters[["log_sigma"]],
+                             log_kappa = parameters[["log_kappa"]],
+                             field = matrix(0,nrow = mesh$n, ncol = length(table(temp))))
+              obj <- MakeADFun(data, params, DLL = "lgcpar1", random = c("field"))
+              obj$hessian <- TRUE
+              opt <- optim(obj$par, obj$fn, obj$gr, ...)
+              return(sdreport(obj))
+
           })
 
-#' Function to simulate a spatiotemporal log-Gaussian Cox process using TMB and the
-#' R_inla namespace for the spde construction of the latent field from a fitted model
-#' or from a template
-#' @param x a fitted model from a call to \code{fit_lgcp} 
-#' @inheritParams fit_lgcp
-#' @export
-setGeneric("sim_lgcp",
-           function(x,locs, temp.idx, mesh, parameters, covs, sp){
-               standardGeneric("sim_lgcp")
-           })
-setMethod("sim_lgcp",
-          c(x = "list",locs = "missing", temp.idx = "missing", mesh = "missing", parameters = "missing",covs = "missing",
-            sp = "missing"),
-          function(x, locs, temp.idx, mesh, parameters, covs, sp){
-              simdata = x$simulate(par = x$obj,complete = TRUE)
-              return(simdata)
-          })
-setMethod("sim_lgcp",
-          c(x = "list", locs = "missing", temp.idx = "missing", mesh = "missing", parameters = "list", covs = "missing",
-            sp = "missing"),
-          function(x, locs, temp.idx, mesh, parameters, covs, sp){
-              simdata = x$simulate(par = parameters,complete = TRUE)
-              return(simdata)
-          })
-setMethod("sim_lgcp",
-          c(x = "missing", locs = "matrix",temp.idx = "factor",mesh = "inla.mesh",parameters = "list",covs = "list",
-            sp = "missing_or_spatialpolygon"),
-          function(x, locs, temp.idx, mesh, parameters, covs, sp){
-              if(!"lgcpar1"%in%getLoadedDLLs()){
-                  dll.stelfi()
-              }
-              resp <- list()
-              w.loc <- split(mesh$idx$loc,temp.idx)
-              w.c <- lapply(w.loc,table)
-              for(i in 1:length(w.c)){
-                  resp[[i]] <- numeric(mesh$n)
-                  count <- as.vector(w.c[[i]])
-                  resp[[i]][unique(w.loc[[i]])] <- count
-              }
-              data <- list(resp = resp, ID = as.factor(temp.idx),covariates = covs)
-              spde <- inla.spde2.matern(mesh = mesh,alpha = 2)
-              data$spde <- spde$param.inla[c("M0","M1","M2")]
-              if(class(sp) == "SpatialPolygonsDataFrame"){
-                  w <- outwith(mesh = mesh, boundary = sp)
-                  data$area <- w*c(Matrix::diag(data$spde$M0))
-              }else{
-                  data$area <- c(Matrix::diag(data$spde$M0))
-              }
-              ## params
-              params <- list(beta = parameters[["beta"]],log_kappa = parameters[["log_kappa"]],
-                             x = matrix(0,nrow = mesh$n, ncol = length(table(temp.idx))),
-                             rho = parameters[["rho"]])
-              onj <- TMB::MakeADFun(data,params,DLL = "lgcpar1",random = c("x"))
-              simdata = x$simulate(par = parameters,complete = TRUE)
-              return(simdata)
-          })
+
 #' Wrapper for \code{INLA} to fit a LGCP
 #' #' @return A \code{INLA::inla} result object
 #'
@@ -118,18 +81,24 @@ setMethod("sim_lgcp",
 #' @param locs a matrix of observation locations, where each row corresponds to the observation. 
 #' @param sp spatial polygon of the point pattern observation window (optional). if supplied
 #' weights at the mesh nodes outwith this will be set to zero.
-#' @param temp a numeric vector specifying a temporal index for each observation (starting at 1.....T) (optional).
-#' @param covariates a named data.frame of covariates (optional) 
-#' @param prior.rho prior for the temporal correlation coefficient, by default a \code{INLA:::pcprior} is used with \code{param = c(0.9,0.9)}.
-#' @param prior.range pc prior for the range of the latent field supplied as the vector c(range0,Prange)  (i.e., P(range < range0) = Prange), by default is \code{ c(5,0.9)}. NOTE should be changed to reflect range of the domain. 
-#' @param prior.sigma pc prior for the sd of the latent field supplied as a vector (sigma0,Psigma) (i.e., P(sigma > sigma0) = Psigma), by default is \code{ c(1,0.005)}.
+#' @param temp a numeric vector specifying a temporal index for each observation
+#' (starting at 1.....T) (optional).
+#' @param covariates a named data.frame of covariates (optional). Note that these must
+#' be specified at the mesh nodes as well as at the point pattern locations.
+#' @param prior.rho prior for the temporal correlation coefficient, by default a
+#' \code{INLA:::pcprior} is used with \code{param = c(0.9,0.9)}.
+#' @param prior.range pc prior for the range of the latent field supplied as the
+#' vector c(range0,Prange)  (i.e., P(range < range0) = Prange), by default is
+#' \code{ c(5,0.9)}. NOTE should be changed to reflect range of the domain. 
+#' @param prior.sigma pc prior for the sd of the latent field supplied as a
+#' vector (sigma0,Psigma) (i.e., P(sigma > sigma0) = Psigma), by default is \code{ c(1,0.005)}.
 #' @param verbose Logical if \code{TRUE} model fit is output to screen.
 #' @param control.inla a list to control model fitting (as per inla)
 #' @param control.fixed a list as per inla by default sets prior for precision intercept
 #' @param ... other arguments taken by \code{inla}
 #' @importMethodsFrom Matrix diag
 #' @export
-fit_lgcp_inla <- function(mesh, locs, sp, temp = NULL, covariates = NULL,
+fit_lgcp_inla <- function(locs, mesh, sp, temp = NULL, covariates = NULL,
                           prior.rho = list(theta = list(prior='pccor1', param = c(0.0, 0.9))),
                           prior.range = c(5,0.9) ,
                           prior.sigma = c(1,0.005),
@@ -138,6 +107,11 @@ fit_lgcp_inla <- function(mesh, locs, sp, temp = NULL, covariates = NULL,
                           control.fixed = list(prec.intercept = 0.001),
                           return.attributes = FALSE,
                           ...){
+    if(class(sp) == "SpatialPolygons"){
+        pid <- sapply(slot(sp, "polygons"), function(x) slot(x, "ID"))
+        pdf <- data.frame(ID = 1:length(sp), row.names = pid) 
+        sp <- SpatialPolygonsDataFrame(sp,data = pdf)
+    }
     mesh <- mesh
     spde <- inla.spde2.pcmatern(mesh = mesh,
                                 prior.range = prior.range,
@@ -174,12 +148,12 @@ fit_lgcp_inla <- function(mesh, locs, sp, temp = NULL, covariates = NULL,
         A.pp <- rbind(imat, lmat)
     }
     if(!is.null(covariates)){
-        m <- make.covs(covariates)
+        m <- stelfi:::make.covs(covariates)
         cov.effects <- m[[1]]
         cov.form <- m[[2]]
         stack <- inla.stack(data=list(y=y.pp, e=expected),
                             A=list(A.pp,1,1),
-                            effects=list(field = field,
+                            effects=list(field = 1:nv,
                                          b0 = rep(1,length(y.pp)),
                                          cov.effects = cov.effects))
         if(!is.null(temp)){

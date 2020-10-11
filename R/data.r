@@ -70,22 +70,24 @@ NULL
 #' @source \url{http://quakesearch.geonet.org.nz/}
 #' @name earthquakes
 NULL
-#' Terrorism 2010--2017
+#' Terrorism in Iraq 2013--2017
 #' 
-#' A dataset containing information of terrorism activity 2010--2017
+#' A dataset containing information of terrorism activity carried out
+#' by the Islamic State of Iraq and the Levant (ISIL) in Iraq,
+#' 2013--2017
 #' 
-#' @format A data frame with 72366 rows and 16 variables:
+#' @format A data frame with 4208 rows and 16 variables:
 #' \describe{
-#' \item{iyear}{numeric year 2010--2017}
+#' \item{iyear}{numeric year 2013--2017}
 #' \item{imonth}{numeric month index 1--12}
 #' \item{iday}{numeric day 1--31 (zeros are a non-entry)}
-#' \item{country}{country}
+#' \item{country}{country (IRAQ)}
 #' \item{latitude}{latitude location}
 #' \item{longitude}{longitude location}
 #' \item{sucess}{Logical fatal or not. TRUE = fatal}
 #' \item{nkill}{number of fatalities per attack}
 #' \item{specificity}{factor which represents the apatial accuracy of the evets: 1 = most accurate, 5 = worst}
-#' \item{gname}{character name of attack perpetrators}
+#' \item{gname}{character name of attack perpetrators (ISIL)}
 #' \item{x.coord}{x coordinate from location projected onto a sphere}
 #' \item{y.coord}{y coordinate from location projected onto a sphere}
 #' \item{z.coord}{z coordinate from location projected onto a sphere}
@@ -96,17 +98,7 @@ NULL
 #' @source \url{http://www.start.umd.edu/gtd/}
 #' @name terrorism
 NULL
-#' IS terrorism
-#' 
-#' A dataset of IS attacks in Iraq in 2017 
-#' 
-#' @format a list with two elements occ (occurances of IS attacks) and covs.mesh
-#' (a list of monthly covariates at set locations in over Iraq, only used as an illustration of
-#' a model in Python et al. (TODO)). The third element is a spatial polygon of Iraq.
-#' @source \url{http://www.start.umd.edu/gtd/}
-#' @name iraq
-NULL
-#' New Zealand
+#' New Zealand polygon
 #'
 #' Spatial Polygon of NZ
 #' 

@@ -1,3 +1,5 @@
-inst/docs/LGCP_cache/
-inst/docs/Hawkes_cache/
-inst/docs/data/
+vignettes/*.html
+vignettes/data/*
+vignettes/*_cache/*
+doc
+Meta

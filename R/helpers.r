@@ -1,8 +1,12 @@
 #' creates a virtual class that is a superclass to the component classes so then both children inherit from that class
-setClassUnion("numeric_or_NULL", c("numeric", "NULL")) 
+setClassUnion("numeric_or_NULL", c("numeric", "NULL"))
+setClassUnion("missing_or_logical", c("missing", "logical"))
+setClassUnion("SpatialPolygonsDataFrame_or_SpatialPolygons",
+              c("SpatialPolygonsDataFrame", "SpatialPolygons"))
 #' Hawkes intensty function with decay historical dependence
-#' @inheritParams sim.hawkes
-#' @inheritParams plot_hawkes
+#' @inheritParams sim_hawkes
+#' @inheritParams show_hawkes
+#' @export
 setGeneric("hawke_intensity",
            function(mu, alpha, beta,times,p = NULL){
            })
@@ -67,41 +71,102 @@ inla.mesh.dual <- function(mesh) {
 #' Relies on inla.mesh.dual function from INLA spde-tutorial
 #' \href{SPDE gitbook}{https://becarioprecario.bitbucket.io/spde-gitbook/}
 #' @export
+#' @importFrom sf st_area st_intersection st_as_sf st_make_valid
+#' @importFrom rgeos gIntersects
 setGeneric("get_weights",
-           function(mesh, sp, plot = FALSE){
+           function(mesh, sp, plot){
            })
 
 setMethod("get_weights",
-          c(mesh = "inla.mesh", sp = "SpatialPolygonsDataFrame", plot = "logical"),
-          function(mesh, sp, plot = FALSE){
+          c(mesh = "inla.mesh",
+            sp = "SpatialPolygonsDataFrame_or_SpatialPolygons",
+            plot = "missing_or_logical"),
+          function(mesh, sp, plot){
               dmesh <- inla.mesh.dual(mesh)
               proj4string(dmesh) <- proj4string(sp)
               w <- sapply(1:length(dmesh), function(i) {
-                  if (rgeos::gIntersects(dmesh[i,], sp)){
-                      return(as.numeric(sum(sf::st_area(sf::st_intersection(sf::st_as_sf(dmesh[i, ]),
-                                                                            sf::st_make_valid(sf::st_as_sf(sp)))))))
+                  if (gIntersects(dmesh[i,], sp)){
+                      return(as.numeric(sum(st_area(st_intersection(st_as_sf(dmesh[i, ]),
+                                                                    st_make_valid(st_as_sf(sp)))))))
                   }
                   else return(0)
               })
+              if(missing(plot)) plot = FALSE
               if(plot){
                   sp::plot(dmesh, col = "grey")
                   sp::plot(mesh, add = TRUE, edge.color = "white")
-                  sp::plot(nz,add = TRUE)
+                  sp::plot(sp,add = TRUE)
                   points(mesh$loc,pch = 18)
                   points(mesh$loc[unlist(w) == 0,],col = "white", pch = 18)
               }
               return(unlist(w))
           })
-#' Function to extract fields from a fitted model (INLA only ATM) (spatial only ATM)
+#' Function to extract fields from a fitted model (INLA only ATM)
+#' @param x an \code{inla} object
+#' @param mesh an object of class \code{inla.mesh}
+#' @param t optional, if supplied specifies the number of time steps
+#' @param mean logical, if TRUE extracts point estimates of the fields,
+#' else returns the standard errors
 #' @export
 setGeneric("get_fields",
-           function(x, mesh){
+           function(x, mesh, t = NULL, mean){
            })
 setGeneric("get_fields",
-           function(x = "inla",mesh = "inla.mesh"){
+           function(x = "inla",mesh = "inla.mesh", t = "numeric_or_NULL", mean = "logical"){
                field.names <- names(x$summary.random)
-               fields <- lapply(1:length(field.names),
-                                function(f) x$summary.random[[field.names[f]]]$mean)
+               if(mean){
+                   fields <- lapply(1:length(field.names),
+                                    function(f) x$summary.random[[field.names[f]]]$mean)
+               }else{
+                   fields <- lapply(1:length(field.names),
+                                    function(f) x$summary.random[[field.names[f]]]$sd)
+               }
+               if(is.numeric(t))  fields <- lapply(fields, split, rep(1:t,each = mesh$n))
                names(fields) <- field.names
                return(fields)
            })
+#'  \url{https://stat.ethz.ch/pipermail/r-sig-geo/2009-May/005781.html}
+#' @importFrom spatstat as.polygonal
+owin_to_polygons <- function(x, id = "1") {
+    require(maptools)
+    require(spatstat.utils)
+    stopifnot(is.owin(x))
+    x <- as.polygonal(x)
+    closering <- function(df) { df[c(seq(nrow(df)), 1), ] }
+    pieces <- lapply(x$bdry,
+                     function(p) {
+                         Polygon(coords = closering(cbind(p$x,p$y)),
+                                 hole = is.hole.xypolygon(p))  })
+    z <- Polygons(pieces, id)
+    
+    return(z)
+}
+#' Function to convert a\code{spatstat} \code{owin} object to
+#' a \code{SpatialPolygonsDataFrame}
+#' @source \url{https://stat.ethz.ch/pipermail/r-sig-geo/2009-May/005781.html}
+#' @param x an object of class \code{owin}
+#' @return a \code{SpatialPolygonsDataFrame}
+#' @export
+#' @importFrom spatstat is.owin
+#' @importFrom sp SpatialPolygonsDataFrame SpatialPolygons
+owin_to_sp <- function(x) {
+    stopifnot(is.owin(x))
+    y <- owin_to_polygons(x)
+    z <- SpatialPolygonsDataFrame(SpatialPolygons(list(y)),
+                                  data = data.frame(rep(1,length(list(y)))))
+    return(z)
+}
+#' Function that takes in a named  matrix of covariates with
+#' ncol equal to the number of covariates
+#' returns a list containing the effects ready to be
+#' read by \code{inla.stack} and a covariate formula,
+#' ready to be read by a call to \code{inla}
+make.covs <- function(covariates){
+    n.covs = ncol(covariates)
+    for(i in 1:n.covs){
+        assign(colnames(covariates)[i],covariates[,i],envir = .GlobalEnv)
+    }
+    cov.effects = sapply(colnames(covariates),get,simplify = FALSE)
+    cov.form = paste(colnames(covariates),collapse = " + ")
+    return(list(cov.effects,cov.form))
+}
