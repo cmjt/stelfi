@@ -151,11 +151,12 @@ fit_lgcp_inla <- function(locs, mesh, sp, temp = NULL, covariates = NULL,
         m <- stelfi:::make.covs(covariates)
         cov.effects <- m[[1]]
         cov.form <- m[[2]]
-        stack <- inla.stack(data=list(y=y.pp, e=expected),
-                            A=list(A.pp,1,1),
-                            effects=list(field = 1:nv,
+        stack <- inla.stack(data = list(y = y.pp, e = expected),
+                            A = list(A.pp,1,1),
+                            effects = list(field = 1:nv,
                                          b0 = rep(1,length(y.pp)),
-                                         cov.effects = cov.effects))
+                                         cov.effects = cov.effects),
+                            tag = "obvs")
         if(!is.null(temp)){
             formula <- paste("y", "~  0  + b0 +", cov.form ,
                              " + f(field, model = spde, group = field.group,control.group = ctr.g)")
@@ -167,7 +168,8 @@ fit_lgcp_inla <- function(locs, mesh, sp, temp = NULL, covariates = NULL,
             stack <- inla.stack(
                 data = list(y = y.pp, e = expected), 
                 A = list(rbind(Diagonal(n = k * nv), Ast), 1), 
-                effects = list(field, list(b0 = rep(1, k * nv + n))))
+                effects = list(field, list(b0 = rep(1, k * nv + n))),
+                tag = "obvs")
             formula <- y ~ 0 + b0 + f(field, model = spde, group = field.group,
                                       control.group = ctr.g)
         }else{
@@ -176,7 +178,7 @@ fit_lgcp_inla <- function(locs, mesh, sp, temp = NULL, covariates = NULL,
                 A = list(1, A.pp),
                 effects = list(list(b0 = rep(1, nv + nrow(locs))), 
                                list(field = 1:nv)),
-                tag = 'pp')
+                tag = 'obvs')
             formula <- y ~ 0  + b0 + f(field, model = spde)
         }
     }
@@ -192,6 +194,7 @@ fit_lgcp_inla <- function(locs, mesh, sp, temp = NULL, covariates = NULL,
     if(return.attributes) {
         attributes(result)$mesh <- as.list(mesh)
         attributes(result)$weights <- weights
+        attributes(result)$stack <- stack
     }
     
     result
