@@ -3,11 +3,11 @@ setClassUnion("numeric_or_NULL", c("numeric", "NULL"))
 #' Hawkes intensty function with decay historical dependence
 #' @inheritParams sim.hawkes
 #' @inheritParams plot_hawkes
-setGeneric("hawke.intensity",
+setGeneric("hawke_intensity",
            function(mu, alpha, beta,times,p = NULL){
            })
 
-setMethod("hawke.intensity",
+setMethod("hawke_intensity",
           c(mu = "numeric",alpha = "numeric" ,beta  = "numeric",times = "vector",
             p = "numeric_or_NULL"),
           function(mu, alpha, beta, times, p){
