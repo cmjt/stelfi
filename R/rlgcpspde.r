@@ -13,7 +13,8 @@ setClassUnion("SpatialPolygonsDataFrameOrowin", c("SpatialPolygonsDataFrame", "o
 #' @param rho the AR(1) correlation coefficient for spatio-temporal samples,
 #' by default this is 0.9.
 #' @export
-#' @importFrom spatstat as.owin rLGCP rpoispp
+#' @importFrom spatstat.geom as.owin
+#' @importFrom spatstat.core rLGCP rpoispp
 setGeneric("rlgcpspde",
            function(sp,  mu, kappa, sigma2, n, nu, rho){
                standardGeneric("rlgcpspde")

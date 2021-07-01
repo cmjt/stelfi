@@ -7,9 +7,9 @@ Author: Charlotte M. Jones-Todd <cmjonestodd@gmail.com>
 Maintainer: Charlotte M. Jones-Todd <cmjonestodd@gmail.com>
 Depends:
     R (>= 3.6.1),
-    INLA,
-    TMB,
-    Rcpp
+    INLA (>= 21.2.23),
+    TMB (>= 1.7.20),
+    Rcpp (>= 1.0.6)
 Description: A package for fitting a range of spatiotemporal models that include latent fields.
 License: GPL
 URL: https://github.com/cmjt/stelfi

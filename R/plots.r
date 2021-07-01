@@ -36,6 +36,7 @@ setMethod("show_hawkes",
 #' @param legend.only logical; legend only to be plotted; default FALSE
 #' @param ... arguments to pass into raster (if rast = TRUE) or image()
 #' @export
+#' @importFrom spatstat.geom as.owin inside.owin
 setGeneric("show_field",
            function(x, mesh, dims, col,
                     sp , rast, legend, legend.only, ...){
@@ -55,7 +56,7 @@ setMethod("show_field",
               if(!missing(sp)){
                   require(maptools)
                   e = expand.grid(proj$x,proj$y)
-                  ins =  spatstat::inside.owin(e[,1],e[,2],spatstat::as.owin(sp))
+                  ins =  inside.owin(e[,1],e[,2],as.owin(sp))
                   ins = matrix(ins,nrow=length(proj$x))
                   field.proj[!ins] = NA
               }                                

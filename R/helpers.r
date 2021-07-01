@@ -126,7 +126,7 @@ setGeneric("get_fields",
                return(fields)
            })
 #'  \url{https://stat.ethz.ch/pipermail/r-sig-geo/2009-May/005781.html}
-#' @importFrom spatstat as.polygonal
+#' @importFrom spatstat.geom as.polygonal
 owin_to_polygons <- function(x, id = "1") {
     require(maptools)
     require(spatstat.utils)
@@ -147,7 +147,7 @@ owin_to_polygons <- function(x, id = "1") {
 #' @param x an object of class \code{owin}
 #' @return a \code{SpatialPolygonsDataFrame}
 #' @export
-#' @importFrom spatstat is.owin
+#' @importFrom spatstat.geom is.owin
 #' @importFrom sp SpatialPolygonsDataFrame SpatialPolygons
 owin_to_sp <- function(x) {
     stopifnot(is.owin(x))
