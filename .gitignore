@@ -3,3 +3,6 @@ vignettes/data/*
 vignettes/*_cache/*
 doc
 Meta
+vignettes/lgcp.cpp
+vignettes/tmb_tst.r
+
