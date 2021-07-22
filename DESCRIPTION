@@ -1,16 +1,23 @@
 Package: stelfi
 Type: Package
-Title: Fitting spatiotemporal models that include latent fields.
+Title: Fitting spatiotemporal point processes.
 Version: 0.0.1
-Date: 2019-09-06
-Author: Charlotte M. Jones-Todd <cmjonestodd@gmail.com>
-Maintainer: Charlotte M. Jones-Todd <cmjonestodd@gmail.com>
+Date: 2021-07-23
+Authors@R: 
+  c(person(given = "Charlotte M.",
+           family = "Jones-Todd",
+           role = c("aut", "cre"),
+           email = "cmjonestodd@gmail.com",
+           comment = c(ORCID = "0000-0003-1201-2781")),
+    person(given = "Xiangjie",
+           family = "Xue",
+           role = "ctb"))
 Depends:
     R (>= 3.6.1),
     INLA (>= 21.2.23),
     TMB (>= 1.7.20),
     Rcpp (>= 1.0.6)
-Description: A package for fitting a range of spatiotemporal models that include latent fields.
+Description: A package for fitting a range of spatiotemporal point processes with include latent fields.
 License: GPL
 URL: https://github.com/cmjt/stelfi
 LazyData: TRUE
