@@ -18,7 +18,10 @@ setMethod("fit_hawkes",
                   dll.stelfi()
               }
               obj = MakeADFun(data = list(times = times),
-                              parameters = parameters,DLL = "hawkes")
+                              parameters = list(log_mu = log(parameters["mu"]),
+                                                logit_abratio = qlogis(parameters["alpha"] / parameters["beta"]),
+                                                log_beta = log(parameters["beta"])),
+                              DLL = "hawkes")
               obj$hessian <- TRUE
               opt <- optim(obj$par, obj$fn, obj$gr,...)
               return(sdreport(obj))
