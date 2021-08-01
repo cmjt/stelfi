@@ -21,11 +21,16 @@ setMethod("compile.stelfi",
               files <- strsplit(list.files(), "[.]")
               base <- sapply(files, function(x) x[1])
               ext <- sapply(files, function(x) x[2]) 
+              is.windows <- length(grep("Windows", sessionInfo()$running)) > 0
               for (i in base[ext == "cpp"]){
                   compile(paste(i, ".cpp", sep = ""))
                   unlink(paste(i, ".o", sep = ""))
-                  file.rename(paste(i, ".so", sep = ""),
-                              paste("../bin/", i, ".so", sep = ""))
+                  if (is.windows)
+                      file.rename(paste(i, ".dll", sep = ""),
+                              paste("../bin/", i, ".dll", sep = ""))
+                  else
+                      file.rename(paste(i, ".so", sep = ""),
+                                  paste("../bin/", i, ".so", sep = ""))
               }
               setwd(wd)
           })
