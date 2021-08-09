@@ -1,10 +1,12 @@
-setClassUnion("logical_or_missing", c("logical", "missing")) 
+setClassUnion("logical_or_missing", c("logical", "missing"))
 #' Plots the Hawkes intensty function with decay historical dependence
 #' @docType methods
 #' @rdname show_hawkes
 #' @inheritParams sim_hawkes
 #' @param times a vector of numeric observation time points
 #' @export
+#' @import patchwork
+#' @import ggplot2
 setGeneric("show_hawkes",
            function(times,mu, alpha, beta){
                standardGeneric("show_hawkes")
@@ -21,8 +23,12 @@ setMethod("show_hawkes",
               col = 1
               lmax = max(lam.p)
               lmin = min(lam.p)
-              plot(times,rep(lmin-1,n),ylim = c(lmin-2,lmax),xlab="time",ylab = ylab,col = col,pch = 20)
-              lines(p,lam.p,col = "grey")
+              line = ggplot(data = data.frame(x = p, y = lam.p),
+                             aes(x = x, y = y)) + xlab("") + ylab(expression(lambda(t))) + 
+                  geom_line() + theme_minimal()
+              hist = ggplot(data = data.frame(times = times), aes(x = times)) +
+                  geom_histogram() + theme_minimal() + xlab("times") + ylab("Number of events")
+              line / hist
           })
 #' Function to plot or create raster of a given field defined over a mesh
 #' @docType methods

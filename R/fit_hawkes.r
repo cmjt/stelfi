@@ -1,8 +1,8 @@
-#' Function to fit a self-exciting Hawkes process
+#' Function to fit a self-exciting Hawkes process using TMB
 #' @param times a vector of numeric observation time points
 #' @param parameters a vector of named parmeters for the hawkes process: "mu"--base rate of the hawkes process,
 #' "alpha"--intensity jump after an event occurence, and "beta"--exponential intensity decay
-#' @param ... arguments to pass into \code{nlminb()}
+#' @param ... arguments to pass into \code{optim()}
 #' @export
 #' @importFrom stats optim
 #' @importFrom TMB MakeADFun sdreport

@@ -1,27 +1,36 @@
 ---
-title: "Modelling retweets with a Hawkes process"
+title: "Fitting a Hawkes process"
 author: "Charlotte M. Jones-Todd"
 date: ""
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Modelling retweets with a Hawkes process}
+  %\VignetteIndexEntry{Fitting a Hawkes process}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
 
 ```{r setup, include=FALSE,message=FALSE,results='asis'}
-knitr::opts_chunk$set(echo = TRUE, eval = TRUE,cache = TRUE)
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE,cache = TRUE, message = FALSE, warning = FALSE)
 ```
 
+Before using the  `TMB` templates in `stelfi` you should use `compile.stelfi()` to compile them:
 
-## Fitting a Hawkes process to Twitter data
+```{r library,results='hide',message=FALSE}
+library(stelfi)
+```
+
+```{r compile, eval = FALSE}
+compile.stelfi()
+```
+
+## Fitting a Hawkes process model
+
+
+### Modelling Twitter data
 
 A [NIWA](https://niwa.co.nz/) scientist [found a working USB in the scat of a leopard seal](https://www.nzherald.co.nz/nz/news/article.cfm?c_id=1&objectid=12201147), they then [tweeted about it](https://twitter.com/niwa_nz/status/1092610541401587712) in the hopes of finding its owner.
 
-Below we use the `stelfi` package to model the times of retweets as a self-exciting (Hawkes) process.
-
-```{r load data,results='hide',message=FALSE}
-library(stelfi)
+```{r data,message=FALSE}
 data(retweets_niwa)
 head(retweets_niwa)
 ```
@@ -31,7 +40,8 @@ head(retweets_niwa)
 times <- sort(as.numeric(difftime(retweets_niwa ,min(retweets_niwa),units = "mins")))
 ```
 
-```{r plot hist, echo = TRUE, fig.cap="Observed counts of retweet times.",fig.height=5,fig.width=8}
+
+```{r plot hist, echo = FALSE, fig.cap = "Observed counts of retweet times.",fig.height = 5,fig.width = 8}
 # NIWA seal first tweet according to Twitter
 start <- lubridate::ymd_hms("2019-02-05 02:27:07")
 ## NIWA seal found owner tweet according to Twitter
@@ -44,16 +54,10 @@ mtext(2, line = 0, text = "Number of retweets per hour",cex = 0.8)
 mtext(1,line = 1, at = c(start,end),text = c("NIWA \n tweeted","USB owner \n found"),cex = 0.9)
 ```
 
-### Model fitting using `TMB`
 
-Before using the  `TMB` templates in `stelfi` you should use `compile.stelfi()` to compile them.
 
-```{r compile,results = "hide"}
-compile.stelfi()
-```
-
-```{r fit model,results='hide',cache=TRUE}
-params <- c(mu = 9,alpha = 3,beta = 10)
+```{r fit model,results = 'hide',cache = TRUE}
+params <- c(mu = 9, alpha = 3, beta = 10)
 ## must have compiled TMB templates first use compile.stelfi()
 fit <- fit_hawkes(times = times,parameters = params) 
 ```
@@ -61,38 +65,80 @@ fit <- fit_hawkes(times = times,parameters = params)
 
 ```{r params}
 ## print out estimated parameters
-fit
-par <- fit$par.fixed
-par
+pars <- summary(fit, "report")
+pars
 ```
 
 
 
-```{r plot, echo = FALSE,fig.height=7,fig.width=9,fig.cap="Fitted intensity (top plot) and observed counts of retweets (bottom)."}
-p <- seq(min(times),max(times),length.out = 1000)
-intenst <- hawke_intensity(mu = par[1],alpha = par[2],beta = par[3],times = times, p = p)
-layout(matrix(c(1,1,1,1,1,1,2,2,2),byrow = TRUE, ncol = 3))
-par(mar = c(1,5,1,2))
-plot(times,rep(0,length(retweets_niwa)),pch = "|", yaxt = "n",ylab = "", xlab = "", ylim = c(0,max(intenst)),
-     xaxt = "n",cex = 0.6)
-mtext(2,line = 0,text = "Rate of retweets per minute", cex = 0.9)
-lines(p,intenst,col = "grey")
-axis(2,at = round(c(0,max(intenst)),2),las = 2)
-const <- length(times)/max(times)
-abline(h = const, lty = 2)
-text(1000,const + 0.5, paste("Constant rate of",round(const,2),"retweets per minute"))
-arrows(1000,const + 0.45, 1000,const,length = 0.05)
-day2 <- start + 24*60*60
-day3 <- day2 + 24*60*60
-abline(v = as.numeric(difftime(day2,min(retweets_niwa),unit = "mins")))
-text(as.numeric(difftime(day2,min(retweets_niwa),unit = "mins")) - 100,4,"24hrs since tweet",srt = 90)
-abline(v = as.numeric(difftime(day3,min(retweets_niwa),unit = "mins")))
-text(as.numeric(difftime(day3,min(retweets_niwa),unit = "mins")) - 100,4,"48hrs since tweet",srt = 90)
-par(mar = c(2,5,0,2))
-## hist
-hist(retweets_niwa, breaks = "mins", axes = FALSE, 
-     xlab = "", ylab = "",main = "", col = "grey",border = "grey",freq = TRUE)
-axis(2,at = c(0,11))
-mtext(2, line = 0, text = "Number of retweets per minute",cex = 0.8)
-mtext(1,line = 1, at = c(start,end),text = c("NIWA \n tweeted","USB owner \n found"),cex = 0.9)
+```{r plot, echo = TRUE,fig.height = 7,fig.width = 9,fig.cap="Fitted intensity (top plot) and observed counts of retweets (bottom)."}
+show_hawkes(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1])
 ```
+### Modelling UK serial killer data
+
+```{r terrorism}
+data(serial_uk)
+## make date vector
+times <- as.Date(paste(serial_uk$Date.of.first.kill, "/01", sep=''), "%m/%Y/%d")
+times <- sort(lubridate::year(times) + lubridate::month(times)/12 - lubridate::year(min(times)))
+```
+
+
+
+```{r fit model mud,results = 'hide',cache = TRUE}
+params <- c(mu = 0.06,alpha = 0.006,beta = 0.01)
+## must have compiled TMB templates first use compile.stelfi()
+fit <- fit_hawkes(times = times,parameters = params) 
+```
+
+```{r params terr}
+## print out estimated parameters
+pars <- summary(fit, "report")
+pars
+```
+
+```{r plot2, echo = TRUE,fig.height = 7,fig.width = 9,fig.cap="Fitted intensity (top plot) and observed counts of UK serial murderers (bottom)."}
+show_hawkes(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1])
+```
+
+### Modelling malaria data
+
+Here we consider data from [*Using Hawkes Processes to model imported and local malaria cases in near-elimination settings*](https://dx.doi.org/10.1371%2Fjournal.pcbi.1008830). Data are recorded line lists of individuals with malaria (caused by the *Plasmodium vivax* parasite) in Yunnan Province, China between 1st January 2011 to 24th September 2013. Data may be downloaded from [here](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/YPRLIL) as follows.
+
+```{r china data, echo = TRUE, message = FALSE}
+tmp <- tempfile(fileext = ".RData")
+download.file("https://dataverse.harvard.edu/api/access/datafile/4443458",
+              destfile = tmp)
+load(tmp)
+unlink(tmp)
+```
+
+
+```{r china EDA}
+str(china_malaria)
+times <- china_malaria$time_jitter
+```
+
+```{r fit model china,results = 'hide',cache = TRUE}
+params <- c(mu = 9, alpha = 3, beta = 10)
+## must have compiled TMB templates first use compile.stelfi()
+fit <- fit_hawkes(times = times,parameters = params) 
+```
+
+```{r params china}
+## print out estimated parameters
+pars <- summary(fit, "report")
+pars
+```
+
+```{r plot3, echo = TRUE,fig.height = 7,fig.width = 9,fig.cap="Fitted intensity (top plot) and observed counts of recorded malarial infection (bottom)."}
+show_hawkes(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1])
+```
+
+## Simulating a from a Hawkes model
+
+### Option 1
+
+### Option 2
+
+### Option 3

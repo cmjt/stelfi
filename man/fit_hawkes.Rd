@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_hawkes.r
 \name{fit_hawkes}
 \alias{fit_hawkes}
-\title{Function to fit a self-exciting Hawkes process}
+\title{Function to fit a self-exciting Hawkes process using TMB}
 \usage{
 fit_hawkes(times, parameters, ...)
 }
@@ -12,8 +12,8 @@ fit_hawkes(times, parameters, ...)
 \item{parameters}{a vector of named parmeters for the hawkes process: "mu"--base rate of the hawkes process,
 "alpha"--intensity jump after an event occurence, and "beta"--exponential intensity decay}
 
-\item{...}{arguments to pass into \code{nlminb()}}
+\item{...}{arguments to pass into \code{optim()}}
 }
 \description{
-Function to fit a self-exciting Hawkes process
+Function to fit a self-exciting Hawkes process using TMB
 }
