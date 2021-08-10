@@ -9,3 +9,4 @@
 ^vignettes/spatio-temporal_cache$
 ^vignettes/spatio-temporal_files$
 ^vignettes/*\.md$
+^data/china_malaria.RData

@@ -1,6 +1,6 @@
 Package: stelfi
 Type: Package
-Title: Fitting spatiotemporal point processes.
+Title: Fitting a range of spatial, temporal, and spatiotemporal point process models
 Version: 0.0.1
 Date: 2021-07-23
 Authors@R: 
@@ -13,11 +13,19 @@ Authors@R:
            family = "Xue",
            role = "ctb"))
 Depends:
-    R (>= 3.6.1),
-    INLA (>= 21.2.23),
+    R (>= 4.1.0)
+Imports:
     TMB (>= 1.7.20),
-    Rcpp (>= 1.0.6)
-Description: A package for fitting a range of spatiotemporal point processes with include latent fields.
+    Rcpp (>= 1.0.6),
+    Matrix,
+    ggplot2,
+    patchwork,
+    rgeos,
+    sf,
+    sp,
+    spatstat.core,
+    spatstat.geom
+Description: A package for fitting a range of spatiotemporal point processes which include latent fields.
 License: GPL
 URL: https://github.com/cmjt/stelfi
 LazyData: TRUE
@@ -26,6 +34,8 @@ Suggests:
     testthat (>= 2.1.0),
     knitr,
     rmarkdown,
-    ggplot2,
-    patchwork
+    maptools,
+    parallel,
+    spatstat.utils,
+    methods
 VignetteBuilder: knitr
