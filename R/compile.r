@@ -3,21 +3,21 @@
 #' Compiles the  TMB templates into a shared object file.
 #' Must be done a single time following installation or updating of the package.
 #' @export
-compile_stelfi <- function(x){
+compile_stelfi <- function(x) {
     wd <- getwd()
     dir <- paste(system.file(package = "stelfi"), "/src", sep = "")
     setwd(dir)
-    if (!dir.exists("../bin")){
+    if (!dir.exists("../bin")) {
         dir.create("../bin")
     }
     files <- strsplit(list.files(), "[.]")
     base <- sapply(files, function(x) x[1])
-    ext <- sapply(files, function(x) x[2]) 
-    is.windows <- length(grep("Windows", utils::sessionInfo()$running)) > 0
-    for (i in base[ext == "cpp"]){
+    ext <- sapply(files, function(x) x[2])
+    is_windows <- length(grep("Windows", utils::sessionInfo()$running)) > 0
+    for (i in base[ext == "cpp"]) {
         TMB::compile(paste(i, ".cpp", sep = ""))
         unlink(paste(i, ".o", sep = ""))
-        if (is.windows)
+        if (is_windows)
             file.rename(paste(i, ".dll", sep = ""),
                         paste("../bin/", i, ".dll", sep = ""))
         else
@@ -30,9 +30,9 @@ compile_stelfi <- function(x){
 #' Function to load DLLs for C++ templtes
 #' Loads required DLLs for models fitted using TMB
 #' @export
-dll_stelfi <- function(){
-    dll.dir <- paste(system.file(package = "stelfi"), "/bin/", sep = "")
-    for (i in paste(dll.dir, list.files(dll.dir), sep = "")){
+dll_stelfi <- function() {
+    dll_dir <- paste(system.file(package = "stelfi"), "/bin/", sep = "")
+    for (i in paste(dll_dir, list.files(dll.dir), sep = "")) {
         dyn.load(i)
     }
 }
