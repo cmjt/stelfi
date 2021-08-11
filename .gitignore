@@ -1,6 +1,7 @@
 vignettes/*.html
 vignettes/data/*
 vignettes/*_cache/*
+inst/bin/*
 doc
 Meta
 vignettes/lgcp.cpp
