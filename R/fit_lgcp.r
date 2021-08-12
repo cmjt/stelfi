@@ -1,15 +1,3 @@
-## Needed for registerin S4 methods
-setClass("inla.mesh.1d")
-setClass("inla.mesh")
-setClass("inla.spde")
-setClassUnion("spdf_or_sp", c("SpatialPolygonsDataFrame", "SpatialPolygons"))
-setClassUnion("numeric_or_missing", c("numeric", "missing"))
-setClassUnion("numeric_or_vector", c("numeric", "vector"))
-setClassUnion("vector_or_matrix", c("vector", "matrix"))
-setClassUnion("inla.mesh.1d_or_missing", c("inla.mesh.1d", "missing"))
-
-
-
 #' Function to fit a spatial or spatiotemporal log-Gaussian Cox process using
 #' \code{TMB} and the
 #' \code{R_inla} namespace for the spde construction of the latent field. For
@@ -62,81 +50,55 @@ setClassUnion("inla.mesh.1d_or_missing", c("inla.mesh.1d", "missing"))
 #' @param atanh_rho optional, \code{arctan(rho)} AR1 parameter
 #' @param ... arguments to pass into \code{nlminb()}
 #' @export
-setGeneric("fit_lgcp_tmb",
-           function(y, A, designmat, spde, w, idx, beta, x, log_tau,
-                    log_kappa, atanh_rho, ...) {
-               standardGeneric("fit_lgcp_tmb")
-           })
-setMethod("fit_lgcp_tmb",
-          c(y = "vector_or_matrix", A = "matrix", designmat = "matrix",
-            spde = "inla.spde", w = "vector", idx = "vector", beta = "vector",
-            x = "matrix", log_tau = "numeric", log_kappa = "numeric",
-            atanh_rho = "numeric_or_missing"),
-          function(y, A, designmat, spde, w, idx, beta, x, log_tau, log_kappa,
-                   atanh_rho, ...) {
-              if (!"lgcp" %in% getLoadedDLLs()) {
-                  dll_stelfi()
-              }
-              data <- list(y = y, A = A, designmat = designmat,
-                          spde = spde, w = w,
-                          idx = idx)
-              param <- list(beta = beta, log_tau = log_tau,
-                            log_kappa = log_kappa, x = x)
-              obj <- TMB::MakeADFun(data = data, parameters = param,
-                                    random = c("x"))
-              obj$hessian <- TRUE
-              opt <- stats::nlminb(obj$par, obj$fn, obj$gr, ...)
-              return(obj)
-          })
+fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta, x, log_tau, log_kappa,
+                          atanh_rho, ...) {
+    if (!"lgcp" %in% getLoadedDLLs()) {
+        dll_stelfi()
+    }
+    data <- list(y = y, A = A, designmat = designmat,
+                 spde = spde, w = w,
+                 idx = idx)
+    param <- list(beta = beta, x = x, log_tau = log_tau,
+                  log_kappa = log_kappa, atanh_rho = atanh_rho)
+    obj <- TMB::MakeADFun(data = data, parameters = param,
+                          random = c("x"), DLL = "lgcp")
+    obj$hessian <- TRUE
+    opt <- stats::nlminb(obj$par, obj$fn, obj$gr, ...)
+    return(obj)
+}
 #' Function to fit a spatial or spatiotemporal log-Gaussian Cox process using \code{TMB}
 #'
 #' A simple to use wrapper for \code{fit_lgcp_tmb}}
-#' @param sp \code{SpatialPolygons} of the domain
+#' @param sp \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame} of the domain
 #' @param locs 2xn \code{data.frame} of locations x, y. If locations have
 #' time stapms then this is the third column of the 3xn matrix
 #' @param smesh spatial mesh
 #' @param tmesh optional, temporal mesh
 #' @inheritParams fit_lgcp_tmb
 #' @export
-setGeneric("fit_lgcp",
-           function(locs, sp, smesh, tmesh, beta, log_tau,
-                    log_kappa, atanh_rho, ...) {
-               standardGeneric("fit_lgcp")
-           })
-setMethod("fit_lgcp",
-          c(locs = "data.frame", sp  = "spdf_or_sp",
-            smesh = "inla.mesh",  tmesh = "inla.mesh.1d_or_missing",
-            beta = "numeric_or_vector", log_tau = "numeric",
-            log_kappa = "numeric",
-            atanh_rho = "numeric_or_missing"),
-          function(locs, sp, smesh, tmesh, beta, log_tau, log_kappa, atanh_rho, ...) {
-               if (!"lgcp" %in% getLoadedDLLs()) {
-                  dll_stelfi()
-              }
-              if (!missing(tmesh)) {
-                  stk <- prep(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
-                   k <- length(tmesh$loc)
-              }else{
-                  stk <- prep(locs = locs, sp = sp, smesh = smesh)
-                  k <- 1
-              }
-              ## SPDE
-              spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
-              data <- list(y = stk$data$data$y, A = stk$A,
-                                  w = stk$data$data$exposure,
-                                  idx = rep(1, length(stk$data$data$y)),
-                                  designmat = matrix(1, nrow = length(stk$data$data$y), ncol = 1),
-                           spde = spde$param.inla[c("M0", "M1", "M2")])
-              param <- list(beta = beta, log_tau = log_tau,
-                            log_kappa = log_kappa,  atanh_rho = atanh_rho,
-                            x = matrix(0, nrow = spde$n.spde, ncol = k))
-              obj <- TMB::MakeADFun(data = data, parameters = param,
-                                    random = c("x"), DLL = "lgcp")
-              obj$hessian <- TRUE
-              opt <- stats::nlminb(obj$par, obj$fn, obj$gr, ...)
-              return(obj)
+fit_lgcp <- function(locs, sp, smesh, tmesh, beta, log_tau, log_kappa, atanh_rho, ...) {
+    if (!missing(tmesh)) {
+        tmp <- prep(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
+        k <- length(tmesh$loc)
+    }else{
+        tmp <- prep(locs = locs, sp = sp, smesh = smesh)
+        k <- 1
+    }
+    ## SPDE
+    stk <- tmp[[1]]
+    a_st <- tmp[[2]]
+    spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
+    res <- fit_lgcp_tmb(y = stk$data$data$y, A = a_st,
+                        designmat = matrix(1, nrow = length(stk$data$data$y), ncol = 1),
+                        spde = spde$param.inla[c("M0", "M1", "M2")],
+                        w = stk$data$data$exposure,
+                        idx = rep(1, length(stk$data$data$y)), beta = beta,
+                        x = matrix(0, nrow = spde$n.spde, ncol = k),
+                        log_tau = log_tau, log_kappa = log_kappa,
+                        atanh_rho = atanh_rho, ...)
+    return(res)
 
-          })
+}
 
 #' Function to prep INLA stuff
 #' @inheritParams fit_lgcp
@@ -188,5 +150,5 @@ prep <- function(locs, sp, smesh, tmesh) {
         data = list(y = agg_dat$Freq, exposure = e0),
         A = list(1, a_st),
         effects = list(idx, list(b0 = rep(1, nrow(agg_dat)))))
-    return(stk)
+    return(list(stk,a_st))
 }

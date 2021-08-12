@@ -32,7 +32,7 @@ compile_stelfi <- function(x) {
 #' @export
 dll_stelfi <- function() {
     dll_dir <- paste(system.file(package = "stelfi"), "/bin/", sep = "")
-    for (i in paste(dll_dir, list.files(dll.dir), sep = "")) {
+    for (i in paste(dll_dir, list.files(dll_dir), sep = "")) {
         dyn.load(i)
     }
 }
