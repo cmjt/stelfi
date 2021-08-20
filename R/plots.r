@@ -1,4 +1,4 @@
-setClassUnion("logical_or_missing", c("logical", "missing"))
+setClassUnion("missing_or_numeric", c("numeric", "missing"))
 #' Plots the Hawkes intensty function with decay historical dependence
 #' @docType methods
 #' @rdname show_hawkes
@@ -31,3 +31,21 @@ setMethod("show_hawkes",
                   ggplot2::xlab("times") +  ggplot2::ylab("Number of events")
               gridExtra::grid.arrange(line, hist, ncol = 1)
           })
+#' Plots estimated random field(s) of a LGCP
+#' @docType methods
+#' @rdname show_field
+#' @param x a vector of values for each mesh node
+#' @param dims by default \code{c(500,500)}, vector of length 2 specifying
+#' spatial pixel resolution
+#' @inheritParams get_fields
+#' @export
+show_field <- function(x,smesh, dims = c(500,500)){
+    nx <- dims[1]
+    ny <- dims[2]
+    px <- inlabru::pixels(smesh, nx = nx, ny = ny)
+    A <- INLA::inla.spde.make.A(smesh, px)
+    px$color <- as.vector(A %*% x)
+    plt <- ggplot2::ggplot(as.data.frame(px), ggplot2::aes(x, y)) +
+        ggplot2::geom_tile(ggplot2::aes(fill = color)) +
+        ggplot2::coord_equal()
+}

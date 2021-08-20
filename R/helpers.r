@@ -18,13 +18,13 @@ setMethod("hawke_intensity",
                   mu + alpha * sum(exp(-beta * (p - times))[times < p])
               }
               lam_p <- rep(0, length(p))
-              for (i in seq_length(p)) {
+              for (i in seq_along(p)) {
                   lam_p[i] <- lam(p[i])
               }
               return(lam_p)
           })
-#' Coefficient extraction
-#' @param object result of a call to \code{fit_hawkes}
+#' Reported parameter estimates
+#' @param object result of a call to \code{fit_hawkes()} or \code{fit_lgcp()}
 #' @export
 setGeneric("get_coefs",
            function(object) {
@@ -37,3 +37,27 @@ setMethod("get_coefs",
               summary(TMB::sdreport(object), "report")
           }
           )
+#' Estimated random field(s)
+#' @param object result of a call \code{fit_lgcp()}
+#' @param plot logical, if TRUE then field(s) plotted
+#' @param sd logical, if TRUE then standard errors of field returned
+#' @inheritParams fit_lgcp 
+#' @export
+get_fields <- function(object, smesh, tmesh, plot = FALSE, sd = FALSE) {
+    idx <- ifelse(sd, 2, 1)
+    x <- summary(TMB::sdreport(fit),"random")[,idx]
+    if(!missing(tmesh)){
+        ind <- rep(seq(tmesh$n), each = smesh$n)
+        x <- split(x,ind)
+        if(plot) {
+            for(i in seq(tmesh$n)) {
+                x11()
+                print(show_field(x[[i]], smesh))
+            }
+        }
+    }else{
+        if(plot) print(show_field(x, smesh))
+    }
+    return(x)
+}
+          

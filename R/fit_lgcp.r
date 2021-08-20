@@ -1,7 +1,7 @@
 #' Function to fit a spatial or spatiotemporal log-Gaussian Cox process using
 #' \code{TMB} and the
 #' \code{R_inla} namespace for the spde construction of the latent field. For
-#' a simpler wrapprt use \code{fit_lgcp()}
+#' a simpler wrapper use \code{fit_lgcp()}
 #' @param y the vector of observations.
 #' For spatial only, this is the vector of counts.
 #' For spatial + AR1 temporal, this vector needs to be
@@ -48,12 +48,14 @@
 #' @param log_tau \code{log(tau)} parameter for the GMRF
 #' @param log_kappa \code{log(kappa)} parameter for the GMRF
 #' @param atanh_rho optional, \code{arctan(rho)} AR1 parameter
+#' @param silent logical, by default FALSE. If TRUE model fitting progress
+#' not printed to console.
 #' @param ... arguments to pass into \code{nlminb()}
 #' @export
 fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta, x, log_tau, log_kappa,
-                          atanh_rho, ...) {
+                          atanh_rho, silent = FALSE,...) {
     if (!"lgcp" %in% getLoadedDLLs()) {
-        dll_stelfi()
+        stelfi::dll_stelfi()
     }
     data <- list(y = y, A = A, designmat = designmat,
                  spde = spde, w = w,
@@ -61,29 +63,39 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta, x, log_tau, log_k
     param <- list(beta = beta, x = x, log_tau = log_tau,
                   log_kappa = log_kappa, atanh_rho = atanh_rho)
     obj <- TMB::MakeADFun(data = data, parameters = param,
-                          random = c("x"), DLL = "lgcp")
+                          random = c("x"), DLL = "lgcp",
+                          silent = silent)
     obj$hessian <- TRUE
     opt <- stats::nlminb(obj$par, obj$fn, obj$gr, ...)
     return(obj)
 }
 #' Function to fit a spatial or spatiotemporal log-Gaussian Cox process using \code{TMB}
 #'
-#' A simple to use wrapper for \code{fit_lgcp_tmb}}
+#' A simple to use wrapper for \code{fit_lgcp_tmb}
 #' @param sp \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame} of the domain
 #' @param locs 2xn \code{data.frame} of locations x, y. If locations have
 #' time stapms then this is the third column of the 3xn matrix
-#' @param smesh spatial mesh
-#' @param tmesh optional, temporal mesh
+#' @param smesh spatial mesh of class \code{"inla.mesh"}
+#' @param tmesh optional, temporal mesh of class \code{"inla.mesh.1d"}
+#' @param tau tau parameter for the GMRF
+#' @param kappa kappa parameter for the GMRF
+#' @param rho optional, rho AR1 parameter
 #' @inheritParams fit_lgcp_tmb
 #' @export
-fit_lgcp <- function(locs, sp, smesh, tmesh, beta, log_tau, log_kappa, atanh_rho, ...) {
+fit_lgcp <-  function(locs, sp, smesh, tmesh, beta, tau, kappa, rho, silent, ...) {
+    if(missing(silent)) silent <- FALSE
     if (!missing(tmesh)) {
         tmp <- prep(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
         k <- length(tmesh$loc)
+        atanh_rho <- atanh(rho)
     }else{
         tmp <- prep(locs = locs, sp = sp, smesh = smesh)
         k <- 1
+        atanh_rho <- NA
     }
+    ## convert svs
+    log_tau <- log(tau)
+    log_kappa <- log(kappa)
     ## SPDE
     stk <- tmp[[1]]
     a_st <- tmp[[2]]
@@ -95,7 +107,7 @@ fit_lgcp <- function(locs, sp, smesh, tmesh, beta, log_tau, log_kappa, atanh_rho
                         idx = rep(1, length(stk$data$data$y)), beta = beta,
                         x = matrix(0, nrow = spde$n.spde, ncol = k),
                         log_tau = log_tau, log_kappa = log_kappa,
-                        atanh_rho = atanh_rho, ...)
+                        atanh_rho = atanh_rho, silent = silent, ...)
     return(res)
 
 }
@@ -111,7 +123,7 @@ prep <- function(locs, sp, smesh, tmesh) {
         n <- nrow(p)
         sp::Polygons(list(sp::Polygon(p[c(1:n, 1), ])), i)
     }))
-    area <- factor(over(sp::SpatialPoints(cbind(locs$x, locs$y)), polys),
+    area <- factor(sp::over(sp::SpatialPoints(cbind(locs$x, locs$y)), polys),
                    levels = seq(1, length(polys)))
     w_areas <- sapply(seq(1, length(tiles)), function(i) {
         p <- cbind(tiles[[i]]$x, tiles[[i]]$y)
@@ -128,7 +140,7 @@ prep <- function(locs, sp, smesh, tmesh) {
     if (!missing(tmesh)) {
         k <- length(tmesh$loc)
         idx <- INLA::inla.spde.make.index("s", spde$n.spde, n.group = k)
-        w_t <- diag(INLA::inla.mesh.fem(tmesh)$c0)
+        w_t <- INLA::inla.mesh.fem(tmesh)$c0
         t_breaks <- sort(c(tmesh$loc[c(1, k)],
                            tmesh$loc[2:k - 1] / 2 + tmesh$loc[2:k] / 2))
         time <- factor(findInterval(locs$t, t_breaks),
@@ -146,7 +158,7 @@ prep <- function(locs, sp, smesh, tmesh) {
         e0 <- w_areas[agg_dat$area]
         a_st <- INLA::inla.spde.make.A(smesh, smesh$loc[agg_dat$area, ])
     }
-    stk <- inla.stack(
+    stk <- INLA::inla.stack(
         data = list(y = agg_dat$Freq, exposure = e0),
         A = list(1, a_st),
         effects = list(idx, list(b0 = rep(1, nrow(agg_dat)))))

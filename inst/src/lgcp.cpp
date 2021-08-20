@@ -137,7 +137,7 @@ Type objective_function<Type>::operator() ()
 
     REPORT(y);
   }
-
+  ADREPORT(beta);
   // ADREPORT parameters for RF.
   ADREPORT(tau);
   ADREPORT(kappa);

@@ -36,12 +36,9 @@ NULL
 #' \item{Cause_cat}{cause of death as category}
 #' \item{Region}{NZ region}
 #' }
-#' @references \href{https://interactives.stuff.co.nz/2019/the-homicide-report/}
-#' {Homicide Report}
-#'
+#' @references \url{https://interactives.stuff.co.nz/2019/the-homicide-report/}
 #' @source Data scraped and cleaned by Charlie Timmings,
 #' honours student at the University of Auckland.
-#'
 #' @name murders_nz
 NULL
 #' NIWA's viral leopard seal Tweet
