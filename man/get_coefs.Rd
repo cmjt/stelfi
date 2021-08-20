@@ -2,13 +2,13 @@
 % Please edit documentation in R/helpers.r
 \name{get_coefs}
 \alias{get_coefs}
-\title{Coefficient extraction}
+\title{Reported parameter estimates}
 \usage{
 get_coefs(object)
 }
 \arguments{
-\item{object}{result of a call to \code{fit_hawkes}}
+\item{object}{result of a call to \code{fit_hawkes()} or \code{fit_lgcp()}}
 }
 \description{
-Coefficient extraction
+Reported parameter estimates
 }

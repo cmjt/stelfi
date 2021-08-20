@@ -9,7 +9,8 @@ hawke_intensity(mu, alpha, beta, times, p)
 \arguments{
 \item{mu}{numeric integer specifying base rate of the hawkes process}
 
-\item{alpha}{numeric integer specifying intensity jump after an event occurence}
+\item{alpha}{numeric integer specifying intensity jump after an event
+occurence}
 
 \item{beta}{numeric integer specifying exponential intensity decay}
 

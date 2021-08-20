@@ -17,5 +17,6 @@ A data frame containing 3824 rows and 5 variables:
 \url{http://quakesearch.geonet.org.nz/}
 }
 \description{
-A dataset taken containing earthquake information in Canterbury, New Zealand 16-Jan-2010--24-Dec-2014
+A dataset taken containing earthquake information in Canterbury,
+New Zealand 16-Jan-2010--24-Dec-2014
 }

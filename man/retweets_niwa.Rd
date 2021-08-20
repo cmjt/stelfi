@@ -13,6 +13,6 @@ A vector of length 4890
 \url{https://twitter.com/niwa_nz/status/1092610541401587712}
 }
 \description{
-A dataset of retweet times of NIWA's viral leopard seal tweet 
+A dataset of retweet times of NIWA's viral leopard seal tweet
 on the 5th Feb 2019
 }

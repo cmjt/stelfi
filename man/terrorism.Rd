@@ -14,7 +14,7 @@ A data frame with 4208 rows and 16 variables:
 \item{longitude}{longitude location}
 \item{sucess}{Logical fatal or not. TRUE = fatal}
 \item{nkill}{number of fatalities per attack}
-\item{specificity}{factor which represents the apatial accuracy of the evets: 1 = most accurate, 5 = worst}
+\item{specificity}{spatial accuracy of event: 1 = most accurate, 5 = worst}
 \item{gname}{character name of attack perpetrators (ISIL)}
 \item{x.coord}{x coordinate from location projected onto a sphere}
 \item{y.coord}{y coordinate from location projected onto a sphere}

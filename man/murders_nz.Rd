@@ -2,7 +2,8 @@
 % Please edit documentation in R/data.r
 \name{murders_nz}
 \alias{murders_nz}
-\title{Murders of NZ}
+\title{Murders of NZ
+A dataset of recorded murder cases in New Zealand 2004--2019}
 \format{
 A dataframe with 967 rows and 13 variables
 \describe{
@@ -22,11 +23,13 @@ A dataframe with 967 rows and 13 variables
 }
 }
 \source{
-Data scraped and cleaned by Charlie Timmings, honours student at the University of Auckland.
+Data scraped and cleaned by Charlie Timmings,
+honours student at the University of Auckland.
 }
 \description{
+Murders of NZ
 A dataset of recorded murder cases in New Zealand 2004--2019
 }
 \references{
-\href{https://interactives.stuff.co.nz/2019/the-homicide-report/}{Homicide Report}
+\url{https://interactives.stuff.co.nz/2019/the-homicide-report/}
 }

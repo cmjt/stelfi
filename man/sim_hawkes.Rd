@@ -10,23 +10,29 @@ sim_hawkes(mu, alpha, beta, n, plot, seed, method)
 \arguments{
 \item{mu}{numeric integer specifying base rate of the hawkes process}
 
-\item{alpha}{numeric integer specifying intensity jump after an event occurence}
+\item{alpha}{numeric integer specifying intensity jump after an event
+occurence}
 
 \item{beta}{numeric integer specifying exponential intensity decay}
 
-\item{n}{numeric depending on method: if \code{method = "1"} specifying end of the time
-line within which to simulate the proces, or \code{method = "2"}. By default = 100.
+\item{n}{numeric depending on method: if \code{method = "1"} specifying
+end of the time
+line within which to simulate the proces, or \code{method = "2"}. By
+default = 100.
 specifying the number of timepoints to simulate.}
 
-\item{plot}{logical if \code{TRUE} data plotted along with the intensity. By default is \code{FALSE}.}
+\item{plot}{logical if \code{TRUE} data plotted along with the intensity.
+By default is \code{FALSE}.}
 
 \item{seed}{seed by default = 123}
 
-\item{method}{a character "1" or "2" specifying the method (see above) to simulate hawkes process.
+\item{method}{a character "1" or "2" specifying the method (see above)
+to simulate hawkes process.
 By default = "1".}
 }
 \description{
-There are two methods to simulate the process: if \code{method = "1"} sumiualtes a
+There are two methods to simulate the process: if \code{method = "1"}
+sumiualtes a
 univariate hawkes process as \code{R}  package \code{hawkes}';
 if \code{method = "2"} as per algorithm defined in
 \url{https://radhakrishna.typepad.com/mle-of-hawkes-self-exciting-process.pdf}

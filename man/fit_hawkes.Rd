@@ -9,8 +9,10 @@ fit_hawkes(times, parameters, ...)
 \arguments{
 \item{times}{a vector of numeric observation time points}
 
-\item{parameters}{a vector of named parmeters for the hawkes process: "mu"--base rate of the hawkes process,
-"alpha"--intensity jump after an event occurence, and "beta"--exponential intensity decay}
+\item{parameters}{a vector of named parmeters for the hawkes process:
+"mu"--base rate of the hawkes process,
+"alpha"--intensity jump after an event occurence, and
+"beta"--exponential intensity decay}
 
 \item{...}{arguments to pass into \code{optim()}}
 }

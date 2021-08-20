@@ -4,7 +4,7 @@
 \alias{compile_stelfi}
 \title{Fuction to compile TMB C++ templates}
 \usage{
-compile_stelfi(x)
+compile_stelfi()
 }
 \description{
 Compiles the  TMB templates into a shared object file.
