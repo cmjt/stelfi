@@ -51,7 +51,7 @@ get_fields <- function(object, smesh, tmesh, plot = FALSE, sd = FALSE) {
         x <- split(x,ind)
         if(plot) {
             for(i in seq(tmesh$n)) {
-                x11()
+                dev.new()
                 print(show_field(x[[i]], smesh))
             }
         }

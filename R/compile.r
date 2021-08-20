@@ -3,7 +3,7 @@
 #' Compiles the  TMB templates into a shared object file.
 #' Must be done a single time following installation or updating of the package.
 #' @export
-compile_stelfi <- function(x) {
+compile_stelfi <- function() {
     wd <- getwd()
     dir <- paste(system.file(package = "stelfi"), "/src", sep = "")
     setwd(dir)
@@ -48,3 +48,4 @@ dll_stelfi <- function() {
 #' @import spatstat.geom
 #' @importFrom stats optim qlogis runif
 #' @importFrom utils sessionInfo
+#' @importFrom grDevices dev.new
