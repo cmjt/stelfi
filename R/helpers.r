@@ -60,4 +60,4 @@ get_fields <- function(object, smesh, tmesh, plot = FALSE, sd = FALSE) {
     }
     return(x)
 }
-          
+      

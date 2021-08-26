@@ -48,4 +48,5 @@ show_field <- function(x,smesh, dims = c(500,500)){
     plt <- ggplot2::ggplot(as.data.frame(px), ggplot2::aes(x, y)) +
         ggplot2::geom_tile(ggplot2::aes(fill = color)) +
         ggplot2::coord_equal()
+    plt
 }

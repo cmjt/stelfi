@@ -30,7 +30,7 @@
 #' of the observations. 1 for contributing to the log-likelihood,
 #' and 0 otherwise.
 #' @param beta A vector of fixed effects needs to be estimated
-#' (same length as \code{nrow(designmat)}
+#' (same length as \code{ncol(designmat)}
 #' @param x the random field/effects
 #' This is the random field/effects. Set this variable random in
 #' \code{MadeADFun()}.
@@ -80,18 +80,25 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta, x, log_tau, log_k
 #' @param tau tau parameter for the GMRF
 #' @param kappa kappa parameter for the GMRF
 #' @param rho optional, rho AR1 parameter
+#' @param covariates optional, a \code{matrix} of covariates at each
+#' \code{smesh} and \code{tmesh} node combination.
 #' @inheritParams fit_lgcp_tmb
 #' @export
-fit_lgcp <-  function(locs, sp, smesh, tmesh, beta, tau, kappa, rho, silent, ...) {
+fit_lgcp <-  function(locs, sp, smesh, tmesh, beta, tau, kappa, rho, covariates, silent, ...) {
     if(missing(silent)) silent <- FALSE
+    if(sum(names(locs) %in% c("x","y")) < 2) stop("Named variables x and y required in arg locs")
+    if(!missing(covariates)) if(!"matrix" %in% class(covariates)) stop("arg covariates must be a matrix")
+    if(!missing(covariates)) if(length(beta) != (ncol(covariates) + 1))
+        stop("arg beta should be length ncol.covariates + 1")
     if (!missing(tmesh)) {
-        tmp <- prep(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
+        if(!"t" %in% names(locs)) stop("Need a variable named t in arg locs")
+        tmp <- prep_data(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
         k <- length(tmesh$loc)
         atanh_rho <- atanh(rho)
     }else{
-        tmp <- prep(locs = locs, sp = sp, smesh = smesh)
+        tmp <- prep_data(locs = locs, sp = sp, smesh = smesh)
         k <- 1
-        atanh_rho <- NA
+        atanh_rho <- 0
     }
     ## convert svs
     log_tau <- log(tau)
@@ -100,8 +107,12 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, beta, tau, kappa, rho, silent, ...
     stk <- tmp[[1]]
     a_st <- tmp[[2]]
     spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
+    ## Designmat
+    designmat <- matrix(1, nrow = length(stk$data$data$y), ncol = 1)
+    if(!missing(covariates)) designmat <- cbind(1, covariates)
+    ## Model fitting
     res <- fit_lgcp_tmb(y = stk$data$data$y, A = a_st,
-                        designmat = matrix(1, nrow = length(stk$data$data$y), ncol = 1),
+                        designmat = designmat,
                         spde = spde$param.inla[c("M0", "M1", "M2")],
                         w = stk$data$data$exposure,
                         idx = rep(1, length(stk$data$data$y)), beta = beta,
@@ -112,9 +123,9 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, beta, tau, kappa, rho, silent, ...
 
 }
 
-#' Function to prep INLA stuff
+#' Function to prep data as per INLA stack
 #' @inheritParams fit_lgcp
-prep <- function(locs, sp, smesh, tmesh) {
+prep_data <- function(locs, sp, smesh, tmesh) {
     ## E
     dd <- deldir::deldir(smesh$loc[, 1], smesh$loc[, 2])
     tiles <- deldir::tile.list(dd)
@@ -159,8 +170,10 @@ prep <- function(locs, sp, smesh, tmesh) {
         a_st <- INLA::inla.spde.make.A(smesh, smesh$loc[agg_dat$area, ])
     }
     stk <- INLA::inla.stack(
-        data = list(y = agg_dat$Freq, exposure = e0),
-        A = list(1, a_st),
-        effects = list(idx, list(b0 = rep(1, nrow(agg_dat)))))
+                     data = list(y = agg_dat$Freq, exposure = e0),
+                     A = list(1, a_st),
+                     effects = list(idx,b0 = rep(1, nrow(agg_dat))))
+    
+    
     return(list(stk,a_st))
 }
