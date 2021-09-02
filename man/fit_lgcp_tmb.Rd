@@ -58,7 +58,7 @@ of the observations. 1 for contributing to the log-likelihood,
 and 0 otherwise.}
 
 \item{beta}{A vector of fixed effects needs to be estimated
-(same length as \code{nrow(designmat)}}
+(same length as \code{ncol(designmat)}}
 
 \item{x}{the random field/effects
 This is the random field/effects. Set this variable random in

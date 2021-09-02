@@ -4,7 +4,19 @@
 \alias{fit_lgcp}
 \title{Function to fit a spatial or spatiotemporal log-Gaussian Cox process using \code{TMB}}
 \usage{
-fit_lgcp(locs, sp, smesh, tmesh, beta, tau, kappa, rho, silent, ...)
+fit_lgcp(
+  locs,
+  sp,
+  smesh,
+  tmesh,
+  beta,
+  tau,
+  kappa,
+  rho,
+  covariates,
+  silent,
+  ...
+)
 }
 \arguments{
 \item{locs}{2xn \code{data.frame} of locations x, y. If locations have
@@ -17,13 +29,16 @@ time stapms then this is the third column of the 3xn matrix}
 \item{tmesh}{optional, temporal mesh of class \code{"inla.mesh.1d"}}
 
 \item{beta}{A vector of fixed effects needs to be estimated
-(same length as \code{nrow(designmat)}}
+(same length as \code{ncol(designmat)}}
 
 \item{tau}{tau parameter for the GMRF}
 
 \item{kappa}{kappa parameter for the GMRF}
 
 \item{rho}{optional, rho AR1 parameter}
+
+\item{covariates}{optional, a \code{matrix} of covariates at each
+\code{smesh} and \code{tmesh} node combination.}
 
 \item{silent}{logical, by default FALSE. If TRUE model fitting progress
 not printed to console.}
