@@ -45,7 +45,7 @@ setMethod("get_coefs",
 #' @export
 get_fields <- function(object, smesh, tmesh, plot = FALSE, sd = FALSE) {
     idx <- ifelse(sd, 2, 1)
-    x <- summary(TMB::sdreport(fit),"random")[,idx]
+    x <- summary(TMB::sdreport(object),"random")[,idx]
     if(!missing(tmesh)){
         ind <- rep(seq(tmesh$n), each = smesh$n)
         x <- split(x,ind)
