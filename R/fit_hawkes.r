@@ -15,7 +15,7 @@ setMethod("fit_hawkes",
           c(times = "numeric", parameters = "vector"),
           function(times, parameters, ...) {
               if (!"hawkes" %in% getLoadedDLLs()) {
-                  dll_stelfi()
+                  dll_stelfi("hawkes")
               }
               obj <- TMB::MakeADFun(data = list(times = times),
                                     parameters = list(log_mu = log(parameters["mu"]),

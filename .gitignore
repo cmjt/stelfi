@@ -6,4 +6,5 @@ doc
 Meta
 vignettes/lgcp.cpp
 vignettes/tmb_tst.r
+model_fits.r
 

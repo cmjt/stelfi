@@ -29,11 +29,16 @@ compile_stelfi <- function() {
 
 #' Function to load DLLs for C++ templtes
 #' Loads required DLLs for models fitted using TMB
+#' @param x option, if provided specifies \code{stelfi} DLL to load
 #' @export
-dll_stelfi <- function() {
+dll_stelfi <- function(x) {
     dll_dir <- paste(system.file(package = "stelfi"), "/bin/", sep = "")
-    for (i in paste(dll_dir, list.files(dll_dir), sep = "")) {
-        dyn.load(i)
+    if(missing(x)){
+        for (i in paste(dll_dir, list.files(dll_dir), sep = "")) {
+            dyn.load(i)
+        }
+    }else{
+        dyn.load(paste(dll_dir, x, sep = "/"))
     }
 }
 #' @importFrom TMB compile MakeADFun sdreport

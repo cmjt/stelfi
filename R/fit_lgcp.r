@@ -55,7 +55,7 @@
 fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta, x, log_tau, log_kappa,
                           atanh_rho, silent = FALSE,...) {
     if (!"lgcp" %in% getLoadedDLLs()) {
-        stelfi::dll_stelfi()
+        stelfi::dll_stelfi("lgcp")
     }
     data <- list(y = y, A = A, designmat = designmat,
                  spde = spde, w = w,
@@ -92,11 +92,11 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, beta, tau, kappa, rho, covariates,
         stop("arg beta should be length ncol.covariates + 1")
     if (!missing(tmesh)) {
         if(!"t" %in% names(locs)) stop("Need a variable named t in arg locs")
-        tmp <- prep_data(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
+        tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
         k <- length(tmesh$loc)
         atanh_rho <- atanh(rho)
     }else{
-        tmp <- prep_data(locs = locs, sp = sp, smesh = smesh)
+        tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
         k <- 1
         atanh_rho <- 0
     }
@@ -125,26 +125,13 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, beta, tau, kappa, rho, covariates,
 
 #' Function to prep data as per INLA stack
 #' @inheritParams fit_lgcp
-prep_data <- function(locs, sp, smesh, tmesh) {
+prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
     ## E
-    dd <- deldir::deldir(smesh$loc[, 1], smesh$loc[, 2])
-    tiles <- deldir::tile.list(dd)
-    polys <- sp::SpatialPolygons(lapply(seq(1, length(tiles)), function(i) {
-        p <- cbind(tiles[[i]]$x, tiles[[i]]$y)
-        n <- nrow(p)
-        sp::Polygons(list(sp::Polygon(p[c(1:n, 1), ])), i)
-    }))
+    w <- get_weights(mesh = smesh, sp = sp, plot = FALSE)
+    w_areas <- w$weights
+    polys <- w$polys
     area <- factor(sp::over(sp::SpatialPoints(cbind(locs$x, locs$y)), polys),
                    levels = seq(1, length(polys)))
-    w_areas <- sapply(seq(1, length(tiles)), function(i) {
-        p <- cbind(tiles[[i]]$x, tiles[[i]]$y)
-        n <- nrow(p)
-        pl <- sp::SpatialPolygons(
-                      list(sp::Polygons(list(sp::Polygon(p[c(1:n, 1), ])), i)))
-        if (rgeos::gIntersects(pl, sp))
-            return(rgeos::gArea(rgeos::gIntersection(pl, sp)))
-        else return(0)
-    })
     ## SPDE
     spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
     ## spatial or spatiotemporal
