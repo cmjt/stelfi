@@ -5,7 +5,10 @@
 \title{Function to load DLLs for C++ templtes
 Loads required DLLs for models fitted using TMB}
 \usage{
-dll_stelfi()
+dll_stelfi(x)
+}
+\arguments{
+\item{x}{option, if provided specifies \code{stelfi} DLL to load}
 }
 \description{
 Function to load DLLs for C++ templtes
