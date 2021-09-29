@@ -27,7 +27,8 @@
 #' The default input from R should be 1s, i.e., the bernoulli distribution.
 #' Gamma distribution, this is the log of scale. If non-NaN, this is taken as
 #' a fixed value of the log of the scale.
-#' @param methods integer:  0 - normal distribution, strparam/strfixed as log_sigma.
+#' @param methods integer:
+#' 0 - normal distribution, strparam/strfixed as log_sigma.
 #' 1 - poisson distribution, strparam is not referenced, strfixed as effort.
 #' 2 - binomial distribution, strparam is not referenced, strfixed as number of trials.
 #' 3 - gamma distribution, the implementation in TMB is shape-scale. strparam/strfixed as log_scale;
@@ -42,25 +43,26 @@
 #' The first element is for the random field of the point process.
 #' @param log_tau  log of taus for the random field. The lengths of these vectors are no. of resp + 1.
 #' The first element is for the random field of the point process.
-#' @param strparam see \code{strfixed}
+#' @param strparam see \code{strfixed} and \code{methods}
 #' @param silent logical, by default FALSE. If TRUE model fitting progress
 #' not printed to console.
 #' @param ... arguments to pass into \code{nlminb()}
 #' @export
 fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, idx, strfixed, methods,
                           betaresp, betapp, beta, log_kappa, log_tau,
-                          strparam, silent = FALSE, ...){
+                          strparam, ...){
     if (!"prefsampling" %in% getLoadedDLLs()) {
-        stelfi::dll_stelfi()
+        stelfi::dll_stelfi("prefsampling")
     }
-    data <- list(yresp = yresps, ypp = ypp, lmat = lmat,
+    data <- list(yresp = marks, ypp = ypp, lmat = lmat,
                  spde = spde$param.inla[c("M0", "M1", "M2")], w = w,
-                 idx = idx, methods = c(0, 2, 2, 3),
-                 strfixed = cbind(rep(log(0.25), dim(yresps)[1]), 1, 1, 2))
-    param <- list(betaresp = rep(0, n2), betapp = 0, beta = matrix(0, nrow = n2, ncol = n2 + 1),
-                  log_kappa = rep(0, dim(idx)[2]), log_tau = rep(0, dim(idx)[2]), strparam = rep(0, n2),
+                 idx = idx, methods = methods,
+                 strfixed = strfixed)
+    param <- list(betaresp = betaresp, betapp = betapp, beta = beta,
+                  log_kappa = log_kappa, log_tau = log_tau, strparam = strparam,
                   x = matrix(0, nrow = dim(lmat)[2], ncol = sum(diag(idx[, -1]) > 0) + 1))
-    obj <- TMB:::MakeADFun(data, param, hessian = TRUE, random = c("x"))
+    obj <- TMB:::MakeADFun(data, param, hessian = TRUE,
+                           random = c("x"), DLL = "prefsampling")
     opt <- stats::nlminb(obj$par, obj$fn, obj$gr, ...)
     return(obj)
 }
@@ -72,59 +74,45 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, idx, strfixed, methods,
 #' @param locs 2xn \code{data.frame} of locations x, y. If locations have
 #' time stapms then this is the third column of the 3xn matrix
 #' @param smesh spatial mesh of class \code{"inla.mesh"}
-#' @param tau tau parameter for the GMRF
-#' @param kappa kappa parameter for the GMRF
+#' @param parameters a list of named parmeters:
+#' "beta"--A vector of  coefficients to be estimated
+#' of length \code{ncol(marks)} + 1.
+#'  "tau"-- tau parameter for the GMRF.
+#'  "kappa"-- kappa parameter for the GMRF.
 #' \code{smesh} and \code{tmesh} node combination.
 #' @inheritParams fit_lgcp_tmb
 #' @export
-fit_mlgcp <-  function(locs, sp, marks, smesh, beta, tau, kappa, rho,  silent, ...) {
-    if(missing(silent)) silent <- FALSE
-    if(sum(names(locs) %in% c("x","y")) < 2) stop("Named variables x and y required in arg locs")
-    ## data
-    n2 <- dim(marks)[2]
-    idx <- cbind(c(1, 1, 0, 1), matrix(0, nrow = n2, ncol = n2))
-    idx[3, 4] <- 1
-    tmp <- prep_data_marked(locs = locs, sp = sp, smesh = smesh)
-    ## SPDE
-    stk <- tmp[[1]]
-    a_st <- tmp[[2]]
-    spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
+fit_mlgcp <-  function(locs, sp, marks, smesh, parameters, methods,
+                       strfixed, strparam, idx, ...) {
     ## convert svs
-    log_tau <- log(tau)
-    log_kappa <- log(kappa)
-
-
-    ## Model fitting
-    res <- fit_mlgcp_tmb(ypp = stk$data$data$y, marks = marks, lmat = lmat,
-                         spde = spde$param.inla[c("M0", "M1", "M2")],
-                         w = stk$data$data$exposure, idx = idx, strfixed = strfixed,
-                         methods = methods,
-                         betaresp = betaresp, betapp = betapp,
-                         beta = beta, log_kappa = log_kapp, log_tau = log_tau,
-                         strparam = strparam, x = x, silent = silent, ...)
-    return(res)
-}
-
-
-
-#' Function to prep data as per INLA stack
-#' @inheritParams fit_mlgcp
-prep_data_marked <- function(locs, sp, smesh) {
+    beta <- parameters[["beta"]]
+    log_tau <- log(parameters[["tau"]])
+    log_kappa <- log(parameters[["kappa"]])
+    betaresp <- parameters[["betaresp"]]
+    betapp <- parameters[["betapp"]]
+    ## data
     ## E
     w <- get_weights(mesh = smesh, sp = sp, plot = FALSE)
     w_areas <- w$weights
     polys <- w$polys
-    area <- factor(sp::over(sp::SpatialPoints(cbind(locs$x, locs$y)), polys),
-                   levels = seq(1, length(polys)))
+    points.in.mesh = function(xy, dmesh){
+        sapply(1:length(dmesh), function(i){
+            coord = raster::geom(dmesh[i, ])[,c("x", "y")]
+            sum(sp::point.in.polygon(xy[, 1], xy[, 2], coord[, 1], coord[, 2]) > 0)
+        })
+    }
+    ypp <- points.in.mesh(locs, polys)
     ## SPDE
     spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
-    agg_dat <- as.data.frame(table(area))
-    agg_dat[[1]] <- as.integer(as.character(agg_dat[[1]]))
-    e0 <- w_areas[agg_dat$area]
-    a_st <- INLA::inla.spde.make.A(smesh, smesh$loc[agg_dat$area, ])
-    stk <- INLA::inla.stack(
-                     data = list(y = agg_dat$Freq, exposure = e0),
-                     A = list(1, a_st),
-                     effects = list(idx,b0 = rep(1, nrow(agg_dat))))
-    return(list(stk,a_st))
+    lmat <- INLA::inla.spde.make.A(smesh, locs)
+    ## Model fitting
+    res <- fit_mlgcp_tmb(ypp = ypp, marks = marks, lmat = lmat,
+                         spde = spde,
+                         w = w_areas, idx = idx, strfixed = strfixed,
+                         methods = methods,
+                         betaresp = betaresp, betapp = betapp,
+                         beta = beta, log_kappa = log_kappa, log_tau = log_tau,
+                         strparam =  strparam,  ...)
+    return(res)
 }
+

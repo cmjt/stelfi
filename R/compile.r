@@ -38,7 +38,7 @@ dll_stelfi <- function(x) {
             dyn.load(i)
         }
     }else{
-        dyn.load(paste(dll_dir, x, sep = "/"))
+        dyn.load(paste(dll_dir, x, ".so", sep = ""))
     }
 }
 #' @importFrom TMB compile MakeADFun sdreport

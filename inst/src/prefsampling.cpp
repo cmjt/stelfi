@@ -154,8 +154,15 @@ Type objective_function<Type>::operator() ()
     }
   }
 
-  // ? prior on beta? (see PARAMETER_MATRIX(beta)).
+  // ? constrain beta? (see PARAMETER_MATRIX(beta)).
   nll -= sum(dnorm(beta.vec(), Type(0.), Type(1. / sqrt(2.)), true));
-
+  ADREPORT(betaresp);
+  ADREPORT(betapp);
+  ADREPORT(beta);
+  ADREPORT(strparam);
+  // ADREPORT parameters for RF.
+  ADREPORT(tau);
+  ADREPORT(kappa);
+  ADREPORT(x);
   return nll;
 }

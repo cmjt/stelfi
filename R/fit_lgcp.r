@@ -29,7 +29,7 @@
 #' With this vector, the log-likelihood can be computed using a subset
 #' of the observations. 1 for contributing to the log-likelihood,
 #' and 0 otherwise.
-#' @param beta A vector of fixed effects needs to be estimated
+#' @param beta A vector of fixed effects coefficients to be estimated
 #' (same length as \code{ncol(designmat)}
 #' @param x the random field/effects
 #' This is the random field/effects. Set this variable random in
@@ -77,14 +77,17 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta, x, log_tau, log_k
 #' time stapms then this is the third column of the 3xn matrix
 #' @param smesh spatial mesh of class \code{"inla.mesh"}
 #' @param tmesh optional, temporal mesh of class \code{"inla.mesh.1d"}
-#' @param tau tau parameter for the GMRF
-#' @param kappa kappa parameter for the GMRF
-#' @param rho optional, rho AR1 parameter
+#' @param parameters a list of named parmeters:
+#' "beta"--A vector of fixed effects coefficients to be estimated
+#' (same length as \code{ncol(covariates)} + 1 )
+#'  "tau"-- tau parameter for the GMRF
+#'  "kappa"-- kappa parameter for the GMRF
+#'  "rho"-- optional, rho AR1 parameter
 #' @param covariates optional, a \code{matrix} of covariates at each
 #' \code{smesh} and \code{tmesh} node combination.
 #' @inheritParams fit_lgcp_tmb
 #' @export
-fit_lgcp <-  function(locs, sp, smesh, tmesh, beta, tau, kappa, rho, covariates, silent, ...) {
+fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates, silent, ...) {
     if(missing(silent)) silent <- FALSE
     if(sum(names(locs) %in% c("x","y")) < 2) stop("Named variables x and y required in arg locs")
     if(!missing(covariates)) if(!"matrix" %in% class(covariates)) stop("arg covariates must be a matrix")
@@ -94,15 +97,16 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, beta, tau, kappa, rho, covariates,
         if(!"t" %in% names(locs)) stop("Need a variable named t in arg locs")
         tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
         k <- length(tmesh$loc)
-        atanh_rho <- atanh(rho)
+        atanh_rho <- atanh(parameters[["rho"]])
     }else{
         tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
         k <- 1
         atanh_rho <- 0
     }
     ## convert svs
-    log_tau <- log(tau)
-    log_kappa <- log(kappa)
+    beta <- parameters[["beta"]]
+    log_tau <- log(parameters[["tau"]])
+    log_kappa <- log(parameters[["kappa"]])
     ## SPDE
     stk <- tmp[[1]]
     a_st <- tmp[[2]]
