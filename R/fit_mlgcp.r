@@ -44,13 +44,16 @@
 #' @param log_tau  log of taus for the random field. The lengths of these vectors are no. of resp + 1.
 #' The first element is for the random field of the point process.
 #' @param strparam see \code{strfixed} and \code{methods}
-#' @param silent logical, by default FALSE. If TRUE model fitting progress
-#' not printed to console.
+#' @param tmb_silent logical, default `TRUE`:
+#' TMB inner optimization tracing information will be printed.
+#' @param nlminb_silent logical, default `TRUE`:
+#' print function and parameters every iteration.
 #' @param ... arguments to pass into \code{nlminb()}
 #' @export
 fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, idx, strfixed, methods,
                           betaresp, betapp, beta, log_kappa, log_tau,
-                          strparam, ...){
+                          strparam, tmb_silent,
+                          nlminb_silent, ...){
     if (!"prefsampling" %in% getLoadedDLLs()) {
         stelfi::dll_stelfi("prefsampling")
     }
@@ -62,8 +65,10 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, idx, strfixed, methods,
                   log_kappa = log_kappa, log_tau = log_tau, strparam = strparam,
                   x = matrix(0, nrow = dim(lmat)[2], ncol = sum(diag(idx[, -1]) > 0) + 1))
     obj <- TMB:::MakeADFun(data, param, hessian = TRUE,
-                           random = c("x"), DLL = "prefsampling")
-    opt <- stats::nlminb(obj$par, obj$fn, obj$gr, ...)
+                           random = c("x"), DLL = "prefsampling",
+                           silent = tmb_silent)
+    trace <- if(nlminb_silent) 0 else 1
+    opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
     return(obj)
 }
 #' Function to fit a spatial  marked
@@ -83,7 +88,9 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, idx, strfixed, methods,
 #' @inheritParams fit_lgcp_tmb
 #' @export
 fit_mlgcp <-  function(locs, sp, marks, smesh, parameters, methods,
-                       strfixed, strparam, idx, ...) {
+                       strfixed, strparam, idx,
+                       tmb_silent = TRUE,
+                       nlminb_silent = TRUE, ...) {
     ## convert svs
     beta <- parameters[["beta"]]
     log_tau <- log(parameters[["tau"]])
@@ -112,7 +119,8 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters, methods,
                          methods = methods,
                          betaresp = betaresp, betapp = betapp,
                          beta = beta, log_kappa = log_kappa, log_tau = log_tau,
-                         strparam =  strparam,  ...)
+                         strparam =  strparam,  tmb_silent = tmb_silent,
+                         nlminb_silent = nlminb_silent, ...)
     return(res)
 }
 

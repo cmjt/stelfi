@@ -1,5 +1,9 @@
 #' Function to fit a spde spatial hawkes process using \code{TMB} and the
 #' \code{R_inla} namespace for the spde construction of the latent field.
+#' @param tmb_silent logical, default `TRUE`:
+#' TMB inner optimization tracing information will be printed.
+#' @param nlminb_silent logical, default `TRUE`:
+#' print function and parameters every iteration.
 #' @inheritParams fit_hawkes
 #' @inheritParams fit_lgcp
 fit_hspde_tmb <- function(times , locs , sp,
@@ -9,7 +13,8 @@ fit_hspde_tmb <- function(times , locs , sp,
                           log_ysigma = 0, atanh_rho = 0,
                           spde, w , tmax = max(times),
                           reltol = 1e-12, abstol = 1e-12,
-                          ...){
+                          tmb_silent,
+                          nlminb_silent, ...){
     if (!"spdehawkes" %in% getLoadedDLLs()) {
         stelfi::dll_stelfi("spdehawkes")
     }
@@ -31,11 +36,16 @@ fit_hspde_tmb <- function(times , locs , sp,
                   atanh_rho = atanh_rho, log_kappa = log_kappa, log_tau = log_tau,
                   x = matrix(0, nrow = dim(lmat)[2], ncol = 1))
     obj <- TMB:::MakeADFun(data, param, hessian = TRUE, random = c("x"),
-                           DLL = "spdehawkes")
-    opt <- stats::nlminb(obj$par, obj$fn, obj$gr, ...)
+                           DLL = "spdehawkes", silent = tmb_silent)
+    trace <- if(nlminb_silent) 0 else 1
+    opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
     return(obj)
 }
 #' Function to fit a spatial hawkes process using \code{TMB}
+#' @param tmb_silent logical, default `TRUE`:
+#' TMB inner optimization tracing information will be printed.
+#' @param nlminb_silent logical, default `TRUE`:
+#' print function and parameters every iteration.
 #' @inheritParams fit_hawkes
 #' @inheritParams fit_lgcp
 fit_hspat_tmb <- function(times, locs, sp,
@@ -43,7 +53,8 @@ fit_hspat_tmb <- function(times, locs, sp,
                           log_xsigma = 0,
                           log_ysigma = 0, atanh_rho = 0, w,
                           reltol = 1e-12, abstol = 1e-12,
-                          tmax = max(times), ...){
+                          tmax = max(times),
+                          tmb_silent, nlminb_silent, ...){
     if (!"spatialhawkes" %in% getLoadedDLLs()) {
         stelfi::dll_stelfi("spatialhawkes")
     }
@@ -64,13 +75,18 @@ fit_hspat_tmb <- function(times, locs, sp,
                   log_xsigma =  log_xsigma,
                   log_ysigma =  log_ysigma, atanh_rho = atanh_rho)
     obj <- TMB:::MakeADFun(data, param, hessian = TRUE,
-                           DLL = "spatialhawkes")
-    opt <- stats::nlminb(obj$par, obj$fn, obj$gr, ...)
+                           DLL = "spatialhawkes", silent = tmb_silent)
+    trace <- if(nlminb_silent) 0 else 1
+    opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
     return(obj)
 }
 #' Funtion to fit stelfi
+#' @inheritParams fit_hspat_tmb
+#' @inheritParams fit_spde_tmb
 fit_stelfi <-  function(times, locs, sp, smesh,  parameters,
-                        gaussian = TRUE, ...) {
+                        gaussian = TRUE,
+                        tmb_silent = TRUE,
+                        nlminb_silent = TRUE, ...) {
     ## convert svs
     log_mu <- log(parameters[["mu"]])
     logit_abratio <- stats::qlogis(parameters[["alpha"]] / parameters[["beta"]])
@@ -87,7 +103,9 @@ fit_stelfi <-  function(times, locs, sp, smesh,  parameters,
                              logit_abratio = logit_abratio, log_beta = log_beta,
                              log_xsigma = log_xsigma,
                              log_ysigma = log_ysigma,
-                             atanh_rho = atanh_rho, ...)
+                             atanh_rho = atanh_rho,
+                             tmb_silent = tmb_silent,
+                             nlminb_silent = nlminb_silent, ...)
     }else{
         ## SPDE
         spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
@@ -99,7 +117,9 @@ fit_stelfi <-  function(times, locs, sp, smesh,  parameters,
                              logit_abratio = logit_abratio, log_beta = log_beta,
                              log_kappa = log_kappa,
                              log_tau = log_tau, log_xsigma =  log_xsigma,
-                             log_ysigma =  log_ysigma, atanh_rho = atanh_rho, ...)
+                             log_ysigma =  log_ysigma, atanh_rho = atanh_rho,
+                             tmb_silent = tmb_silent,
+                             nlminb_silent = nlminb_silent, ...)
     }
     return(res)
 }

@@ -48,12 +48,16 @@
 #' @param log_tau \code{log(tau)} parameter for the GMRF
 #' @param log_kappa \code{log(kappa)} parameter for the GMRF
 #' @param atanh_rho optional, \code{arctan(rho)} AR1 parameter
-#' @param silent logical, by default FALSE. If TRUE model fitting progress
-#' not printed to console.
 #' @param ... arguments to pass into \code{nlminb()}
+#' @param tmb_silent logical, default `TRUE`:
+#' TMB inner optimization tracing information will be printed.
+#' @param nlminb_silent logical, default `TRUE`:
+#' print function and parameters every iteration.
 #' @export
-fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta, x, log_tau, log_kappa,
-                          atanh_rho, silent = FALSE,...) {
+fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta, x,
+                          log_tau, log_kappa,
+                          atanh_rho, tmb_silent,
+                          nlminb_silent, ...) {
     if (!"lgcp" %in% getLoadedDLLs()) {
         stelfi::dll_stelfi("lgcp")
     }
@@ -64,9 +68,10 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta, x, log_tau, log_k
                   log_kappa = log_kappa, atanh_rho = atanh_rho)
     obj <- TMB::MakeADFun(data = data, parameters = param,
                           random = c("x"), DLL = "lgcp",
-                          silent = silent)
+                          silent = tmb_silent)
     obj$hessian <- TRUE
-    opt <- stats::nlminb(obj$par, obj$fn, obj$gr, ...)
+    trace <- if(nlminb_silent) 0 else 1
+    opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
     return(obj)
 }
 #' Function to fit a spatial or spatiotemporal log-Gaussian Cox process using \code{TMB}
@@ -87,8 +92,9 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta, x, log_tau, log_k
 #' \code{smesh} and \code{tmesh} node combination.
 #' @inheritParams fit_lgcp_tmb
 #' @export
-fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates, silent, ...) {
-    if(missing(silent)) silent <- FALSE
+fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
+                      tmb_silent = TRUE,
+                      nlminb_silent = TRUE, ...) {
     if(sum(names(locs) %in% c("x","y")) < 2) stop("Named variables x and y required in arg locs")
     if(!missing(covariates)) if(!"matrix" %in% class(covariates)) stop("arg covariates must be a matrix")
     if(!missing(covariates)) if(length(beta) != (ncol(covariates) + 1))
@@ -122,7 +128,9 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates, silent, ..
                         idx = rep(1, length(stk$data$data$y)), beta = beta,
                         x = matrix(0, nrow = spde$n.spde, ncol = k),
                         log_tau = log_tau, log_kappa = log_kappa,
-                        atanh_rho = atanh_rho, silent = silent, ...)
+                        atanh_rho = atanh_rho, tmb_silent = tmb_silent,
+                        nlminb_silent = nlminb_silent,
+                        ...)
     return(res)
 
 }
