@@ -115,7 +115,7 @@ Type objective_function<Type>::operator() ()
       AR1_t<GMRF_t<Type> >(rho, GMRF(Q)).simulate(x);
     }
 
-    ADREPORT(rho);
+    ADREPORT(atanh_rho);
   }
 
   /*
@@ -139,8 +139,8 @@ Type objective_function<Type>::operator() ()
   }
   ADREPORT(beta);
   // ADREPORT parameters for RF.
-  ADREPORT(tau);
-  ADREPORT(kappa);
+  ADREPORT(log_tau);
+  ADREPORT(log_kappa);
 
   return nll;
 }

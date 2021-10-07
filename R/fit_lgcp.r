@@ -54,9 +54,9 @@
 #' @param nlminb_silent logical, default `TRUE`:
 #' print function and parameters every iteration.
 #' @export
-fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta, x,
+fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
                           log_tau, log_kappa,
-                          atanh_rho, tmb_silent,
+                          atanh_rho, x, tmb_silent,
                           nlminb_silent, ...) {
     if (!"lgcp" %in% getLoadedDLLs()) {
         stelfi::dll_stelfi("lgcp")
@@ -64,8 +64,15 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta, x,
     data <- list(y = y, A = A, designmat = designmat,
                  spde = spde, w = w,
                  idx = idx)
-    param <- list(beta = beta, x = x, log_tau = log_tau,
-                  log_kappa = log_kappa, atanh_rho = atanh_rho)
+    if(is.null(atanh_rho)){
+        param <- list(beta = beta,  log_kappa = log_kappa,
+                      log_tau = log_tau,
+                      x = x)
+    }else{
+        param <- list(beta = beta,  log_kappa = log_kappa,
+                      log_tau = log_tau,
+                      atanh_rho = atanh_rho, x = x)
+    }
     obj <- TMB::MakeADFun(data = data, parameters = param,
                           random = c("x"), DLL = "lgcp",
                           silent = tmb_silent)
@@ -85,8 +92,8 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta, x,
 #' @param parameters a list of named parmeters:
 #' "beta"--A vector of fixed effects coefficients to be estimated
 #' (same length as \code{ncol(covariates)} + 1 )
-#'  "tau"-- tau parameter for the GMRF
-#'  "kappa"-- kappa parameter for the GMRF
+#'  "log_tau"-- tau parameter for the GMRF
+#'  "log_kappa"-- kappa parameter for the GMRF
 #'  "rho"-- optional, rho AR1 parameter
 #' @param covariates optional, a \code{matrix} of covariates at each
 #' \code{smesh} and \code{tmesh} node combination.
@@ -103,30 +110,26 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
         if(!"t" %in% names(locs)) stop("Need a variable named t in arg locs")
         tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
         k <- length(tmesh$loc)
-        atanh_rho <- atanh(parameters[["rho"]])
+        atanh_rho <- parameters[["rho"]]
     }else{
         tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
         k <- 1
-        atanh_rho <- 0
+        atanh_rho <- NULL
     }
-    ## convert svs
+    ## svs
     beta <- parameters[["beta"]]
-    log_tau <- log(parameters[["tau"]])
-    log_kappa <- log(parameters[["kappa"]])
-    ## SPDE
-    stk <- tmp[[1]]
-    a_st <- tmp[[2]]
-    spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
+    log_tau <- parameters[["log_tau"]]
+    log_kappa <- parameters[["log_kappa"]]
     ## Designmat
-    designmat <- matrix(1, nrow = length(stk$data$data$y), ncol = 1)
+    designmat <- matrix(rep(1, length(tmp$ypp) ), ncol = 1)
     if(!missing(covariates)) designmat <- cbind(1, covariates)
     ## Model fitting
-    res <- fit_lgcp_tmb(y = stk$data$data$y, A = a_st,
+    res <- fit_lgcp_tmb(y = tmp$ypp, A = tmp$A,
                         designmat = designmat,
-                        spde = spde$param.inla[c("M0", "M1", "M2")],
-                        w = stk$data$data$exposure,
-                        idx = rep(1, length(stk$data$data$y)), beta = beta,
-                        x = matrix(0, nrow = spde$n.spde, ncol = k),
+                        spde = tmp$spde$param.inla[c("M0", "M1", "M2")],
+                        w = tmp$w,
+                        idx = tmp$w > 0 , beta = beta,
+                        x = matrix(0, nrow = length(tmp$ypp), ncol = k),
                         log_tau = log_tau, log_kappa = log_kappa,
                         atanh_rho = atanh_rho, tmb_silent = tmb_silent,
                         nlminb_silent = nlminb_silent,
@@ -151,6 +154,7 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
         k <- length(tmesh$loc)
         idx <- INLA::inla.spde.make.index("s", spde$n.spde, n.group = k)
         w_t <- INLA::inla.mesh.fem(tmesh)$c0
+        w_t <- diag(w_t)
         t_breaks <- sort(c(tmesh$loc[c(1, k)],
                            tmesh$loc[2:k - 1] / 2 + tmesh$loc[2:k] / 2))
         time <- factor(findInterval(locs$t, t_breaks),
@@ -160,19 +164,24 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
             agg_dat[[j]] <- as.integer(as.character(agg_dat[[j]]))
         e0 <- w_areas[agg_dat$area] * (w_t[agg_dat$time])
         a_st <- INLA::inla.spde.make.A(smesh, smesh$loc[agg_dat$area, ],
-                         group = agg_dat$time, mesh.group = tmesh)
+                                       group = agg_dat$time, mesh.group = tmesh)
+        stk <- INLA::inla.stack(
+                         data = list(y = agg_dat$Freq, exposure = e0),
+                         A = list(1, a_st),
+                         effects = list(idx, list(b0 = rep(1, nrow(agg_dat)))))
+        
     }else{
-        idx <- INLA::inla.spde.make.index("s", spde$n.spde)
-        agg_dat <- as.data.frame(table(area))
-        agg_dat[[1]] <- as.integer(as.character(agg_dat[[1]]))
-        e0 <- w_areas[agg_dat$area]
-        a_st <- INLA::inla.spde.make.A(smesh, smesh$loc[agg_dat$area, ])
+        nv <- smesh$n
+        points.in.mesh = function(xy, dmesh){
+            sapply(1:length(dmesh), function(i){
+                coord = raster::geom(dmesh[i, ])[,c("x", "y")]
+                sum(sp::point.in.polygon(xy[, 1], xy[, 2], coord[, 1], coord[, 2]) > 0)
+            })
+        }
+        ypp <- points.in.mesh(locs, polys)
+        expected <- w_areas
+        A <- sparseMatrix(i = 1:nv, j = 1:nv, x = 1)
+        lst <- list(ypp = ypp, A = A, spde = spde, w = expected)
     }
-    stk <- INLA::inla.stack(
-                     data = list(y = agg_dat$Freq, exposure = e0),
-                     A = list(1, a_st),
-                     effects = list(idx,b0 = rep(1, nrow(agg_dat))))
-    
-    
-    return(list(stk,a_st))
+    return(lst)
 }
