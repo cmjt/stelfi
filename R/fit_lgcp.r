@@ -110,7 +110,7 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
         if(!"t" %in% names(locs)) stop("Need a variable named t in arg locs")
         tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
         k <- length(tmesh$loc)
-        atanh_rho <- parameters[["rho"]]
+        atanh_rho <- parameters[["atanh_rho"]]
     }else{
         tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
         k <- 1
@@ -128,8 +128,8 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
                         designmat = designmat,
                         spde = tmp$spde$param.inla[c("M0", "M1", "M2")],
                         w = tmp$w,
-                        idx = tmp$w > 0 , beta = beta,
-                        x = matrix(0, nrow = length(tmp$ypp), ncol = k),
+                        idx = tmp$idx , beta = beta,
+                        x = matrix(0, nrow = tmp$spde$n.spde, ncol = k),
                         log_tau = log_tau, log_kappa = log_kappa,
                         atanh_rho = atanh_rho, tmb_silent = tmb_silent,
                         nlminb_silent = nlminb_silent,
@@ -145,43 +145,40 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
     w <- get_weights(mesh = smesh, sp = sp, plot = FALSE)
     w_areas <- w$weights
     polys <- w$polys
-    area <- factor(sp::over(sp::SpatialPoints(cbind(locs$x, locs$y)), polys),
-                   levels = seq(1, length(polys)))
+    nv <- smesh$n
+    points.in.mesh = function(xy, dmesh){
+        sapply(1:length(dmesh), function(i){
+            coord = raster::geom(dmesh[i, ])[,c("x", "y")]
+            sum(sp::point.in.polygon(xy[, 1], xy[, 2], coord[, 1], coord[, 2]) > 0)
+        })
+    }
     ## SPDE
     spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
     ## spatial or spatiotemporal
     if (!missing(tmesh)) {
         k <- length(tmesh$loc)
-        idx <- INLA::inla.spde.make.index("s", spde$n.spde, n.group = k)
-        w_t <- INLA::inla.mesh.fem(tmesh)$c0
-        w_t <- diag(w_t)
-        t_breaks <- sort(c(tmesh$loc[c(1, k)],
+        area <- factor(over(SpatialPoints(cbind(xyt$x, xyt$y)), polys),
+                       levels = 1:length(polys))
+
+        t.breaks <- sort(c(tmesh$loc[c(1, k)],
                            tmesh$loc[2:k - 1] / 2 + tmesh$loc[2:k] / 2))
-        time <- factor(findInterval(locs$t, t_breaks),
-                       levels = 1:(length(t_breaks) - 1))
-        agg_dat <- as.data.frame(table(area, time))
-        for (j in 1:2) # set time and area as integer
-            agg_dat[[j]] <- as.integer(as.character(agg_dat[[j]]))
-        e0 <- w_areas[agg_dat$area] * (w_t[agg_dat$time])
-        a_st <- INLA::inla.spde.make.A(smesh, smesh$loc[agg_dat$area, ],
-                                       group = agg_dat$time, mesh.group = tmesh)
-        stk <- INLA::inla.stack(
-                         data = list(y = agg_dat$Freq, exposure = e0),
-                         A = list(1, a_st),
-                         effects = list(idx, list(b0 = rep(1, nrow(agg_dat)))))
-        
+        time <- factor(findInterval(xyt$t, t.breaks),
+                       levels = 1:(length(t.breaks) - 1))
+        agg.dat <- as.data.frame(table(area, time))
+        for(j in 1:2) # set time and area as integer
+            agg.dat[[j]] <- as.integer(as.character(agg.dat[[j]]))
+        ypp <- agg.dat$Freq
+        w.t <- Matrix::diag(INLA::inla.mesh.fem(tmesh)$c0)
+        expected <- w_areas[agg.dat$area] * (w.t[agg.dat$time])
+        A <- inla.spde.make.A(smesh, smesh$loc[agg.dat$area, ],
+                              group = agg.dat$time, mesh.group = tmesh)
+        idx <- rep(1, length(ypp))
     }else{
-        nv <- smesh$n
-        points.in.mesh = function(xy, dmesh){
-            sapply(1:length(dmesh), function(i){
-                coord = raster::geom(dmesh[i, ])[,c("x", "y")]
-                sum(sp::point.in.polygon(xy[, 1], xy[, 2], coord[, 1], coord[, 2]) > 0)
-            })
-        }
         ypp <- points.in.mesh(locs, polys)
         expected <- w_areas
         A <- sparseMatrix(i = 1:nv, j = 1:nv, x = 1)
-        lst <- list(ypp = ypp, A = A, spde = spde, w = expected)
+        idx <- expected > 0
     }
+    lst <- list(ypp = ypp, A = A, spde = spde, w = expected, idx = idx)
     return(lst)
 }

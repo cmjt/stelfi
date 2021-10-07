@@ -44,7 +44,7 @@ fit_lgcp_inla <- function(smesh = NULL, locs = NULL, domain = NULL,
                                  group = temp, group.mesh = tmesh)
         idx <- inla.spde.make.index('field', n.spde = spde$n.spde, group = temp, n.group = k)
         w <- stelfi::get_weights(smesh, domain)$weights
-        st.vol <- rep(w, k) * rep(Matrix::diag(inla.mesh.fem(mesh.t)$c0), nv)
+        st.vol <- rep(w, k) * rep(Matrix::diag(inla.mesh.fem(tmesh)$c0), nv)
         expected <- c(st.vol, rep(0, n))
         ctr.g <- list(model = 'ar1',param = prior.rho)
         y.pp <- rep(0:1, c(k * nv, n))
