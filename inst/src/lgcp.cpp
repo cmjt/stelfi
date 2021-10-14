@@ -3,6 +3,7 @@
 /* Added simulation code on 20/05/2021. */
 #include <TMB.hpp>
 #include <numeric>
+#include <math.h> // for pi
 
 template<class Type>
 Type objective_function<Type>::operator() ()
@@ -115,7 +116,7 @@ Type objective_function<Type>::operator() ()
       AR1_t<GMRF_t<Type> >(rho, GMRF(Q)).simulate(x);
     }
 
-    ADREPORT(atanh_rho);
+    ADREPORT(rho);
   }
 
   /*
@@ -141,6 +142,10 @@ Type objective_function<Type>::operator() ()
   // ADREPORT parameters for RF.
   ADREPORT(log_tau);
   ADREPORT(log_kappa);
-
+  // ADREPORT transformed params
+  Type range = sqrt(8)/exp(log_kappa); //as reported by INLA
+  Type stdev = 1/(4*M_PI*pow(exp(log_kappa),2)*pow(exp(log_tau),2)) ; // as reported by INLA
+  ADREPORT(range);
+  ADREPORT(stdev);
   return nll;
 }

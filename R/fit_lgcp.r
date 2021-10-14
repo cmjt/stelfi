@@ -157,7 +157,7 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
     ## spatial or spatiotemporal
     if (!missing(tmesh)) {
         k <- length(tmesh$loc)
-        area <- factor(over(SpatialPoints(cbind(xyt$x, xyt$y)), polys),
+        area <- factor(sp::over(sp::SpatialPoints(cbind(xyt$x, xyt$y)), polys),
                        levels = 1:length(polys))
 
         t.breaks <- sort(c(tmesh$loc[c(1, k)],
@@ -170,13 +170,13 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
         ypp <- agg.dat$Freq
         w.t <- Matrix::diag(INLA::inla.mesh.fem(tmesh)$c0)
         expected <- w_areas[agg.dat$area] * (w.t[agg.dat$time])
-        A <- inla.spde.make.A(smesh, smesh$loc[agg.dat$area, ],
+        A <- INLA::inla.spde.make.A(smesh, smesh$loc[agg.dat$area, ],
                               group = agg.dat$time, mesh.group = tmesh)
         idx <- rep(1, length(ypp))
     }else{
         ypp <- points.in.mesh(locs, polys)
         expected <- w_areas
-        A <- sparseMatrix(i = 1:nv, j = 1:nv, x = 1)
+        A <- Matrix::sparseMatrix(i = 1:nv, j = 1:nv, x = 1)
         idx <- expected > 0
     }
     lst <- list(ypp = ypp, A = A, spde = spde, w = expected, idx = idx)

@@ -27,7 +27,6 @@ fit_lgcp_inla <- function(smesh = NULL, locs = NULL, domain = NULL,
                           prior.sigma = c(1,0.01),
                           verbose = FALSE,
                           control.inla = list(strategy='gaussian',int.strategy = 'eb'),
-                          control.fixed = list(prec.intercept = 0.001),
                           ...){
     spde <- inla.spde2.pcmatern(mesh = smesh,
                                 prior.range = prior.range,
@@ -61,7 +60,7 @@ fit_lgcp_inla <- function(smesh = NULL, locs = NULL, domain = NULL,
         cov.effects <- m[[1]]
         cov.form <- m[[2]]
         stack <- inla.stack(data = list(y = y.pp, e = expected),
-                            A=list(A.pp,1,1),
+                            A = list(A.pp,1,1),
                             effects = list(field = field, b0 = rep(1,length(y.pp)),
                                            cov.effects = cov.effects))
         if(!is.null(tmesh)){
@@ -92,7 +91,6 @@ fit_lgcp_inla <- function(smesh = NULL, locs = NULL, domain = NULL,
                    E = inla.stack.data(stack)$e,
                    control.predictor = list(A = inla.stack.A(stack), compute = TRUE),
                    control.inla = control.inla,
-                   control.fixed = control.fixed,
                    verbose = verbose,
                    ...)
     result
