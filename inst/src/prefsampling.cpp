@@ -1,6 +1,7 @@
 /* By Xiangjie Xue, updated on 01/05/2021. */
 #include <TMB.hpp>
 #include <numeric>
+#include <iostream>
 
 template<class Type>
 Type objective_function<Type>::operator() ()
@@ -9,19 +10,12 @@ Type objective_function<Type>::operator() ()
   using namespace density; // this where the structure for GMRF is defined
   using namespace Eigen;  // probably for sparseness clacs
   // assume the right number of dimention of parameter and data is passed.
-  DATA_MATRIX(yresp); // A matrix of response, each column should have the same distribution
+  DATA_MATRIX(yresp); // A matrix of marks, each column contain data from the same distribution
+  DATA_MATRIX(yresp_ind); // A matrix of marks with additional fields... could not work out how to index here
   DATA_VECTOR(ypp) // A vector for point process response (poisson).
   DATA_SPARSE_MATRIX(lmat); // A sparse matrix mapping mesh points to the observations
   DATA_STRUCT(spde,spde_t); // this as structure of spde object is defined in r-inla hence using that namespace
-  DATA_VECTOR(w); // weight of mesh
-  DATA_IMATRIX(idx); 
-  /*
-    a matrix of size (no of resp) * (no of resp + 1). 
-    The first column is for sharing random field with point process. 
-    For the first column, the values are indicated as >0 if sharing random field with point process.
-    For the i-th column (idx.col(i + 1)), the values are also indicated as >0 if sharing random field defined in i-th random field.
-    If idx(i, i + 1) = 0, then the entire column is ignored.
-  */ 
+  DATA_VECTOR(w); // weights of mesh
   DATA_MATRIX(strfixed);
   /*
     a matrix of fixed structural parameters. For some distributions, non-NaN values will overwrites the corresponding strparam (consider it fixed),
@@ -42,38 +36,36 @@ Type objective_function<Type>::operator() ()
     2 - binomial distribution, strparam is not referenced, strfixed as number of trials.
     3 - gamma distribution, the implementation in TMB is shape-scale. strparam/strfixed as log_scale;
   */
-  PARAMETER_VECTOR(betaresp); // intercept term of each response
+  PARAMETER_VECTOR(betaresp); // intercept term of each mark (n_mark)
   PARAMETER(betapp); // intercept of point process
-  PARAMETER_MATRIX(beta); 
-  /*
-    A matrix of the same size as idx.
-    This matrix contains the estimates for the sharing effects.
-    Note that for the right no. of resp-by-no. of resp matrix, the diagonal terms WILL always be 0.
-    This might be resulting from the features of TMB. Consider a manual fixed from R side if needed.
-    All the values in this matrix is constrained to be a normal variable.
-
-    NB: Tried to remove this constraint before, the estimates will be unbounded. The diagonal terms can not
-      be constrained as a normal variable with very small sd, this will cause erroneous results as well.
-  */ 
-  PARAMETER_VECTOR(log_kappa); 
+  //std::cout << betaresp << "betaresp\n";
+  PARAMETER_VECTOR(beta_coefs_pp); // coefficients of shared field
+  DATA_IVECTOR(mark_field); // indicator if mark should have its own field
+  int n_mark = 0;
+  for (int i = 0; i < mark_field.size(); ++i){
+    if (mark_field(i) == 1){
+      n_mark = n_mark + 1;
+	}
+  }
+  std::cout << n_mark << "n_mark\n";
+  PARAMETER_VECTOR(log_kappa); //same length as number of fields (i.e., max shared + n marks)
   PARAMETER_VECTOR(log_tau);
   /*
     log of kappas/taus for the random field.
-    The lengths of these vectors are no. of resp + 1.
+    The lengths of these vectors are no. of resp + 1 if all marks have own field.
     The first element in both vectors are for the random field of the point process.
   */
   PARAMETER_VECTOR(strparam); // see strfixed.
   PARAMETER_MATRIX(x); 
   /*
     the random field/effect. First column is always the random field for point process.
-    The number of columns is sum(diag(idx[, -1]) > 0) + 1, and must have the right size before passing.
-
-    NB: Tried to use the matrix with the column (1 + no. of resp). This will give an error when using nlminb.
+    The number of columns is + 1 + n(mark__field == 1), and must have the right size before passing.
   */
   vector<Type> kappa = exp(log_kappa);
   vector<Type> tau = exp(log_tau);
   // spde part
-  SparseMatrix<Type> Q = Q_spde(spde, kappa[0]) * tau[0]; // create the precision matrix from the spde model for the GMRF
+  SparseMatrix<Type> Q = Q_spde(spde, kappa[0]) * tau[0];
+  // create the precision matrix from the spde model for the GMRF
   // Type nll = 0.0;
   vector<Type> tempx = x.col(0);
   Type nll = GMRF(Q)(tempx); // field the random effect is a GMRF with precision Q
@@ -84,40 +76,25 @@ Type objective_function<Type>::operator() ()
   
   matrix<Type> lambdaresp(x.rows(), yresp.cols());
   // for responses interact with point process and set intercept
+  int RFcount = 1;
   for (int i = 0; i < yresp.cols(); ++i){
     lambdaresp.col(i).setConstant(betaresp[i]); // set intercept of responses
-    // if ith response has sharing effect with point process
-    if (idx(i, 0) > 0){
-      vector<Type> temp = lambdaresp.col(i);
-      temp += beta(i, 0) * tempx; 
-      lambdaresp.col(i) = temp;
+    vector<Type> temp = lambdaresp.col(i);
+    temp += beta_coefs_pp(i) * tempx; 
+    lambdaresp.col(i) = temp;
+    if(mark_field(i) == 1){
+     // for mark specific random fields 
+      for (int j = 0; j < yresp_ind.cols(); ++j){
+	Q = Q_spde(spde, kappa[j + 1]) * tau[j + 1];
+	tempx = x.col(RFcount);
+	nll += GMRF(Q)(tempx); // field the random effect is a GMRF with precision Q
+	vector<Type> temp = lambdaresp.col(i);
+	temp += tempx; // For j-th variable itself.
+	lambdaresp.col(i) = temp;
+      }
+    RFcount++;
     }
   }
-  // for other random fields
-  int RFcount = 1;
-  for (int i = 1; i < idx.cols(); ++i)
-    if (idx(i - 1, i) > 0){
-      // inspect if each of diag(idx[, -1]) is positive. If 0, the whole column is ignored.
-      Q = Q_spde(spde, kappa[i]) * tau[i];
-      tempx = x.col(RFcount);
-      nll += GMRF(Q)(tempx); // field the random effect is a GMRF with precision Q
-      for (int j = 0; j < yresp.cols(); ++j)
-        if (idx(j, i) > 0){
-          vector<Type> temp = lambdaresp.col(j);
-          if (j == i - 1) {
-            temp += tempx; // For i-th variable itself.
-            /*
-              An IMPORTANT NOTE, the corresponding term of beta WILL NOT be 1.
-              Assigning beta(j, i)=1 will produce the same result, this issue might be explained by TMB evaluating its derivative.
-              As a result, a manual fix is needed in R side.
-            */
-          }else{
-            temp += beta(j, i) * tempx;  // for other variables.
-          }
-          lambdaresp.col(j) = temp;
-        }
-      RFcount++;
-    }
 
   matrix<Type> matchresp = lmat * lambdaresp;
   for (int i = 0; i < yresp.cols(); ++i){
@@ -155,10 +132,9 @@ Type objective_function<Type>::operator() ()
   }
 
   // ? constrain beta? (see PARAMETER_MATRIX(beta)).
-  nll -= sum(dnorm(beta.vec(), Type(0.), Type(1. / sqrt(2.)), true));
+  //nll -= sum(dnorm(beta_coef.vec(), Type(0.), Type(1. / sqrt(2.)), true));
   ADREPORT(betaresp);
   ADREPORT(betapp);
-  ADREPORT(beta);
   ADREPORT(strparam);
   // ADREPORT parameters for RF.
   ADREPORT(tau);
