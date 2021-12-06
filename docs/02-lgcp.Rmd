@@ -1,0 +1,38 @@
+# log-Gaussian Cox Process {#lgcp}
+
+## The `fit_lgcp()` function
+
+```{r}
+args(fit_lgcp)
+```
+
+## Fitting a LGCP
+
+### Spatial only
+
+```{r}
+data(xyt, package = "stelfi")
+domain <- as(xyt$window, "SpatialPolygons")
+locs <- data.frame(x = xyt$x, y = xyt$y)
+smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+                      max.edge = 0.75, cutoff = 0.3)
+fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh,
+                parameters = c(beta = 0, tau = 1, kappa = 1))
+get_coefs(fit)
+```
+
+### Spatiotemporal LGCP
+
+```{r}
+ndays <- 2
+locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
+w0 <- 2
+tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
+fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh, tmesh = tmesh,
+                parameters = c(beta = 0, tau = 1, kappa = 1, rho = 0.2))
+get_coefs(fit)
+
+
+```
+
+

@@ -1,0 +1,334 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+# Comparing `INLA` and `stelfi` fitting LGCPs
+
+R`INLA` steps below are taken from [Advanced Spatial Modeling with Stochastic Partial Differential Equations Using R and INLA, Chapter 4](https://becarioprecario.bitbucket.io/spde-gitbook/ch-lcox.html)
+
+## Spatial only LGCP
+
+### Simulate Data {-}
+
+```{r}
+library(INLA)
+library(spatstat)
+library(RandomFields)
+```
+
+```{r}
+win <- spatstat.geom::owin(c(0, 3), c(0, 3))
+npix <- 300
+spatstat.options(npixel = npix)
+beta0 <- 3
+## expected munber of points 
+exp(beta0) * diff(range(win$x)) * diff(range(win$y))
+sigma2x <- 0.2
+range <- 1.2
+nu <- 1
+set.seed(1)
+lg.s <- rLGCP('matern', beta0, var = sigma2x,
+              scale = range / sqrt(8), nu = nu, win = win)
+xy <- cbind(lg.s$x, lg.s$y)[, 2:1]
+n <- nrow(xy)
+Lam <- attr(lg.s, 'Lambda')
+rf.s <- log(Lam$v)
+summary(as.vector(rf.s))
+
+loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
+```
+
+## Model fitting using "raw" `INLA`
+
+```{r}
+mesh <- inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1),
+                     max.edge = c(0.3, 0.7), cutoff = 0.05)
+nv <- mesh$n
+```
+
+
+```{r}
+spde <- inla.spde2.pcmatern(mesh = mesh,
+  # PC-prior on range: P(practic.range < 0.05) = 0.01
+  prior.range = c(0.05, 0.01),
+  # PC-prior on sigma: P(sigma > 1) = 0.01
+  prior.sigma = c(1, 0.01)) 
+domain.polys <- Polygons(list(Polygon(loc.d)), '0')
+domain <- SpatialPolygons(list(domain.polys))
+```
+
+```{r}
+
+## get_weights uses inla.dual.mesh()/book.mesh.dual() directly
+w <- stelfi::get_weights(mesh, domain)$weights
+y.pp <- rep(0:1, c(nv, n))
+e.pp <- c(w, rep(0, n))
+imat <- Diagonal(nv, rep(1, nv))
+lmat <- inla.spde.make.A(mesh, xy)
+A.pp <- rbind(imat, lmat)
+```
+
+
+```{r}
+stk <- inla.stack(
+   data = list(y = y.pp, e = e.pp),
+   A = list(A.pp, 1), 
+   effects = list(i = 1:nv, b0 = rep(1, nv + n)))
+
+res <- inla(y ~ 0 + b0 + f(i, model = spde), family = "poisson",
+            data = inla.stack.data(stk), E = inla.stack.data(stk)$e,
+               control.predictor = list(A = inla.stack.A(stk)))
+summary(res)$fixed
+summary(res)$hyper
+```
+
+
+
+`Theta1 = log(tau)` and `Theta2 = log(kappa)`. Field variance as per https://link.springer.com/article/10.1007/s10182-012-0196-3
+
+$$\sigma^2_\omega =\frac{1}{4\pi\kappa^2\tau^2} $$
+
+Range as above
+
+$$\rho = \frac{\sqrt{8 \nu}}{\kappa} =  \frac{\sqrt{8}}{\kappa}$$
+
+### `stelfi` wrapper for `INLA`{-}
+
+```{r}
+devtools::load_all("~/Git/stelfi")
+## inla wrapper stelfi
+locs <- data.frame(x = xy[, 1], y = xy[, 2])
+res_wrap <- stelfi::fit_lgcp_inla(smesh = mesh, locs = locs,
+                       domain = domain)
+
+summary(res_wrap)$fixed
+summary(res_wrap)$hyper
+```
+
+### Model fitting using `TMB` via `stelfi`
+
+```{r}
+devtools::load_all("~/Git/stelfi")
+fit <- fit_lgcp(locs = locs, sp = domain, smesh = mesh,
+                parameters = c(beta = 0, log_tau = 0, log_kappa = 1))
+get_coefs(fit)
+
+```
+
+## Spatiotemporal LGCP
+
+Following [Advanced Spatial Modeling with Stochastic Partial Differential Equations Using R and INLA, Chapter 8](https://becarioprecario.bitbucket.io/spde-gitbook/ch-stapp.html#sec:burkitt).
+
+```{r}
+data('xyt', package = 'stelfi')
+k <- 2
+tknots <- seq(min(xyt$t), max(xyt$t), length = k)
+mesh.t <- inla.mesh.1d(tknots)
+domain <- as(xyt$window, "SpatialPolygons")
+locs <- data.frame(x = xyt$x, y = xyt$y)
+mesh.s <- inla.mesh.2d(
+  boundary = inla.sp2segment(domain), 
+  max.edge = 0.75, cutoff = 0.3) 
+spde <- inla.spde2.pcmatern(mesh = mesh.s,
+  prior.range = c(0.5, 0.5), 
+  prior.sigma = c(0.1, 0.1)) 
+m <- spde$n.spde
+n <- xyt$n
+Ast <- inla.spde.make.A(mesh = mesh.s, loc = as.matrix(locs),
+  n.group = length(mesh.t$n), group = xyt$t,
+  group.mesh = mesh.t)
+idx <- inla.spde.make.index('s', spde$n.spde, n.group = mesh.t$n)
+## get_weights uses inla.dual.mesh()/book.mesh.dual() directly
+w <- stelfi::get_weights(mesh.s, domain)$weights
+st.vol <- rep(w, k) * rep(diag(inla.mesh.fem(mesh.t)$c0), m)
+y <- rep(0:1, c(k * m, n))
+expected <- c(st.vol, rep(0, n))
+stk <- inla.stack(
+  data = list(y = y, expect = expected), 
+  A = list(rbind(Diagonal(n = k * m), Ast), 1), 
+  effects = list(idx, list(a0 = rep(1, k * m + n))))
+pcrho <- list(prior = 'pc.cor1', param = c(0.7, 0.7))
+form <- y ~ 0 + a0 + f(s, model = spde, group = s.group, 
+  control.group = list(model = 'ar1',
+    hyper = list(rho = pcrho)))
+
+res <- inla(form, family = 'poisson', 
+  data = inla.stack.data(stk), E = expected,
+  control.predictor = list(A = inla.stack.A(stk)),
+  control.inla = list(strategy = 'adaptive'))
+summary(res)$fixed
+summary(res)$hyperpar
+```
+
+
+
+### `stelfi` wrapper for `INLA`{-}
+
+```{r}
+## inla wrapper stelfi
+devtools::load_all("~/Git/stelfi")
+locs$t <- xyt$t
+res_wrap_st <- stelfi::fit_lgcp_inla(smesh = mesh.s, locs = locs,
+                       domain = domain, tmesh = mesh.t, 
+                       prior.range = c(0.5,0.5),
+                       prior.sigma = c(0.1,0.1),
+                       prior.rho = list(theta = pcrho),
+                       control.inla = list(strategy = 'adaptive'))
+summary(res_wrap_st)$fixed
+summary(res_wrap_st)$hyperpar
+```
+
+
+### Model fitting using `TMB` via `stelfi`
+
+```{r}
+
+devtools::load_all("~/Git/stelfi")
+fit <- fit_lgcp(locs = locs, sp = domain, smesh = mesh.s,
+                tmesh = mesh.t, 
+                parameters = c(beta = 0, log_tau = 0, log_kappa = 0, atanh_rho = 0))
+get_coefs(fit)
+```
+
+
+## Marked LGCP
+
+
+### simulate
+```{r}
+devtools::load_all("~/Git/stelfi")
+library(INLA)
+library(spatstat)
+win <- spatstat.geom::owin(c(0, 3), c(0, 3))
+npix <- 300
+spatstat.options(npixel = npix)
+beta0 <- 3
+exp(beta0) * diff(range(win$x)) * diff(range(win$y))
+sigma2x <- 0.2
+range <- 1.2
+nu <- 1
+library(RandomFields)
+lg.s <- rLGCP('matern', beta0, var = sigma2x,
+              scale = range / sqrt(8), nu = nu, win = win)
+xy <- cbind(lg.s$x, lg.s$y)[, 2:1]
+(n <- nrow(xy))
+## [1] 217
+Lam <- attr(lg.s, 'Lambda')
+rf.s <- log(Lam$v)
+summary(as.vector(rf.s))
+loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
+mesh <- inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1), 
+                     max.edge = c(0.3, 0.7), cutoff = 0.05)
+nv <- mesh$n
+spde <- inla.spde2.matern(mesh = mesh, alpha = 2)
+domain.polys <- Polygons(list(Polygon(loc.d)), '0')
+domainSP <- SpatialPolygons(list(domain.polys))
+weights <- stelfi::get_weights(mesh, domainSP)
+w <- weights$weights
+y.pp <- rep(0:1, c(nv, n))
+e.pp <- c(w, rep(0, n))
+imat <- Diagonal(nv, rep(1, nv))
+lmat <- inla.spde.make.A(mesh, xy)
+A.pp <- rbind(imat, lmat)
+
+z <- log(t(Lam$v)[do.call('cbind',
+                          nearest.pixel(xy[, 1], xy[, 2], Lam))])
+beta0.y <- 10
+beta0.y1 <- -2
+beta0.y2 <- 1
+beta <- 2
+prec.y <- 16
+scale.y3 = 2
+
+set.seed(2)
+resp <- beta0.y + (z - beta0) * beta + 
+  rnorm(length(z), 0, sqrt(1 / prec.y))
+resp1 <- rbinom(length(z), 1, plogis(beta0.y1 + (z - beta0) * beta))
+resp2 <- rbinom(length(z), 1, plogis(beta0.y2 + (z - beta0) * beta))
+resp3 <- rgamma(length(z), shape = (beta0.y + (z - beta0) * beta) / scale.y3,
+                scale = scale.y3)
+
+```
+
+
+INLA stacks
+
+```{r}
+stk2.y <- inla.stack(
+  data = list(y = cbind(resp, NA, NA, NA, NA), e = rep(0, n)), 
+  A = list(lmat, 1),
+  effects = list(j = 1:nv, b0.y = rep(1, n)),
+  tag = 'resp')
+
+stk2.y1 <- inla.stack(
+  data = list(y = cbind(NA, resp1, NA, NA, NA), e = rep(0, n)), 
+  A = list(lmat, 1),
+  effects = list(j1 = 1:nv, b0.y1 = rep(1, n)),
+  tag = 'resp1')
+
+stk2.y2 <- inla.stack(
+  data = list(y = cbind(NA, NA, resp2, NA, NA), e = rep(0, n)), 
+  A = list(lmat, 1),
+  effects = list(j2 = 1:nv, b0.y2 = rep(1, n)),
+  tag = 'resp2')
+
+stk2.y3 <- inla.stack(
+  data = list(y = cbind(NA, NA, NA, resp3, NA), e = rep(0, n)), 
+  A = list(lmat, 1),
+  effects = list(j3 = 1:nv, b0.y3 = rep(1, n)),
+  tag = 'resp3')
+
+stk2.pp <- inla.stack(data = list(y = cbind(NA, NA, NA, NA, y.pp), e = e.pp), 
+                      A = list(A.pp, 1),
+                      effects = list(i = 1:nv, b0.pp = rep(1, nv + n)),
+                      tag = 'pp2')
+
+j.stk <- inla.stack(stk2.y, stk2.y1, stk2.y2, stk2.y3, stk2.pp)
+```
+
+fit model
+
+```{r}
+gaus.prior <- list(prior = 'gaussian', param = c(0, 2))
+# Model formula
+jform <- y ~ 0 + b0.pp + b0.y + b0.y1 + b0.y2 + b0.y3 + f(i, model = spde) +
+  f(j, copy = 'i', fixed = FALSE, hyper = list(theta = gaus.prior)) + 
+  f(j1, copy = 'i', fixed = FALSE, hyper = list(theta = gaus.prior)) +
+  f(j2, model = spde) +
+  f(j3, copy = 'i', fixed = FALSE, hyper = list(theta = gaus.prior))
+# Fit model
+j.res <- inla(jform, family = c('gaussian', 'binomial', 'binomial', "gamma", 'poisson'), 
+              data = inla.stack.data(j.stk),
+              E = inla.stack.data(j.stk)$e,
+              control.predictor = list(A = inla.stack.A(j.stk)))
+summary(j.res)$fixed
+summary(j.res)$hyperpar
+```
+
+### `stelfi` {-}
+
+
+```{r}
+locs <- cbind(x = xy[,1], y = xy[,2])
+marks <- cbind(m1 = resp, m2 = resp1, m3 = resp2, m4 = resp3)
+param <- list(beta = matrix(0, nrow = ncol(marks), ncol = ncol(marks) + 1) ,
+              tau = rep(1, 5), kappa = rep(1, 5),
+              betaresp = rep(0, ncol(marks)), betapp = 0)
+## c(1,1,1,1) share all marks with point process, idx[3, 3] = 1
+## would mean that the second mark will be shared with the third mark 
+idx <-  cbind(c(1, 1, 1, 1), matrix(0, nrow = ncol(marks), ncol = ncol(marks)))
+## number of "structural" parameters to be estimated relating to marks
+## only referenced as  log_sigma for Normal and log_scale for gamma
+strparam <- c(1, 0, 0, 1)
+## matrix of "structural" fixed parameters relating to marks
+## e.g., number of trials for binomial, effort for poisson
+strfixed <- cbind(rep(log(0.25), nrow(marks)), 1, 2, 1)
+
+fit <- fit_mlgcp(locs = locs, marks = marks,
+                 sp = domainSP, smesh = mesh,
+                 parameters = param, methods = c(0, 2, 2, 3),
+                 strfixed = strfixed, strparam = strparam, idx = idx)
+get_coefs(fit)
+
+```

@@ -1,0 +1,38 @@
+# Marked log-Gaussian Cox Process {#marked}
+
+## The `fit_mlgcp()` function
+
+```{r}
+args(fit_mlgcp)
+```
+
+## Fitting a marked LGCP
+
+```{r, eval = FALSE}
+devtools::load_all("~/Git/stelfi")
+data(marked)
+loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
+domain <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(loc.d)),'0')))
+smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1), 
+                           max.edge = c(0.3, 0.7), cutoff = 0.05)
+locs <- cbind(x = marked$x, y = marked$y)
+marks <- cbind(m1 = marked$m1, m2 = marked$m2, m3 = marked$m3)
+param <- list(beta = matrix(0, nrow = ncol(marks), ncol = ncol(marks) + 1) ,
+              tau = rep(1, 4), kappa = rep(1, 4),
+              betaresp = rep(0, ncol(marks)), betapp = 0)
+## c(1,1,1) share all marks with point process, idx[3, 3] = 1
+## would mean that the second mark will be shared with the third mark 
+idx <-  cbind(c(1, 1, 1), matrix(0, nrow = ncol(marks), ncol = ncol(marks)))
+## number of "structural" parameters to be estimated relating to marks
+## only referenced as  log_sigma for Normal and log_scale for gamma
+strparam <- c(1, 0, 1)
+## matrix of "structural" fixed parameters relating to marks
+## e.g., number of trials for binomial, effort for poisson
+strfixed <- cbind(rep(log(0.25), nrow(marks)), 1, 2)
+
+fit <- fit_mlgcp(locs = locs, marks = marks,
+                 sp = domain, smesh = smesh,
+                 parameters = param, methods = c(0, 2, 3),
+                 strfixed = strfixed, strparam = strparam, idx = idx)
+get_coefs(fit)
+```

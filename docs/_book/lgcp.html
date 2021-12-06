@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 3 log-Gaussian Cox Process | Spatiotemporal LGCPs</title>
+  <meta name="description" content="Using stelfi" />
+  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 3 log-Gaussian Cox Process | Spatiotemporal LGCPs" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Using stelfi" />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 3 log-Gaussian Cox Process | Spatiotemporal LGCPs" />
+  
+  <meta name="twitter:description" content="Using stelfi" />
+  
+
+<meta name="author" content="Charlotte M. Jones-Todd" />
+
+
+<meta name="date" content="2021-09-30" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="hawkes.html"/>
+<link rel="next" href="marked.html"/>
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Spatiotemporal LGCPs</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#installing-stelfi"><i class="fa fa-check"></i><b>1.1</b> Installing <code>stelfi</code></a>
+<ul>
+<li class="chapter" data-level="1.1.1" data-path="index.html"><a href="index.html#compiling-templates"><i class="fa fa-check"></i><b>1.1.1</b> Compiling templates</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="hawkes.html"><a href="hawkes.html"><i class="fa fa-check"></i><b>2</b> Hawkes process</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes-function"><i class="fa fa-check"></i><b>2.1</b> The <code>fit_hawkes()</code> function</a></li>
+<li class="chapter" data-level="2.2" data-path="hawkes.html"><a href="hawkes.html#applied-examples"><i class="fa fa-check"></i><b>2.2</b> Applied examples</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="hawkes.html"><a href="hawkes.html#retweets"><i class="fa fa-check"></i><b>2.2.1</b> Retweets</a></li>
+<li class="chapter" data-level="2.2.2" data-path="hawkes.html"><a href="hawkes.html#uk-serial-killers"><i class="fa fa-check"></i><b>2.2.2</b> UK serial killers</a></li>
+<li class="chapter" data-level="2.2.3" data-path="hawkes.html"><a href="hawkes.html#malaria-cases"><i class="fa fa-check"></i><b>2.2.3</b> Malaria cases</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="hawkes.html"><a href="hawkes.html#simulation"><i class="fa fa-check"></i><b>2.3</b> Simulation</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>3</b> log-Gaussian Cox Process</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>3.1</b> The <code>fit_lgcp()</code> function</a></li>
+<li class="chapter" data-level="3.2" data-path="lgcp.html"><a href="lgcp.html#fitting-a-lgcp"><i class="fa fa-check"></i><b>3.2</b> Fitting a LGCP</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="lgcp.html"><a href="lgcp.html#spatial-only"><i class="fa fa-check"></i><b>3.2.1</b> Spatial only</a></li>
+<li class="chapter" data-level="3.2.2" data-path="lgcp.html"><a href="lgcp.html#spatiotemporal-lgcp"><i class="fa fa-check"></i><b>3.2.2</b> Spatiotemporal LGCP</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="marked.html"><a href="marked.html"><i class="fa fa-check"></i><b>4</b> Marked log-Gaussian Cox Process</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="marked.html"><a href="marked.html#the-fit_mlgcp-function"><i class="fa fa-check"></i><b>4.1</b> The <code>fit_mlgcp()</code> function</a></li>
+<li class="chapter" data-level="4.2" data-path="marked.html"><a href="marked.html#fitting-a-marked-lgcp"><i class="fa fa-check"></i><b>4.2</b> Fitting a marked LGCP</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="stelfi.html"><a href="stelfi.html"><i class="fa fa-check"></i><b>5</b> Spatiotemporal self-exciting model</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="stelfi.html"><a href="stelfi.html#the-fit_stelfi-function"><i class="fa fa-check"></i><b>5.1</b> The <code>fit_stelfi()</code> function</a></li>
+<li class="chapter" data-level="5.2" data-path="stelfi.html"><a href="stelfi.html#hawkes-spatial"><i class="fa fa-check"></i><b>5.2</b> Hawkes spatial</a></li>
+<li class="chapter" data-level="5.3" data-path="stelfi.html"><a href="stelfi.html#hawkes-spde"><i class="fa fa-check"></i><b>5.3</b> Hawkes spde</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="comparing-inla-and-stelfi-fitting-lgcps.html"><a href="comparing-inla-and-stelfi-fitting-lgcps.html"><i class="fa fa-check"></i><b>6</b> Comparing <code>INLA</code> and <code>stelfi</code> fitting LGCPs</a></li>
+<li class="chapter" data-level="7" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>7</b> Introduction</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Spatiotemporal LGCPs</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="lgcp" class="section level1" number="3">
+<h1><span class="header-section-number">Chapter 3</span> log-Gaussian Cox Process</h1>
+<div id="the-fit_lgcp-function" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> The <code>fit_lgcp()</code> function</h2>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="lgcp.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">args</span>(fit_lgcp)</span></code></pre></div>
+<pre><code>## function (locs, sp, smesh, tmesh, parameters, covariates, silent, 
+##     ...) 
+## NULL</code></pre>
+</div>
+<div id="fitting-a-lgcp" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Fitting a LGCP</h2>
+<div id="spatial-only" class="section level3" number="3.2.1">
+<h3><span class="header-section-number">3.2.1</span> Spatial only</h3>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="lgcp.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(xyt)</span>
+<span id="cb38-2"><a href="lgcp.html#cb38-2" aria-hidden="true" tabindex="-1"></a>domain <span class="ot">&lt;-</span> <span class="fu">as</span>(xyt<span class="sc">$</span>window, <span class="st">&quot;SpatialPolygons&quot;</span>)</span>
+<span id="cb38-3"><a href="lgcp.html#cb38-3" aria-hidden="true" tabindex="-1"></a>locs <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> xyt<span class="sc">$</span>x, <span class="at">y =</span> xyt<span class="sc">$</span>y)</span>
+<span id="cb38-4"><a href="lgcp.html#cb38-4" aria-hidden="true" tabindex="-1"></a>smesh <span class="ot">&lt;-</span> INLA<span class="sc">::</span><span class="fu">inla.mesh.2d</span>(<span class="at">boundary =</span> INLA<span class="sc">::</span><span class="fu">inla.sp2segment</span>(domain), </span>
+<span id="cb38-5"><a href="lgcp.html#cb38-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">max.edge =</span> <span class="fl">0.75</span>, <span class="at">cutoff =</span> <span class="fl">0.3</span>)</span>
+<span id="cb38-6"><a href="lgcp.html#cb38-6" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_lgcp</span>(<span class="at">locs =</span> locs, <span class="at">sp =</span> domain, <span class="at">smesh =</span> smesh,</span>
+<span id="cb38-7"><a href="lgcp.html#cb38-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">parameters =</span> <span class="fu">c</span>(<span class="at">beta =</span> <span class="dv">0</span>, <span class="at">tau =</span> <span class="dv">1</span>, <span class="at">kappa =</span> <span class="dv">1</span>))</span></code></pre></div>
+<pre><code>## Order of parameters:
+## [1] &quot;beta&quot;      &quot;x&quot;         &quot;log_tau&quot;   &quot;log_kappa&quot; &quot;atanh_rho&quot;
+## Not matching template order:
+## [1] &quot;beta&quot;      &quot;x&quot;         &quot;log_tau&quot;   &quot;log_kappa&quot;
+## Your parameter list has been re-ordered.
+## (Disable this warning with checkParameterOrder=FALSE)
+## Optimizing tape... Done
+## iter: 1  value: 534.3463 mgc: 10.76379 ustep: 0.6827823 
+## iter: 2  value: 397.1872 mgc: 12.70915 ustep: 0.8263238 
+## iter: 3  value: 385.679 mgc: 3.166187 ustep: 0.9090326 
+## iter: 4  value: 385.4992 mgc: 0.3762095 ustep: 0.9534367 
+## iter: 5  value: 385.499 mgc: 0.01007973 ustep: 0.9764432 
+## iter: 6  value: 385.499 mgc: 5.399029e-05 ustep: 0.9881526 
+## iter: 7  value: 385.499 mgc: 1.984211e-07 ustep: 0.9940592 
+## iter: 8  mgc: 6.342769e-10 
+## iter: 1  mgc: 6.342769e-10 
+## Matching hessian patterns... Done
+## outer mgc:  541.4191 
+## iter: 1  value: 282.5293 mgc: 2.075785 ustep: 1 
+## iter: 2  value: 282.5275 mgc: 0.03264823 ustep: 1 
+## iter: 3  value: 282.5275 mgc: 7.871658e-05 ustep: 1 
+## iter: 4  mgc: 7.276089e-10 
+## iter: 1  mgc: 7.276089e-10 
+## outer mgc:  4.166455 
+## iter: 1  value: 371.0988 mgc: 4.643818 ustep: 1 
+## iter: 2  value: 370.3376 mgc: 0.4191142 ustep: 1 
+## iter: 3  value: 370.3372 mgc: 0.01039809 ustep: 1 
+## iter: 4  value: 370.3372 mgc: 8.245341e-06 ustep: 1 
+## iter: 5  mgc: 1.193795e-11 
+## iter: 1  mgc: 1.193795e-11 
+## outer mgc:  2.27722 
+## iter: 1  value: 420.9599 mgc: 12.90898 ustep: 1 
+## iter: 2  value: 377.8876 mgc: 3.274451 ustep: 1 
+## iter: 3  value: 376.9409 mgc: 0.434989 ustep: 1 
+## iter: 4  value: 376.9403 mgc: 0.01114035 ustep: 1 
+## iter: 5  value: 376.9403 mgc: 7.823585e-06 ustep: 1 
+## iter: 6  mgc: 3.856915e-12 
+## iter: 1  mgc: 3.856915e-12 
+## outer mgc:  4.454899 
+## iter: 1  value: 8989.436 mgc: 358.5375 ustep: 1 
+## iter: 2  value: 2890.988 mgc: 129.5891 ustep: 1 
+## iter: 3  value: 1064.355 mgc: 45.30125 ustep: 1 
+## iter: 4  value: 683.7126 mgc: 14.39097 ustep: 1 
+## iter: 5  value: 650.8102 mgc: 3.471187 ustep: 1 
+## iter: 6  value: 650.3926 mgc: 0.3865383 ustep: 1 
+## iter: 7  value: 650.3925 mgc: 0.006996776 ustep: 1 
+## iter: 8  value: 650.3925 mgc: 2.783676e-06 ustep: 1 
+## iter: 9  mgc: 4.842793e-13 
+## iter: 1  value: 381.1853 mgc: 3.684777 ustep: 1 
+## iter: 2  value: 379.8359 mgc: 0.5242108 ustep: 1 
+## iter: 3  value: 379.8347 mgc: 0.01584216 ustep: 1 
+## iter: 4  value: 379.8347 mgc: 1.56739e-05 ustep: 1 
+## iter: 5  mgc: 1.536471e-11 
+## iter: 1  mgc: 1.536471e-11 
+## outer mgc:  7.440148 
+## iter: 1  value: 402.7536 mgc: 9.164175 ustep: 1 
+## iter: 2  value: 385.0895 mgc: 2.045565 ustep: 1 
+## iter: 3  value: 384.9128 mgc: 0.1921578 ustep: 1 
+## iter: 4  value: 384.9128 mgc: 0.002191669 ustep: 1 
+## iter: 5  value: 384.9128 mgc: 2.930951e-07 ustep: 1 
+## iter: 6  mgc: 1.509903e-14 
+## iter: 1  value: 534.4073 mgc: 21.58889 ustep: 1 
+## iter: 2  value: 422.4273 mgc: 6.155377 ustep: 1 
+## iter: 3  value: 417.6858 mgc: 1.107201 ustep: 1 
+## iter: 4  value: 417.6729 mgc: 0.05840989 ustep: 1 
+## iter: 5  value: 417.6729 mgc: 0.0001847432 ustep: 1 
+## iter: 6  mgc: 2.057174e-09 
+## iter: 1  mgc: 1.509903e-14 
+## outer mgc:  10.74939 
+## iter: 1  value: 370.7182 mgc: 8.277341 ustep: 1 
+## iter: 2  value: 363.6895 mgc: 1.610508 ustep: 1 
+## iter: 3  value: 363.6635 mgc: 0.1076835 ustep: 1 
+## iter: 4  value: 363.6635 mgc: 0.0004992693 ustep: 1 
+## iter: 5  value: 363.6635 mgc: 1.523622e-08 ustep: 1 
+## mgc: 1.834644e-14 
+## iter: 1  value: 377.9086 mgc: 0.253723 ustep: 1 
+## iter: 2  value: 377.9086 mgc: 0.002233806 ustep: 1 
+## iter: 3  value: 377.9086 mgc: 8.205234e-07 ustep: 1 
+## iter: 4  mgc: 1.072198e-13 
+## iter: 1  mgc: 1.072198e-13 
+## outer mgc:  9.921071 
+## iter: 1  value: 364.3054 mgc: 0.5134671 ustep: 1 
+## iter: 2  value: 364.3043 mgc: 0.01642565 ustep: 1 
+## iter: 3  value: 364.3043 mgc: 3.544357e-05 ustep: 1 
+## iter: 4  mgc: 1.588341e-10 
+## iter: 1  value: 327.3533 mgc: 2.353158 ustep: 1 
+## iter: 2  value: 327.3145 mgc: 0.1570107 ustep: 1 
+## iter: 3  value: 327.3145 mgc: 0.001211215 ustep: 1 
+## iter: 4  value: 327.3145 mgc: 6.693012e-08 ustep: 1 
+## iter: 5  mgc: 6.383782e-15 
+## iter: 1  mgc: 1.588341e-10 
+## outer mgc:  6.457193 
+## iter: 1  value: 344.6071 mgc: 1.465723 ustep: 1 
+## iter: 2  value: 344.5333 mgc: 0.1502923 ustep: 1 
+## iter: 3  value: 344.5333 mgc: 0.001418727 ustep: 1 
+## iter: 4  value: 344.5333 mgc: 1.388773e-07 ustep: 1 
+## iter: 5  mgc: 7.015222e-15 
+## iter: 1  value: 356.6117 mgc: 0.529421 ustep: 1 
+## iter: 2  value: 356.6084 mgc: 0.02412715 ustep: 1 
+## iter: 3  value: 356.6084 mgc: 5.9255e-05 ustep: 1 
+## iter: 4  mgc: 4.002466e-10 
+## iter: 1  mgc: 4.002466e-10 
+## outer mgc:  2.669901 
+## iter: 1  value: 364.9294 mgc: 0.5706286 ustep: 1 
+## iter: 2  value: 364.9294 mgc: 0.004675022 ustep: 1 
+## iter: 3  value: 364.9294 mgc: 6.432198e-07 ustep: 1 
+## iter: 4  mgc: 4.884981e-14 
+## iter: 1  value: 367.8286 mgc: 3.57254 ustep: 1 
+## iter: 2  value: 367.5086 mgc: 0.3664021 ustep: 1 
+## iter: 3  value: 367.5086 mgc: 0.005250454 ustep: 1 
+## iter: 4  value: 367.5086 mgc: 1.551418e-06 ustep: 1 
+## iter: 5  mgc: 1.152828e-13 
+## iter: 1  mgc: 4.884981e-14 
+## outer mgc:  3.11325 
+## iter: 1  value: 377.3664 mgc: 0.8732301 ustep: 1 
+## iter: 2  value: 377.365 mgc: 0.02030594 ustep: 1 
+## iter: 3  value: 377.365 mgc: 1.603306e-05 ustep: 1 
+## iter: 4  mgc: 1.155523e-11 
+## iter: 1  mgc: 1.155523e-11 
+## outer mgc:  4.351084 
+## iter: 1  value: 391.2425 mgc: 1.092614 ustep: 1 
+## iter: 2  value: 391.241 mgc: 0.03574139 ustep: 1 
+## iter: 3  value: 391.241 mgc: 5.513449e-05 ustep: 1 
+## iter: 4  mgc: 1.286748e-10 
+## iter: 1  mgc: 1.286748e-10 
+## outer mgc:  3.076712 
+## iter: 1  value: 381.7407 mgc: 0.6545439 ustep: 1 
+## iter: 2  value: 381.7403 mgc: 0.01677527 ustep: 1 
+## iter: 3  value: 381.7403 mgc: 1.770063e-05 ustep: 1 
+## iter: 4  mgc: 1.855079e-11 
+## iter: 1  value: 387.8669 mgc: 0.2111348 ustep: 1 
+## iter: 2  value: 387.8669 mgc: 0.002191831 ustep: 1 
+## iter: 3  value: 387.8669 mgc: 3.837711e-07 ustep: 1 
+## iter: 4  mgc: 1.26097e-14 
+## iter: 1  mgc: 1.26097e-14 
+## outer mgc:  2.158236 
+## iter: 1  value: 394.859 mgc: 0.2812286 ustep: 1 
+## iter: 2  value: 394.859 mgc: 0.002026409 ustep: 1 
+## iter: 3  value: 394.859 mgc: 3.013404e-07 ustep: 1 
+## iter: 4  mgc: 1.104672e-14 
+## iter: 1  mgc: 1.104672e-14 
+## outer mgc:  2.034748 
+## iter: 1  value: 401.1775 mgc: 0.450018 ustep: 1 
+## iter: 2  value: 401.1774 mgc: 0.004096185 ustep: 1 
+## iter: 3  value: 401.1774 mgc: 6.014281e-07 ustep: 1 
+## iter: 4  mgc: 1.154632e-14 
+## iter: 1  value: 416.6716 mgc: 0.8191125 ustep: 1 
+## iter: 2  value: 416.6715 mgc: 0.01138783 ustep: 1 
+## iter: 3  value: 416.6715 mgc: 4.737287e-06 ustep: 1 
+## iter: 4  mgc: 8.484324e-13 
+## iter: 1  mgc: 8.484324e-13 
+## outer mgc:  1.702276 
+## iter: 1  value: 425.4947 mgc: 0.6661809 ustep: 1 
+## iter: 2  value: 425.4946 mgc: 0.01192623 ustep: 1 
+## iter: 3  value: 425.4946 mgc: 4.731394e-06 ustep: 1 
+## iter: 4  mgc: 8.853612e-13 
+## iter: 1  mgc: 8.853612e-13 
+## outer mgc:  2.034039 
+## iter: 1  value: 428.9727 mgc: 0.3281455 ustep: 1 
+## iter: 2  value: 428.9727 mgc: 0.004324923 ustep: 1 
+## iter: 3  value: 428.9727 mgc: 9.692598e-07 ustep: 1 
+## iter: 4  mgc: 4.363176e-14 
+## iter: 1  mgc: 4.363176e-14 
+## outer mgc:  0.4653992 
+## iter: 1  value: 428.3006 mgc: 0.06473722 ustep: 1 
+## iter: 2  value: 428.3006 mgc: 0.0001445645 ustep: 1 
+## iter: 3  mgc: 1.026396e-09 
+## iter: 1  mgc: 1.026396e-09 
+## outer mgc:  0.09116502 
+## iter: 1  value: 428.2364 mgc: 0.00658129 ustep: 1 
+## iter: 2  value: 428.2364 mgc: 3.309161e-06 ustep: 1 
+## iter: 3  mgc: 7.97612e-13 
+## iter: 1  mgc: 7.97612e-13 
+## outer mgc:  0.04702646 
+## iter: 1  value: 428.302 mgc: 0.003062686 ustep: 1 
+## iter: 2  value: 428.302 mgc: 2.609464e-07 ustep: 1 
+## iter: 3  mgc: 5.967449e-15 
+## iter: 1  mgc: 5.967449e-15 
+## outer mgc:  0.0004561847 
+## iter: 1  value: 428.301 mgc: 8.169674e-05 ustep: 1 
+## iter: 2  mgc: 2.319102e-10 
+## iter: 1  mgc: 2.319102e-10 
+## outer mgc:  2.120713e-05 
+## iter: 1  mgc: 2.319102e-10</code></pre>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="lgcp.html#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit)</span></code></pre></div>
+<pre><code>## iter: 1  mgc: 2.319102e-10 
+## outer mgc:  2.120713e-05 
+## iter: 1  value: 428.2936 mgc: 0.007893647 ustep: 1 
+## iter: 2  value: 428.2936 mgc: 2.816726e-06 ustep: 1 
+## iter: 3  mgc: 3.715916e-13 
+## outer mgc:  0.1291841 
+## iter: 1  value: 428.3085 mgc: 0.007885757 ustep: 1 
+## iter: 2  value: 428.3085 mgc: 2.816468e-06 ustep: 1 
+## iter: 3  mgc: 3.692602e-13 
+## outer mgc:  0.1291358 
+## iter: 1  value: 428.214 mgc: 0.00464869 ustep: 1 
+## iter: 2  value: 428.214 mgc: 4.335762e-07 ustep: 1 
+## iter: 3  mgc: 8.992806e-15 
+## outer mgc:  0.0362467 
+## iter: 1  value: 428.388 mgc: 0.004644043 ustep: 1 
+## iter: 2  value: 428.388 mgc: 4.334062e-07 ustep: 1 
+## iter: 3  mgc: 6.439294e-15 
+## outer mgc:  0.03625438 
+## iter: 1  value: 428.1967 mgc: 0.006239337 ustep: 1 
+## iter: 2  value: 428.1967 mgc: 1.21095e-06 ustep: 1 
+## iter: 3  mgc: 6.017409e-14 
+## outer mgc:  0.08753317 
+## iter: 1  value: 428.4052 mgc: 0.006221647 ustep: 1 
+## iter: 2  value: 428.4052 mgc: 1.206346e-06 ustep: 1 
+## iter: 3  mgc: 6.261658e-14 
+## outer mgc:  0.08740283 
+## outer mgc:  2.597914</code></pre>
+<pre><code>##         Estimate Std. Error
+## beta  2.44818565 0.09034647
+## tau   0.07198347 0.04792390
+## kappa 2.59791407 0.76483198</code></pre>
+</div>
+<div id="spatiotemporal-lgcp" class="section level3" number="3.2.2">
+<h3><span class="header-section-number">3.2.2</span> Spatiotemporal LGCP</h3>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="lgcp.html#cb43-1" aria-hidden="true" tabindex="-1"></a>ndays <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb43-2"><a href="lgcp.html#cb43-2" aria-hidden="true" tabindex="-1"></a>locs <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> xyt<span class="sc">$</span>x, <span class="at">y =</span> xyt<span class="sc">$</span>y, <span class="at">t =</span> xyt<span class="sc">$</span>t)</span>
+<span id="cb43-3"><a href="lgcp.html#cb43-3" aria-hidden="true" tabindex="-1"></a>w0 <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb43-4"><a href="lgcp.html#cb43-4" aria-hidden="true" tabindex="-1"></a>tmesh <span class="ot">&lt;-</span> INLA<span class="sc">::</span><span class="fu">inla.mesh.1d</span>(<span class="fu">seq</span>(<span class="dv">0</span>, ndays, <span class="at">by =</span> w0))</span>
+<span id="cb43-5"><a href="lgcp.html#cb43-5" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_lgcp</span>(<span class="at">locs =</span> locs, <span class="at">sp =</span> domain, <span class="at">smesh =</span> smesh, <span class="at">tmesh =</span> tmesh,</span>
+<span id="cb43-6"><a href="lgcp.html#cb43-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">parameters =</span> <span class="fu">c</span>(<span class="at">beta =</span> <span class="dv">0</span>, <span class="at">tau =</span> <span class="dv">1</span>, <span class="at">kappa =</span> <span class="dv">1</span>, <span class="at">rho =</span> <span class="fl">0.2</span>))</span></code></pre></div>
+<pre><code>## Warning: 4 external pointers will be removed
+## Optimizing tape... Done
+## iter: 1  value: 518.8558 mgc: 9.69178 ustep: 0.8994163 
+## iter: 2  value: 352.1387 mgc: 8.671286 ustep: 0.9483808 
+## iter: 3  value: 332.8561 mgc: 2.414627 ustep: 0.973851 
+## iter: 4  value: 332.3444 mgc: 0.3796963 ustep: 0.9868402 
+## iter: 5  value: 332.3436 mgc: 0.01488855 ustep: 0.993399 
+## iter: 6  value: 332.3436 mgc: 5.379539e-05 ustep: 0.9966944 
+## iter: 7  value: 332.3436 mgc: 1.037112e-07 ustep: 0.998346 
+## iter: 8  mgc: 1.519413e-10 
+## iter: 1  mgc: 1.519413e-10 
+## Matching hessian patterns... Done
+## outer mgc:  286.9585 
+## iter: 1  value: 345.9611 mgc: 2.140766 ustep: 1 
+## iter: 2  value: 345.5366 mgc: 0.104814 ustep: 1 
+## iter: 3  value: 345.5359 mgc: 0.006420566 ustep: 1 
+## iter: 4  value: 345.5359 mgc: 2.161942e-05 ustep: 1 
+## iter: 5  mgc: 2.223214e-10 
+## iter: 1  mgc: 2.223214e-10 
+## outer mgc:  5.416438 
+## iter: 1  value: 447.8499 mgc: 1.969873 ustep: 1 
+## iter: 2  value: 447.68 mgc: 0.1140927 ustep: 1 
+## iter: 3  value: 447.68 mgc: 0.001680815 ustep: 1 
+## iter: 4  value: 447.68 mgc: 9.058264e-07 ustep: 1 
+## iter: 5  mgc: 2.516876e-13 
+## iter: 1  mgc: 2.516876e-13 
+## outer mgc:  5.576032 
+## iter: 1  value: 659.9079 mgc: 2.905043 ustep: 1 
+## iter: 2  value: 659.8212 mgc: 0.126931 ustep: 1 
+## iter: 3  value: 659.8212 mgc: 0.002759595 ustep: 1 
+## iter: 4  value: 659.8212 mgc: 1.121765e-06 ustep: 1 
+## iter: 5  mgc: 1.6976e-13 
+## iter: 1  value: 541.1307 mgc: 1.711116 ustep: 1 
+## iter: 2  value: 541.1261 mgc: 0.03403901 ustep: 1 
+## iter: 3  value: 541.1261 mgc: 0.0001451792 ustep: 1 
+## iter: 4  mgc: 2.203859e-09 
+## iter: 1  mgc: 2.203859e-09 
+## outer mgc:  5.348311 
+## iter: 1  value: 546.9014 mgc: 2.085702 ustep: 1 
+## iter: 2  value: 545.9208 mgc: 0.2986195 ustep: 1 
+## iter: 3  value: 545.9201 mgc: 0.008110388 ustep: 1 
+## iter: 4  value: 545.9201 mgc: 6.222201e-06 ustep: 1 
+## iter: 5  mgc: 3.621631e-12 
+## iter: 1  mgc: 3.621631e-12 
+## outer mgc:  1.435357 
+## iter: 1  value: 536.5535 mgc: 2.266254 ustep: 1 
+## iter: 2  value: 535.798 mgc: 0.2884635 ustep: 1 
+## iter: 3  value: 535.7976 mgc: 0.006642251 ustep: 1 
+## iter: 4  value: 535.7976 mgc: 3.835085e-06 ustep: 1 
+## iter: 5  mgc: 1.296505e-12 
+## iter: 1  value: 541.5788 mgc: 0.739168 ustep: 1 
+## iter: 2  value: 541.5652 mgc: 0.03932166 ustep: 1 
+## iter: 3  value: 541.5652 mgc: 0.0001279691 ustep: 1 
+## iter: 4  mgc: 1.399683e-09 
+## iter: 1  mgc: 1.399683e-09 
+## outer mgc:  0.3280603 
+## iter: 1  value: 546.2725 mgc: 0.1970036 ustep: 1 
+## iter: 2  value: 546.2725 mgc: 0.00122573 ustep: 1 
+## iter: 3  value: 546.2725 mgc: 7.997233e-08 ustep: 1 
+## iter: 4  mgc: 2.742251e-14 
+## iter: 1  mgc: 2.742251e-14 
+## outer mgc:  0.4583343 
+## iter: 1  value: 542.579 mgc: 0.1030731 ustep: 1 
+## iter: 2  value: 542.579 mgc: 0.0007006543 ustep: 1 
+## iter: 3  value: 542.579 mgc: 5.15095e-08 ustep: 1 
+## iter: 4  mgc: 2.620126e-14 
+## iter: 1  mgc: 2.620126e-14 
+## outer mgc:  0.1228685 
+## iter: 1  value: 544.8844 mgc: 0.05965421 ustep: 1 
+## iter: 2  value: 544.8844 mgc: 0.0002784645 ustep: 1 
+## iter: 3  mgc: 7.745592e-09 
+## iter: 1  mgc: 7.745592e-09 
+## outer mgc:  0.07424418 
+## iter: 1  value: 544.4463 mgc: 0.01971116 ustep: 1 
+## iter: 2  value: 544.4463 mgc: 4.000269e-05 ustep: 1 
+## iter: 3  mgc: 1.898561e-10 
+## iter: 1  mgc: 1.898561e-10 
+## outer mgc:  0.008037084 
+## iter: 1  value: 544.4318 mgc: 0.00344086 ustep: 1 
+## iter: 2  value: 544.4318 mgc: 6.89621e-07 ustep: 1 
+## iter: 3  mgc: 5.962592e-14 
+## iter: 1  mgc: 5.962592e-14 
+## outer mgc:  0.0008111555 
+## iter: 1  value: 544.4385 mgc: 0.0003610607 ustep: 1 
+## iter: 2  mgc: 5.154479e-09 
+## iter: 1  mgc: 5.154479e-09 
+## outer mgc:  0.0001077869 
+## iter: 1  mgc: 5.154479e-09</code></pre>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="lgcp.html#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit)</span></code></pre></div>
+<pre><code>## iter: 1  mgc: 5.154479e-09 
+## outer mgc:  0.0001077869 
+## iter: 1  value: 544.4382 mgc: 0.00515223 ustep: 1 
+## iter: 2  value: 544.4382 mgc: 2.555828e-06 ustep: 1 
+## iter: 3  mgc: 6.311479e-13 
+## outer mgc:  0.004361833 
+## iter: 1  value: 544.4388 mgc: 0.00514707 ustep: 1 
+## iter: 2  value: 544.4388 mgc: 2.557479e-06 ustep: 1 
+## iter: 3  mgc: 6.338402e-13 
+## outer mgc:  0.00435769 
+## iter: 1  value: 544.2326 mgc: 0.004852782 ustep: 1 
+## iter: 2  value: 544.2326 mgc: 2.158663e-07 ustep: 1 
+## iter: 3  mgc: 4.085621e-14 
+## outer mgc:  0.02273045 
+## iter: 1  value: 544.6445 mgc: 0.004847922 ustep: 1 
+## iter: 2  value: 544.6445 mgc: 2.16009e-07 ustep: 1 
+## iter: 3  mgc: 3.108624e-14 
+## outer mgc:  0.02293385 
+## iter: 1  value: 544.4108 mgc: 0.0009039216 ustep: 1 
+## iter: 2  value: 544.4108 mgc: 3.490953e-08 ustep: 1 
+## iter: 3  mgc: 3.330669e-14 
+## outer mgc:  0.05563897 
+## iter: 1  value: 544.4663 mgc: 0.0009017732 ustep: 1 
+## iter: 2  value: 544.4663 mgc: 3.471919e-08 ustep: 1 
+## iter: 3  mgc: 3.252953e-14 
+## outer mgc:  0.05561237 
+## iter: 1  value: 544.3657 mgc: 0.004975578 ustep: 1 
+## iter: 2  value: 544.3657 mgc: 1.896277e-07 ustep: 1 
+## iter: 3  mgc: 4.352074e-14 
+## outer mgc:  0.02093011 
+## iter: 1  value: 544.5112 mgc: 0.004971711 ustep: 1 
+## iter: 2  value: 544.5112 mgc: 1.894794e-07 ustep: 1 
+## iter: 3  mgc: 3.419487e-14 
+## outer mgc:  0.02095997 
+## outer mgc:  1</code></pre>
+<pre><code>##        Estimate Std. Error
+## rho   0.3195294 0.24628383
+## beta  0.8957975 0.47944607
+## tau   0.2680934 0.09133882
+## kappa 0.6811763 0.15365247</code></pre>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="hawkes.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="marked.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["docs.pdf", "docs.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
