@@ -37,7 +37,11 @@ dll_stelfi <- function(x) {
         for (i in paste(dll_dir, list.files(dll_dir), sep = "")) {
             dyn.load(i)
         }
-    }else{
+    }
+    is_windows <- length(grep("Windows", utils::sessionInfo()$running)) > 0
+    else if (is_windows) {
+        dyn.load(paste(dll_dir, x, ".dll", sep = ""))
+    } else {
         dyn.load(paste(dll_dir, x, ".so", sep = ""))
     }
 }
