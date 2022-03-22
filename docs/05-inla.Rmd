@@ -96,7 +96,7 @@ $$\rho = \frac{\sqrt{8 \nu}}{\kappa} =  \frac{\sqrt{8}}{\kappa}$$
 ### `stelfi` wrapper for `INLA`{-}
 
 ```{r}
-devtools::load_all("~/Git/stelfi")
+#devtools::load_all("GitHub/stelfi")
 ## inla wrapper stelfi
 locs <- data.frame(x = xy[, 1], y = xy[, 2])
 res_wrap <- stelfi::fit_lgcp_inla(smesh = mesh, locs = locs,
@@ -109,7 +109,7 @@ summary(res_wrap)$hyper
 ### Model fitting using `TMB` via `stelfi`
 
 ```{r}
-devtools::load_all("~/Git/stelfi")
+#devtools::load_all("~/Git/stelfi")
 fit <- fit_lgcp(locs = locs, sp = domain, smesh = mesh,
                 parameters = c(beta = 0, log_tau = 0, log_kappa = 1))
 get_coefs(fit)
@@ -121,6 +121,7 @@ get_coefs(fit)
 Following [Advanced Spatial Modeling with Stochastic Partial Differential Equations Using R and INLA, Chapter 8](https://becarioprecario.bitbucket.io/spde-gitbook/ch-stapp.html#sec:burkitt).
 
 ```{r}
+set.seed(123)
 data('xyt', package = 'stelfi')
 k <- 2
 tknots <- seq(min(xyt$t), max(xyt$t), length = k)
@@ -167,7 +168,7 @@ summary(res)$hyperpar
 
 ```{r}
 ## inla wrapper stelfi
-devtools::load_all("~/Git/stelfi")
+#devtools::load_all("~/Git/stelfi")
 locs$t <- xyt$t
 res_wrap_st <- stelfi::fit_lgcp_inla(smesh = mesh.s, locs = locs,
                        domain = domain, tmesh = mesh.t, 
@@ -184,7 +185,7 @@ summary(res_wrap_st)$hyperpar
 
 ```{r}
 
-devtools::load_all("~/Git/stelfi")
+#devtools::load_all("~/Git/stelfi")
 fit <- fit_lgcp(locs = locs, sp = domain, smesh = mesh.s,
                 tmesh = mesh.t, 
                 parameters = c(beta = 0, log_tau = 0, log_kappa = 0, atanh_rho = 0))
@@ -197,7 +198,7 @@ get_coefs(fit)
 
 ### simulate
 ```{r}
-devtools::load_all("~/Git/stelfi")
+#devtools::load_all("~/Git/stelfi")
 library(INLA)
 library(spatstat)
 win <- spatstat.geom::owin(c(0, 3), c(0, 3))
