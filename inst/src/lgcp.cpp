@@ -83,7 +83,7 @@ Type objective_function<Type>::operator() ()
   Type tau = exp(log_tau);
   
   // Section 5.1.1 of https://becarioprecario.bitbucket.io/spde-gitbook/ch-nonstationarity.html.
-  SparseMatrix<Type> Q = Q_spde(spde, kappa) * tau; 
+  SparseMatrix<Type> Q = Q_spde(spde, kappa) * pow(tau,2); 
   Type nll = 0.0;
   /*
     The following chunk is for the log-likelihood of the random effects.
@@ -95,7 +95,7 @@ Type objective_function<Type>::operator() ()
     x.col(i) = rho * x.col(i - 1) + \epsilon_i, where \epsilon_i ~ N(0, Q).
   */
   if (x.cols() == 1){
-    nll += GMRF(Q)(x); 
+    nll = GMRF(Q)(x);
 
     SIMULATE{
       array<Type> xmat(x.size(), 2);
@@ -118,12 +118,12 @@ Type objective_function<Type>::operator() ()
 
     ADREPORT(rho);
   }
-
+  
   /*
     construct the linear predictor eta* = Eexp(eta), with random effects
     transformed by A and add the fixed effects.
   */
-  vector<Type> lambda = exp(A * x.vec() + designmat * beta) * w.cwiseEqual(0).select(vector<Type>::Ones(w.size()), w); 
+  vector<Type> lambda = exp(A * x.vec() + designmat * beta) * w.cwiseEqual(0).select(vector<Type>::Ones(w.size()), w);
   /*
     construct the likelihood with binary variable idx.
   */
@@ -147,5 +147,6 @@ Type objective_function<Type>::operator() ()
   Type stdev = 1/(4*M_PI*pow(exp(log_kappa),2)*pow(exp(log_tau),2)) ; // as reported by INLA
   ADREPORT(range);
   ADREPORT(stdev);
+  REPORT(x);
   return nll;
 }
