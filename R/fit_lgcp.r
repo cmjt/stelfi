@@ -79,6 +79,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
     obj$hessian <- TRUE
     trace <- if(nlminb_silent) 0 else 1
     opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
+    obj$objective <- opt$objective
     return(obj)
 }
 #' Function to fit a spatial or spatiotemporal log-Gaussian Cox process using \code{TMB}
@@ -104,6 +105,7 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
                       nlminb_silent = TRUE, ...) {
     if(sum(names(locs) %in% c("x","y")) < 2) stop("Named variables x and y required in arg locs")
     if(!missing(covariates)) if(!"matrix" %in% class(covariates)) stop("arg covariates must be a matrix")
+    beta <- parameters[["beta"]]
     if(!missing(covariates)) if(length(beta) != (ncol(covariates) + 1))
         stop("arg beta should be length ncol.covariates + 1")
     if (!missing(tmesh)) {
@@ -117,12 +119,14 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
         atanh_rho <- NULL
     }
     ## svs
-    beta <- parameters[["beta"]]
     log_tau <- parameters[["log_tau"]]
     log_kappa <- parameters[["log_kappa"]]
     ## Designmat
-    designmat <- matrix(rep(1, length(tmp$ypp) ), ncol = 1)
-    if(!missing(covariates)) designmat <- cbind(1, covariates)
+    if(!missing(covariates)) {
+        designmat <- cbind(1, covariates)
+    } else {
+        designmat <- matrix(rep(1, length(tmp$ypp) ), ncol = 1)
+    }
     ## Model fitting
     res <- fit_lgcp_tmb(y = tmp$ypp, A = tmp$A,
                         designmat = designmat,
