@@ -27,7 +27,7 @@ compile_stelfi <- function() {
     setwd(wd)
 }
 
-#' Function to load DLLs for C++ templtes
+#' Function to load DLLs for C++ templates
 #' Loads required DLLs for models fitted using TMB
 #' @param x option, if provided specifies \code{stelfi} DLL to load
 #' @export
