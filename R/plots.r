@@ -39,7 +39,8 @@ setMethod("show_hawkes",
 #' spatial pixel resolution
 #' @inheritParams get_fields
 #' @export
-show_field <- function(x,smesh, dims = c(500,500), border){
+show_field <- function(x,smesh, dims = c(500,500), border, colour_option="D",
+                       title="Plot"){
      nx <- dims[1]
      ny <- dims[2]
      px <- inlabru::pixels(smesh, nx = nx, ny = ny)
@@ -52,8 +53,9 @@ show_field <- function(x,smesh, dims = c(500,500), border){
 
      plt <- ggplot2::ggplot(as.data.frame(px), ggplot2::aes(x, y)) +
          ggplot2::geom_tile(ggplot2::aes(fill = color)) +
-         ggplot2::scale_fill_viridis_c() +
-         ggplot2::coord_equal()
+         ggplot2::scale_fill_viridis_c(option=colour_option) +
+         ggplot2::coord_equal()+
+         ggplot2::ggtitle(title)
      
      if (!missing(border)){
      plt<- plt+ggplot2::geom_polygon(data=border_f,ggplot2::aes(x=long,y=lat,group=group),fill=NA,color='red')

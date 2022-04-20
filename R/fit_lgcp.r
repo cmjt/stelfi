@@ -57,7 +57,7 @@
 fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
                           log_tau, log_kappa,
                           atanh_rho, x, tmb_silent,
-                          nlminb_silent, ...) {
+                          nlminb_silent, simulation,...) {
     if (!"lgcp" %in% getLoadedDLLs()) {
         stelfi::dll_stelfi("lgcp")
     }
@@ -78,8 +78,10 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
                           silent = tmb_silent)
     obj$hessian <- TRUE
     trace <- if(nlminb_silent) 0 else 1
-    opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
-    obj$objective <- opt$objective
+    if (simulation == FALSE) {
+        opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
+        obj$objective <- opt$objective
+    }
     return(obj)
 }
 #' Function to fit a spatial or spatiotemporal log-Gaussian Cox process using \code{TMB}
@@ -103,17 +105,24 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
                       tmb_silent = TRUE,
                       nlminb_silent = TRUE, ...) {
+    # Verify that arguments are correct size and class, basic processing
     if(sum(names(locs) %in% c("x","y")) < 2) stop("Named variables x and y required in arg locs")
     if(!missing(covariates)) if(!"matrix" %in% class(covariates)) stop("arg covariates must be a matrix")
     beta <- parameters[["beta"]]
     if(!missing(covariates)) if(length(beta) != (ncol(covariates) + 1))
         stop("arg beta should be length ncol.covariates + 1")
+    if (missing(covariates)) if(length(beta) != 1)
+        stop("arg beta should be length 1 if covariates missing")
     if (!missing(tmesh)) {
         if(!"t" %in% names(locs)) stop("Need a variable named t in arg locs")
         tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
         k <- length(tmesh$loc)
+        if (!missing(covariates)) if (nrow(covariates) != nrow(smesh$loc)*k)
+            stop("nrow.covariates should be size of spatial mesh times number of time knots")
         atanh_rho <- parameters[["atanh_rho"]]
     }else{
+        if (!missing(covariates)) if(nrow(covariates) != nrow(smesh$loc))
+            stop("nrow.covariates should be same as spatial mesh size")
         tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
         k <- 1
         atanh_rho <- NULL
@@ -137,6 +146,7 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
                         log_tau = log_tau, log_kappa = log_kappa,
                         atanh_rho = atanh_rho, tmb_silent = tmb_silent,
                         nlminb_silent = nlminb_silent,
+                        simulation = FALSE,
                         ...)
     return(res)
 
@@ -150,12 +160,7 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
     w_areas <- w$weights
     polys <- w$polys
     nv <- smesh$n
-    points.in.mesh = function(xy, dmesh){
-        sapply(1:length(dmesh), function(i){
-            coord = raster::geom(dmesh[i, ])[,c("x", "y")]
-            sum(sp::point.in.polygon(xy[, 1], xy[, 2], coord[, 1], coord[, 2]) > 0)
-        })
-    }
+
     ## SPDE
     spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
     ## spatial or spatiotemporal
@@ -178,7 +183,7 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
                               group = agg.dat$time, mesh.group = tmesh)
         idx <- rep(1, length(ypp))
     }else{
-        ypp <- points.in.mesh(locs, polys)
+        ypp <- stelfi::points.in.mesh(locs, polys)
         expected <- w_areas
         A <- Matrix::sparseMatrix(i = 1:nv, j = 1:nv, x = 1)
         idx <- expected > 0
@@ -186,3 +191,67 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
     lst <- list(ypp = ypp, A = A, spde = spde, w = expected, idx = idx)
     return(lst)
 }
+# FUNCTION HEADER TO BE WRITTEN
+#' Function to fit a spatial or spatiotemporal log-Gaussian Cox process using \code{TMB}
+#'
+#' A simple to use wrapper for \code{fit_lgcp_tmb}
+#' @param sp \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame} of the domain
+#' @param locs 2xn \code{data.frame} of locations x, y. If locations have
+#' time stapms then this is the third column of the 3xn matrix
+#' @param smesh spatial mesh of class \code{"inla.mesh"}
+#' @param tmesh optional, temporal mesh of class \code{"inla.mesh.1d"}
+#' @param parameters a list of named parmeters:
+#' "beta"--A vector of fixed effects coefficients to be estimated
+#' (same length as \code{ncol(covariates)} + 1 )
+#'  "log_tau"-- tau parameter for the GMRF
+#'  "log_kappa"-- kappa parameter for the GMRF
+#'  "rho"-- optional, rho AR1 parameter
+#' @param covariates optional, a \code{matrix} of covariates at each
+#' \code{smesh} and \code{tmesh} node combination.
+#' @inheritParams fit_lgcp_tmb
+#' @export
+simulate_lgcp <- function(parameters, sp, smesh, covariates) {
+    # Currently written to simulate spatial models only
+    if(!missing(covariates)) if(!"matrix" %in% class(covariates)) stop("arg covariates must be a matrix")
+    if(!missing(covariates)) if(!"matrix" %in% class(covariates)) stop("arg covariates must be a matrix")
+    beta <- parameters[["beta"]]
+    if(!missing(covariates)) if(length(beta) != (ncol(covariates) + 1))
+        stop("arg beta should be length ncol.covariates + 1")
+    
+    # prepare variables
+    locs = matrix(0, nrow=10, ncol=2)
+    tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
+    k <- 1
+    atanh_rho <- NULL
+    log_tau <- parameters[["log_tau"]]
+    log_kappa <- parameters[["log_kappa"]]
+    ## Designmat
+    if(!missing(covariates)) {
+        designmat <- cbind(1, covariates)
+    } else {
+        designmat <- matrix(rep(1, length(tmp$ypp) ), ncol = 1)
+    }
+    ## Model fitting
+    res <- fit_lgcp_tmb(y = tmp$ypp, A = tmp$A,
+                        designmat = designmat,
+                        spde = tmp$spde$param.inla[c("M0", "M1", "M2")],
+                        w = tmp$w,
+                        idx = tmp$idx , beta = beta,
+                        x = matrix(0, nrow = tmp$spde$n.spde, ncol = k),
+                        log_tau = log_tau, log_kappa = log_kappa,
+                        atanh_rho = atanh_rho, tmb_silent = TRUE,
+                        nlminb_silent = TRUE,
+                        simulation = TRUE)
+                        #...)
+    # Perform simulation
+    length_beta <- length(beta)
+    length_x <- tmp$spde$n.spde
+    res$env$last.par[1:length_beta] <- beta
+    res$env$last.par[(length_beta+1):(length_beta+length_x)] <- x
+    res$env$last.par[(length_beta+length_x+1)] <- log_tau
+    res$env$last.par[(length_beta+length_x+2)] <- log_kappa
+    simdata <- res$simulate(complete=TRUE)
+    return(simdata)
+}
+    
+    

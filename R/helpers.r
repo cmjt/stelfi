@@ -98,3 +98,27 @@ make.covs <- function(covariates){
     cov.form <- paste(colnames(covariates),collapse = " + ")
     return(list(cov.effects,cov.form))
 }
+
+#' Function that takes in a list of points 
+#' (and optionally a weight or covariate for each point)
+#' and a mesh of polygons
+#' Returns either the number of points in each polygon or sum of the weights
+
+points.in.mesh <- function(xy, dmesh, weights){
+  if (missing(weights)){
+    sapply(1:length(dmesh), function(i){
+      coord <- raster::geom(dmesh[i, ])[,c("x", "y")]
+      sum(sp::point.in.polygon(xy[, 1], xy[, 2], coord[, 1], coord[, 2]) > 0)
+    })
+  }
+  else {
+    result = rep(0, length(dmesh))
+    for (i in 1:length(dmesh)) {
+      coord <- raster::geom(dmesh[i, ])[,c("x", "y")]
+      temp_result = sp::point.in.polygon(xy[, 1], xy[, 2], coord[, 1], coord[, 2]) > 0
+      temp_result = temp_result * weights
+      result[i] = sum(temp_result)
+    }
+    return(result)
+  }
+}
