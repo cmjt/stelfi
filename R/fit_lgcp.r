@@ -105,31 +105,37 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
                       tmb_silent = TRUE,
                       nlminb_silent = TRUE, ...) {
-    # Verify that arguments are correct size and class, basic processing
+    ## svs
+    log_tau <- parameters[["log_tau"]]
+    log_kappa <- parameters[["log_kappa"]]
+    beta <- parameters[["beta"]]
+    
+    # Verify that arguments are correct size and class, and basic processing
     if(sum(names(locs) %in% c("x","y")) < 2) stop("Named variables x and y required in arg locs")
     if(!missing(covariates)) if(!"matrix" %in% class(covariates)) stop("arg covariates must be a matrix")
-    beta <- parameters[["beta"]]
-    if(!missing(covariates)) if(length(beta) != (ncol(covariates) + 1))
-        stop("arg beta should be length ncol.covariates + 1")
-    if (missing(covariates)) if(length(beta) != 1)
-        stop("arg beta should be length 1 if covariates missing")
+    if(!missing(covariates)){
+        if(length(beta) != (ncol(covariates) + 1)) stop("arg beta should be length ncol.covariates + 1")
+    } else {
+        if(length(beta) != 1) stop("arg beta should be length 1 if covariates missing")
+    }
+    if (length(log_tau) != 1) stop("log_tau must be a single number")
+    if (length(log_kappa) != 1) stop("log_kappa must be a single number")
     if (!missing(tmesh)) {
         if(!"t" %in% names(locs)) stop("Need a variable named t in arg locs")
         tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
         k <- length(tmesh$loc)
         if (!missing(covariates)) if (nrow(covariates) != nrow(smesh$loc)*k)
-            stop("nrow.covariates should be size of spatial mesh times number of time knots")
+            stop("nrow.covariates should be size of spatial mesh by number of time knots")
         atanh_rho <- parameters[["atanh_rho"]]
-    }else{
+        if (length(atanh_rho) != 1) stop("atanh_rho must be a single number")
+    } else {
         if (!missing(covariates)) if(nrow(covariates) != nrow(smesh$loc))
             stop("nrow.covariates should be same as spatial mesh size")
         tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
         k <- 1
         atanh_rho <- NULL
     }
-    ## svs
-    log_tau <- parameters[["log_tau"]]
-    log_kappa <- parameters[["log_kappa"]]
+
     ## Designmat
     if(!missing(covariates)) {
         designmat <- cbind(1, covariates)

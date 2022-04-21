@@ -11,7 +11,7 @@ Type objective_function<Type>::operator() ()
   using namespace Eigen;  // probably for sparseness clacs
   // assume the right number of dimention of parameter and data is passed.
   DATA_MATRIX(yresp); // A matrix of marks, each column contain data from the same distribution
-  DATA_MATRIX(yresp_ind); // A matrix of marks with additional fields... could not work out how to index here
+  //DATA_MATRIX(yresp_ind); // A matrix of marks with additional fields... could not work out how to index here
   DATA_VECTOR(ypp) // A vector for point process response (poisson).
   DATA_SPARSE_MATRIX(lmat); // A sparse matrix mapping mesh points to the observations
   DATA_STRUCT(spde,spde_t); // this as structure of spde object is defined in r-inla hence using that namespace
@@ -45,9 +45,10 @@ Type objective_function<Type>::operator() ()
   for (int i = 0; i < mark_field.size(); ++i){
     if (mark_field(i) == 1){
       n_mark = n_mark + 1;
-	}
+	  }
   }
   std::cout << n_mark << "n_mark\n";
+  
   PARAMETER_VECTOR(log_kappa); //same length as number of fields (i.e., max shared + n marks)
   PARAMETER_VECTOR(log_tau);
   /*
@@ -64,7 +65,7 @@ Type objective_function<Type>::operator() ()
   vector<Type> kappa = exp(log_kappa);
   vector<Type> tau = exp(log_tau);
   // spde part
-  SparseMatrix<Type> Q = Q_spde(spde, kappa[0]) * tau[0];
+  SparseMatrix<Type> Q = Q_spde(spde, kappa[0]) * pow(tau[0],2);
   // create the precision matrix from the spde model for the GMRF
   // Type nll = 0.0;
   vector<Type> tempx = x.col(0);
@@ -83,16 +84,13 @@ Type objective_function<Type>::operator() ()
     temp += beta_coefs_pp(i) * tempx; 
     lambdaresp.col(i) = temp;
     if(mark_field(i) == 1){
-     // for mark specific random fields 
-      for (int j = 0; j < yresp_ind.cols(); ++j){
-	Q = Q_spde(spde, kappa[j + 1]) * tau[j + 1];
-	tempx = x.col(RFcount);
-	nll += GMRF(Q)(tempx); // field the random effect is a GMRF with precision Q
-	vector<Type> temp = lambdaresp.col(i);
-	temp += tempx; // For j-th variable itself.
-	lambdaresp.col(i) = temp;
-      }
-    RFcount++;
+	     Q = Q_spde(spde, kappa[i + 1]) * pow(tau[i + 1],2);
+	     tempx = x.col(RFcount);
+	     nll += GMRF(Q)(tempx); // field the random effect is a GMRF with precision Q
+	     vector<Type> temp = lambdaresp.col(i);
+	     temp += tempx; // For i-th variable itself.
+	     lambdaresp.col(i) = temp;
+       RFcount++;
     }
   }
 
@@ -135,6 +133,7 @@ Type objective_function<Type>::operator() ()
   //nll -= sum(dnorm(beta_coef.vec(), Type(0.), Type(1. / sqrt(2.)), true));
   ADREPORT(betaresp);
   ADREPORT(betapp);
+  ADREPORT(beta_coefs_pp);
   ADREPORT(strparam);
   // ADREPORT parameters for RF.
   ADREPORT(tau);

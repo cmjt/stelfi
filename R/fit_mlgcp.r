@@ -51,8 +51,8 @@
 #' @param ... arguments to pass into \code{nlminb()}
 #' @export
 fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, idx, strfixed, methods,
-                          betaresp, betapp, beta, log_kappa, log_tau,
-                          strparam, tmb_silent,
+                          betaresp, betapp, beta_coefs_pp, beta, log_kappa, log_tau,
+                          strparam, fields, tmb_silent,
                           nlminb_silent, ...){
     if (!"prefsampling" %in% getLoadedDLLs()) {
         stelfi::dll_stelfi("prefsampling")
@@ -60,9 +60,9 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, idx, strfixed, methods,
     data <- list(yresp = marks, ypp = ypp, lmat = lmat,
                  spde = spde$param.inla[c("M0", "M1", "M2")], w = w,
                  idx = idx, methods = methods,
-                 strfixed = strfixed)
-    param <- list(betaresp = betaresp, betapp = betapp, beta = beta,
-                  log_kappa = log_kappa, log_tau = log_tau, strparam = strparam,
+                 strfixed = strfixed, mark_field = fields)
+    param <- list(betaresp = betaresp, betapp = betapp, beta = beta, log_kappa = log_kappa, 
+                  log_tau = log_tau, strparam = strparam, beta_coefs_pp = beta_coefs_pp,
                   x = matrix(0, nrow = dim(lmat)[2], ncol = sum(diag(idx[, -1]) > 0) + 1))
     obj <- TMB:::MakeADFun(data, param, hessian = TRUE,
                            random = c("x"), DLL = "prefsampling",
@@ -85,30 +85,44 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, idx, strfixed, methods,
 #'  "tau"-- tau parameter for the GMRF.
 #'  "kappa"-- kappa parameter for the GMRF.
 #' \code{smesh} and \code{tmesh} node combination.
+#' @param fields whether each mark has it's own GMRF
 #' @inheritParams fit_lgcp_tmb
 #' @export
 fit_mlgcp <-  function(locs, sp, marks, smesh, parameters, methods,
-                       strfixed, strparam, idx,
+                       strfixed, strparam, idx, fields,
                        tmb_silent = TRUE,
                        nlminb_silent = TRUE, ...) {
+    
     ## convert svs
     beta <- parameters[["beta"]]
-    log_tau <- log(parameters[["tau"]])
-    log_kappa <- log(parameters[["kappa"]])
+    log_tau <- parameters[["log_tau"]]
+    log_kappa <- parameters[["log_kappa"]]
     betaresp <- parameters[["betaresp"]]
     betapp <- parameters[["betapp"]]
+    beta_coefs_pp <- parameters[["beta_coefs_pp"]]
+    
+    ## Verify args are correct size and class
+    if(!"matrix" %in% class(idx)) stop("arg idx must be a matrix")
+    n_marks <- ncol(marks)
+    if (nrow(idx) != n_marks) stop("nrow.idx must equal ncol.marks")
+    if (ncol(idx) != (n_marks+1)) stop("ncol.idx must equal ncol.marks+1")
+    if (nrow(beta) != n_marks) stop("nrow.beta must equal ncol.marks")
+    if (ncol(beta) != (n_marks+1)) stop("ncol.beta must equal ncol.marks+1")
+    if (length(log_tau) != (n_marks+1)) stop("log_tau must have length ncol.marks+1")
+    if (length(log_kappa) != (n_marks+1)) stop("log_kappa must have length ncol.marks+1")
+    if (length(betaresp) != (n_marks)) stop("betaresp must have length ncol.marks")
+    if (length(beta_coefs_pp) != (n_marks)) stop("beta_coefs_pp must have length ncol.marks")
+    if (length(betapp) != 1) stop("betapp must have length 1")
+    if (length(methods) != n_marks) stop("arg methods must have length ncol.marks")
+    if (length(fields) != n_marks) stop("arg fields must have length ncol.marks")
+    if (sum(fields) != sum(diag(idx[, -1]) > 0)) stop("idx and/or fields incorrectly set")
     ## data
     ## E
     w <- get_weights(mesh = smesh, sp = sp, plot = FALSE)
     w_areas <- w$weights
     polys <- w$polys
-    points.in.mesh = function(xy, dmesh){
-        sapply(1:length(dmesh), function(i){
-            coord = raster::geom(dmesh[i, ])[,c("x", "y")]
-            sum(sp::point.in.polygon(xy[, 1], xy[, 2], coord[, 1], coord[, 2]) > 0)
-        })
-    }
-    ypp <- points.in.mesh(locs, polys)
+
+    ypp <- stelfi::points.in.mesh(locs, polys)
     ## SPDE
     spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
     lmat <- INLA::inla.spde.make.A(smesh, locs)
@@ -117,9 +131,9 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters, methods,
                          spde = spde,
                          w = w_areas, idx = idx, strfixed = strfixed,
                          methods = methods,
-                         betaresp = betaresp, betapp = betapp,
+                         betaresp = betaresp, betapp = betapp, beta_coefs_pp = beta_coefs_pp,
                          beta = beta, log_kappa = log_kappa, log_tau = log_tau,
-                         strparam =  strparam,  tmb_silent = tmb_silent,
+                         strparam =  strparam,  fields = fields, tmb_silent = tmb_silent,
                          nlminb_silent = nlminb_silent, ...)
     return(res)
 }
