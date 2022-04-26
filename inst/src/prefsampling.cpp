@@ -18,15 +18,12 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR(w); // weights of mesh
   DATA_MATRIX(strfixed);
   /*
-    a matrix of fixed structural parameters. For some distributions, non-NaN values will overwrites the corresponding strparam (consider it fixed),
-    and NaN values indicate that it should be estimated (there is no NA in C++). Non-NaN values can be set partially.
-    The entire column shares one estimate if it needs estimating (and hence strparam is a vector of length no. of resp).
-    Details:
-    Normal distribution, this is the log of element-wise standard deviation. If non-NaN, it is taken as a fixed value 
-      of the log of standard deviation.
-    Poisson distribution, this is the effort. The default input passed from R should be 1s.
-    Binomial distribution, this is the number of trials. The default input from R should be 1s, i.e., the bernoulli distribution.
-    Gamma distribution, this is the log of scale. If non-NaN, this is taken as a fixed value of the log of the scale.
+   A matrix of fixed structural parameters.
+   Normal distribution: this is the log of element-wise standard deviation.
+   Poisson distribution: not used
+   Binomial distribution, this is the number of trials.
+   The default input from R should be 1s, i.e., the Bernoulli distribution.
+   Gamma distribution, this is the log of scale.
   */
   DATA_IVECTOR(methods);
   /*
@@ -37,7 +34,7 @@ Type objective_function<Type>::operator() ()
     3 - gamma distribution, the implementation in TMB is shape-scale. strparam/strfixed as log_scale;
   */
   PARAMETER_VECTOR(betaresp); // intercept term of each mark (n_mark)
-  PARAMETER(betapp); // intercept of point process
+  PARAMETER_VECTOR(betapp); // intercept of point process
   //std::cout << betaresp << "betaresp\n";
   PARAMETER_VECTOR(beta_coefs_pp); // coefficients of shared field
   DATA_IVECTOR(mark_field); // indicator if mark should have its own field
@@ -47,8 +44,8 @@ Type objective_function<Type>::operator() ()
       n_mark = n_mark + 1;
 	  }
   }
-  std::cout << n_mark << "n_mark\n";
-  
+  //std::cout << n_mark << "n_mark\n";
+  DATA_MATRIX(designmat);  // the design matrix for the fixed effects of the point process.
   PARAMETER_VECTOR(log_kappa); //same length as number of fields (i.e., max shared + n marks)
   PARAMETER_VECTOR(log_tau);
   /*
@@ -56,7 +53,7 @@ Type objective_function<Type>::operator() ()
     The lengths of these vectors are no. of resp + 1 if all marks have own field.
     The first element in both vectors are for the random field of the point process.
   */
-  PARAMETER_VECTOR(strparam); // see strfixed.
+  //PARAMETER_VECTOR(strparam); // see strfixed.
   PARAMETER_MATRIX(x); 
   /*
     the random field/effect. First column is always the random field for point process.
@@ -72,7 +69,7 @@ Type objective_function<Type>::operator() ()
   Type nll = GMRF(Q)(tempx); // field the random effect is a GMRF with precision Q
 
   // point process
-  vector<Type> lambdapp = exp(tempx + betapp) * w.cwiseEqual(0).select(vector<Type>::Ones(w.size()), w); // Eexp(eta);
+  vector<Type> lambdapp = exp(tempx + designmat*betapp) * w.cwiseEqual(0).select(vector<Type>::Ones(w.size()), w); // Eexp(eta);
   nll -= w.cwiseEqual(0).select(vector<Type>::Zero(ypp.size()), dpois(ypp, lambdapp, true)).sum(); // construct likelihood
   
   matrix<Type> lambdaresp(x.rows(), yresp.cols());
@@ -81,13 +78,13 @@ Type objective_function<Type>::operator() ()
   for (int i = 0; i < yresp.cols(); ++i){
     lambdaresp.col(i).setConstant(betaresp[i]); // set intercept of responses
     vector<Type> temp = lambdaresp.col(i);
-    temp += beta_coefs_pp(i) * tempx; 
+    temp += beta_coefs_pp(i) * log(lambdapp); 
     lambdaresp.col(i) = temp;
     if(mark_field(i) == 1){
 	     Q = Q_spde(spde, kappa[i + 1]) * pow(tau[i + 1],2);
 	     tempx = x.col(RFcount);
 	     nll += GMRF(Q)(tempx); // field the random effect is a GMRF with precision Q
-	     vector<Type> temp = lambdaresp.col(i);
+	     //vector<Type> temp = lambdaresp.col(i);
 	     temp += tempx; // For i-th variable itself.
 	     lambdaresp.col(i) = temp;
        RFcount++;
@@ -103,14 +100,15 @@ Type objective_function<Type>::operator() ()
     switch(methods[i]){
       case 0 : {
         // normal
-        vector<Type> sigma = fixedstr.isNaN().select(vector<Type>::Constant(fixedstr.size(), strparam[i]), fixedstr); // replace NaN terms with estimates
+        //vector<Type> sigma = fixedstr.isNaN().select(vector<Type>::Constant(fixedstr.size(), strparam[i]), fixedstr); // replace NaN terms with estimates
+        vector<Type> sigma = fixedstr;
         sigma = exp(sigma);
         nll -= sum(dnorm(resp, pred, sigma, true));
         break;
       }
       case 1 : {
         // poisson
-        pred = exp(pred) * fixedstr; // incorporate efforts.
+        pred = exp(pred);
         nll -= sum(dpois(resp, pred, true));
         break;
       }
@@ -121,7 +119,8 @@ Type objective_function<Type>::operator() ()
       }
       case 3 : {
         // gamma.
-        vector<Type> scale = fixedstr.isNaN().select(vector<Type>::Constant(fixedstr.size(), strparam[i]), fixedstr); // replace NaN with estimates
+        //vector<Type> scale = fixedstr.isNaN().select(vector<Type>::Constant(fixedstr.size(), strparam[i]), fixedstr); // replace NaN with estimates
+        vector<Type> scale = fixedstr;
         scale = exp(scale);
         pred = exp(pred) / scale;
         nll -= sum(dgamma(resp, pred, scale, true));
@@ -134,10 +133,10 @@ Type objective_function<Type>::operator() ()
   ADREPORT(betaresp);
   ADREPORT(betapp);
   ADREPORT(beta_coefs_pp);
-  ADREPORT(strparam);
+  //ADREPORT(strparam);
   // ADREPORT parameters for RF.
   ADREPORT(tau);
   ADREPORT(kappa);
-  ADREPORT(x);
+  REPORT(x);
   return nll;
 }

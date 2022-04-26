@@ -112,8 +112,8 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
     
     # Verify that arguments are correct size and class, and basic processing
     if(sum(names(locs) %in% c("x","y")) < 2) stop("Named variables x and y required in arg locs")
-    if(!missing(covariates)) if(!"matrix" %in% class(covariates)) stop("arg covariates must be a matrix")
     if(!missing(covariates)){
+        if(!"matrix" %in% class(covariates)) stop("arg covariates must be a matrix")
         if(length(beta) != (ncol(covariates) + 1)) stop("arg beta should be length ncol.covariates + 1")
     } else {
         if(length(beta) != 1) stop("arg beta should be length 1 if covariates missing")
@@ -218,7 +218,6 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
 #' @export
 simulate_lgcp <- function(parameters, sp, smesh, covariates) {
     # Currently written to simulate spatial models only
-    if(!missing(covariates)) if(!"matrix" %in% class(covariates)) stop("arg covariates must be a matrix")
     if(!missing(covariates)) if(!"matrix" %in% class(covariates)) stop("arg covariates must be a matrix")
     beta <- parameters[["beta"]]
     if(!missing(covariates)) if(length(beta) != (ncol(covariates) + 1))
