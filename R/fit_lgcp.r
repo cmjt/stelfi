@@ -216,20 +216,43 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
 #' \code{smesh} and \code{tmesh} node combination.
 #' @inheritParams fit_lgcp_tmb
 #' @export
-simulate_lgcp <- function(parameters, sp, smesh, covariates) {
-    # Currently written to simulate spatial models only
-    if(!missing(covariates)) if(!"matrix" %in% class(covariates)) stop("arg covariates must be a matrix")
+simulate_lgcp <- function(parameters, sp, smesh, tmesh, covariates) {
+    ## svs
     beta <- parameters[["beta"]]
-    if(!missing(covariates)) if(length(beta) != (ncol(covariates) + 1))
-        stop("arg beta should be length ncol.covariates + 1")
+    log_tau <- parameters[["log_tau"]]
+    log_kappa <- parameters[["log_kappa"]]
+    
+    # Verify that arguments are correct size and class, and basic processing
+    if(sum(names(locs) %in% c("x","y")) < 2) stop("Named variables x and y required in arg locs")
+    if(!missing(covariates)){
+        if(!"matrix" %in% class(covariates)) stop("arg covariates must be a matrix")
+        if(length(beta) != (ncol(covariates) + 1)) stop("arg beta should be length ncol.covariates + 1")
+    } else {
+        if(length(beta) != 1) stop("arg beta should be length 1 if covariates missing")
+    }
+    if (length(log_tau) != 1) stop("log_tau must be a single number")
+    if (length(log_kappa) != 1) stop("log_kappa must be a single number")
     
     # prepare variables
-    locs = matrix(0, nrow=10, ncol=2)
+    if (!missing(tmesh)) {
+        locs = matrix(0, nrow=10, ncol=3)
+        tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
+        atanh_rho <-atanh_rho <- parameters[["atanh_rho"]]
+        k <- length(tmesh$loc)
+        if (!missing(covariates)) if (nrow(covariates) != nrow(smesh$loc)*k)
+            stop("nrow.covariates should be size of spatial mesh by number of time knots")
+        if (length(atanh_rho) != 1) stop("atanh_rho must be a single number")
+    } else {
+        locs = matrix(0, nrow=10, ncol=2)
+        tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
+        k <- 1
+        if(!missing(covariates)) {
+            if(length(beta) != (ncol(covariates) + 1)) stop("arg beta should be length ncol.covariates + 1")
+        }
+    }
     tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
     k <- 1
     atanh_rho <- NULL
-    log_tau <- parameters[["log_tau"]]
-    log_kappa <- parameters[["log_kappa"]]
     ## Designmat
     if(!missing(covariates)) {
         designmat <- cbind(1, covariates)
@@ -252,9 +275,12 @@ simulate_lgcp <- function(parameters, sp, smesh, covariates) {
     length_beta <- length(beta)
     length_x <- tmp$spde$n.spde
     res$env$last.par[1:length_beta] <- beta
-    res$env$last.par[(length_beta+1):(length_beta+length_x)] <- x
+    #res$env$last.par[(length_beta+1):(length_beta+length_x)] <- x
     res$env$last.par[(length_beta+length_x+1)] <- log_tau
     res$env$last.par[(length_beta+length_x+2)] <- log_kappa
+    if (!missing(tmesh)){
+        res$env$last.par[(length_beta+length_x+3)] <- atanh_rho
+    }
     simdata <- res$simulate(complete=TRUE)
     return(simdata)
 }

@@ -1,4 +1,5 @@
 /* By Xiangjie Xue, updated on 01/05/2021. */
+/* Edited by Alec van Helsdingen, last updated 27/04/2022 */
 #include <TMB.hpp>
 #include <numeric>
 #include <iostream>
@@ -10,8 +11,7 @@ Type objective_function<Type>::operator() ()
   using namespace density; // this where the structure for GMRF is defined
   using namespace Eigen;  // probably for sparseness clacs
   // assume the right number of dimention of parameter and data is passed.
-  DATA_MATRIX(yresp); // A matrix of marks, each column contain data from the same distribution
-  //DATA_MATRIX(yresp_ind); // A matrix of marks with additional fields... could not work out how to index here
+  DATA_MATRIX(ymarks); // A matrix of marks, each column contain data from the same distribution
   DATA_VECTOR(ypp) // A vector for point process response (poisson).
   DATA_SPARSE_MATRIX(lmat); // A sparse matrix mapping mesh points to the observations
   DATA_STRUCT(spde,spde_t); // this as structure of spde object is defined in r-inla hence using that namespace
@@ -33,10 +33,12 @@ Type objective_function<Type>::operator() ()
     2 - binomial distribution, strparam is not referenced, strfixed as number of trials.
     3 - gamma distribution, the implementation in TMB is shape-scale. strparam/strfixed as log_scale;
   */
-  PARAMETER_VECTOR(betaresp); // intercept term of each mark (n_mark)
-  PARAMETER_VECTOR(betapp); // intercept of point process
+  DATA_MATRIX(designmat);  // the design matrix for the fixed effects of the point process.// intercept of point process
+  PARAMETER_VECTOR(betapp); //Intercept and slope coefficients for point processes
+  DATA_SCALAR(cov_option);
+  PARAMETER_MATRIX(betamarks); //Intercept and slope coefficients for marks
   //std::cout << betaresp << "betaresp\n";
-  PARAMETER_VECTOR(beta_coefs_pp); // coefficients of shared field
+  PARAMETER_VECTOR(marks_coefs_pp); // coefficients of shared field
   DATA_IVECTOR(mark_field); // indicator if mark should have its own field
   int n_mark = 0;
   for (int i = 0; i < mark_field.size(); ++i){
@@ -45,7 +47,6 @@ Type objective_function<Type>::operator() ()
 	  }
   }
   //std::cout << n_mark << "n_mark\n";
-  DATA_MATRIX(designmat);  // the design matrix for the fixed effects of the point process.
   PARAMETER_VECTOR(log_kappa); //same length as number of fields (i.e., max shared + n marks)
   PARAMETER_VECTOR(log_tau);
   /*
@@ -65,42 +66,48 @@ Type objective_function<Type>::operator() ()
   SparseMatrix<Type> Q = Q_spde(spde, kappa[0]) * pow(tau[0],2);
   // create the precision matrix from the spde model for the GMRF
   // Type nll = 0.0;
-  vector<Type> tempx = x.col(0);
+  int RFcount = 0;
+  vector<Type> tempx = x.col(RFcount);
+  vector<Type> temppp = x.col(0);
   Type nll = GMRF(Q)(tempx); // field the random effect is a GMRF with precision Q
 
   // point process
   vector<Type> lambdapp = exp(tempx + designmat*betapp) * w.cwiseEqual(0).select(vector<Type>::Ones(w.size()), w); // Eexp(eta);
   nll -= w.cwiseEqual(0).select(vector<Type>::Zero(ypp.size()), dpois(ypp, lambdapp, true)).sum(); // construct likelihood
   
-  matrix<Type> lambdaresp(x.rows(), yresp.cols());
-  // for responses interact with point process and set intercept
-  int RFcount = 1;
-  for (int i = 0; i < yresp.cols(); ++i){
-    lambdaresp.col(i).setConstant(betaresp[i]); // set intercept of responses
-    vector<Type> temp = lambdaresp.col(i);
-    temp += beta_coefs_pp(i) * log(lambdapp); 
-    lambdaresp.col(i) = temp;
-    if(mark_field(i) == 1){
-	     Q = Q_spde(spde, kappa[i + 1]) * pow(tau[i + 1],2);
-	     tempx = x.col(RFcount);
-	     nll += GMRF(Q)(tempx); // field the random effect is a GMRF with precision Q
-	     //vector<Type> temp = lambdaresp.col(i);
-	     temp += tempx; // For i-th variable itself.
-	     lambdaresp.col(i) = temp;
-       RFcount++;
+  matrix<Type> lambdamarks(x.rows(), ymarks.cols());
+  
+  // Set Lambda for each marks: intercept, slope with pp, covariates
+  for (int i = 0; i < ymarks.cols(); ++i){
+    lambdamarks.col(i).setConstant(0); // set intercept of responses
+    vector<Type> temp = lambdamarks.col(i);
+    if (cov_option == 0){
+      lambdamarks.col(i).setConstant(betamarks(i,0)); // set intercept of responses
+      temp = lambdamarks.col(i);
+      temp += marks_coefs_pp(i) * log(lambdapp); // coefficients multiplies lambda of pp
+    } else {
+      temp = designmat * betamarks.col(i); //covariates and intercept
+      temp += marks_coefs_pp(i) * temppp; //coefficient multiplies GMRF of pp
     }
+    if (mark_field(i) ==1) { //Indicates a new field
+      RFcount++;
+      Q = Q_spde(spde, kappa[RFcount]) * pow(tau[RFcount],2);
+      tempx = x.col(RFcount);
+      nll += GMRF(Q)(tempx); // field the random effect is a GMRF with precision Q
+    }
+	   temp += tempx; // Add random field
+	   lambdamarks.col(i) = temp;
   }
 
-  matrix<Type> matchresp = lmat * lambdaresp;
-  for (int i = 0; i < yresp.cols(); ++i){
+  matrix<Type> matchresp = lmat * lambdamarks;
+  for (int i = 0; i < ymarks.cols(); ++i){
     // construct likelihood
-    vector<Type> resp = yresp.col(i); // response 
+    vector<Type> resp = ymarks.col(i); // response 
     vector<Type> pred = matchresp.col(i); // predictor
     vector<Type> fixedstr = strfixed.col(i); // fixed structural parameters
     switch(methods[i]){
       case 0 : {
         // normal
-        //vector<Type> sigma = fixedstr.isNaN().select(vector<Type>::Constant(fixedstr.size(), strparam[i]), fixedstr); // replace NaN terms with estimates
         vector<Type> sigma = fixedstr;
         sigma = exp(sigma);
         nll -= sum(dnorm(resp, pred, sigma, true));
@@ -130,9 +137,9 @@ Type objective_function<Type>::operator() ()
 
   // ? constrain beta? (see PARAMETER_MATRIX(beta)).
   //nll -= sum(dnorm(beta_coef.vec(), Type(0.), Type(1. / sqrt(2.)), true));
-  ADREPORT(betaresp);
+  ADREPORT(betamarks);
   ADREPORT(betapp);
-  ADREPORT(beta_coefs_pp);
+  ADREPORT(marks_coefs_pp);
   //ADREPORT(strparam);
   // ADREPORT parameters for RF.
   ADREPORT(tau);

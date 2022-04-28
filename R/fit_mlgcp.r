@@ -38,21 +38,21 @@
 #' @param ... arguments to pass into \code{nlminb()}
 #' @export
 fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
-                          betaresp, betapp, beta_coefs_pp, log_kappa, log_tau,
-                          designmat, fields, tmb_silent,
+                          betamarks, betapp, marks_coefs_pp, log_kappa, log_tau,
+                          cov_option, designmat, fields, tmb_silent,
                           nlminb_silent, ...){
-    if (!"prefsampling" %in% getLoadedDLLs()) {
-        stelfi::dll_stelfi("prefsampling")
+    if (!"markedLGCP" %in% getLoadedDLLs()) {
+        stelfi::dll_stelfi("markedLGCP")
     }
-    data <- list(yresp = marks, ypp = ypp, lmat = lmat,
+    data <- list(ymarks = marks, ypp = ypp, lmat = lmat,
                  spde = spde$param.inla[c("M0", "M1", "M2")], w = w,
-                 methods = methods, designmat = designmat,
+                 methods = methods, designmat = designmat, cov_option = cov_option,
                  strfixed = strfixed, mark_field = fields)
-    param <- list(betaresp = betaresp, betapp = betapp, log_kappa = log_kappa, 
-                  log_tau = log_tau, beta_coefs_pp = beta_coefs_pp,
+    param <- list(betamarks = betamarks, betapp = betapp, log_kappa = log_kappa, 
+                  log_tau = log_tau, marks_coefs_pp = marks_coefs_pp,
                   x = matrix(0, nrow = dim(lmat)[2], ncol = sum(fields) + 1))
     obj <- TMB:::MakeADFun(data, param, hessian = TRUE,
-                           random = c("x"), DLL = "prefsampling",
+                           random = c("x"), DLL = "markedLGCP",
                            silent = tmb_silent)
     trace <- if(nlminb_silent) 0 else 1
     opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
@@ -75,24 +75,32 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' @inheritParams fit_lgcp_tmb
 #' @export
 fit_mlgcp <-  function(locs, sp, marks, smesh, parameters, methods,
-                       strfixed, fields, covariates,
+                       strfixed, fields, covariates, cov_option,
                        tmb_silent = TRUE,
                        nlminb_silent = TRUE, ...) {
     
     ## convert svs
     log_tau <- parameters[["log_tau"]]
     log_kappa <- parameters[["log_kappa"]]
-    betaresp <- parameters[["betaresp"]]
+    betamarks <- parameters[["betamarks"]]
     betapp <- parameters[["betapp"]]
-    beta_coefs_pp <- parameters[["beta_coefs_pp"]]
+    marks_coefs_pp <- parameters[["marks_coefs_pp"]]
     
     ## Verify args are correct size and class
-    if(!"matrix" %in% class(idx)) stop("arg idx must be a matrix")
     n_marks <- ncol(marks)
-    if (length(log_tau) != (n_marks+1)) stop("log_tau must have length ncol.marks+1")
-    if (length(log_kappa) != (n_marks+1)) stop("log_kappa must have length ncol.marks+1")
-    if (length(betaresp) != (n_marks)) stop("betaresp must have length ncol.marks")
-    if (length(beta_coefs_pp) != (n_marks)) stop("beta_coefs_pp must have length ncol.marks")
+    n_fields <- sum(fields) + 1
+    if (length(log_tau) != n_fields) stop("log_tau must have length ncol.marks+1")
+    if (length(log_kappa) != n_fields) stop("log_kappa must have length ncol.marks+1")
+    if (cov_option == 1) {
+        if (nrow(betamarks) != ncol(covariates) + 1) stop("If cov_option is 1, nrow.betamarks must equal ncol.covariates + 1")
+        if (ncol(betamarks) != n_marks) stop("If cov_option is 1, ncol.betamarks must equal ncol.marks")
+    } else if (cov_option == 0) {
+        if (nrow(betamarks) != n_marks) stop("If cov_option is 0, nrow.betamarks must equal ncol.marks")
+        if (ncol(betamarks) != 1) stop ("If cov_option is 0, ncol.betamarks must equal 1")
+    } else {
+        stop("cov_option must be a scalar equal to either 0 or 1")
+    }
+    if (length(marks_coefs_pp) != (n_marks)) stop("marks_coefs_pp must have length ncol.marks")
     if (length(methods) != n_marks) stop("arg methods must have length ncol.marks")
     if (length(fields) != n_marks) stop("arg fields must have length ncol.marks")
     if (nrow(strfixed) != nrow(locs)) stop("nrow.strfixed must be equal to number of points")
@@ -127,11 +135,11 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters, methods,
     ## Model fitting
     res <- fit_mlgcp_tmb(ypp = ypp, marks = marks, lmat = lmat,
                          spde = spde,
-                         w = w_areas, idx = idx, strfixed = strfixed,
+                         w = w_areas, strfixed = strfixed,
                          methods = methods,
-                         betaresp = betaresp, betapp = betapp, beta_coefs_pp = beta_coefs_pp,
+                         betamarks = betamarks, betapp = betapp, marks_coefs_pp = marks_coefs_pp,
                          log_kappa = log_kappa, log_tau = log_tau, designmat = designmat,
-                         fields = fields, tmb_silent = tmb_silent,
+                         cov_option = cov_option, fields = fields, tmb_silent = tmb_silent,
                          nlminb_silent = nlminb_silent, ...)
     return(res)
 }

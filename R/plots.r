@@ -63,56 +63,37 @@ show_field <- function(x,smesh, dims = c(500,500), border, colour_option="D",
      plt
 
  }
+#' Plot the lambda estimate from a spatial model
 
-#' Function to plot or create raster of a given field defined over a mesh
-#' @docType methods
-#' @rdname show_field
-#' @param x vector of length \link{mesh$n} of values at each \link{mesh} node
-#' @param dims vector of length 2 defining how fine a projection; default c(300,300)
-#' @param col colours of plot; default terrain.colors(100)
-#' @inheritParams fit_lgcp_inla
-#' @param rast logical; if TRUE create raster object; default FALSE
-#' @param legend logical; plot legend; default TRUE
-#' @param legend.only logical; legend only to be plotted; default FALSE
-#' @param ... arguments to pass into raster (if rast = TRUE) or image()
-#' @export
-#' @importFrom spatstat.geom as.owin inside.owin
-# #setGeneric("show_field",
-#            function(x, mesh, dims, col,
-#                     sp , rast, legend, legend.only, ...){
-#                standardGeneric("show_field")
-#            })
-# #setMethod("show_field",
-#           c(x = "numeric", mesh = "inla.mesh", dims = "numeric", col = "character",
-#             sp = "missing_or_spatialpolygon",rast = "logical_or_missing",
-#             legend = "logical_or_missing",legend.only = "logical_or_missing"),
-#show_field <- function(x, mesh, dims, col, sp ,rast, legend, legend.only,...){
-#              if(missing(rast)) rast = FALSE
-#              if(missing(legend)) legend = TRUE
-#              if(missing(legend.only)) legend.only = FALSE
-#              stopifnot(length(x) == mesh$n)
-#              proj = INLA::inla.mesh.projector(mesh, dims = dims)
-#              field.proj = INLA::inla.mesh.project(proj, x)
-#              if(!missing(sp)){
-#                  require(maptools)
-#                  e = expand.grid(proj$x,proj$y)
-#                  ins =  inside.owin(e[,1],e[,2],as.owin(sp))
-#                  ins = matrix(ins,nrow=length(proj$x))
-#                  field.proj[!ins] = NA
-#              }                                
-#              if(rast){
-#                  raster::raster(list(x = proj$x, y=proj$y, z = field.proj),...)
-#              }else{
-#                  if(legend.only){
-#                      fields::image.plot(list(x = proj$x, y=proj$y, z = field.proj),
-#                                         legend.only = TRUE, col = col,add = TRUE,legend.width = 4,
-#                                         legend.mar = 0)
-#                  }else{
-#                      image(list(x = proj$x, y=proj$y, z = field.proj),col = col, axes = FALSE, ...)
-#                      if(legend){fields::image.plot(list(x = proj$x, y=proj$y, z = field.proj),
-#                                                    legend.only = TRUE, col = col,
-#                                                    legend.shrink = 0.5)}
-#                      if(!missing(sp)){sp::plot(sp, add = TRUE)}
-#                  }
-#              }
-#          }
+plot_lambda <-function(fit,covariates, smesh,dims=c(500,500), border, colour_option="D",
+                       title="Plot"){
+        if(!missing(covariates)) {
+                designmat <- cbind(1, covariates)
+        } else {
+                designmat <- matrix(rep(1, smesh$n), ncol = 1)
+        }
+        
+        res = TMB::sdreport(fit)
+        field = res$par.random
+        beta = res$value[1:ncol(designmat)]
+        beta = as.matrix(beta,ncol=1)
+        lambda = field + designmat%*%beta
+        if (missing(dims)){
+                dims = c(500,500)
+        }
+        if (missing(colour_option)){
+                colour_option = "D"
+        }
+        if (missing(title)){
+                title = "Plot"
+        }
+        if (missing(border)){
+                stelfi::show_field(x=lambda,smesh=smesh,dims=dims,
+                                   colour_option=colour_option, title=title)
+        } else {
+                stelfi::show_field(lambda,smesh,dims,border,colour_option,title)
+        }
+        
+}
+        
+        
