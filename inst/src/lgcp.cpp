@@ -5,6 +5,8 @@
 #include <numeric>
 #include <math.h> // for pi
 
+
+
 template<class Type>
 Type objective_function<Type>::operator() ()
 {
@@ -77,6 +79,7 @@ Type objective_function<Type>::operator() ()
   effects x.col(0)     x.col(1)    x.col(2)       ...         x.col(t_n - 1)
   ----------------------------------------------------------------------
   */
+  
   PARAMETER(log_tau); // tau parameter for the RF
   PARAMETER(log_kappa); // kappa parameter for the RF
   Type kappa = exp(log_kappa);
@@ -124,29 +127,37 @@ Type objective_function<Type>::operator() ()
     transformed by A and add the fixed effects.
   */
   vector<Type> lambda = exp(A * x.vec() + designmat * beta) * w.cwiseEqual(0).select(vector<Type>::Ones(w.size()), w);
+  //vector<Type> lambda = exp(A * X.vec() + designmat * beta) * w.cwiseEqual(0).select(vector<Type>::Ones(w.size()), w);
+  for (int k=0;k<lambda.size();k++) {
+    lambda(k) += 1e-50;
+  }
   /*
     construct the likelihood with binary variable idx.
   */
   nll -= idx.cwiseEqual(0).select(vector<Type>::Zero(y.size()), dpois(y, lambda, true)).sum(); // construct likelihood
-
   // simulation chunk
   SIMULATE {
 
     lambda = exp(A * x.vec() + designmat * beta) * w.cwiseEqual(0).select(vector<Type>::Ones(w.size()), w);
 
     y = rpois(lambda);
+    for (int k=0; k<y.size(); k++) {
+      y(k) *= idx(k);
+    }
 
     REPORT(y);
   }
+
   ADREPORT(beta);
   // ADREPORT parameters for RF.
   ADREPORT(log_tau);
   ADREPORT(log_kappa);
   // ADREPORT transformed params
   Type range = sqrt(8)/exp(log_kappa); //as reported by INLA
-  Type stdev = 1/(4*M_PI*pow(exp(log_kappa),2)*pow(exp(log_tau),2)) ; // as reported by INLA
+  Type stdev = 1/(pow((4*M_PI*pow(exp(log_kappa),2)*pow(exp(log_tau),2)),0.5)); // as reported by INLA
   ADREPORT(range);
   ADREPORT(stdev);
   REPORT(x);
+  //REPORT(X);
   return nll;
 }

@@ -78,18 +78,9 @@ plot_lambda <-function(fit,covariates, smesh,dims=c(500,500), border, colour_opt
         beta = res$value[1:ncol(designmat)]
         beta = as.matrix(beta,ncol=1)
         lambda = field + designmat%*%beta
-        if (missing(dims)){
-                dims = c(500,500)
-        }
-        if (missing(colour_option)){
-                colour_option = "D"
-        }
-        if (missing(title)){
-                title = "Plot"
-        }
         if (missing(border)){
                 stelfi::show_field(x=lambda,smesh=smesh,dims=dims,
-                                   colour_option=colour_option, title=title)
+                                  colour_option=colour_option, title=title)
         } else {
                 stelfi::show_field(lambda,smesh,dims,border,colour_option,title)
         }
