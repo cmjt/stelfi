@@ -17,12 +17,13 @@ compile_stelfi <- function() {
     for (i in base[ext == "cpp"]) {
         TMB::compile(paste(i, ".cpp", sep = ""))
         unlink(paste(i, ".o", sep = ""))
-        if (is_windows)
+        if (is_windows) {
             file.rename(paste(i, ".dll", sep = ""),
                         paste("../bin/", i, ".dll", sep = ""))
-        else
+        } else {
             file.rename(paste(i, ".so", sep = ""),
                         paste("../bin/", i, ".so", sep = ""))
+            }
     }
     setwd(wd)
 }
