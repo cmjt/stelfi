@@ -1,5 +1,5 @@
 /* By Xiangjie Xue, updated on 01/05/2021. */
-/* Edited by Alec van Helsdingen, last updated 27/04/2022 */
+/* Edited by Alec van Helsdingen, last updated 12/05/2022 */
 #include <TMB.hpp>
 #include <numeric>
 #include <iostream>
@@ -33,20 +33,15 @@ Type objective_function<Type>::operator() ()
     2 - binomial distribution, strparam is not referenced, strfixed as number of trials.
     3 - gamma distribution, the implementation in TMB is shape-scale. strparam/strfixed as log_scale;
   */
-  DATA_MATRIX(designmat);  // the design matrix for the fixed effects of the point process.// intercept of point process
+  DATA_MATRIX(designmatpp); // the design matrix for the fixed effects of the point process.
+  DATA_MATRIX(designmatmarks); // the design matrix for the fixed effects of the marks.
   PARAMETER_VECTOR(betapp); //Intercept and slope coefficients for point processes
-  DATA_SCALAR(cov_option);
+  DATA_SCALAR(cov_overlap);
   PARAMETER_MATRIX(betamarks); //Intercept and slope coefficients for marks
-  //std::cout << betaresp << "betaresp\n";
   PARAMETER_VECTOR(marks_coefs_pp); // coefficients of shared field
   DATA_IVECTOR(mark_field); // indicator if mark should have its own field
-  int n_mark = 0;
-  for (int i = 0; i < mark_field.size(); ++i){
-    if (mark_field(i) == 1){
-      n_mark = n_mark + 1;
-	  }
-  }
-  //std::cout << n_mark << "n_mark\n";
+
+
   PARAMETER_VECTOR(log_kappa); //same length as number of fields (i.e., max shared + n marks)
   PARAMETER_VECTOR(log_tau);
   /*
@@ -68,11 +63,13 @@ Type objective_function<Type>::operator() ()
   // Type nll = 0.0;
   int RFcount = 0;
   vector<Type> tempx = x.col(RFcount);
-  vector<Type> temppp = x.col(0);
-  Type nll = GMRF(Q)(tempx); // field the random effect is a GMRF with precision Q
+  if (cov_overlap){
+    vector<Type> temprf = x.col(0);
+  }
+  Type nll = GMRF(Q)(tempx); // the random field is a GMRF with precision Q
 
   // point process
-  vector<Type> lambdapp = exp(tempx + designmat*betapp) * w.cwiseEqual(0).select(vector<Type>::Ones(w.size()), w); // Eexp(eta);
+  vector<Type> lambdapp = exp(tempx + designmatpp*betapp) * w.cwiseEqual(0).select(vector<Type>::Ones(w.size()), w); // Eexp(eta);
   nll -= w.cwiseEqual(0).select(vector<Type>::Zero(ypp.size()), dpois(ypp, lambdapp, true)).sum(); // construct likelihood
   
   matrix<Type> lambdamarks(x.rows(), ymarks.cols());
@@ -81,13 +78,12 @@ Type objective_function<Type>::operator() ()
   for (int i = 0; i < ymarks.cols(); ++i){
     lambdamarks.col(i).setConstant(0); // set intercept of responses
     vector<Type> temp = lambdamarks.col(i);
-    if (cov_option == 0){
-      lambdamarks.col(i).setConstant(betamarks(i,0)); // set intercept of responses
-      temp = lambdamarks.col(i);
-      temp += marks_coefs_pp(i) * log(lambdapp); // coefficients multiplies lambda of pp
+    if (cov_overlap == 0){
+      temp = designmatmarks * betamarks.col(i); // multiply coefficients by design matrix
+      temp += marks_coefs_pp(i) * log(lambdapp); // coefficients multiplies entire lambda of pp
     } else {
-      temp = designmat * betamarks.col(i); //covariates and intercept
-      temp += marks_coefs_pp(i) * temppp; //coefficient multiplies GMRF of pp
+      temp = designmatmarks * betamarks.col(i); 
+      temp += marks_coefs_pp(i) * temprf; //coefficient only multiplies GMRF of pp
     }
     if (mark_field(i) ==1) { //Indicates a new field
       RFcount++;
@@ -99,29 +95,29 @@ Type objective_function<Type>::operator() ()
 	   lambdamarks.col(i) = temp;
   }
 
-  matrix<Type> matchresp = lmat * lambdamarks;
+  matrix<Type> matchmarks = lmat * lambdamarks;
   for (int i = 0; i < ymarks.cols(); ++i){
     // construct likelihood
-    vector<Type> resp = ymarks.col(i); // response 
-    vector<Type> pred = matchresp.col(i); // predictor
+    vector<Type> mark = ymarks.col(i); // response 
+    vector<Type> pred = matchmarks.col(i); // predictor
     vector<Type> fixedstr = strfixed.col(i); // fixed structural parameters
     switch(methods[i]){
       case 0 : {
         // normal
         vector<Type> sigma = fixedstr;
         sigma = exp(sigma);
-        nll -= sum(dnorm(resp, pred, sigma, true));
+        nll -= sum(dnorm(mark, pred, sigma, true));
         break;
       }
       case 1 : {
         // poisson
         pred = exp(pred);
-        nll -= sum(dpois(resp, pred, true));
+        nll -= sum(dpois(mark, pred, true));
         break;
       }
       case 2 : {
         // binomial
-        nll -= sum(dbinom_robust(resp, fixedstr, pred, true)); // this function is linking density of binomial to predictor directly.
+        nll -= sum(dbinom_robust(mark, fixedstr, pred, true)); // this function is linking density of binomial to predictor directly.
         break;
       }
       case 3 : {
@@ -130,7 +126,7 @@ Type objective_function<Type>::operator() ()
         vector<Type> scale = fixedstr;
         scale = exp(scale);
         pred = exp(pred) / scale;
-        nll -= sum(dgamma(resp, pred, scale, true));
+        nll -= sum(dgamma(mark, pred, scale, true));
       }
     }
   }
@@ -140,7 +136,6 @@ Type objective_function<Type>::operator() ()
   ADREPORT(betamarks);
   ADREPORT(betapp);
   ADREPORT(marks_coefs_pp);
-  //ADREPORT(strparam);
   // ADREPORT parameters for RF.
   ADREPORT(tau);
   ADREPORT(kappa);
