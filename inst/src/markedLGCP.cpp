@@ -63,9 +63,7 @@ Type objective_function<Type>::operator() ()
   // Type nll = 0.0;
   int RFcount = 0;
   vector<Type> tempx = x.col(RFcount);
-  if (cov_overlap){
-    vector<Type> temprf = x.col(0);
-  }
+  vector<Type> temprf = x.col(0);
   Type nll = GMRF(Q)(tempx); // the random field is a GMRF with precision Q
 
   // point process
