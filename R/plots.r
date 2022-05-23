@@ -6,17 +6,17 @@ setClassUnion("missing_or_numeric", c("numeric", "missing"))
 #' @param times a vector of numeric observation time points
 #' @export
 setGeneric("show_hawkes",
-           function(times,mu, alpha, beta){
+           function(times, mu, alpha, beta, marks){
                standardGeneric("show_hawkes")
            })
 
 setMethod("show_hawkes",
-          c(times = "vector", mu = "numeric", alpha = "numeric", beta  = "numeric"),
-          function(times, mu, alpha, beta){
+          c(times = "vector", mu = "numeric", alpha = "numeric", beta  = "numeric", marks = "vector"),
+          function(times, mu, alpha, beta, marks){
               n = length(times)
               max = max(times)
               p = seq(0,max,length.out = 500)
-              lam.p = hawke_intensity(mu = mu, alpha = alpha, beta = beta, times = times, p = p)
+              lam.p = hawke_intensity(mu = mu, alpha = alpha, beta = beta, times = times, p = p, marks= marks)
               ylab = expression(lambda(t))
               col = 1
               lmax = max(lam.p)

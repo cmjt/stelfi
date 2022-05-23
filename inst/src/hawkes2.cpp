@@ -15,8 +15,9 @@ Type objective_function<Type>::operator() ()
   PARAMETER(logit_abratio);
   PARAMETER(log_beta);
   PARAMETER(logit_amuratio);
-  PARAMETER(b);
+  PARAMETER(log_b);
   PARAMETER(atanh_c);
+  Type b = exp(log_b); //enforcing b > 0
   Type c = tanh(atanh_c) * M_PI; //enforcing -pi<c<pi
   Type mu = exp(log_mu);
   Type a = exp(logit_amuratio) / (Type(1.) + exp(logit_amuratio)) * mu; // enforcing 0<=a<=mu
@@ -39,8 +40,9 @@ Type objective_function<Type>::operator() ()
     A[i] = exp(-beta * (times[i] - times[i - 1])) * (Type(1.0) + A[i - 1]);
   }
   vector<Type> term_3vec = log(lambda + alpha * A);
+  Type lambda_integral = ((a * cos(c) - a * cos((b*last)+c)) / b) + mu * last;
   // part of part 2 is computed in A[times.size() - 1].
-  nll = (lambda.template tail<1>()[0] * last) - ((alpha/beta)*A.template tail<1>()[0])+ ((alpha / beta) * Type(times.size() - 1)) - sum(term_3vec);
+  nll = lambda_integral - ((alpha/beta)*A.template tail<1>()[0])+ ((alpha / beta) * Type(times.size() - 1)) - sum(term_3vec);
 
   SIMULATE {
     Type eps = 1e-10, t = 0, M = mu, U;

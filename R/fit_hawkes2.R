@@ -23,8 +23,7 @@ fit_hawkes2 <-  function(times, parameters, tmb_silent = TRUE,
     if (alpha > beta) stop("alpha must be smaller than or equal to beta")
     if (alpha < 0) stop("alpha must be non-negative")
     if ((c > pi) || (c < -pi)) stop("The absolute value of C must be less than or equal to pi")
-    if (a > mu) stop("a must be smaller than or equal to mu")
-    if (a < 0) stop("a must be non-negative")
+    if ((a > mu) || (a < 0)) stop("a must be between 0 and mu")
     
     for (i in 2:length(times)){
         if ((times[i]-times[i-1])<1.e-10) stop("times must be in ascending order with no simultaneous events")
@@ -38,7 +37,7 @@ fit_hawkes2 <-  function(times, parameters, tmb_silent = TRUE,
                                             logit_abratio = stats::qlogis(alpha/beta),
                                             log_beta = log(beta),
                                             logit_amuratio = stats::qlogis(a/mu),
-                                            b = b,
+                                            log_b = log(b),
                                             atanh_c = atanh(c/pi)),
                           DLL = "hawkes2", silent = tmb_silent)
     obj$hessian <- TRUE
