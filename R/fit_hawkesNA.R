@@ -128,5 +128,5 @@ fit_hawkesNACBF <- function(times, parameters, marks=c(rep(1,length(times))),
     opt2 <- stats::optim(obj$par, obj$fn, obj$gr, control = list(trace = trace))
     res <- TMB::sdreport(obj)
     return(list(alpha=res$value[1],beta=res$value[2],background_parameters=opt$par,
-                obj=opt2$value))
+                objective=opt2$value))
 }

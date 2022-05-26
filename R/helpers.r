@@ -5,22 +5,26 @@ setClassUnion("numeric_or_missing", c("numeric", "missing"))
 #' @param p vector of pseudo times at which to calculate the intensity
 #' @export
 setGeneric("hawke_intensity",
-           function(mu, alpha, beta, times, p, marks) {
+           function(times, mu, alpha, beta, p, marks, background_param) {
            })
 
 setMethod("hawke_intensity",
-          c(mu = "numeric", alpha = "numeric", beta  = "numeric",
-            times = "vector", marks = "vector",
-            p = "numeric_or_missing"),
-          function(mu, alpha, beta, times, 
-                   p, marks) {
+          c(times = "vector", alpha = "numeric",
+            beta  = "numeric", p = "numeric_or_missing"),
+          function(times, mu, alpha, beta, 
+                   p, marks, background_param) {
               if (missing(p)) p <- times
-              lam <- function(p,mark) {
+              lam <- function(p,mark,mu) {
                   mu + mark * alpha * sum(exp(-beta * (p - times))[times < p])
               }
               lam_p <- rep(0, length(p))
+              if (class(mu) == "function"){
+                mus <- mu(background_param, p)
+              } else {
+                mus <- rep(mu,length(p))
+              }
               for (i in seq_along(p)) {
-                  lam_p[i] <- lam(p[i],marks[i])
+                  lam_p[i] <- lam(p[i],marks[i],mus[i])
               }
               return(lam_p)
           })

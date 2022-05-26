@@ -6,17 +6,18 @@ setClassUnion("missing_or_numeric", c("numeric", "missing"))
 #' @param times a vector of numeric observation time points
 #' @export
 setGeneric("show_hawkes",
-           function(times, mu, alpha, beta, marks){
+           function(times, mu, alpha, beta, marks=c(rep(1,length(times))), background_param=NULL){
                standardGeneric("show_hawkes")
            })
 
 setMethod("show_hawkes",
-          c(times = "vector", mu = "numeric", alpha = "numeric", beta  = "numeric", marks = "vector"),
-          function(times, mu, alpha, beta, marks){
+          c(times = "vector", alpha = "numeric", beta  = "numeric"),
+          function(times, mu, alpha, beta, marks, background_param){
               n = length(times)
               max = max(times)
               p = seq(0,max,length.out = 500)
-              lam.p = hawke_intensity(mu = mu, alpha = alpha, beta = beta, times = times, p = p, marks= marks)
+              lam.p = hawke_intensity(mu = mu, alpha = alpha, beta = beta, times = times, 
+                                      p = p, marks= marks, background_param = background_param)
               ylab = expression(lambda(t))
               col = 1
               lmax = max(lam.p)
@@ -31,6 +32,92 @@ setMethod("show_hawkes",
                   ggplot2::xlab("times") +  ggplot2::ylab("Number of events")
               gridExtra::grid.arrange(line, hist, ncol = 1)
           })
+setGeneric("show_hawkes_GOF", # only for constant mu at this stage
+           function(times, mu, alpha, beta, marks=c(rep(1,length(times))),
+                    background_param){
+                   standardGeneric("show_hawkes_GOF")
+           })
+
+setMethod("show_hawkes_GOF",
+          c(times = "vector", alpha = "numeric", beta  = "numeric"),
+          function(times, mu, alpha, beta, marks, background_param){
+                  
+                  A <- numeric(length=length(times))
+                  for(i in 2:length(times)){
+                          A[i] <- exp(-beta * (times[i] - times[i - 1])) * (marks[i-1] + A[i - 1])
+                  }
+                  
+                  compensator = numeric(length=length(times))
+                  if (class(mu) == "numeric"){
+                        for(i in 1:length(times)){
+                                compensator[i] <- (mu * times[i]) - ((alpha/beta)*A[i])+ ((alpha / beta) * (i - 1))
+                        }
+                  } else {
+                          for(i in 1:length(times)){
+                                  compensator[i] <- mu(background_param,times[i]) - ((alpha/beta)*A[i])+ ((alpha / beta) * (i - 1))
+                          }
+                          compensator = compensator - mu(background_param,0) # Subtract integral at zero
+                          
+                  }
+                  
+                  interarrivals <- compensator[2:length(compensator)] - compensator[1:(length(compensator)-1)]
+
+                  data <- data.frame(x = times, observed = 1:length(times), compensator = compensator)
+                  melted <- reshape2::melt(data, id.vars = "x")
+                  
+                  # Plot of compensator and actual events
+                  lineplot = ggplot2::ggplot(data = melted, ggplot2::aes(x = x, y = value, colour = variable)) +
+                          ggplot2::xlab("Time") +
+                          ggplot2::ylab("Events") +
+                          ggplot2::geom_line() +
+                          ggplot2::theme_minimal() +
+                          ggplot2::theme(legend.position=c(0.8,0.2)) +
+                          ggplot2::ggtitle("Actual Events and Compensator")
+                  
+                  
+                  # Histogram of transformed interarrival times
+                  hist =  ggplot2::ggplot(data = data.frame(data = interarrivals),  ggplot2::aes(x = data)) +
+                          ggplot2::geom_histogram(ggplot2::aes(y=..density..)) +  ggplot2::theme_minimal() +
+                          ggplot2::xlab("Interarrival times") +  ggplot2::ylab("Density") +
+                          ggplot2::stat_function(fun="dexp", args=(mean=1), color = "red") +
+                          ggplot2::ggtitle("Transformed Interarrival Times")
+                  
+                  p <- ppoints(100)    # 100 equally spaced points on (0,1), excluding endpoints
+                  q <- quantile(interarrivals,p=p) # percentiles of the sample distribution
+                  data <- data.frame(x = qexp(p), y = q)
+                  # Q-Q plot of transformed interarrival times
+                  qqplot = ggplot2::ggplot(data = data, ggplot2::aes(x = .data$x, y = .data$y)) +
+                          ggplot2::xlab("Expected Quantiles") +
+                          ggplot2::ylab("Observed Quantiles") + 
+                          ggplot2::geom_point() +  ggplot2::theme_minimal() + 
+                          ggplot2::geom_abline(intercept = 0,slope = 1, color = "red") +
+                          ggplot2::ggtitle("Transformed Interarrival Times")
+
+                  U <- numeric(length=length(interarrivals))
+                  U <- 1 - exp(-compensator[2:length(compensator)] + compensator[1:(length(compensator)-1)])
+                  
+                  data <- data.frame(x = U[1:(length(U)-1)], y = U[2:length(U)])
+                  # Scatterplot of consecutive interarrival times
+                  scatter = ggplot2::ggplot(data = data, ggplot2::aes(x = .data$x, y = .data$y)) +
+                          ggplot2::xlab("Interarrival time k") +
+                          ggplot2::ylab("Interarrival time k+1") + 
+                          ggplot2::geom_point() +  ggplot2::theme_minimal() +
+                          ggplot2::ggtitle("Consecutive Interarrival Times")
+                
+                  # Kolmogorov-Smirnov Test
+                  KS <- stats::ks.test(interarrivals, "pexp")$p.value
+                  # Ljung-Box Test
+                  LBQ <- stats::Box.test(interarrivals, type = "Ljung")$p.value
+                  
+                  title = paste("LBQ p-value = ", round(LBQ,3), "KS p-value = ", round(KS,3))
+                  gridExtra::grid.arrange(lineplot, qqplot, hist, scatter, ncol = 2, bottom = grid::textGrob(
+                          title,
+                          gp = grid::gpar(fontface = 3, fontsize = 9),
+                          hjust = 1,
+                          x = 1
+                  ))
+                  return(list(interarrivals=interarrivals, KS = KS))
+                  })
 #' Plots estimated random field(s) of a LGCP
 #' @docType methods
 #' @rdname show_field
