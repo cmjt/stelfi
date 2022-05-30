@@ -18,7 +18,7 @@ fit_hawkes <-  function(times, parameters, marks=c(rep(1,length(times))), tmb_si
     alpha <- parameters[["alpha"]]
     beta <- parameters[["beta"]]
     
-    if (alpha > beta) stop("alpha must be smaller than or equal to beta")
+    if (alpha > (beta/mean(marks))) stop("alpha must be smaller than or equal to beta divided by the mean of the marks")
     if (alpha < 0) stop("alpha must be non-negative")
     
     
@@ -34,7 +34,7 @@ fit_hawkes <-  function(times, parameters, marks=c(rep(1,length(times))), tmb_si
     }
     obj <- TMB::MakeADFun(data = list(times = times, marks=marks),
                           parameters = list(log_mu = log(mu),
-                                            logit_abratio = stats::qlogis(alpha / beta),
+                                            logit_abratio = stats::qlogis(alpha / (beta/mean(marks))),
                                             log_beta = log(beta)),
                           DLL = "hawkes", silent = tmb_silent)
     obj$hessian <- TRUE
@@ -69,7 +69,7 @@ fit_hawkesCBF <- function(times, parameters, marks=c(rep(1,length(times))),
     }
     alpha <- parameters[["alpha"]]
     beta <- parameters[["beta"]]
-    if (alpha > beta) stop("alpha must be smaller than or equal to beta")
+    if (alpha > (beta/mean(marks))) stop("alpha must be smaller than or equal to beta divided by the mean of the marks")
     if (alpha < 0) stop("alpha must be non-negative")
     
     if (length(marks) != length(times)) stop("marks must have same length as times")
@@ -89,7 +89,7 @@ fit_hawkesCBF <- function(times, parameters, marks=c(rep(1,length(times))),
         beta <- parameters[["beta"]]
         obj <- TMB::MakeADFun(data = list(times = times,lambda = lambda, 
                                           lambda_integral = lambda_integral, marks = marks),
-                              parameters = list(logit_abratio = stats::qlogis(alpha/beta),
+                              parameters = list(logit_abratio = stats::qlogis(alpha/(beta/mean(marks))),
                                                 log_beta = log(beta)),
                               DLL = "hawkesCBF", silent = tmb_silent)
         obj$hessian <- TRUE

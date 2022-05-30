@@ -68,8 +68,6 @@ fit_hawkesNACBF <- function(times, parameters, marks=c(rep(1,length(times))),
     }
     a_par <- parameters[["a_par"]]
     beta <- parameters[["beta"]]
-    #if (alpha > beta) stop("alpha must be smaller than or equal to beta")
-    #if (alpha < 0) stop("alpha must be non-negative")
     
     if (length(marks) != length(times)) stop("marks must have same length as times")
     
@@ -84,8 +82,8 @@ fit_hawkesNACBF <- function(times, parameters, marks=c(rep(1,length(times))),
         for (k in 1:(length(times)-1)){
             lambda_min[k] <- background_min(background_parameters,times[k],times[k+1])
         }
-        lambda_min[length(times)] <- background_min(background_parameters, times[length(times)],times[length(times)])
-        if (min(lambda-lambda_min) < 0) stop("lambda_min incorrectly defined: lambda_min[i] > lambda[i]")
+        lambda_min[length(times)] <- background(background_parameters, tail(times, n=1))
+        if (min(lambda-lambda_min) < 0) stop("lambda_min incorrectly defined: lambda_min > lambda")
         lambda_integral <- background_integral(background_parameters, tail(times,n=1)) -
             background_integral(background_parameters, 0)
         
@@ -106,14 +104,12 @@ fit_hawkesNACBF <- function(times, parameters, marks=c(rep(1,length(times))),
                         gr = NULL, times, parameters, marks, background, background_integral,
                         background_min, tmb_silent, optim_silent)
     # Need to run again to extract alpha and beta
-    print(opt$par)
-    print(opt$value)
     lambda <- background(opt$par, times)
     lambda_min <- numeric(length=length(times))
     for (k in 1:(length(times)-1)){
         lambda_min[k] <- background_min(opt$par,times[k],times[k+1])
     }
-    lambda_min[length(times)] <- background_min(opt$par, times[length(times)],times[length(times)])
+    lambda_min[length(times)] <- background(opt$par, tail(times, n=1))
     lambda_integral <- background_integral(opt$par, tail(times,n=1)) -
         background_integral(opt$par, 0)
     a_par <- parameters[["a_par"]]

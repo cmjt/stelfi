@@ -50,11 +50,11 @@ setMethod("show_hawkes_GOF",
                   compensator = numeric(length=length(times))
                   if (class(mu) == "numeric"){
                         for(i in 1:length(times)){
-                                compensator[i] <- (mu * times[i]) - ((alpha/beta)*A[i])+ ((alpha / beta) * (i - 1))
+                                compensator[i] <- (mu * times[i]) - ((alpha/beta)*A[i])+ ((alpha / beta) * (sum(marks[1:i])-marks[i]))
                         }
                   } else {
                           for(i in 1:length(times)){
-                                  compensator[i] <- mu(background_param,times[i]) - ((alpha/beta)*A[i])+ ((alpha / beta) * (i - 1))
+                                  compensator[i] <- mu(background_param,times[i]) - ((alpha/beta)*A[i])+ ((alpha / beta) * (sum(marks[1:i])-marks[i]))
                           }
                           compensator = compensator - mu(background_param,0) # Subtract integral at zero
                           
@@ -87,7 +87,7 @@ setMethod("show_hawkes_GOF",
                   data <- data.frame(x = qexp(p), y = q)
                   # Q-Q plot of transformed interarrival times
                   qqplot = ggplot2::ggplot(data = data, ggplot2::aes(x = .data$x, y = .data$y)) +
-                          ggplot2::xlab("Expected Quantiles") +
+                          ggplot2::xlab("Theoretical Quantiles") +
                           ggplot2::ylab("Observed Quantiles") + 
                           ggplot2::geom_point() +  ggplot2::theme_minimal() + 
                           ggplot2::geom_abline(intercept = 0,slope = 1, color = "red") +
@@ -97,10 +97,10 @@ setMethod("show_hawkes_GOF",
                   U <- 1 - exp(-compensator[2:length(compensator)] + compensator[1:(length(compensator)-1)])
                   
                   data <- data.frame(x = U[1:(length(U)-1)], y = U[2:length(U)])
-                  # Scatterplot of consecutive interarrival times
+                  # Scatterplot of the CDF of consecutive interarrival times
                   scatter = ggplot2::ggplot(data = data, ggplot2::aes(x = .data$x, y = .data$y)) +
-                          ggplot2::xlab("Interarrival time k") +
-                          ggplot2::ylab("Interarrival time k+1") + 
+                          ggplot2::xlab("F(Interarrival time k)") +
+                          ggplot2::ylab("F(Interarrival time k+1)") + 
                           ggplot2::geom_point() +  ggplot2::theme_minimal() +
                           ggplot2::ggtitle("Consecutive Interarrival Times")
                 
@@ -116,7 +116,7 @@ setMethod("show_hawkes_GOF",
                           hjust = 1,
                           x = 1
                   ))
-                  return(list(interarrivals=interarrivals, KS = KS))
+                  return(list(interarrivals=interarrivals, KS = KS, LBQ = LBQ))
                   })
 #' Plots estimated random field(s) of a LGCP
 #' @docType methods
