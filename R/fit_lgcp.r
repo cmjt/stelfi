@@ -54,7 +54,7 @@
 #' @param nlminb_silent logical, default `TRUE`:
 #' print function and parameters every iteration.
 #' @export
-fit_lgcp_tmb2 <-  function(y, A, designmat, spde, w, idx, beta,
+fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
                           log_tau, log_kappa,
                           atanh_rho, x, tmb_silent,
                           nlminb_silent, simulation,...) {
@@ -102,7 +102,7 @@ fit_lgcp_tmb2 <-  function(y, A, designmat, spde, w, idx, beta,
 #' \code{smesh} and \code{tmesh} node combination.
 #' @inheritParams fit_lgcp_tmb
 #' @export
-fit_lgcp2 <-  function(locs, sp, smesh, tmesh, parameters, covariates,
+fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
                       tmb_silent = TRUE,
                       nlminb_silent = TRUE, ...) {
     ## svs
@@ -143,7 +143,7 @@ fit_lgcp2 <-  function(locs, sp, smesh, tmesh, parameters, covariates,
         designmat <- matrix(rep(1, length(tmp$ypp) ), ncol = 1)
     }
     ## Model fitting
-    res <- fit_lgcp_tmb2(y = tmp$ypp, A = tmp$A,
+    res <- fit_lgcp_tmb(y = tmp$ypp, A = tmp$A,
                         designmat = designmat,
                         spde = tmp$spde$param.inla[c("M0", "M1", "M2")],
                         w = tmp$w,
@@ -160,7 +160,7 @@ fit_lgcp2 <-  function(locs, sp, smesh, tmesh, parameters, covariates,
 
 #' Function to prep data as per INLA stack
 #' @inheritParams fit_lgcp
-prep_data_lgcp2 <- function(locs, sp, smesh, tmesh) {
+prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
     ## E
     w <- get_weights(mesh = smesh, sp = sp, plot = FALSE)
     for (k in 1:length(w$weights)){
@@ -202,7 +202,6 @@ prep_data_lgcp2 <- function(locs, sp, smesh, tmesh) {
     lst <- list(ypp = ypp, A = A, spde = spde, w = expected, idx = idx)
     return(lst)
 }
-# FUNCTION HEADER TO BE WRITTEN
 #' Function to fit a spatial or spatiotemporal log-Gaussian Cox process using \code{TMB}
 #'
 #' A simple to use wrapper for \code{fit_lgcp_tmb}
@@ -276,17 +275,17 @@ simulate_lgcp <- function(parameters, sp, smesh, tmesh, covariates) {
                         nlminb_silent = TRUE,
                         simulation = TRUE)
                         #...)
-    # Perform simulation
+    ## Perform simulation
     length_beta <- length(beta)
     length_x <- tmp$spde$n.spde
     res$env$last.par[1:length_beta] <- beta
-    #res$env$last.par[(length_beta+1):(length_beta+length_x)] <- x
+    ## res$env$last.par[(length_beta+1):(length_beta+length_x)] <- x
     res$env$last.par[(length_beta+length_x+1)] <- log_tau
     res$env$last.par[(length_beta+length_x+2)] <- log_kappa
     if (!missing(tmesh)){
         res$env$last.par[(length_beta+length_x+3)] <- atanh_rho
     }
-    simdata <- res$simulate(complete=TRUE)
+    simdata <- res$simulate(complete = TRUE)
     return(simdata)
 }
     
