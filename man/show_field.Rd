@@ -5,15 +5,22 @@
 \alias{show_field}
 \title{Plots estimated random field(s) of a LGCP}
 \usage{
-show_field(x, smesh, dims = c(500, 500))
+show_field(
+  x,
+  smesh,
+  dims = c(500, 500),
+  border,
+  colour_option = "D",
+  title = ""
+)
 }
 \arguments{
 \item{x}{a vector of values for each mesh node}
 
-\item{smesh}{spatial mesh of class \code{"inla.mesh"}}
-
 \item{dims}{by default \code{c(500,500)}, vector of length 2 specifying
 spatial pixel resolution}
+
+\item{border}{optional, a \code{SpatialPolygons} object of the domain border}
 }
 \description{
 Plots estimated random field(s) of a LGCP

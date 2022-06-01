@@ -15,11 +15,13 @@ fit_lgcp_tmb(
   w,
   idx,
   beta,
-  x,
   log_tau,
   log_kappa,
   atanh_rho,
-  silent = FALSE,
+  x,
+  tmb_silent,
+  nlminb_silent,
+  simulation,
   ...
 )
 }
@@ -60,6 +62,12 @@ and 0 otherwise.}
 \item{beta}{A vector of fixed effects coefficients to be estimated
 (same length as \code{ncol(designmat)}}
 
+\item{log_tau}{\code{log(tau)} parameter for the GMRF}
+
+\item{log_kappa}{\code{log(kappa)} parameter for the GMRF}
+
+\item{atanh_rho}{optional, \code{arctan(rho)} AR1 parameter}
+
 \item{x}{the random field/effects
 This is the random field/effects. Set this variable random in
 \code{MadeADFun()}.
@@ -75,14 +83,11 @@ random
 effects x.col(0)     x.col(1)    x.col(2)       ...         x.col(t_n - 1)
 ----------------------------------------------------------------------}
 
-\item{log_tau}{\code{log(tau)} parameter for the GMRF}
+\item{tmb_silent}{logical, default `TRUE`:
+TMB inner optimization tracing information will be printed.}
 
-\item{log_kappa}{\code{log(kappa)} parameter for the GMRF}
-
-\item{atanh_rho}{optional, \code{arctan(rho)} AR1 parameter}
-
-\item{silent}{logical, by default FALSE. If TRUE model fitting progress
-not printed to console.}
+\item{nlminb_silent}{logical, default `TRUE`:
+print function and parameters every iteration.}
 
 \item{...}{arguments to pass into \code{nlminb()}}
 }

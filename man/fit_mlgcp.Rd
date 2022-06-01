@@ -13,8 +13,12 @@ fit_mlgcp(
   parameters,
   methods,
   strfixed,
-  strparam,
-  idx,
+  fields,
+  covariates,
+  pp_covariates,
+  marks_covariates,
+  tmb_silent = TRUE,
+  nlminb_silent = TRUE,
   ...
 )
 }
@@ -27,17 +31,24 @@ time stapms then this is the third column of the 3xn matrix}
 \item{smesh}{spatial mesh of class \code{"inla.mesh"}}
 
 \item{parameters}{a list of named parmeters:
-"beta"--A vector of  coefficients to be estimated
-of length \code{ncol(marks)} + 1.
- "tau"-- tau parameter for the GMRF.
- "kappa"-- kappa parameter for the GMRF.
+log_tau, log_kappa, betamarks, betapp, marks_coefs_pp. 
+See fit_mlgcp_tmb header for further details
 \code{smesh} and \code{tmesh} node combination.}
 
-\item{idx}{a binary vector of the same size as the observation
-vector \code{y}.
-With this vector, the log-likelihood can be computed using a subset
-of the observations. 1 for contributing to the log-likelihood,
-and 0 otherwise.}
+\item{fields}{See fit_mlgcp_tmb header}
+
+\item{covariates}{Covariate(s) corresponding to each area in the spatial mesh}
+
+\item{pp_covariates}{Which columns of the covariates apply to the point process}
+
+\item{marks_covariates}{Which columns of the covariates apply to the marks.
+By default, all covariates apply to the marks only.}
+
+\item{tmb_silent}{logical, default `TRUE`:
+TMB inner optimization tracing information will be printed.}
+
+\item{nlminb_silent}{logical, default `TRUE`:
+print function and parameters every iteration.}
 
 \item{...}{arguments to pass into \code{nlminb()}}
 }

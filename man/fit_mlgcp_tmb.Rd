@@ -2,8 +2,8 @@
 % Please edit documentation in R/fit_mlgcp.r
 \name{fit_mlgcp_tmb}
 \alias{fit_mlgcp_tmb}
-\title{Function to fit a spatial or spatiotemporal marked log-Gaussian Cox
-process using \code{TMB} and the
+\title{Function to fit a marked spatial log-Gaussian Cox
+process (LGCP) using \code{TMB} and the
 \code{R_inla} namespace for the spde construction of the latent field.
 For a simpler wrapper use \code{fit_mlgcp()}}
 \usage{
@@ -13,15 +13,19 @@ fit_mlgcp_tmb(
   lmat,
   spde,
   w,
-  idx,
   strfixed,
   methods,
-  betaresp,
+  betamarks,
   betapp,
-  beta,
+  marks_coefs_pp,
   log_kappa,
   log_tau,
-  strparam,
+  cov_overlap,
+  designmatpp,
+  designmatmarks,
+  fields,
+  tmb_silent,
+  nlminb_silent,
   ...
 )
 }
@@ -39,57 +43,50 @@ The minimal required components are M0, M1, M2.}
 poisson models in \code{INLA},
 see \code{INLA::inla.doc("poisson")} for more detail.}
 
-\item{idx}{a matrix of size (no of resp) * (no of resp + 1).
-The first column is for sharing random field with point process.
-For the first column, the values are indicated as >0 if sharing random field with point process.
-For the i-th column (idx.col(i + 1)), the values are also indicated as >0 if sharing random
-field defined in i-th random field. If idx(i, i + 1) = 0, then the entire column is ignored.}
-
-\item{strfixed}{a matrix of fixed structural parameters. For some distributions,
-non-NaN values will overwrites the corresponding strparam (consider it fixed),
-and NaN values indicate that it should be estimated (there is no NA in C++).
-Non-NaN values can be set partially. The entire column shares one estimate if
-it needs estimating (and hence strparam is a vector of length no. of resp).
-Details:  Normal distribution, this is the log of element-wise standard deviation.
-If non-NaN, it is taken as a fixed value  of the log of standard deviation.
-Poisson distribution, this is the effort. The default input passed from R should be 1s.
+\item{strfixed}{a matrix of fixed structural parameters.
+Normal distribution: this is the log of element-wise standard deviation.
+Poisson distribution: not used
 Binomial distribution, this is the number of trials.
-The default input from R should be 1s, i.e., the bernoulli distribution.
-Gamma distribution, this is the log of scale. If non-NaN, this is taken as
-a fixed value of the log of the scale.}
+The default input from R should be 1s, i.e., the Bernoulli distribution.
+Gamma distribution, this is the log of scale.}
 
 \item{methods}{integer:
-0 - normal distribution, strparam/strfixed as log_sigma.
-1 - poisson distribution, strparam is not referenced, strfixed as effort.
-2 - binomial distribution, strparam is not referenced, strfixed as number of trials.
-3 - gamma distribution, the implementation in TMB is shape-scale. strparam/strfixed as log_scale;}
+0 - normal distribution. Parameter estimated is mean
+1 - poisson distribution. Parameter estimated is intensity
+2 - binomial distribution. Parameter estimated is logit/probability
+3 - gamma distribution, the implementation in TMB is shape-scale.}
 
-\item{betaresp}{starting value of the intercept term of each response}
+\item{betamarks}{starting value of the intercept term and covariate coefficient of each mark}
 
 \item{betapp}{starting value of the  intercept of point process}
 
-\item{beta}{A matrix of the same size as idx.
-This matrix contains the estimates for the sharing effects.
-Note that for the right no. of resp-by-no. of resp matrix, the diagonal terms WILL always be 0.
-This might be resulting from the features of TMB. Consider a manual fixed from R side if needed.
-All the values in this matrix is constrained to be a normal variable.}
+\item{marks_coefs_pp}{slope of mark lambda versus point process lambda}
 
-\item{log_kappa}{log of kappas for the random field. The lengths of these vectors are no. of resp + 1.
-The first element is for the random field of the point process.}
+\item{log_kappa}{log of kappas for the random field(s). The first element is for the random field of the point process.}
 
-\item{log_tau}{log of taus for the random field. The lengths of these vectors are no. of resp + 1.
-The first element is for the random field of the point process.}
+\item{log_tau}{log of taus for the random field(s). The first element is for the random field of the point process.}
 
-\item{strparam}{see \code{strfixed} and \code{methods}}
+\item{cov_overlap}{whether or nor marks and point process share covariates. If not, marks_coef_pp applies to entire lambda of the point process.
+If there is overlap, it applies only to the point process random field.}
+
+\item{designmatpp}{Design matrix for point process. The first column is ones.
+If there are covariates, then the covariates are in the subsequent columns}
+
+\item{designmatmarks}{Design matrix for marks}
+
+\item{fields}{Binary vector indicating whether there is a new random field for each mark.}
+
+\item{tmb_silent}{logical, default `TRUE`:
+TMB inner optimization tracing information will be printed.}
+
+\item{nlminb_silent}{logical, default `TRUE`:
+print function and parameters every iteration.}
 
 \item{...}{arguments to pass into \code{nlminb()}}
-
-\item{silent}{logical, by default FALSE. If TRUE model fitting progress
-not printed to console.}
 }
 \description{
-Function to fit a spatial or spatiotemporal marked log-Gaussian Cox
-process using \code{TMB} and the
+Function to fit a marked spatial log-Gaussian Cox
+process (LGCP) using \code{TMB} and the
 \code{R_inla} namespace for the spde construction of the latent field.
 For a simpler wrapper use \code{fit_mlgcp()}
 }

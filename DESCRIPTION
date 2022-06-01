@@ -11,12 +11,15 @@ Authors@R:
            comment = c(ORCID = "0000-0003-1201-2781")),
     person(given  = "Alec",
            family = "van Helsdingen",
-           role = "ctb"),
+           role = c("aut")),
     person(given = "Xiangjie",
            family = "Xue",
            role = "ctb"))
 Depends:
-    R (>= 4.1.2)
+    R (>= 4.1.2),
+    sf,
+    spatstat.core,
+    spatstat.geom,
 Imports:
     TMB (>= 1.7.20),
     Rcpp (>= 1.0.6),
@@ -24,15 +27,12 @@ Imports:
     ggplot2,
     patchwork,
     rgeos,
-    sf,
-    sp,
-    spatstat.core,
-    spatstat.geom
+    sp
 Description: A package for fitting a range of spatiotemporal point processes which include latent fields.
 License: GPL
 URL: https://github.com/cmjt/stelfi
 LazyData: TRUE
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Suggests: 
     testthat (>= 3.0.0),
     knitr,

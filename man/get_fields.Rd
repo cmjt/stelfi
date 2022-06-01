@@ -9,10 +9,6 @@ get_fields(object, smesh, tmesh, plot = FALSE, sd = FALSE)
 \arguments{
 \item{object}{result of a call \code{fit_lgcp()}}
 
-\item{smesh}{spatial mesh of class \code{"inla.mesh"}}
-
-\item{tmesh}{optional, temporal mesh of class \code{"inla.mesh.1d"}}
-
 \item{plot}{logical, if TRUE then field(s) plotted}
 
 \item{sd}{logical, if TRUE then standard errors of field returned}
