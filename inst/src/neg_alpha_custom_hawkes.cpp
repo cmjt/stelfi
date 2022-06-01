@@ -1,6 +1,7 @@
 /* Modified version of estimating Hawkes process */
 /* The simulation code is added on 20/05/2021. */
-/* Negative Alpha and Custom Background Function 24/05/2022 */
+/* Generic Inhomogenous Hawke's processes(either self-exciting or self-inhibiting) 24/05/2022 */
+/* Not 100% working 02/06/2022 */
 #include <TMB.hpp>
 #include <vector>
 #include <iostream>
@@ -20,8 +21,6 @@ Type objective_function<Type>::operator() ()
   PARAMETER(log_beta);
   Type beta = exp(log_beta);
 
-  // t_n
-  //Type last = times.template tail<1>()[0];
   vector<Type> A = vector<Type>::Zero(times.size());
   
   Type nll = 0;
@@ -30,13 +29,14 @@ Type objective_function<Type>::operator() ()
     // Page 28 of https://pat-laub.github.io/pdfs/honours_thesis.pdf
     A[i] = exp(-beta * (times[i] - times[i - 1])) * (marks[i-1] + A[i - 1]);
   }
+  
   // B[i]*alpha is self-exciting component immediately after event i
   vector<Type> B = vector<Type>::Zero(times.size());
   for(int i = 0; i < times.size(); ++i){
     B[i] = A[i] + marks[i];
   }
   
-  // -min(lambda_min/B) <= alpha <= beta
+  // -min(lambda_min/B) <= alpha <= beta/mean(marks)
   // A conservative formula for ensuring the intensity is never negative
   vector<Type> C = vector<Type>::Zero(times.size());
   for(int i = 0; i < times.size(); ++i){
@@ -48,7 +48,6 @@ Type objective_function<Type>::operator() ()
 
   
   vector<Type> term_3vec = log(lambda + alpha * A);
-  // part of part 2 is computed in A[times.size() - 1].
   nll = lambda_integral - ((alpha/beta)*A.template tail<1>()[0])+ ((alpha / beta) * Type(sum(marks)-marks.template tail<1>()[0])) - sum(term_3vec);
 
   //SIMULATE {

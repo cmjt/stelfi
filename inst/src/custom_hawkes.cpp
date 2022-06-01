@@ -1,6 +1,6 @@
 /* Modified version of estimating Hawkes process */
 /* The simulation code is added on 20/05/2021. */
-/* Generic Inhomogenous Hawke's processes 23/05/2022 */
+/* Generic Inhomogenous Self-exciting Hawke's processes 23/05/2022 */
 #include <TMB.hpp>
 #include <vector>
 #include <iostream>
@@ -14,17 +14,14 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR(marks);
   Type marks_mean = marks.sum()/marks.size(); // Average mark
   DATA_SCALAR(lambda_integral);
+  
   // parameters of the hawkes process
-  //PARAMETER(log_mu);
   PARAMETER(logit_abratio);
   PARAMETER(log_beta);
 
-  //Type mu = exp(log_mu);
   Type beta = exp(log_beta);
   Type alpha = exp(logit_abratio) / (Type(1.) + exp(logit_abratio)) * (beta/marks_mean); // enforcing 0<=alpha<=beta
 
-  // t_n
-  //Type last = times.template tail<1>()[0];
   vector<Type> A = vector<Type>::Zero(times.size());
   
   
@@ -34,7 +31,6 @@ Type objective_function<Type>::operator() ()
     A[i] = exp(-beta * (times[i] - times[i - 1])) * (marks[i-1] + A[i - 1]);
   }
   vector<Type> term_3vec = log(lambda + alpha * A);
-  // part of part 2 is computed in A[times.size() - 1].
   nll = lambda_integral - ((alpha/beta)*A.template tail<1>()[0])+ ((alpha / beta) * Type(sum(marks)-marks.template tail<1>()[0])) - sum(term_3vec);
 
   //SIMULATE {
@@ -51,7 +47,6 @@ Type objective_function<Type>::operator() ()
     //REPORT(times);
   //}
 
-  //ADREPORT(mu);
   ADREPORT(alpha);
   ADREPORT(beta);
 
