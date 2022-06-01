@@ -1,6 +1,6 @@
 Package: stelfi
 Type: Package
-Title: Fitting a range of spatial, temporal, and spatiotemporal point process models
+Title: For fitting a range of spatial, temporal, and spatiotemporal point process models
 Version: 0.0.1
 Date: 2021-07-23
 Authors@R: 
@@ -9,11 +9,14 @@ Authors@R:
            role = c("aut", "cre"),
            email = "cmjonestodd@gmail.com",
            comment = c(ORCID = "0000-0003-1201-2781")),
+    person(given  = "Alec",
+           family = "van Helsdingen",
+           role = "ctb"),
     person(given = "Xiangjie",
            family = "Xue",
            role = "ctb"))
 Depends:
-    R (>= 4.1.0)
+    R (>= 4.1.2)
 Imports:
     TMB (>= 1.7.20),
     Rcpp (>= 1.0.6),
