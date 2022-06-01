@@ -122,7 +122,7 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
     if (length(log_kappa) != 1) stop("log_kappa must be a single number")
     if (!missing(tmesh)) {
         if(!"t" %in% names(locs)) stop("Need a variable named t in arg locs")
-        tmp <- prep_data_lgcp2(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
+        tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
         k <- length(tmesh$loc)
         if (!missing(covariates)) if (nrow(covariates) != nrow(smesh$loc)*k)
             stop("nrow.covariates should be size of spatial mesh by number of time knots")
@@ -131,7 +131,7 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
     } else {
         if (!missing(covariates)) if(nrow(covariates) != nrow(smesh$loc))
             stop("nrow.covariates should be same as spatial mesh size")
-        tmp <- prep_data_lgcp2(locs = locs, sp = sp, smesh = smesh)
+        tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
         k <- 1
         atanh_rho <- NULL
     }
@@ -163,11 +163,6 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
 prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
     ## E
     w <- get_weights(mesh = smesh, sp = sp, plot = FALSE)
-    for (k in 1:length(w$weights)){
-        if ((smesh$loc[k,2]-0.42475*smesh$loc[k,1]+114.274)<0){
-            w$weights[k] <- 0
-        }
-    }
     w_areas <- w$weights
     polys <- w$polys
     nv <- smesh$n
@@ -202,6 +197,7 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
     lst <- list(ypp = ypp, A = A, spde = spde, w = expected, idx = idx)
     return(lst)
 }
+# FUNCTION HEADER TO BE WRITTEN
 #' Function to fit a spatial or spatiotemporal log-Gaussian Cox process using \code{TMB}
 #'
 #' A simple to use wrapper for \code{fit_lgcp_tmb}
@@ -275,17 +271,17 @@ simulate_lgcp <- function(parameters, sp, smesh, tmesh, covariates) {
                         nlminb_silent = TRUE,
                         simulation = TRUE)
                         #...)
-    ## Perform simulation
+    # Perform simulation
     length_beta <- length(beta)
     length_x <- tmp$spde$n.spde
     res$env$last.par[1:length_beta] <- beta
-    ## res$env$last.par[(length_beta+1):(length_beta+length_x)] <- x
+    #res$env$last.par[(length_beta+1):(length_beta+length_x)] <- x
     res$env$last.par[(length_beta+length_x+1)] <- log_tau
     res$env$last.par[(length_beta+length_x+2)] <- log_kappa
     if (!missing(tmesh)){
         res$env$last.par[(length_beta+length_x+3)] <- atanh_rho
     }
-    simdata <- res$simulate(complete = TRUE)
+    simdata <- res$simulate(complete=TRUE)
     return(simdata)
 }
     

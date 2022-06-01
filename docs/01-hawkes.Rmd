@@ -2,16 +2,19 @@
 
 A  univariate Hawkes process is defined to be a self-exciting temporal point process where the conditional intensity function is given by
 
- $$\lambda(t)= \mu(t)+ \Sigma_{i:\tau_i<t}\nu(t-\tau_i)$$ 
- where where $\mu(t)$ is the background rate of the process and $\Sigma_{i:\tau_i<t}\nu(t-\tau_i)$ is some historic temporal dependence.
+ $$\lambda(t) = \mu(t) + \Sigma_{i:\tau_i<t}\nu(t-\tau_i)$$ 
+ where where $\mu(t)$ is the background rate of the process and $\Sigma_{i:\tau_i<t}\nu(t-\tau_i)$ is some historic temporal dependence. First introduced by @hawkes
+ 
+ $$\lambda(t) = \mu(t) + \alpha \Sigma_{i:\tau_i<t}\text{exp}(-\beta * (t-\tau_i)) $$ 
  
 ## The `fit_hawkes()` function
 
 ```{r}
-devtools::load_all("~/Git/stelfi")
+## devtools::load_all("~/Git/stelfi")
+library(stelfi)
 args(fit_hawkes)
 ```
- 
+
 **Retweets**
 
 A [NIWA](https://niwa.co.nz/) scientist [found a working USB in the scat of a leopard seal](https://www.nzherald.co.nz/nz/news/article.cfm?c_id=1&objectid=12201147), they then [tweeted about it](https://twitter.com/niwa_nz/status/1092610541401587712) in the hopes of finding its owner.
@@ -68,6 +71,11 @@ show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,
 
 **ETAS marked model**
 
+Here we fit a univariate marked Hawkes process  where the conditional intensity function is given by
+
+ $$\lambda(t; m(t)) = \mu(t) + \alpha \Sigma_{i:\tau_i<t}m(t-\tau_i)\text{exp}(-\beta * (t-\tau_i)) $$ 
+where $\mu(t)$ is the background rate of the process, $m(t)$ is the temporal mark and $\Sigma_{i:\tau_i<t}\nu(t-\tau_i)$ is some historic temporal dependence.
+
 ```{r}
 data("earthquakes")
 head(earthquakes)
@@ -100,3 +108,5 @@ show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,
 ```{r}
 args(fit_hawkes_cbf)
 ```
+
+
