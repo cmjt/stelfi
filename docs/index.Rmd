@@ -1,7 +1,7 @@
 --- 
-title: "Spatiotemporal LGCPs"
-author: "Charlotte M. Jones-Todd"
-date: "`r Sys.Date()`"
+title: "Fitting models using `stelfi`"
+author: ""
+date: ""
 site: bookdown::bookdown_site
 documentclass: book
 bibliography: [book.bib, packages.bib]
@@ -10,9 +10,9 @@ link-citations: yes
 description: "Using `stelfi`"
 ---
 
-# Introduction {#install}
+# Introduction {-}
 
-## Installing `stelfi`
+## Installing `stelfi` {-}
 
 The `stelfi` package can be installed from Github:
 
@@ -20,7 +20,7 @@ The `stelfi` package can be installed from Github:
 devtools::install_github("cmjt/stelfi")
 ```
 
-### Compiling templates
+### Compiling templates {-}
 
 Before using the  `TMB` templates in `stelfi` you should use `compile_stelfi()` to compile them:
 

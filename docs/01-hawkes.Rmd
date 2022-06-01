@@ -8,13 +8,11 @@ A  univariate Hawkes process is defined to be a self-exciting temporal point pro
 ## The `fit_hawkes()` function
 
 ```{r}
+devtools::load_all("~/Git/stelfi")
 args(fit_hawkes)
 ```
-
-## Applied examples
-
-
-### Retweets
+ 
+**Retweets**
 
 A [NIWA](https://niwa.co.nz/) scientist [found a working USB in the scat of a leopard seal](https://www.nzherald.co.nz/nz/news/article.cfm?c_id=1&objectid=12201147), they then [tweeted about it](https://twitter.com/niwa_nz/status/1092610541401587712) in the hopes of finding its owner.
 
@@ -25,7 +23,7 @@ head(retweets_niwa)
 
 ```{r sort data}
 ## numeric time stamps
-times <- sort(as.numeric(difftime(retweets_niwa ,min(retweets_niwa),units = "mins")))
+times <- unique(sort(as.numeric(difftime(retweets_niwa ,min(retweets_niwa),units = "mins"))))
 ```
 
 
@@ -59,106 +57,46 @@ pars
 
 
 
-```{r plot, echo = TRUE,fig.height = 7,fig.width = 9,fig.cap="Fitted intensity (top plot) and observed counts of retweets (bottom)."}
+```{r plot, echo = TRUE,fig.height = 7,fig.width = 9}
 show_hawkes(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1])
 ```
 
-### UK serial killers
 
-```{r terrorism}
-data(serial_uk)
-## make date vector
-times <- as.Date(paste(serial_uk$Date.of.first.kill, "/01", sep=''), "%m/%Y/%d")
-times <- sort(lubridate::year(times) + lubridate::month(times)/12 - lubridate::year(min(times)))
+```{r gof, echo = TRUE,fig.height = 7,fig.width = 9}
+show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1], return_values = FALSE)
 ```
 
+**ETAS marked model**
 
-
-```{r fit model mud,results = 'hide',cache = TRUE}
-params <- c(mu = 0.06,alpha = 0.006,beta = 0.01)
+```{r}
+data("earthquakes")
+head(earthquakes)
+earthquakes <- earthquakes[order(earthquakes$origintime),]
+earthquakes <- earthquakes[!duplicated(earthquakes$origintime),]
+times <- earthquakes$origintime
+times <- as.numeric(difftime(times , min(times), units = "mins"))
+marks <- earthquakes$magnitude
+params <- c(mu = 3, alpha = 0.05, beta = 1)
 ## must have compiled TMB templates first use compile_stelfi()
-fit <- fit_hawkes(times = times,parameters = params) 
-```
-
-```{r params terr}
+fit <- fit_hawkes(times = times, parameters = params, marks = marks) 
 ## print out estimated parameters
 pars <- get_coefs(fit)
 pars
 ```
 
-```{r plot2, echo = TRUE,fig.height = 7,fig.width = 9,fig.cap="Fitted intensity (top plot) and observed counts of UK serial murderers (bottom)."}
-show_hawkes(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1])
-```
-
-### Malaria cases
-
-Here we consider data from [*Using Hawkes Processes to model imported and local malaria cases in near-elimination settings*](https://dx.doi.org/10.1371%2Fjournal.pcbi.1008830). Data are recorded line lists of individuals with malaria (caused by the *Plasmodium vivax* parasite) in Yunnan Province, China between 1st January 2011 to 24th September 2013. Data may be downloaded from [here](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/YPRLIL) as follows.
-
-```{r china data, echo = TRUE, message = FALSE, eval = FALSE}
-tmp <- tempfile(fileext = ".RData")
-download.file("https://dataverse.harvard.edu/api/access/datafile/4443458",
-              destfile = tmp)
-load(tmp)
-unlink(tmp)
-```
-
-```{r, eval = TRUE, echo = FALSE}
-load("../data/china_malaria.RData")
+```{r, echo = TRUE,fig.height = 7,fig.width = 9}
+show_hawkes(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1], marks = marks)
 ```
 
 
-```{r china EDA}
-str(china_malaria)
-times <- china_malaria$time_jitter
+```{r, echo = TRUE,fig.height = 7,fig.width = 9}
+show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1], marks = marks, return_values = FALSE)
 ```
 
-```{r fit model china,results = 'hide',cache = TRUE}
-params <- c(mu = 9, alpha = 3, beta = 10)
-## must have compiled TMB templates first use compile_stelfi()
-fit <- fit_hawkes(times = times,parameters = params) 
-```
 
-```{r params china}
-## print out estimated parameters
-pars <- get_coefs(fit)
-pars
-```
 
-```{r plot3, echo = TRUE,fig.height = 7,fig.width = 9,fig.cap="Fitted intensity (top plot) and observed counts of recorded malarial infection (bottom)."}
-show_hawkes(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1])
-```
-
-## Simulation
-
-**Set parameters**
+## The `fit_hawkes_cbf()` function
 
 ```{r}
-mu <- 0.25
-alpha <- 0.13
-beta <- 0.15
-```
-
-**Option 1**
-
-Simulation algorithm as per [*On Lewis' simulation method for point processes*](https://ieeexplore.ieee.org/document/1056305)
-
-```{r, fig.height = 7,fig.width = 9,}
-sim1 <- sim_hawkes(mu = mu, alpha = alpha, beta = beta, plot = TRUE)
-```
-
-**Option 2**
-
-Simulation algorithm as per [*MLE of Hawkes' self-exciting point process*]({https://radhakrishna.typepad.com/mle-of-hawkes-self-exciting-process.pdf)
-
-```{r, fig.height = 7,fig.width = 9,}
-sim2 <- sim_hawkes(mu = mu, alpha = alpha, beta = beta,n = 250, method = "2", plot = TRUE)
-```
-
-**Option 3**
-
-Using the TMB likelihood template; below we simulate another realisation from the fitted `china_malaria` model:
-
-```{r}
-sim3 <- fit$simulate()
-dplyr::glimpse(sim3)
+args(fit_hawkes_cbf)
 ```
