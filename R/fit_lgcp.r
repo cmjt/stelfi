@@ -54,7 +54,7 @@
 #' @param nlminb_silent logical, default `TRUE`:
 #' print function and parameters every iteration.
 #' @export
-fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
+fit_lgcp_tmb2 <-  function(y, A, designmat, spde, w, idx, beta,
                           log_tau, log_kappa,
                           atanh_rho, x, tmb_silent,
                           nlminb_silent, simulation,...) {
@@ -102,7 +102,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' \code{smesh} and \code{tmesh} node combination.
 #' @inheritParams fit_lgcp_tmb
 #' @export
-fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
+fit_lgcp2 <-  function(locs, sp, smesh, tmesh, parameters, covariates,
                       tmb_silent = TRUE,
                       nlminb_silent = TRUE, ...) {
     ## svs
@@ -122,7 +122,7 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
     if (length(log_kappa) != 1) stop("log_kappa must be a single number")
     if (!missing(tmesh)) {
         if(!"t" %in% names(locs)) stop("Need a variable named t in arg locs")
-        tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
+        tmp <- prep_data_lgcp2(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
         k <- length(tmesh$loc)
         if (!missing(covariates)) if (nrow(covariates) != nrow(smesh$loc)*k)
             stop("nrow.covariates should be size of spatial mesh by number of time knots")
@@ -131,7 +131,7 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
     } else {
         if (!missing(covariates)) if(nrow(covariates) != nrow(smesh$loc))
             stop("nrow.covariates should be same as spatial mesh size")
-        tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
+        tmp <- prep_data_lgcp2(locs = locs, sp = sp, smesh = smesh)
         k <- 1
         atanh_rho <- NULL
     }
@@ -143,7 +143,7 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
         designmat <- matrix(rep(1, length(tmp$ypp) ), ncol = 1)
     }
     ## Model fitting
-    res <- fit_lgcp_tmb(y = tmp$ypp, A = tmp$A,
+    res <- fit_lgcp_tmb2(y = tmp$ypp, A = tmp$A,
                         designmat = designmat,
                         spde = tmp$spde$param.inla[c("M0", "M1", "M2")],
                         w = tmp$w,
@@ -160,9 +160,14 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
 
 #' Function to prep data as per INLA stack
 #' @inheritParams fit_lgcp
-prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
+prep_data_lgcp2 <- function(locs, sp, smesh, tmesh) {
     ## E
     w <- get_weights(mesh = smesh, sp = sp, plot = FALSE)
+    for (k in 1:length(w$weights)){
+        if ((smesh$loc[k,2]-0.42475*smesh$loc[k,1]+114.274)<0){
+            w$weights[k] <- 0
+        }
+    }
     w_areas <- w$weights
     polys <- w$polys
     nv <- smesh$n
