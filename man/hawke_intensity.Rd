@@ -4,17 +4,17 @@
 \alias{hawke_intensity}
 \title{Hawkes intensty function with decay historical dependence}
 \usage{
-hawke_intensity(mu, alpha, beta, times, p)
+hawke_intensity(times, mu, alpha, beta, p, marks, background_param)
 }
 \arguments{
+\item{times}{a vector of numeric observation time points}
+
 \item{mu}{numeric integer specifying base rate of the hawkes process}
 
 \item{alpha}{numeric integer specifying intensity jump after an event
 occurence}
 
 \item{beta}{numeric integer specifying exponential intensity decay}
-
-\item{times}{a vector of numeric observation time points}
 
 \item{p}{vector of pseudo times at which to calculate the intensity}
 }

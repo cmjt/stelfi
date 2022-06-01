@@ -19,6 +19,8 @@ fit_hspat_tmb(
   reltol = 1e-12,
   abstol = 1e-12,
   tmax = max(times),
+  tmb_silent,
+  nlminb_silent,
   ...
 )
 }
@@ -29,6 +31,12 @@ fit_hspat_tmb(
 time stapms then this is the third column of the 3xn matrix}
 
 \item{sp}{\code{SpatialPolygons} or \code{SpatialPolygonsDataFrame} of the domain}
+
+\item{tmb_silent}{logical, default `TRUE`:
+TMB inner optimization tracing information will be printed.}
+
+\item{nlminb_silent}{logical, default `TRUE`:
+print function and parameters every iteration.}
 
 \item{...}{arguments to pass into \code{optim()}}
 }

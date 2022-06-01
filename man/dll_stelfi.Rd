@@ -2,7 +2,7 @@
 % Please edit documentation in R/compile.r
 \name{dll_stelfi}
 \alias{dll_stelfi}
-\title{Function to load DLLs for C++ templtes
+\title{Function to load DLLs for C++ templates
 Loads required DLLs for models fitted using TMB}
 \usage{
 dll_stelfi(x)
@@ -11,6 +11,6 @@ dll_stelfi(x)
 \item{x}{option, if provided specifies \code{stelfi} DLL to load}
 }
 \description{
-Function to load DLLs for C++ templtes
+Function to load DLLs for C++ templates
 Loads required DLLs for models fitted using TMB
 }

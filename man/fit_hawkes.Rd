@@ -4,15 +4,36 @@
 \alias{fit_hawkes}
 \title{Function to fit a self-exciting Hawkes process using TMB}
 \usage{
-fit_hawkes(times, parameters, ...)
+fit_hawkes(
+  times,
+  parameters,
+  model = 1,
+  marks = c(rep(1, length(times))),
+  tmb_silent = TRUE,
+  optim_silent = TRUE,
+  ...
+)
 }
 \arguments{
 \item{times}{a vector of numeric observation time points}
 
-\item{parameters}{a vector of named parmeters for the hawkes process:
+\item{parameters}{a vector of named parmeters for the chosen model (see \code{model})
 "mu"--base rate of the hawkes process,
 "alpha"--intensity jump after an event occurence, and
 "beta"--exponential intensity decay}
+
+\item{model}{a factor indicator specifying which model to fit:
+\code{1}, a hawkes process with exponential decay (default);
+\code{2}, a self-inhibiting hawkes process;
+\code{3}, hawkes process with negative self-exciting intensity "jump".}
+
+\item{marks}{a vector of numerical marks, defaults to 1 (i.e., no marks)}
+
+\item{tmb_silent}{logical, default `TRUE`:
+TMB inner optimization tracing information will be printed.}
+
+\item{optim_silent}{logical, default `TRUE`:
+print function and parameters every iteration.}
 
 \item{...}{arguments to pass into \code{optim()}}
 }
