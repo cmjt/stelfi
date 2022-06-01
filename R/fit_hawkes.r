@@ -63,7 +63,6 @@ fit_hawkes <-  function(times, parameters, model = 1,
                                      DLL = "neg_alpha_hawkes", silent = tmb_silent)
             }
         }
-    }
     obj$hessian <- TRUE
     trace <- if(optim_silent) 0 else 1
     opt <- stats::optim(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
