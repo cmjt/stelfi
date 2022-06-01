@@ -1,11 +1,5 @@
-vignettes/*.html
-vignettes/data/*
-vignettes/*_cache/*
 inst/bin/*
 doc
 Meta
-vignettes/lgcp.cpp
-vignettes/tmb_tst.r
 model_fits.r
-
 .Rproj.user
