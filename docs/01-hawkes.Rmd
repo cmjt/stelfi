@@ -105,8 +105,54 @@ show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,
 
 ## The `fit_hawkes_cbf()` function
 
+The previous two examples were homogenous; \mu(t) was constant. Inhomogenous Hawke's procceses are those with a non-constant background function \mu(t). In this example we used simulated data
+
+
+
 ```{r}
 args(fit_hawkes_cbf)
+set.seed(1)
+library(hawkesbow)
+# Simulate a Hawkes process with mu = 1+sin(t), alpha=1, beta =2
+times <- hawkesbow::hawkes(1000, fun=function(y) {1+0.5*sin(y)}, M=1.5, repr=0.5, family="exp", rate=2)$p
 ```
 
+We will attempt to recover these parameter values, modelling the background as $ \mu(t) = A + Bsin(t)$. The background will be written as a function of $x$ and $y$, where $A = e^x$ and $B= logit(y) e^x$. This formulation ensures the background is never negative. 
 
+```{r}
+# The background function must take a single parameter and the time(s) at which it is evaluated
+background <- function(params,times){
+        A = exp(params[[1]])
+        B = stats::plogis(params[[2]]) * A
+        return(A + B*sin(times))
+}
+
+# The background_integral function must take a single parameter and the time at which it is evaluated
+background_integral <- function(params,x){
+        A = exp(params[[1]])
+        B = stats::plogis(params[[2]]) * A
+        return((A*x)-B*cos(x))
+}
+param = list(alpha = 0.5, beta = 1.5)
+background_param = list(1,1)
+fit <- fit_hawkes_cbf(times = times, parameters = param, background = background, background_integral = background_integral, background_parameters = background_param)
+```
+
+The estimated values of $A$ and $B$ respectively are 
+```{r}
+exp(fit$background_parameters[1])
+plogis(fit$background_parameters[2]) * exp(fit$background_parameters[1])
+```
+
+The estimated values of $\alpha$ and $\beta$ respectively are:
+```{r}
+fit$alpha
+fit$beta
+```
+
+```{r, echo = TRUE,fig.height = 7,fig.width = 9}
+show_hawkes(times = times, mu = background, alpha = fit$alpha, beta = fit$beta, background_param = fit$background_parameters)
+```
+```{r, echo = TRUE,fig.height = 7,fig.width = 9}
+show_hawkes_GOF(times = times, mu = background_integral, alpha = fit$alpha, beta = fit$beta, background_param = fit$background_parameters, return_values = FALSE)
+```
