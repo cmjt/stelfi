@@ -35,7 +35,8 @@ fit_hspde_tmb(
 \item{locs}{2xn \code{data.frame} of locations x, y. If locations have
 time stapms then this is the third column of the 3xn matrix}
 
-\item{sp}{\code{SpatialPolygons} or \code{SpatialPolygonsDataFrame} of the domain}
+\item{sp}{\code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
+of the domain}
 
 \item{tmb_silent}{logical, default `TRUE`:
 TMB inner optimization tracing information will be printed.}

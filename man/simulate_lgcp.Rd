@@ -2,7 +2,8 @@
 % Please edit documentation in R/fit_lgcp.r
 \name{simulate_lgcp}
 \alias{simulate_lgcp}
-\title{Function to fit a spatial or spatiotemporal log-Gaussian Cox process using \code{TMB}}
+\title{Function to fit a spatial or spatiotemporal log-Gaussian Cox process
+using \code{TMB}}
 \usage{
 simulate_lgcp(parameters, sp, smesh, tmesh, covariates)
 }
@@ -14,7 +15,8 @@ simulate_lgcp(parameters, sp, smesh, tmesh, covariates)
  "log_kappa"-- kappa parameter for the GMRF
  "rho"-- optional, rho AR1 parameter}
 
-\item{sp}{\code{SpatialPolygons} or \code{SpatialPolygonsDataFrame} of the domain}
+\item{sp}{\code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
+of the domain}
 
 \item{smesh}{spatial mesh of class \code{"inla.mesh"}}
 

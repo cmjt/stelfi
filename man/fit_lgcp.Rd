@@ -2,7 +2,8 @@
 % Please edit documentation in R/fit_lgcp.r
 \name{fit_lgcp}
 \alias{fit_lgcp}
-\title{Function to fit a spatial or spatiotemporal log-Gaussian Cox process using \code{TMB}}
+\title{Function to fit a spatial or spatiotemporal log-Gaussian Cox process
+using \code{TMB}}
 \usage{
 fit_lgcp(
   locs,
@@ -20,7 +21,8 @@ fit_lgcp(
 \item{locs}{2xn \code{data.frame} of locations x, y. If locations have
 time stapms then this is the third column of the 3xn matrix}
 
-\item{sp}{\code{SpatialPolygons} or \code{SpatialPolygonsDataFrame} of the domain}
+\item{sp}{\code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
+of the domain}
 
 \item{smesh}{spatial mesh of class \code{"inla.mesh"}}
 

@@ -10,7 +10,8 @@ prep_data_lgcp(locs, sp, smesh, tmesh)
 \item{locs}{2xn \code{data.frame} of locations x, y. If locations have
 time stapms then this is the third column of the 3xn matrix}
 
-\item{sp}{\code{SpatialPolygons} or \code{SpatialPolygonsDataFrame} of the domain}
+\item{sp}{\code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
+of the domain}
 
 \item{smesh}{spatial mesh of class \code{"inla.mesh"}}
 

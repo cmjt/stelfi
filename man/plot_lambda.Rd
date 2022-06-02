@@ -12,7 +12,8 @@ plot_lambda(
   dims = c(500, 500),
   border,
   colour_option = "D",
-  title = ""
+  title = "",
+  timestamp = 1
 )
 }
 \description{
