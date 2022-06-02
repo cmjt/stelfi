@@ -24,8 +24,7 @@ fit_hawkes(
 
 \item{model}{a factor indicator specifying which model to fit:
 \code{1}, a hawkes process with exponential decay (default);
-\code{2}, a self-inhibiting hawkes process;
-\code{3}, hawkes process with negative self-exciting intensity "jump".}
+\code{2}, hawkes process with negative self-exciting intensity "jump".}
 
 \item{marks}{a vector of numerical marks, defaults to 1 (i.e., no marks)}
 
