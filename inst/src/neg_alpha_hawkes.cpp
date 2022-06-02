@@ -1,5 +1,6 @@
 /* Modified version of estimating Hawkes process */
 /* The simulation code is added on 20/05/2021. */
+/* Hawke's Process, either self-exciting or self-inhibiting 02/06/2022 */
 #include <TMB.hpp>
 #include <vector>
 #include <iostream>
@@ -28,20 +29,20 @@ Type objective_function<Type>::operator() ()
     // Page 28 of https://pat-laub.github.io/pdfs/honours_thesis.pdf
     A[i] = exp(-beta * (times[i] - times[i - 1])) * (marks[i-1] + A[i - 1]);
   }
+  
   // B[i]*alpha is self-exciting component immediately after event i
   vector<Type> B = vector<Type>::Zero(times.size());
   for(int i = 0; i < times.size(); ++i){
     B[i] = A[i] + marks[i];
   }
   
-  // -min(lambda/B) <= alpha <= beta
+  // -min(lambda/B) <= alpha <= beta/mean(marks)
   Type Max = beta/marks_mean;
   Type Min = mu/max(B);
   Type alpha = (exp(a_par) / (Type(1.) + exp(a_par)))*(Max+Min) - Min;
 
   
   vector<Type> term_3vec = log(mu + alpha * A);
-  // part of part 2 is computed in A[times.size() - 1].
   nll = (mu * last) - ((alpha/beta)*A.template tail<1>()[0])+ ((alpha / beta) * Type(sum(marks)-marks.template tail<1>()[0])) - sum(term_3vec);
 
   SIMULATE {

@@ -6,8 +6,7 @@
 #' "beta"--exponential intensity decay
 #' @param model a factor indicator specifying which model to fit:
 #' \code{1}, a hawkes process with exponential decay (default);
-#' \code{2}, a self-inhibiting hawkes process;
-#' \code{3}, hawkes process with negative self-exciting intensity "jump".
+#' \code{2}, hawkes process with negative self-exciting intensity "jump".
 #' @param marks a vector of numerical marks, defaults to 1 (i.e., no marks)
 #' @param tmb_silent logical, default `TRUE`:
 #' TMB inner optimization tracing information will be printed.
@@ -51,44 +50,19 @@ fit_hawkes <-  function(times, parameters, model = 1,
                               DLL = "hawkes", silent = tmb_silent)
         
     }else{
-        if (model == 2) {
-            ## parameters
-            a <- parameters[["a"]]
-            b <- parameters[["b"]]
-            c <- parameters[["c"]]
-            ## error checks
-            if (alpha > beta) stop("alpha must be smaller than or equal to beta")
-            if (alpha < 0) stop("alpha must be non-negative")
-            if ((c > pi) || (c < -pi)) stop("The absolute value of C must be less than or equal to pi")
-            if ((a > mu) || (a < 0)) stop("a must be between 0 and mu")
+        if (model == 2){
             ## check for DLL
-            if (!"inhibit_hawkes" %in% getLoadedDLLs()) {
-                dll_stelfi("inhibit_hawkes")
+            if (!"neg_alpha_hawkes" %in% getLoadedDLLs()) {
+                dll_stelfi("neg_alpha_hawkes")
             }
-            ## steup
-            obj <- TMB::MakeADFun(data = list(times = times),
-                                  parameters = list(log_mu = log(mu),
-                                                    logit_abratio = stats::qlogis(alpha/beta),
-                                                    log_beta = log(beta),
-                                                    logit_amuratio = stats::qlogis(a/mu),
-                                                    log_b = log(b),
-                                                    atanh_c = atanh(c/pi)),
-                                  DLL = "inhibit_hawkes", silent = tmb_silent)
-        }else{
-            if (model == 3){
-                ## check for DLL
-                if (!"neg_alpha_hawkes" %in% getLoadedDLLs()) {
-                    dll_stelfi("neg_alpha_hawkes")
-                }
-                ## setup
-                obj <- TMB::MakeADFun(data = list(times = times, marks=marks),
-                                      parameters = list(log_mu = log(mu),
-                                                        a_par = alpha,
-                                                        log_beta = log(beta)),
-                                      DLL = "neg_alpha_hawkes", silent = tmb_silent)
+            ## setup
+            obj <- TMB::MakeADFun(data = list(times = times, marks=marks),
+                                     parameters = list(log_mu = log(mu),
+                                                    a_par = alpha,
+                                                    log_beta = log(beta)),
+                                     DLL = "neg_alpha_hawkes", silent = tmb_silent)
             }
         }
-    }
     obj$hessian <- TRUE
     trace <- if(optim_silent) 0 else 1
     opt <- stats::optim(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)

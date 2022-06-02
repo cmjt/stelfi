@@ -29,7 +29,6 @@ Type objective_function<Type>::operator() ()
     A[i] = exp(-beta * (times[i] - times[i - 1])) * (marks[i-1] + A[i - 1]);
   }
   vector<Type> term_3vec = log(mu + alpha * A);
-  // part of part 2 is computed in A[times.size() - 1].
   nll = (mu * last) - ((alpha/beta)*A.template tail<1>()[0])+ ((alpha / beta) * Type(sum(marks)-marks.template tail<1>()[0])) - sum(term_3vec);
 
   SIMULATE {
