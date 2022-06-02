@@ -45,8 +45,7 @@ setMethod("get_coefs",
 #' Estimated random field(s)
 #' @param object result of a call \code{fit_lgcp()}
 #' @param plot logical, if TRUE then field(s) plotted
-#' @param sd logical, if TRUE then standard errors of field returned
-#' @inheritParams fit_lgcp 
+#' @param sd logical, if TRUE then standard errors of field returned 
 #' @export
 get_fields <- function(object, smesh, tmesh, plot = FALSE, sd = FALSE) {
     idx <- ifelse(sd, 2, 1)

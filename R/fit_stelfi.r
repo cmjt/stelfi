@@ -82,7 +82,7 @@ fit_hspat_tmb <- function(times, locs, sp,
 }
 #' Funtion to fit stelfi
 #' @inheritParams fit_hspat_tmb
-#' @inheritParams fit_spde_tmb
+#' @inheritParams fit_hspde_tmb
 fit_stelfi <-  function(times, locs, sp, smesh,  parameters,
                         gaussian = TRUE,
                         tmb_silent = TRUE,
