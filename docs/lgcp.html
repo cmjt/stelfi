@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 2 log-Gaussian Cox Process | Fitting models using stelfi</title>
+  <meta name="description" content="Using stelfi" />
+  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 2 log-Gaussian Cox Process | Fitting models using stelfi" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Using stelfi" />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 2 log-Gaussian Cox Process | Fitting models using stelfi" />
+  
+  <meta name="twitter:description" content="Using stelfi" />
+  
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="hawkes.html"/>
+<link rel="next" href="references.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Spatiotemporal LGCPs</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introduction</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#installing-stelfi"><i class="fa fa-check"></i>Installing <code>stelfi</code></a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#compiling-templates"><i class="fa fa-check"></i>Compiling templates</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="hawkes.html"><a href="hawkes.html"><i class="fa fa-check"></i><b>1</b> Hawkes process</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes-function"><i class="fa fa-check"></i><b>1.1</b> The <code>fit_hawkes()</code> function</a></li>
+<li class="chapter" data-level="1.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>1.2</b> The <code>fit_hawkes_cbf()</code> function</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>2</b> log-Gaussian Cox Process</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>2.1</b> The <code>fit_lgcp()</code> function</a></li>
+<li class="chapter" data-level="2.2" data-path="lgcp.html"><a href="lgcp.html#fitting-a-lgcp"><i class="fa fa-check"></i><b>2.2</b> Fitting a LGCP</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="lgcp.html"><a href="lgcp.html#spatial-only"><i class="fa fa-check"></i><b>2.2.1</b> Spatial only</a></li>
+<li class="chapter" data-level="2.2.2" data-path="lgcp.html"><a href="lgcp.html#spatiotemporal-lgcp"><i class="fa fa-check"></i><b>2.2.2</b> Spatiotemporal LGCP</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Fitting models using <code>stelfi</code></a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="lgcp" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">Chapter 2</span> log-Gaussian Cox Process<a href="lgcp.html#lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="the-fit_lgcp-function" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> The <code>fit_lgcp()</code> function<a href="lgcp.html#the-fit_lgcp-function" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="lgcp.html#cb23-1"></a><span class="kw">args</span>(fit_lgcp)</span></code></pre></div>
+<pre><code>## function (locs, sp, smesh, tmesh, parameters, covariates, tmb_silent = TRUE, 
+##     nlminb_silent = TRUE, ...) 
+## NULL</code></pre>
+</div>
+<div id="fitting-a-lgcp" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Fitting a LGCP<a href="lgcp.html#fitting-a-lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="spatial-only" class="section level3 hasAnchor" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Spatial only<a href="lgcp.html#spatial-only" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="lgcp.html#cb25-1"></a><span class="kw">require</span>(maptools)</span>
+<span id="cb25-2"><a href="lgcp.html#cb25-2"></a><span class="kw">data</span>(xyt, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
+<span id="cb25-3"><a href="lgcp.html#cb25-3"></a>domain &lt;-<span class="st"> </span><span class="kw">as</span>(xyt<span class="op">$</span>window, <span class="st">&quot;SpatialPolygons&quot;</span>)</span>
+<span id="cb25-4"><a href="lgcp.html#cb25-4"></a>locs &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> xyt<span class="op">$</span>x, <span class="dt">y =</span> xyt<span class="op">$</span>y)</span>
+<span id="cb25-5"><a href="lgcp.html#cb25-5"></a>smesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.2d</span>(<span class="dt">boundary =</span> INLA<span class="op">::</span><span class="kw">inla.sp2segment</span>(domain), </span>
+<span id="cb25-6"><a href="lgcp.html#cb25-6"></a>                      <span class="dt">max.edge =</span> <span class="fl">0.75</span>, <span class="dt">cutoff =</span> <span class="fl">0.3</span>)</span>
+<span id="cb25-7"><a href="lgcp.html#cb25-7"></a><span class="kw">system.time</span>(fit &lt;-<span class="st"> </span><span class="kw">fit_lgcp</span>(<span class="dt">locs =</span> locs, <span class="dt">sp =</span> domain, <span class="dt">smesh =</span> smesh,</span>
+<span id="cb25-8"><a href="lgcp.html#cb25-8"></a>                            <span class="dt">parameters =</span> <span class="kw">c</span>(<span class="dt">beta =</span> <span class="dv">0</span>, <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>))))</span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##   4.267   0.256   4.457</code></pre>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="lgcp.html#cb27-1"></a><span class="kw">get_coefs</span>(fit)</span></code></pre></div>
+<pre><code>##             Estimate Std. Error
+## beta       2.4481848 0.09034657
+## log_tau   -1.3156570 0.33288053
+## log_kappa  0.9547072 0.29440167
+## range      1.0887319 0.32052448
+## stdev      0.4047190 0.05027126</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="lgcp.html#cb29-1"></a><span class="kw">plot_lambda</span>(fit, <span class="dt">smesh =</span> smesh, <span class="dt">border =</span> domain) <span class="op">+</span></span>
+<span id="cb29-2"><a href="lgcp.html#cb29-2"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><strong>Comparing to <code>inlabru</code></strong></p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="lgcp.html#cb30-1"></a><span class="kw">require</span>(inlabru)</span>
+<span id="cb30-2"><a href="lgcp.html#cb30-2"></a><span class="kw">require</span>(ggplot2)</span>
+<span id="cb30-3"><a href="lgcp.html#cb30-3"></a>matern &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.spde2.matern</span>(smesh)</span>
+<span id="cb30-4"><a href="lgcp.html#cb30-4"></a>cmp &lt;-<span class="st"> </span>coordinates <span class="op">~</span><span class="st"> </span><span class="kw">mySmooth</span>(coordinates, <span class="dt">model =</span> matern) <span class="op">+</span><span class="st"> </span><span class="kw">Intercept</span>(<span class="dv">1</span>)</span>
+<span id="cb30-5"><a href="lgcp.html#cb30-5"></a><span class="kw">coordinates</span>(locs) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)</span>
+<span id="cb30-6"><a href="lgcp.html#cb30-6"></a><span class="kw">system.time</span>(fit_inla &lt;-<span class="st"> </span><span class="kw">lgcp</span>(cmp, locs,</span>
+<span id="cb30-7"><a href="lgcp.html#cb30-7"></a>                             <span class="dt">samplers =</span> domain,</span>
+<span id="cb30-8"><a href="lgcp.html#cb30-8"></a>                             <span class="dt">domain =</span> <span class="kw">list</span>(<span class="dt">coordinates =</span> smesh),</span>
+<span id="cb30-9"><a href="lgcp.html#cb30-9"></a>                             <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">control.inla =</span> <span class="kw">list</span>(<span class="dt">int.strategy =</span> <span class="st">&quot;eb&quot;</span>))))</span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##   6.649   6.562   6.577</code></pre>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="lgcp.html#cb32-1"></a><span class="kw">summary</span>(fit_inla)</span></code></pre></div>
+<pre><code>## inlabru version: 2.5.2
+## INLA version: 22.05.07
+## Components:
+##   mySmooth: Model types main=&#39;spde&#39;, group=&#39;exchangeable&#39;, replicate=&#39;iid&#39;
+##   Intercept: Model types main=&#39;linear&#39;, group=&#39;exchangeable&#39;, replicate=&#39;iid&#39;
+## Likelihoods:
+##   Family: &#39;cp&#39;
+##     Data class: &#39;SpatialPointsDataFrame&#39;
+##     Predictor: coordinates ~ .
+## Time used:
+##     Pre = 0.952, Running = 4.83, Post = 0.0843, Total = 5.86 
+## Fixed effects:
+##            mean   sd 0.025quant 0.5quant 0.975quant mode   kld
+## Intercept 2.487 0.14      2.213    2.487      2.762   NA 0.028
+## 
+## Random effects:
+##   Name     Model
+##     mySmooth SPDE2 model
+## 
+## Model hyperparameters:
+##                       mean    sd 0.025quant 0.5quant 0.975quant mode
+## Theta1 for mySmooth -0.424 0.255     -0.914   -0.428      0.089   NA
+## Theta2 for mySmooth  0.223 0.302     -0.385    0.228      0.804   NA
+## 
+## Deviance Information Criterion (DIC) ...............: 5037.99
+## Deviance Information Criterion (DIC, saturated) ....: 173.34
+## Effective number of parameters .....................: 19.93
+## 
+## Watanabe-Akaike information criterion (WAIC) ...: 2895.65
+## Effective number of parameters .................: 808.56
+## 
+## Marginal log-Likelihood:  -2555.64 
+##  is computed 
+## Posterior summaries for the linear predictor and the fitted values are computed
+## (Posterior marginals needs also &#39;control.compute=list(return.marginals.predictor=TRUE)&#39;)</code></pre>
+<p><img src="docs_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+</div>
+<div id="spatiotemporal-lgcp" class="section level3 hasAnchor" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> Spatiotemporal LGCP<a href="lgcp.html#spatiotemporal-lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="lgcp.html#cb34-1"></a>ndays &lt;-<span class="st"> </span><span class="dv">2</span></span>
+<span id="cb34-2"><a href="lgcp.html#cb34-2"></a>locs &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> xyt<span class="op">$</span>x, <span class="dt">y =</span> xyt<span class="op">$</span>y, <span class="dt">t =</span> xyt<span class="op">$</span>t)</span>
+<span id="cb34-3"><a href="lgcp.html#cb34-3"></a>w0 &lt;-<span class="st"> </span><span class="dv">2</span></span>
+<span id="cb34-4"><a href="lgcp.html#cb34-4"></a>tmesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.1d</span>(<span class="kw">seq</span>(<span class="dv">0</span>, ndays, <span class="dt">by =</span> w0))</span>
+<span id="cb34-5"><a href="lgcp.html#cb34-5"></a>fit &lt;-<span class="st"> </span><span class="kw">fit_lgcp</span>(<span class="dt">locs =</span> locs, <span class="dt">sp =</span> domain, <span class="dt">smesh =</span> smesh, <span class="dt">tmesh =</span> tmesh,</span>
+<span id="cb34-6"><a href="lgcp.html#cb34-6"></a>                <span class="dt">parameters =</span> <span class="kw">c</span>(<span class="dt">beta =</span> <span class="dv">0</span>, <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">atanh_rho =</span> <span class="fl">0.2</span>))</span>
+<span id="cb34-7"><a href="lgcp.html#cb34-7"></a><span class="kw">get_coefs</span>(fit)</span></code></pre></div>
+<pre><code>##             Estimate Std. Error
+## rho        0.3100841 0.20738457
+## beta       1.6852264 0.13685036
+## log_tau   -1.0683016 0.22402076
+## log_kappa  0.4785904 0.22707189
+## range      1.7526525 0.39797812
+## stdev      0.5087488 0.05765947</code></pre>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="lgcp.html#cb36-1"></a><span class="kw">plot_lambda</span>(fit, <span class="dt">smesh =</span> smesh, <span class="dt">tmesh =</span> tmesh, <span class="dt">timestamp =</span> <span class="dv">1</span>, <span class="dt">title =</span> <span class="st">&quot;t = 1&quot;</span>) <span class="op">+</span></span>
+<span id="cb36-2"><a href="lgcp.html#cb36-2"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="lgcp.html#cb37-1"></a><span class="kw">plot_lambda</span>(fit, <span class="dt">smesh =</span> smesh, <span class="dt">tmesh =</span> tmesh, <span class="dt">timestamp =</span> <span class="dv">2</span>, <span class="dt">title =</span> <span class="st">&quot;t = 2&quot;</span>) <span class="op">+</span></span>
+<span id="cb37-2"><a href="lgcp.html#cb37-2"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="hawkes.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["docs.pdf", "docs.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

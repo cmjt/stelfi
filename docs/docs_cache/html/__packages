@@ -1,2 +1,13 @@
 testthat
 stelfi
+sf
+spatstat.data
+spatstat.geom
+spatstat.random
+nlme
+rpart
+spatstat.core
+sp
+maptools
+inlabru
+ggplot2

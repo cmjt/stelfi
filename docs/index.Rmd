@@ -25,7 +25,7 @@ devtools::install_github("cmjt/stelfi")
 Before using the  `TMB` templates in `stelfi` you should use `compile_stelfi()` to compile them:
 
 ```{r library,results = 'hide',message = FALSE, echo = FALSE}
-devtools::load_all("~/Git/stelfi")
+library(stelfi)
 ```
 
 ```{r compile, eval = FALSE}

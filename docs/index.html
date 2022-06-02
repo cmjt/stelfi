@@ -146,6 +146,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.1" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes-function"><i class="fa fa-check"></i><b>1.1</b> The <code>fit_hawkes()</code> function</a></li>
 <li class="chapter" data-level="1.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>1.2</b> The <code>fit_hawkes_cbf()</code> function</a></li>
 </ul></li>
+<li class="chapter" data-level="2" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>2</b> log-Gaussian Cox Process</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>2.1</b> The <code>fit_lgcp()</code> function</a></li>
+<li class="chapter" data-level="2.2" data-path="lgcp.html"><a href="lgcp.html#fitting-a-lgcp"><i class="fa fa-check"></i><b>2.2</b> Fitting a LGCP</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="lgcp.html"><a href="lgcp.html#spatial-only"><i class="fa fa-check"></i><b>2.2.1</b> Spatial only</a></li>
+<li class="chapter" data-level="2.2.2" data-path="lgcp.html"><a href="lgcp.html#spatiotemporal-lgcp"><i class="fa fa-check"></i><b>2.2.2</b> Spatiotemporal LGCP</a></li>
+</ul></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -180,10 +189,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="compiling-templates" class="section level3 unnumbered hasAnchor" number="">
 <h3>Compiling templates<a href="index.html#compiling-templates" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Before using the <code>TMB</code> templates in <code>stelfi</code> you should use <code>compile_stelfi()</code> to compile them:</p>
-<pre><code>## Warning: namespace &#39;lgcp&#39; is not available and has been replaced
-## by .GlobalEnv when processing object &#39;xyt&#39;</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="index.html#cb3-1"></a><span class="kw">library</span>(stelfi)</span>
-<span id="cb3-2"><a href="index.html#cb3-2"></a><span class="kw">compile_stelfi</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="index.html#cb2-1"></a><span class="kw">library</span>(stelfi)</span>
+<span id="cb2-2"><a href="index.html#cb2-2"></a><span class="kw">compile_stelfi</span>()</span></code></pre></div>
 
 </div>
 </div>
