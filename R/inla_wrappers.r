@@ -1,6 +1,8 @@
-#' Function copied from \url{http://www.r-inla.org/spde-book}
-#' which is suppied alongside the
-#' \href{SPDE gitbook}{https://becarioprecario.bitbucket.io/spde-gitbook/}
+#' Function to construct the dual mesh
+#' 
+#' \code{inla.mesh.dual} is an internal function that returns a list of \code{SpatialPolygons}
+#' centered at each \code{mesh} node.
+#' @seealso \url{http://www.r-inla.org/spde-book} and \url{https://becarioprecario.bitbucket.io/spde-gitbook/}
 #' @source \url{http://www.r-inla.org/spde-book}
 inla.mesh.dual <- function(mesh) {
     if (mesh$manifold=='R2') {

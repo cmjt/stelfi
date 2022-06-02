@@ -1,8 +1,9 @@
-#' Function to fit a spatial or spatiotemporal log-Gaussian Cox process using
-#' \code{TMB} and the
+#' Fit a spatial or spatiotemporal log-Gaussian Cox process (LGCP)
+#' 
+#' \code{fit_lgcp_tmb} fits a LGCP using \code{\link{TMB}} and the
 #' \code{R_inla} namespace for the spde construction of the latent field. For
-#' a simpler wrapper use \code{fit_lgcp()}
-#' @param y the vector of observations.
+#' a simpler wrapper use \code{\link{fit_lgcp}}
+#' @param y The vector of observations.
 #' For spatial only, this is the vector of counts.
 #' For spatial + AR1 temporal, this vector needs to be
 #' arranged in the following way:
@@ -16,24 +17,22 @@
 #' y_{n+2}           2
 #' ...
 #' y_{n * t_n - 1}   t_n
-#' y_{n * t_n}       t_n
-#' @param A the predicator matrix A, obtained from \code{r-inla}
-#' @param designmat the design matrix for the fixed effects
-#' @param spde the structure of spde object as defined in \code{r-inla}.
-#' The minimal required components are M0, M1, M2
-#' @param w a vector of model weights; corresponds to the E term for
-#' poisson models in \code{INLA},
-#' see \code{INLA::inla.doc("poisson")} for more detail.
-#' @param idx a binary vector of the same size as the observation
-#' vector \code{y}.
-#' With this vector, the log-likelihood can be computed using a subset
-#' of the observations. 1 for contributing to the log-likelihood,
-#' and 0 otherwise.
+#' y_{n * t_n}       t_n.
+#' @param A The predictor matrix A, obtained from \code{\link{INLA}}.
+#' @param designmat The design matrix for the fixed effects.
+#' @param spde The structure of SPDE object as defined in \code{\link{INLA}}.
+#' The minimal required components are \code{M0}, \code{M1}, \code{M2}.
+#' @param w A vector of model weights; corresponds to the E term for
+#' poisson models in \code{\link{INLA}}.
+#' @seealso \code{\link{INLA::inla.doc("poisson")}} for more detail.
+#' @param idx A binary vector of the same size as the observation
+#' vector \code{\link{y}}. With this vector, the log-likelihood can 
+#' be computed using a subset of the observations: 1 for contributing 
+#' to the log-likelihood, and 0 otherwise.
 #' @param beta A vector of fixed effects coefficients to be estimated
-#' (same length as \code{ncol(designmat)}
-#' @param x the random field/effects
-#' This is the random field/effects. Set this variable random in
-#' \code{MadeADFun()}.
+#' (same length as \code{ncol(\link{designmat})}.
+#' @param x The random field/effects. Set this variable random in
+#' \code{\link{TMB::MadeADFun()}}.
 #' This array is of size no. of random effect for each time knots
 #' (x.rows()) by no. of temporal
 #' knots (x.cols()), and hence the total number of random effects is
@@ -45,13 +44,13 @@
 #' random
 #' effects x.col(0)     x.col(1)    x.col(2)       ...         x.col(t_n - 1)
 #' ----------------------------------------------------------------------
-#' @param log_tau \code{log(tau)} parameter for the GMRF
-#' @param log_kappa \code{log(kappa)} parameter for the GMRF
-#' @param atanh_rho optional, \code{arctan(rho)} AR1 parameter
-#' @param ... arguments to pass into \code{nlminb()}
-#' @param tmb_silent logical, default `TRUE`:
+#' @param log_tau \code{log(tau)} parameter for the GMRF.
+#' @param log_kappa \code{log(kappa)} parameter for the GMRF.
+#' @param atanh_rho Optional, \code{arctan(rho)} AR1 parameter.
+#' @param ... Optional extra arguments to pass into \code{nlminb()}.
+#' @param tmb_silent Logical, default \code{TRUE}:
 #' TMB inner optimization tracing information will be printed.
-#' @param nlminb_silent logical, default `TRUE`:
+#' @param nlminb_silent logical, default \code{TRUE}:
 #' print function and parameters every iteration.
 #' @export
 fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
@@ -85,23 +84,25 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
     }
     return(obj)
 }
-#' Function to fit a spatial or spatiotemporal log-Gaussian Cox process
-#' using \code{TMB}
-#'
-#' A simple to use wrapper for \code{fit_lgcp_tmb}
-#' @param sp \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
-#' of the domain
-#' @param locs 2xn \code{data.frame} of locations x, y. If locations have
-#' time stapms then this is the third column of the 3xn matrix
-#' @param smesh spatial mesh of class \code{"inla.mesh"}
-#' @param tmesh optional, temporal mesh of class \code{"inla.mesh.1d"}
-#' @param parameters a list of named parmeters:
-#' "beta"--A vector of fixed effects coefficients to be estimated
-#' (same length as \code{ncol(covariates)} + 1 )
-#'  "log_tau"-- tau parameter for the GMRF
-#'  "log_kappa"-- kappa parameter for the GMRF
-#'  "rho"-- optional, rho AR1 parameter
-#' @param covariates optional, a \code{matrix} of covariates at each
+#' Fit a spatial or spatiotemporal log-Gaussian Cox process (LGCP)
+#' 
+#' \code{fit_lgcp} fits a LGCP using \code{\link{TMB}} and the
+#' \code{R_inla} namespace for the spde construction of the latent field. Ths is
+#' the user friendly wrapper for \code{\link{fit_lgcp_tmb}}. 
+#' @seealso \code{\link{fit_lgcp_tmb}}.
+#' @param sp A \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
+#' of the domain.
+#' @param locs A \code{data.frame} of \code{x} and \code{y} locations (2xn). If locations have
+#' time stamps then this is the third column of the supplied 3xn matrix.
+#' @param smesh A spatial mesh of class \code{\link{INLA::inla.mesh.2d}}.
+#' @param tmesh Optional, a temporal mesh of class \code{\link{INLA::inla.mesh.1d}}.
+#' @param parameters A list of named parameters:
+#' \code{beta}, a vector of fixed effects coefficients to be estimated
+#' (same length as \code{ncol(covariates)} + 1 );
+#' \code{log_tau}, the \code{log(tau)} parameter for the GMRF;
+#' \code{log_kappa}, \code{log(kappa)} parameter for the GMRF;
+#' \code{rho}, optional, \code{rho} AR1 parameter.
+#' @param covariates Optional, a \code{matrix} of covariates at each
 #' \code{smesh} and \code{tmesh} node combination.
 #' @inheritParams fit_lgcp_tmb
 #' @export
@@ -168,7 +169,7 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
 
 }
 
-#' Function to prep data as per INLA stack
+#' Internal function to prep data as per \code{link{INLA}} stack
 #' @inheritParams fit_lgcp
 prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
     ## E
@@ -176,7 +177,6 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
     w_areas <- w$weights
     polys <- w$polys
     nv <- smesh$n
-
     ## SPDE
     spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
     ## spatial or spatiotemporal
@@ -207,25 +207,13 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
     lst <- list(ypp = ypp, A = A, spde = spde, w = expected, idx = idx)
     return(lst)
 }
-# FUNCTION HEADER TO BE WRITTEN
-#' Function to fit a spatial or spatiotemporal log-Gaussian Cox process
-#' using \code{TMB}
-#'
-#' A simple to use wrapper for \code{fit_lgcp_tmb}
-#' @param sp \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
-#' of the domain
-#' @param locs 2xn \code{data.frame} of locations x, y. If locations have
-#' time stapms then this is the third column of the 3xn matrix
-#' @param smesh spatial mesh of class \code{"inla.mesh"}
-#' @param tmesh optional, temporal mesh of class \code{"inla.mesh.1d"}
-#' @param parameters a list of named parmeters:
-#' "beta"--A vector of fixed effects coefficients to be estimated
-#' (same length as \code{ncol(covariates)} + 1 )
-#'  "log_tau"-- tau parameter for the GMRF
-#'  "log_kappa"-- kappa parameter for the GMRF
-#'  "rho"-- optional, rho AR1 parameter
-#' @param covariates optional, a \code{matrix} of covariates at each
-#' \code{smesh} and \code{tmesh} node combination
+#' Simulate a log-Gaussian Cox process (LGCP)
+#' @inheritParams fit_lgcp
+#' 
+#' \code{simulate_lgcp} simulates a LGCP using the \code{\link{TMB}} \code{C++}
+#' template.
+#' @return A \code{data.frame} of locations. If \code{rho} is supplied in \code{\link{parameters}}
+#' then times knots will also be returned.
 #' @export
 simulate_lgcp <- function(parameters, sp, smesh, tmesh, covariates) {
     ## svs
