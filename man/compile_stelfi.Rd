@@ -2,11 +2,20 @@
 % Please edit documentation in R/compile.r
 \name{compile_stelfi}
 \alias{compile_stelfi}
-\title{Fuction to compile TMB C++ templates}
+\title{Function to compile all TMB C++ templates contained in the package}
 \usage{
 compile_stelfi()
 }
 \description{
-Compiles the  TMB templates into a shared object file.
-Must be done a single time following installation or updating of the package.
+\code{compile_stelfi} compiles the  TMB templates into a shared object file.
+Must be done a single time following installation or updating of the package. For
+loading the required DLL see \code{\link{dll_stelfi}}.
+}
+\examples{
+\dontrun{
+compile_stelfi()
+}
+}
+\seealso{
+\code{\link{dll_stelfi}}
 }

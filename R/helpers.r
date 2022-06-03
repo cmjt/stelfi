@@ -31,7 +31,7 @@ setMethod("hawke_intensity",
 #' Reported parameter estimates
 #' 
 #' \code{get_coefs} returns the parameter estimates for the fitted model.
-#' @param object result of a call to \code{\link{fit_hawkes} or \code{\link{fit_lgcp}
+#' @param object result of a call to \code{\link{fit_hawkes}} or \code{\link{fit_lgcp}}
 #' @export
 setGeneric("get_coefs",
            function(object) {

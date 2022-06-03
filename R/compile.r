@@ -1,9 +1,13 @@
 #' Function to compile all TMB C++ templates contained in the package
+#' 
 #' \code{compile_stelfi} compiles the  TMB templates into a shared object file.
 #' Must be done a single time following installation or updating of the package. For
-#' loading the required DLL @seealso \code{\link{dll_stelfi}}.
-#' @example \dontrun{
-#'  compile_stelfi()}
+#' loading the required DLL see \code{\link{dll_stelfi}}.
+#' 
+#' @seealso \code{\link{dll_stelfi}}
+#' @examples \dontrun{
+#' compile_stelfi()
+#' }
 #' @export
 compile_stelfi <- function() {
     wd <- getwd()
@@ -31,11 +35,14 @@ compile_stelfi <- function() {
 }
 
 #' Function to load DLLs for C++ templates
+#' 
 #' \code{dll_stelfi} loads required DLLs for models fitted using TMB.
-#' For compiling the required templates @seealso \code{\link{compile_stelfi}}.
-#' @param x Optional, if provided specifies which \code{stelfi} DLL to load.
-#' @example \dontrun{
-#' dll_stelfi()}
+#' For compiling the required templates see \code{\link{compile_stelfi}}.
+#' 
+#' @param x Optional, if provided specifies which \code{\link{stelfi}} DLL to load.
+#' @examples \dontrun{
+#' dll_stelfi()
+#' }
 #' @export
 dll_stelfi <- function(x) {
     dll_dir <- paste(system.file(package = "stelfi"), "/bin/", sep = "")

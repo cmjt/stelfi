@@ -2,21 +2,21 @@
 % Please edit documentation in R/fit_lgcp.r
 \name{prep_data_lgcp}
 \alias{prep_data_lgcp}
-\title{Function to prep data as per INLA stack}
+\title{Internal function to prep data as per \code{link{INLA}} stack}
 \usage{
 prep_data_lgcp(locs, sp, smesh, tmesh)
 }
 \arguments{
-\item{locs}{2xn \code{data.frame} of locations x, y. If locations have
-time stapms then this is the third column of the 3xn matrix}
+\item{locs}{A \code{data.frame} of \code{x} and \code{y} locations, 2xn. If locations have
+time stamps then this should be the third column of the supplied 3xn matrix.}
 
-\item{sp}{\code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
-of the domain}
+\item{sp}{A \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
+of the domain.}
 
-\item{smesh}{spatial mesh of class \code{"inla.mesh"}}
+\item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
 
-\item{tmesh}{optional, temporal mesh of class \code{"inla.mesh.1d"}}
+\item{tmesh}{Optional, a temporal mesh of class \code{\link[INLA]{inla.mesh.1d}}.}
 }
 \description{
-Function to prep data as per INLA stack
+Internal function to prep data as per \code{link{INLA}} stack
 }

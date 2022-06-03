@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.r
 \name{plot_lambda}
 \alias{plot_lambda}
-\title{Plot the lambda estimate from a spatial model}
+\title{Plot the lambda estimate from a fitted LGCP model}
 \usage{
 plot_lambda(
   fit,
@@ -11,11 +11,25 @@ plot_lambda(
   tmesh,
   dims = c(500, 500),
   border,
-  colour_option = "D",
-  title = "",
   timestamp = 1
 )
 }
 \description{
-Plot the lambda estimate from a spatial model
+Plot the lambda estimate from a fitted LGCP model
+}
+\examples{
+\dontrun{
+require(maptools)
+data(xyt, package = "stelfi")
+domain <- as(xyt$window, "SpatialPolygons")
+locs <- data.frame(x = xyt$x, y = xyt$y)
+smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+max.edge = 0.75, cutoff = 0.3)
+fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh,
+parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
+plot_lambda(fit, smesh = smesh, border = domain)
+}
+}
+\seealso{
+\code{\link{show_field}} and \code{\link{get_fields}}
 }

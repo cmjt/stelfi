@@ -2,9 +2,7 @@
 % Please edit documentation in R/inla_wrappers.r
 \name{inla.mesh.dual}
 \alias{inla.mesh.dual}
-\title{Function copied from \url{http://www.r-inla.org/spde-book}
-which is suppied alongside the
-\href{SPDE gitbook}{https://becarioprecario.bitbucket.io/spde-gitbook/}}
+\title{Function to construct the dual mesh}
 \source{
 \url{http://www.r-inla.org/spde-book}
 }
@@ -12,7 +10,9 @@ which is suppied alongside the
 inla.mesh.dual(mesh)
 }
 \description{
-Function copied from \url{http://www.r-inla.org/spde-book}
-which is suppied alongside the
-\href{SPDE gitbook}{https://becarioprecario.bitbucket.io/spde-gitbook/}
+\code{inla.mesh.dual} is an internal function that returns a list of \code{SpatialPolygons}
+centered at each \code{mesh} node.
+}
+\seealso{
+\url{http://www.r-inla.org/spde-book} and \url{https://becarioprecario.bitbucket.io/spde-gitbook/}
 }

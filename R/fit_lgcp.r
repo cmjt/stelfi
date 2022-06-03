@@ -1,30 +1,29 @@
 #' Fit a spatial or spatiotemporal log-Gaussian Cox process (LGCP)
 #' 
-#' \code{fit_lgcp_tmb} fits a LGCP using \code{\link{TMB}} and the
+#' \code{fit_lgcp_tmb} fits a LGCP using \code{TMB} and the
 #' \code{R_inla} namespace for the spde construction of the latent field. For
-#' a simpler wrapper use \code{\link{fit_lgcp}}
+#' a simpler wrapper use \code{\link{fit_lgcp}} as this is an internal function.
 #' @param y The vector of observations.
 #' For spatial only, this is the vector of counts.
 #' For spatial + AR1 temporal, this vector needs to be
 #' arranged in the following way:
-#' y                 t
-#' ---------------------
-#' y_1               1
-#' y_2               1
-#' ...
-#' y_n               1
-#' y_{n+1}           2
-#' y_{n+2}           2
-#' ...
-#' y_{n * t_n - 1}   t_n
-#' y_{n * t_n}       t_n.
-#' @param A The predictor matrix A, obtained from \code{\link{INLA}}.
+#'\tabular{rr}{ y \tab  t \cr
+#' y_1  \tab             1 \cr
+#' y_2  \tab             1 \cr
+#' ... \tab ... \cr
+#' y_n  \tab             1 \cr
+#' y_{n+1}  \tab         2 \cr
+#' y_{n+2}  \tab         2 \cr
+#' ... \tab ... \cr
+#' y_{n * t_n - 1} \tab  t_n \cr
+#' y_{n * t_n}  \tab     t_n \cr
+#' }
+#' @param A The predictor matrix A, obtained from \code{\link[INLA]{inla.spde.make.A}}.
 #' @param designmat The design matrix for the fixed effects.
-#' @param spde The structure of SPDE object as defined in \code{\link{INLA}}.
+#' @param spde The structure of SPDE object as defined in \code{\link[INLA]{inla.spde2.matern}}.
 #' The minimal required components are \code{M0}, \code{M1}, \code{M2}.
-#' @param w A vector of model weights; corresponds to the E term for
-#' poisson models in \code{\link{INLA}}.
-#' @seealso \code{\link{INLA::inla.doc("poisson")}} for more detail.
+#' @param w A vector of model weights; corresponds to the \code{E} term for
+#' poisson models, see \code{\link[INLA]{inla.doc("poisson")}} for more detail.
 #' @param idx A binary vector of the same size as the observation
 #' vector \code{\link{y}}. With this vector, the log-likelihood can 
 #' be computed using a subset of the observations: 1 for contributing 
@@ -32,27 +31,25 @@
 #' @param beta A vector of fixed effects coefficients to be estimated
 #' (same length as \code{ncol(\link{designmat})}.
 #' @param x The random field/effects. Set this variable random in
-#' \code{\link{TMB::MadeADFun()}}.
-#' This array is of size no. of random effect for each time knots
-#' (x.rows()) by no. of temporal
-#' knots (x.cols()), and hence the total number of random effects is
+#' \code{\link[TMB]{MadeADFun}}.
+#' The array is of size \code{n} of random effect for each time knot
+#' (x.rows()) by number of temporal
+#' knots (x.cols()). Therefore, the total number of random effects is
 #' x.rows() * x.cols().
 #' Each column represents a time knot:
-#' t
-#'                     1           2           3           ...           t_n
-#' ----------------------------------------------------------------------
-#' random
-#' effects x.col(0)     x.col(1)    x.col(2)       ...         x.col(t_n - 1)
-#' ----------------------------------------------------------------------
+#' \tabular{r|rrrrr}{
+#'  t     \tab              1    \tab       2   \tab        3   \tab        ...    \tab       t_n \cr
+#' random effects \tab x.col(0)  \tab   x.col(1) \tab   x.col(2)  \tab     ...   \tab      x.col(t_n - 1)
+#' }
 #' @param log_tau \code{log(tau)} parameter for the GMRF.
 #' @param log_kappa \code{log(kappa)} parameter for the GMRF.
 #' @param atanh_rho Optional, \code{arctan(rho)} AR1 parameter.
-#' @param ... Optional extra arguments to pass into \code{nlminb()}.
+#' @param ... Optional extra arguments to pass into \code{\link[stats]{nlminb}}.
 #' @param tmb_silent Logical, default \code{TRUE}:
 #' TMB inner optimization tracing information will be printed.
 #' @param nlminb_silent logical, default \code{TRUE}:
 #' print function and parameters every iteration.
-#' @export
+#' @seealso \code{\link{fit_lgcp}}
 fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
                           log_tau, log_kappa,
                           atanh_rho, x, tmb_silent,
@@ -88,23 +85,42 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' 
 #' \code{fit_lgcp} fits a LGCP using \code{\link{TMB}} and the
 #' \code{R_inla} namespace for the spde construction of the latent field. Ths is
-#' the user friendly wrapper for \code{\link{fit_lgcp_tmb}}. 
+#' the user friendly wrapper for the internal function \code{\link{fit_lgcp_tmb}}. 
 #' @seealso \code{\link{fit_lgcp_tmb}}.
 #' @param sp A \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
 #' of the domain.
-#' @param locs A \code{data.frame} of \code{x} and \code{y} locations (2xn). If locations have
-#' time stamps then this is the third column of the supplied 3xn matrix.
-#' @param smesh A spatial mesh of class \code{\link{INLA::inla.mesh.2d}}.
-#' @param tmesh Optional, a temporal mesh of class \code{\link{INLA::inla.mesh.1d}}.
-#' @param parameters A list of named parameters:
+#' @param locs A \code{data.frame} of \code{x} and \code{y} locations, 2xn. If locations have
+#' time stamps then this should be the third column of the supplied 3xn matrix.
+#' @param smesh A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.
+#' @param tmesh Optional, a temporal mesh of class \code{\link[INLA]{inla.mesh.1d}}.
+#' @param parameters A named list of parameters:
 #' \code{beta}, a vector of fixed effects coefficients to be estimated
 #' (same length as \code{ncol(covariates)} + 1 );
 #' \code{log_tau}, the \code{log(tau)} parameter for the GMRF;
 #' \code{log_kappa}, \code{log(kappa)} parameter for the GMRF;
-#' \code{rho}, optional, \code{rho} AR1 parameter.
+#' \code{atanh_rho}, optional, \code{arctan(rho)} AR1 temporal parameter.
 #' @param covariates Optional, a \code{matrix} of covariates at each
 #' \code{smesh} and \code{tmesh} node combination.
 #' @inheritParams fit_lgcp_tmb
+#' @return A fitted \code{\link[TMB]{MakeADFun}} object.
+#' @examples \dontrun{
+#' data(xyt, package = "stelfi")
+#' domain <- as(xyt$window, "SpatialPolygons")
+#' locs <- data.frame(x = xyt$x, y = xyt$y)
+#' smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+#' max.edge = 0.75, cutoff = 0.3)
+#' fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh,
+#' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
+#' }
+#' \dontrun{
+#' ndays <- 2
+#' locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
+#' w0 <- 2
+#' tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
+#' fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh, tmesh = tmesh,
+#'  parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2))
+#' 
+#' }
 #' @export
 fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
                       tmb_silent = TRUE,
@@ -208,14 +224,34 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
     return(lst)
 }
 #' Simulate a log-Gaussian Cox process (LGCP)
-#' @inheritParams fit_lgcp
 #' 
 #' \code{simulate_lgcp} simulates a LGCP using the \code{\link{TMB}} \code{C++}
-#' template.
-#' @return A \code{data.frame} of locations. If \code{rho} is supplied in \code{\link{parameters}}
-#' then times knots will also be returned.
+#' template. If \code{rho} is supplied in \code{parameters}
+#' as well as \code{tmesh} then times knots will also be returned.
+#' @inheritParams fit_lgcp
+#' @param all Logical, if \code{TRUE} then all model components are returned.
+#' @return A named list. If \code{all = FALSE} then only the simulated values of 
+#' the GMRF at each mesh node are returned, \code{x}, alongside the number of 
+#' events, \code{y}, simulated at each node.
+#'
+#' @examples \dontrun{
+#' data(xyt, package = "stelfi")
+#' domain <- as(xyt$window, "SpatialPolygons")
+#' smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+#' max.edge = 0.75, cutoff = 0.3)
+#' parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
+#' simulate_lgcp(parameters = parameters, sp = domain, smesh = smesh)
+#' }
+#' \dontrun{
+#' ndays <- 2
+#' w0 <- 2
+#' tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
+#' parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2)
+#' simulate_lgcp(parameters = parameters, sp = domain, smesh = smesh, tmesh = tmesh)
+#' }
 #' @export
-simulate_lgcp <- function(parameters, sp, smesh, tmesh, covariates) {
+simulate_lgcp <- function(parameters, sp, smesh, tmesh, covariates,
+                          all = FALSE) {
     ## svs
     beta <- parameters[["beta"]]
     log_tau <- parameters[["log_tau"]]
@@ -244,6 +280,7 @@ simulate_lgcp <- function(parameters, sp, smesh, tmesh, covariates) {
                                       stop("nrow.covariates should be size of spatial mesh by number of time knots")
         if (length(atanh_rho) != 1)
             stop("atanh_rho must be a single number")
+        tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
     } else {
         locs <-  matrix(0, nrow = 10, ncol = 2)
         tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
@@ -252,10 +289,10 @@ simulate_lgcp <- function(parameters, sp, smesh, tmesh, covariates) {
             if(length(beta) != (ncol(covariates) + 1))
                 stop("arg beta should be length ncol.covariates + 1")
         }
+        k <- 1
+        atanh_rho <- NULL
+        tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
     }
-    tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
-    k <- 1
-    atanh_rho <- NULL
     ## Designmat
     if(!missing(covariates)) {
         designmat <- cbind(1, covariates)
@@ -274,14 +311,12 @@ simulate_lgcp <- function(parameters, sp, smesh, tmesh, covariates) {
                         nlminb_silent = TRUE,
                         simulation = TRUE)
     ## Simulation
-    length_beta <- length(beta)
-    length_x <- tmp$spde$n.spde
-    res$env$last.par[1:length_beta] <- beta
-    res$env$last.par[(length_beta + length_x + 1)] <- log_tau
-    res$env$last.par[(length_beta + length_x + 2)] <- log_kappa
+    res$env$last.par["beta"] <- beta
+    res$env$last.par["log_tau"] <- log_tau
+    res$env$last.par["log_kappa"] <- log_kappa
     if (!missing(tmesh)) {
-        res$env$last.par[(length_beta + length_x + 3)] <- atanh_rho
+        res$env$last.par["atanh_rho"] <- atanh_rho
     }
-    simdata <- res$simulate(complete = TRUE)
+    simdata <- res$simulate(complete = all)
     return(simdata)
 }

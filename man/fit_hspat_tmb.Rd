@@ -27,11 +27,11 @@ fit_hspat_tmb(
 \arguments{
 \item{times}{a vector of numeric observation time points}
 
-\item{locs}{2xn \code{data.frame} of locations x, y. If locations have
-time stapms then this is the third column of the 3xn matrix}
+\item{locs}{A \code{data.frame} of \code{x} and \code{y} locations, 2xn. If locations have
+time stamps then this should be the third column of the supplied 3xn matrix.}
 
-\item{sp}{\code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
-of the domain}
+\item{sp}{A \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
+of the domain.}
 
 \item{tmb_silent}{logical, default `TRUE`:
 TMB inner optimization tracing information will be printed.}

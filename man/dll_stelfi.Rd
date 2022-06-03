@@ -2,15 +2,19 @@
 % Please edit documentation in R/compile.r
 \name{dll_stelfi}
 \alias{dll_stelfi}
-\title{Function to load DLLs for C++ templates
-Loads required DLLs for models fitted using TMB}
+\title{Function to load DLLs for C++ templates}
 \usage{
 dll_stelfi(x)
 }
 \arguments{
-\item{x}{option, if provided specifies \code{stelfi} DLL to load}
+\item{x}{Optional, if provided specifies which \code{\link{stelfi}} DLL to load.}
 }
 \description{
-Function to load DLLs for C++ templates
-Loads required DLLs for models fitted using TMB
+\code{dll_stelfi} loads required DLLs for models fitted using TMB.
+For compiling the required templates see \code{\link{compile_stelfi}}.
+}
+\examples{
+\dontrun{
+dll_stelfi()
+}
 }

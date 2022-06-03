@@ -153,6 +153,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="2.2.1" data-path="lgcp.html"><a href="lgcp.html#spatial-only"><i class="fa fa-check"></i><b>2.2.1</b> Spatial only</a></li>
 <li class="chapter" data-level="2.2.2" data-path="lgcp.html"><a href="lgcp.html#spatiotemporal-lgcp"><i class="fa fa-check"></i><b>2.2.2</b> Spatiotemporal LGCP</a></li>
+<li class="chapter" data-level="2.2.3" data-path="lgcp.html"><a href="lgcp.html#simulating-a-lgcp"><i class="fa fa-check"></i><b>2.2.3</b> Simulating a LGCP</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
@@ -180,7 +181,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 2</span> log-Gaussian Cox Process<a href="lgcp.html#lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <div id="the-fit_lgcp-function" class="section level2 hasAnchor" number="2.1">
 <h2><span class="header-section-number">2.1</span> The <code>fit_lgcp()</code> function<a href="lgcp.html#the-fit_lgcp-function" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="lgcp.html#cb23-1"></a><span class="kw">args</span>(fit_lgcp)</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="lgcp.html#cb33-1"></a><span class="kw">args</span>(fit_lgcp)</span></code></pre></div>
 <pre><code>## function (locs, sp, smesh, tmesh, parameters, covariates, tmb_silent = TRUE, 
 ##     nlminb_silent = TRUE, ...) 
 ## NULL</code></pre>
@@ -189,39 +190,39 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">2.2</span> Fitting a LGCP<a href="lgcp.html#fitting-a-lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <div id="spatial-only" class="section level3 hasAnchor" number="2.2.1">
 <h3><span class="header-section-number">2.2.1</span> Spatial only<a href="lgcp.html#spatial-only" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="lgcp.html#cb25-1"></a><span class="kw">require</span>(maptools)</span>
-<span id="cb25-2"><a href="lgcp.html#cb25-2"></a><span class="kw">data</span>(xyt, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
-<span id="cb25-3"><a href="lgcp.html#cb25-3"></a>domain &lt;-<span class="st"> </span><span class="kw">as</span>(xyt<span class="op">$</span>window, <span class="st">&quot;SpatialPolygons&quot;</span>)</span>
-<span id="cb25-4"><a href="lgcp.html#cb25-4"></a>locs &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> xyt<span class="op">$</span>x, <span class="dt">y =</span> xyt<span class="op">$</span>y)</span>
-<span id="cb25-5"><a href="lgcp.html#cb25-5"></a>smesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.2d</span>(<span class="dt">boundary =</span> INLA<span class="op">::</span><span class="kw">inla.sp2segment</span>(domain), </span>
-<span id="cb25-6"><a href="lgcp.html#cb25-6"></a>                      <span class="dt">max.edge =</span> <span class="fl">0.75</span>, <span class="dt">cutoff =</span> <span class="fl">0.3</span>)</span>
-<span id="cb25-7"><a href="lgcp.html#cb25-7"></a><span class="kw">system.time</span>(fit &lt;-<span class="st"> </span><span class="kw">fit_lgcp</span>(<span class="dt">locs =</span> locs, <span class="dt">sp =</span> domain, <span class="dt">smesh =</span> smesh,</span>
-<span id="cb25-8"><a href="lgcp.html#cb25-8"></a>                            <span class="dt">parameters =</span> <span class="kw">c</span>(<span class="dt">beta =</span> <span class="dv">0</span>, <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>))))</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="lgcp.html#cb35-1"></a><span class="kw">require</span>(maptools)</span>
+<span id="cb35-2"><a href="lgcp.html#cb35-2"></a><span class="kw">data</span>(xyt, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
+<span id="cb35-3"><a href="lgcp.html#cb35-3"></a>domain &lt;-<span class="st"> </span><span class="kw">as</span>(xyt<span class="op">$</span>window, <span class="st">&quot;SpatialPolygons&quot;</span>)</span>
+<span id="cb35-4"><a href="lgcp.html#cb35-4"></a>locs &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> xyt<span class="op">$</span>x, <span class="dt">y =</span> xyt<span class="op">$</span>y)</span>
+<span id="cb35-5"><a href="lgcp.html#cb35-5"></a>smesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.2d</span>(<span class="dt">boundary =</span> INLA<span class="op">::</span><span class="kw">inla.sp2segment</span>(domain), </span>
+<span id="cb35-6"><a href="lgcp.html#cb35-6"></a>                      <span class="dt">max.edge =</span> <span class="fl">0.75</span>, <span class="dt">cutoff =</span> <span class="fl">0.3</span>)</span>
+<span id="cb35-7"><a href="lgcp.html#cb35-7"></a><span class="kw">system.time</span>(fit &lt;-<span class="st"> </span><span class="kw">fit_lgcp</span>(<span class="dt">locs =</span> locs, <span class="dt">sp =</span> domain, <span class="dt">smesh =</span> smesh,</span>
+<span id="cb35-8"><a href="lgcp.html#cb35-8"></a>                            <span class="dt">parameters =</span> <span class="kw">c</span>(<span class="dt">beta =</span> <span class="dv">0</span>, <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>))))</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##   4.267   0.256   4.457</code></pre>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="lgcp.html#cb27-1"></a><span class="kw">get_coefs</span>(fit)</span></code></pre></div>
+##   4.500   0.232   4.668</code></pre>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="lgcp.html#cb37-1"></a><span class="kw">get_coefs</span>(fit)</span></code></pre></div>
 <pre><code>##             Estimate Std. Error
 ## beta       2.4481848 0.09034657
 ## log_tau   -1.3156570 0.33288053
 ## log_kappa  0.9547072 0.29440167
 ## range      1.0887319 0.32052448
 ## stdev      0.4047190 0.05027126</code></pre>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="lgcp.html#cb29-1"></a><span class="kw">plot_lambda</span>(fit, <span class="dt">smesh =</span> smesh, <span class="dt">border =</span> domain) <span class="op">+</span></span>
-<span id="cb29-2"><a href="lgcp.html#cb29-2"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="lgcp.html#cb39-1"></a><span class="kw">plot_lambda</span>(fit, <span class="dt">smesh =</span> smesh, <span class="dt">border =</span> domain) <span class="op">+</span></span>
+<span id="cb39-2"><a href="lgcp.html#cb39-2"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <p><strong>Comparing to <code>inlabru</code></strong></p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="lgcp.html#cb30-1"></a><span class="kw">require</span>(inlabru)</span>
-<span id="cb30-2"><a href="lgcp.html#cb30-2"></a><span class="kw">require</span>(ggplot2)</span>
-<span id="cb30-3"><a href="lgcp.html#cb30-3"></a>matern &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.spde2.matern</span>(smesh)</span>
-<span id="cb30-4"><a href="lgcp.html#cb30-4"></a>cmp &lt;-<span class="st"> </span>coordinates <span class="op">~</span><span class="st"> </span><span class="kw">mySmooth</span>(coordinates, <span class="dt">model =</span> matern) <span class="op">+</span><span class="st"> </span><span class="kw">Intercept</span>(<span class="dv">1</span>)</span>
-<span id="cb30-5"><a href="lgcp.html#cb30-5"></a><span class="kw">coordinates</span>(locs) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)</span>
-<span id="cb30-6"><a href="lgcp.html#cb30-6"></a><span class="kw">system.time</span>(fit_inla &lt;-<span class="st"> </span><span class="kw">lgcp</span>(cmp, locs,</span>
-<span id="cb30-7"><a href="lgcp.html#cb30-7"></a>                             <span class="dt">samplers =</span> domain,</span>
-<span id="cb30-8"><a href="lgcp.html#cb30-8"></a>                             <span class="dt">domain =</span> <span class="kw">list</span>(<span class="dt">coordinates =</span> smesh),</span>
-<span id="cb30-9"><a href="lgcp.html#cb30-9"></a>                             <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">control.inla =</span> <span class="kw">list</span>(<span class="dt">int.strategy =</span> <span class="st">&quot;eb&quot;</span>))))</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="lgcp.html#cb40-1"></a><span class="kw">require</span>(inlabru)</span>
+<span id="cb40-2"><a href="lgcp.html#cb40-2"></a><span class="kw">require</span>(ggplot2)</span>
+<span id="cb40-3"><a href="lgcp.html#cb40-3"></a>matern &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.spde2.matern</span>(smesh)</span>
+<span id="cb40-4"><a href="lgcp.html#cb40-4"></a>cmp &lt;-<span class="st"> </span>coordinates <span class="op">~</span><span class="st"> </span><span class="kw">mySmooth</span>(coordinates, <span class="dt">model =</span> matern) <span class="op">+</span><span class="st"> </span><span class="kw">Intercept</span>(<span class="dv">1</span>)</span>
+<span id="cb40-5"><a href="lgcp.html#cb40-5"></a><span class="kw">coordinates</span>(locs) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)</span>
+<span id="cb40-6"><a href="lgcp.html#cb40-6"></a><span class="kw">system.time</span>(fit_inla &lt;-<span class="st"> </span><span class="kw">lgcp</span>(cmp, locs,</span>
+<span id="cb40-7"><a href="lgcp.html#cb40-7"></a>                             <span class="dt">samplers =</span> domain,</span>
+<span id="cb40-8"><a href="lgcp.html#cb40-8"></a>                             <span class="dt">domain =</span> <span class="kw">list</span>(<span class="dt">coordinates =</span> smesh),</span>
+<span id="cb40-9"><a href="lgcp.html#cb40-9"></a>                             <span class="dt">options =</span> <span class="kw">list</span>(<span class="dt">control.inla =</span> <span class="kw">list</span>(<span class="dt">int.strategy =</span> <span class="st">&quot;eb&quot;</span>))))</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##   6.649   6.562   6.577</code></pre>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="lgcp.html#cb32-1"></a><span class="kw">summary</span>(fit_inla)</span></code></pre></div>
+##   7.108   7.651   7.584</code></pre>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="lgcp.html#cb42-1"></a><span class="kw">summary</span>(fit_inla)</span></code></pre></div>
 <pre><code>## inlabru version: 2.5.2
 ## INLA version: 22.05.07
 ## Components:
@@ -232,7 +233,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##     Data class: &#39;SpatialPointsDataFrame&#39;
 ##     Predictor: coordinates ~ .
 ## Time used:
-##     Pre = 0.952, Running = 4.83, Post = 0.0843, Total = 5.86 
+##     Pre = 1.28, Running = 5.25, Post = 0.104, Total = 6.63 
 ## Fixed effects:
 ##            mean   sd 0.025quant 0.5quant 0.975quant mode   kld
 ## Intercept 2.487 0.14      2.213    2.487      2.762   NA 0.028
@@ -257,17 +258,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##  is computed 
 ## Posterior summaries for the linear predictor and the fitted values are computed
 ## (Posterior marginals needs also &#39;control.compute=list(return.marginals.predictor=TRUE)&#39;)</code></pre>
-<p><img src="docs_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="docs_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 </div>
 <div id="spatiotemporal-lgcp" class="section level3 hasAnchor" number="2.2.2">
 <h3><span class="header-section-number">2.2.2</span> Spatiotemporal LGCP<a href="lgcp.html#spatiotemporal-lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="lgcp.html#cb34-1"></a>ndays &lt;-<span class="st"> </span><span class="dv">2</span></span>
-<span id="cb34-2"><a href="lgcp.html#cb34-2"></a>locs &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> xyt<span class="op">$</span>x, <span class="dt">y =</span> xyt<span class="op">$</span>y, <span class="dt">t =</span> xyt<span class="op">$</span>t)</span>
-<span id="cb34-3"><a href="lgcp.html#cb34-3"></a>w0 &lt;-<span class="st"> </span><span class="dv">2</span></span>
-<span id="cb34-4"><a href="lgcp.html#cb34-4"></a>tmesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.1d</span>(<span class="kw">seq</span>(<span class="dv">0</span>, ndays, <span class="dt">by =</span> w0))</span>
-<span id="cb34-5"><a href="lgcp.html#cb34-5"></a>fit &lt;-<span class="st"> </span><span class="kw">fit_lgcp</span>(<span class="dt">locs =</span> locs, <span class="dt">sp =</span> domain, <span class="dt">smesh =</span> smesh, <span class="dt">tmesh =</span> tmesh,</span>
-<span id="cb34-6"><a href="lgcp.html#cb34-6"></a>                <span class="dt">parameters =</span> <span class="kw">c</span>(<span class="dt">beta =</span> <span class="dv">0</span>, <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">atanh_rho =</span> <span class="fl">0.2</span>))</span>
-<span id="cb34-7"><a href="lgcp.html#cb34-7"></a><span class="kw">get_coefs</span>(fit)</span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="lgcp.html#cb44-1"></a>ndays &lt;-<span class="st"> </span><span class="dv">2</span></span>
+<span id="cb44-2"><a href="lgcp.html#cb44-2"></a>locs &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> xyt<span class="op">$</span>x, <span class="dt">y =</span> xyt<span class="op">$</span>y, <span class="dt">t =</span> xyt<span class="op">$</span>t)</span>
+<span id="cb44-3"><a href="lgcp.html#cb44-3"></a>w0 &lt;-<span class="st"> </span><span class="dv">2</span></span>
+<span id="cb44-4"><a href="lgcp.html#cb44-4"></a>tmesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.1d</span>(<span class="kw">seq</span>(<span class="dv">0</span>, ndays, <span class="dt">by =</span> w0))</span>
+<span id="cb44-5"><a href="lgcp.html#cb44-5"></a>fit &lt;-<span class="st"> </span><span class="kw">fit_lgcp</span>(<span class="dt">locs =</span> locs, <span class="dt">sp =</span> domain, <span class="dt">smesh =</span> smesh, <span class="dt">tmesh =</span> tmesh,</span>
+<span id="cb44-6"><a href="lgcp.html#cb44-6"></a>                <span class="dt">parameters =</span> <span class="kw">c</span>(<span class="dt">beta =</span> <span class="dv">0</span>, <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">atanh_rho =</span> <span class="fl">0.2</span>))</span>
+<span id="cb44-7"><a href="lgcp.html#cb44-7"></a><span class="kw">get_coefs</span>(fit)</span></code></pre></div>
 <pre><code>##             Estimate Std. Error
 ## rho        0.3100841 0.20738457
 ## beta       1.6852264 0.13685036
@@ -275,12 +276,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## log_kappa  0.4785904 0.22707189
 ## range      1.7526525 0.39797812
 ## stdev      0.5087488 0.05765947</code></pre>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="lgcp.html#cb36-1"></a><span class="kw">plot_lambda</span>(fit, <span class="dt">smesh =</span> smesh, <span class="dt">tmesh =</span> tmesh, <span class="dt">timestamp =</span> <span class="dv">1</span>, <span class="dt">title =</span> <span class="st">&quot;t = 1&quot;</span>) <span class="op">+</span></span>
-<span id="cb36-2"><a href="lgcp.html#cb36-2"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="lgcp.html#cb37-1"></a><span class="kw">plot_lambda</span>(fit, <span class="dt">smesh =</span> smesh, <span class="dt">tmesh =</span> tmesh, <span class="dt">timestamp =</span> <span class="dv">2</span>, <span class="dt">title =</span> <span class="st">&quot;t = 2&quot;</span>) <span class="op">+</span></span>
-<span id="cb37-2"><a href="lgcp.html#cb37-2"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="lgcp.html#cb46-1"></a><span class="kw">plot_lambda</span>(fit, <span class="dt">smesh =</span> smesh, <span class="dt">tmesh =</span> tmesh, <span class="dt">timestamp =</span> <span class="dv">1</span>) <span class="op">+</span></span>
+<span id="cb46-2"><a href="lgcp.html#cb46-2"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>() <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="st">&quot;t = 2&quot;</span>)</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="lgcp.html#cb47-1"></a><span class="kw">plot_lambda</span>(fit, <span class="dt">smesh =</span> smesh, <span class="dt">tmesh =</span> tmesh, <span class="dt">timestamp =</span> <span class="dv">2</span>) <span class="op">+</span></span>
+<span id="cb47-2"><a href="lgcp.html#cb47-2"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>() <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="st">&quot;t = 2&quot;</span>)</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-19-2.png" width="672" /></p>
+</div>
+<div id="simulating-a-lgcp" class="section level3 hasAnchor" number="2.2.3">
+<h3><span class="header-section-number">2.2.3</span> Simulating a LGCP<a href="lgcp.html#simulating-a-lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Option 1</strong> using <code>simulate_lgcp</code></p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="lgcp.html#cb48-1"></a>parameters &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dt">beta =</span> <span class="dv">1</span>, <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">atanh_rho =</span> <span class="fl">0.2</span>)</span>
+<span id="cb48-2"><a href="lgcp.html#cb48-2"></a>simdata &lt;-<span class="st"> </span><span class="kw">simulate_lgcp</span>(<span class="dt">parameters =</span> parameters, <span class="dt">sp =</span> domain, <span class="dt">smesh =</span> smesh, <span class="dt">tmesh =</span> tmesh)</span>
+<span id="cb48-3"><a href="lgcp.html#cb48-3"></a><span class="kw">show_field</span>(simdata<span class="op">$</span>x[,<span class="dv">1</span>], <span class="dt">smesh =</span> smesh) <span class="op">+</span></span>
+<span id="cb48-4"><a href="lgcp.html#cb48-4"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><strong>Option 2</strong> directly from the fitted model</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="lgcp.html#cb49-1"></a>simdata &lt;-<span class="st"> </span>fit<span class="op">$</span><span class="kw">simulate</span>(fit<span class="op">$</span>env<span class="op">$</span>last.par, <span class="dt">complete =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb49-2"><a href="lgcp.html#cb49-2"></a><span class="kw">show_field</span>(simdata<span class="op">$</span>x[,<span class="dv">1</span>], <span class="dt">smesh =</span> smesh) <span class="op">+</span></span>
+<span id="cb49-3"><a href="lgcp.html#cb49-3"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 
 </div>
 </div>

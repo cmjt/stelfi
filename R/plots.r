@@ -1,9 +1,17 @@
 setClassUnion("missing_or_numeric", c("numeric", "missing"))
 #' Plots the Hawkes intensty function with decay historical dependence
-#' @docType methods
-#' @rdname show_hawkes
+#' 
 #' @inheritParams sim_hawkes
-#' @param times a vector of numeric observation time points
+#' @param times A numeric vector of observed time points.
+#' @examples \dontrun{
+#' data(retweets_niwa, package = "stelfi")
+#' times <- unique(sort(as.numeric(difftime(retweets_niwa ,min(retweets_niwa),units = "mins"))))
+#' params <- c(mu = 9, alpha = 3, beta = 10)
+#' ## must have compiled TMB templates first use compile_stelfi()
+#' fit <- fit_hawkes(times = times, parameters = params) 
+#' pars <- get_coefs(fit)
+#' show_hawkes(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1])
+#' }
 #' @export
 setGeneric("show_hawkes",
            function(times, mu, alpha, beta, marks = c(rep(1, length(times))),
@@ -33,11 +41,20 @@ setMethod("show_hawkes",
                   ggplot2::xlab("times") +  ggplot2::ylab("Number of events")
               gridExtra::grid.arrange(line, hist, ncol = 1)
           })
-#' Plot the compensator ans other associated goodness of fit metrics for a Hawkes process
-#' @rdname show_hawkes_GOF
+#' Plot the compensator and other associated goodness of fit metrics for a Hawkes process
+#' 
 #' @inheritParams show_hawkes
-#' @param plot logical, whether to plot GOF plots
-#' @param return_values logical, whether to return GOF values
+#' @param plot Logical, whether to plot GOF plots. Default \code{TRUE}.
+#' @param return_values Logical, whether to return GOF values. Default \code{TRUE}.
+#' @examples \dontrun{
+#' data(retweets_niwa, package = "stelfi")
+#' times <- unique(sort(as.numeric(difftime(retweets_niwa ,min(retweets_niwa),units = "mins"))))
+#' params <- c(mu = 9, alpha = 3, beta = 10)
+#' ## must have compiled TMB templates first use compile_stelfi()
+#' fit <- fit_hawkes(times = times, parameters = params) 
+#' pars <- get_coefs(fit)
+#' show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1], return_values = FALSE)
+#' }
 #' @export
 setGeneric("show_hawkes_GOF", # only for constant mu at this stage
            function(times, mu, alpha, beta, marks = c(rep(1,length(times))),
@@ -123,17 +140,25 @@ setMethod("show_hawkes_GOF",
                   return(list(interarrivals = interarrivals, KS = KS, LBQ = LBQ))
                   }
           })
-#' Plots estimated random field(s) of a LGCP
-#' @docType methods
-#' @rdname show_field
-#' @param x a vector of values for each mesh node
-#' @param dims by default \code{c(500,500)}, vector of length 2 specifying
-#' spatial pixel resolution
-#' @param border optional, a \code{SpatialPolygons} object of the domain border
+#' Plot estimated random field(s) of a fitted LGCP
+#' 
+#' @param x A vector of values for each \code{smesh} node.
+#' @param dims A numeric vector of length 2 specifying
+#' the spatial pixel resolution. By default \code{= c(500,500)}.
+#' @param border Optional, a \code{SpatialPolygons} object of the domain border.
 #' @inheritParams get_fields
+#' @seealso \code{\link{plot_lambda}} and \code{\link{get_fields}}
+#' @examples \dontrun{
+#' data(xyt, package = "stelfi")
+#' domain <- as(xyt$window, "SpatialPolygons")
+#' smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+#' max.edge = 0.75, cutoff = 0.3)
+#' parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
+#' simdata <- simulate_lgcp(parameters = parameters, sp = domain, smesh = smesh)
+#' show_field(simdata$x, smesh = smesh)
+#' }
 #' @export
-show_field <- function(x, smesh, dims = c(500,500), border, colour_option = "D",
-                       title = "") {
+show_field <- function(x, smesh, dims = c(500,500), border) {
     nx <- dims[1]
     ny <- dims[2]
     px <- inlabru::pixels(smesh, nx = nx, ny = ny)
@@ -147,9 +172,8 @@ show_field <- function(x, smesh, dims = c(500,500), border, colour_option = "D",
     plt <- ggplot2::ggplot(as.data.frame(px), ggplot2::aes(x, y)) +
         ggplot2::geom_tile(ggplot2::aes(fill = color)) +
         ggplot2::labs(fill = "") + 
-        ggplot2::scale_fill_viridis_c(option = colour_option) +
-        ggplot2::coord_equal() +
-        ggplot2::ggtitle(title)
+        ggplot2::scale_fill_viridis_c(option = "D") +
+        ggplot2::coord_equal() 
     
     if (!missing(border)) {
         plt <- plt +
@@ -160,14 +184,25 @@ show_field <- function(x, smesh, dims = c(500,500), border, colour_option = "D",
     plt
 
 }
-#' Plot the lambda estimate from a spatial model
+#' Plot the lambda estimate from a fitted LGCP model
+#' 
 #' @inheritParams get_fields
+#' @seealso \code{\link{show_field}} and \code{\link{get_fields}}
+#' @examples \dontrun{
+#' require(maptools)
+#' data(xyt, package = "stelfi")
+#' domain <- as(xyt$window, "SpatialPolygons")
+#' locs <- data.frame(x = xyt$x, y = xyt$y)
+#' smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+#' max.edge = 0.75, cutoff = 0.3)
+#' fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh,
+#' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
+#' plot_lambda(fit, smesh = smesh, border = domain)
+#' }
 #' @export
 plot_lambda <- function(fit, covariates, smesh, tmesh,
                         dims = c(500,500),
                         border,
-                        colour_option = "D",
-                        title = "",
                         timestamp = 1) {
     
     if(!missing(tmesh)) {
@@ -187,10 +222,9 @@ plot_lambda <- function(fit, covariates, smesh, tmesh,
         plt <- list()
         for(i in seq(tmesh$n)) {
             if (missing(border)) {
-                plt[[i]] <- show_field(x = x[[i]], smesh = smesh,dims = dims,
-                                       colour_option = colour_option, title = title)
+                plt[[i]] <- show_field(x = x[[i]], smesh = smesh,dims = dims)
             } else {
-                plt[[i]] <- show_field(x = x[[i]], smesh, dims, border, colour_option, title)
+                plt[[i]] <- show_field(x = x[[i]], smesh, dims, border)
             }
         }
         plt[[timestamp]]
@@ -207,10 +241,9 @@ plot_lambda <- function(fit, covariates, smesh, tmesh,
         beta <- as.matrix(beta, ncol = 1)
         lambda <- exp(field + designmat%*%beta)
         if (missing(border)) {
-            show_field(x = lambda, smesh = smesh,dims = dims,
-                       colour_option = colour_option, title = title)
+            show_field(x = lambda, smesh = smesh,dims = dims)
         } else {
-            show_field(lambda, smesh, dims, border, colour_option, title)
+            show_field(lambda, smesh, dims, border)
         }
     }           
 }

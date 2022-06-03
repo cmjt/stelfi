@@ -7,8 +7,8 @@
 get_coefs(object)
 }
 \arguments{
-\item{object}{result of a call to \code{fit_hawkes()} or \code{fit_lgcp()}}
+\item{object}{result of a call to \code{\link{fit_hawkes}} or \code{\link{fit_lgcp}}}
 }
 \description{
-Reported parameter estimates
+\code{get_coefs} returns the parameter estimates for the fitted model.
 }
