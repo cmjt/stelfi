@@ -7,12 +7,12 @@
 get_fields(object, smesh, tmesh, plot = FALSE, sd = FALSE)
 }
 \arguments{
-\item{object}{result of a call \code{fit_lgcp()}}
+\item{object}{The result of a call to \code{\link{fit_lgcp}}.}
 
-\item{plot}{logical, if TRUE then field(s) plotted}
+\item{plot}{Logical, if \code{TRUE} then the returned values are plotted.}
 
-\item{sd}{logical, if TRUE then standard errors of field returned}
+\item{sd}{Logical, if \code{TRUE} then standard errors of field are returned.}
 }
 \description{
-Estimated random field(s)
+\code{get_fields} returns
 }

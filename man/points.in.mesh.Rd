@@ -2,16 +2,24 @@
 % Please edit documentation in R/helpers.r
 \name{points.in.mesh}
 \alias{points.in.mesh}
-\title{Function that takes in a list of points 
+\title{Internal function that takes in a list of points 
 (and optionally a weight or covariate for each point)
-and a mesh of polygons
-Returns either the number of points in each polygon or sum of the weights}
+and a mesh of polygons.}
 \usage{
 \method{points}{in.mesh}(xy, dmesh, weights)
 }
+\arguments{
+\item{xy}{A data frame of locations.}
+
+\item{dmesh}{An object returned by \code{\link{inla.mesh.dual}}.}
+
+\item{weights}{A vector of weights at each node of \code{dmesh}.}
+}
+\value{
+Either the number of points in each polygon or sum of the weights.
+}
 \description{
-Function that takes in a list of points 
+Internal function that takes in a list of points 
 (and optionally a weight or covariate for each point)
-and a mesh of polygons
-Returns either the number of points in each polygon or sum of the weights
+and a mesh of polygons.
 }

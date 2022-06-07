@@ -2,12 +2,12 @@
 % Please edit documentation in R/helpers.r
 \name{hawke_intensity}
 \alias{hawke_intensity}
-\title{Hawkes intensty function with decay historical dependence}
+\title{Hawkes intensity function}
 \usage{
 hawke_intensity(times, mu, alpha, beta, p, marks, background_param)
 }
 \arguments{
-\item{times}{a vector of numeric observation time points}
+\item{times}{A numeric vector of observed time points.}
 
 \item{mu}{numeric integer specifying base rate of the hawkes process}
 
@@ -16,8 +16,8 @@ occurence}
 
 \item{beta}{numeric integer specifying exponential intensity decay}
 
-\item{p}{vector of pseudo times at which to calculate the intensity}
+\item{p}{An optional vector of pseudo times at which to calculate the intensity.}
 }
 \description{
-Hawkes intensty function with decay historical dependence
+Hawkes intensity function
 }

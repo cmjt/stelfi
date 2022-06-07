@@ -1,5 +1,3 @@
-testthat
-stelfi
 sf
 spatstat.data
 spatstat.geom
@@ -7,6 +5,9 @@ spatstat.random
 nlme
 rpart
 spatstat.core
+stelfi
+Rcpp
+hawkesbow
 sp
 maptools
 inlabru

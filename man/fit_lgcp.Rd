@@ -2,8 +2,7 @@
 % Please edit documentation in R/fit_lgcp.r
 \name{fit_lgcp}
 \alias{fit_lgcp}
-\title{Function to fit a spatial or spatiotemporal log-Gaussian Cox process
-using \code{TMB}}
+\title{Fit a spatial or spatiotemporal log-Gaussian Cox process (LGCP)}
 \usage{
 fit_lgcp(
   locs,
@@ -18,34 +17,62 @@ fit_lgcp(
 )
 }
 \arguments{
-\item{locs}{2xn \code{data.frame} of locations x, y. If locations have
-time stapms then this is the third column of the 3xn matrix}
+\item{locs}{A \code{data.frame} of \code{x} and \code{y} locations, 2xn. If locations have
+time stamps then this should be the third column of the supplied 3xn matrix.}
 
-\item{sp}{\code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
-of the domain}
+\item{sp}{A \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
+of the domain.}
 
-\item{smesh}{spatial mesh of class \code{"inla.mesh"}}
+\item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
 
-\item{tmesh}{optional, temporal mesh of class \code{"inla.mesh.1d"}}
+\item{tmesh}{Optional, a temporal mesh of class \code{\link[INLA]{inla.mesh.1d}}.}
 
-\item{parameters}{a list of named parmeters:
-"beta"--A vector of fixed effects coefficients to be estimated
-(same length as \code{ncol(covariates)} + 1 )
- "log_tau"-- tau parameter for the GMRF
- "log_kappa"-- kappa parameter for the GMRF
- "rho"-- optional, rho AR1 parameter}
+\item{parameters}{A named list of parameters:
+\code{beta}, a vector of fixed effects coefficients to be estimated
+(same length as \code{ncol(covariates)} + 1 );
+\code{log_tau}, the \code{log(tau)} parameter for the GMRF;
+\code{log_kappa}, \code{log(kappa)} parameter for the GMRF;
+\code{atanh_rho}, optional, \code{arctan(rho)} AR1 temporal parameter.}
 
-\item{covariates}{optional, a \code{matrix} of covariates at each
+\item{covariates}{Optional, a \code{matrix} of covariates at each
 \code{smesh} and \code{tmesh} node combination.}
 
-\item{tmb_silent}{logical, default `TRUE`:
+\item{tmb_silent}{Logical, default \code{TRUE}:
 TMB inner optimization tracing information will be printed.}
 
-\item{nlminb_silent}{logical, default `TRUE`:
+\item{nlminb_silent}{logical, default \code{TRUE}:
 print function and parameters every iteration.}
 
-\item{...}{arguments to pass into \code{nlminb()}}
+\item{...}{Optional extra arguments to pass into \code{\link[stats]{nlminb}}.}
+}
+\value{
+A fitted \code{\link[TMB]{MakeADFun}} object.
 }
 \description{
-A simple to use wrapper for \code{fit_lgcp_tmb}
+\code{fit_lgcp} fits a LGCP using \code{\link{TMB}} and the
+\code{R_inla} namespace for the spde construction of the latent field. Ths is
+the user friendly wrapper for the internal function \code{\link{fit_lgcp_tmb}}.
+}
+\examples{
+\dontrun{
+data(xyt, package = "stelfi")
+domain <- as(xyt$window, "SpatialPolygons")
+locs <- data.frame(x = xyt$x, y = xyt$y)
+smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+max.edge = 0.75, cutoff = 0.3)
+fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh,
+parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
+}
+\dontrun{
+ndays <- 2
+locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
+w0 <- 2
+tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
+fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh, tmesh = tmesh,
+ parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2))
+
+}
+}
+\seealso{
+\code{\link{fit_lgcp_tmb}}.
 }

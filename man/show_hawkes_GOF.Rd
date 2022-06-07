@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.r
 \name{show_hawkes_GOF}
 \alias{show_hawkes_GOF}
-\title{Plot the compensator ans other associated goodness of fit metrics for a Hawkes process}
+\title{Plot the compensator and other associated goodness of fit metrics for a Hawkes process}
 \usage{
 show_hawkes_GOF(
   times,
@@ -16,7 +16,7 @@ show_hawkes_GOF(
 )
 }
 \arguments{
-\item{times}{a vector of numeric observation time points}
+\item{times}{A numeric vector of observed time points.}
 
 \item{mu}{numeric integer specifying base rate of the hawkes process}
 
@@ -25,10 +25,21 @@ occurence}
 
 \item{beta}{numeric integer specifying exponential intensity decay}
 
-\item{plot}{logical, whether to plot GOF plots}
+\item{plot}{Logical, whether to plot GOF plots. Default \code{TRUE}.}
 
-\item{return_values}{logical, whether to return GOF values}
+\item{return_values}{Logical, whether to return GOF values. Default \code{TRUE}.}
 }
 \description{
-Plot the compensator ans other associated goodness of fit metrics for a Hawkes process
+Plot the compensator and other associated goodness of fit metrics for a Hawkes process
+}
+\examples{
+\dontrun{
+data(retweets_niwa, package = "stelfi")
+times <- unique(sort(as.numeric(difftime(retweets_niwa ,min(retweets_niwa),units = "mins"))))
+params <- c(mu = 9, alpha = 3, beta = 10)
+## must have compiled TMB templates first use compile_stelfi()
+fit <- fit_hawkes(times = times, parameters = params) 
+pars <- get_coefs(fit)
+show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1], return_values = FALSE)
+}
 }

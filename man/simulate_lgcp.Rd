@@ -2,32 +2,54 @@
 % Please edit documentation in R/fit_lgcp.r
 \name{simulate_lgcp}
 \alias{simulate_lgcp}
-\title{Function to fit a spatial or spatiotemporal log-Gaussian Cox process
-using \code{TMB}}
+\title{Simulate a log-Gaussian Cox process (LGCP)}
 \usage{
-simulate_lgcp(parameters, sp, smesh, tmesh, covariates)
+simulate_lgcp(parameters, sp, smesh, tmesh, covariates, all = FALSE)
 }
 \arguments{
-\item{parameters}{a list of named parmeters:
-"beta"--A vector of fixed effects coefficients to be estimated
-(same length as \code{ncol(covariates)} + 1 )
- "log_tau"-- tau parameter for the GMRF
- "log_kappa"-- kappa parameter for the GMRF
- "rho"-- optional, rho AR1 parameter}
+\item{parameters}{A named list of parameters:
+\code{beta}, a vector of fixed effects coefficients to be estimated
+(same length as \code{ncol(covariates)} + 1 );
+\code{log_tau}, the \code{log(tau)} parameter for the GMRF;
+\code{log_kappa}, \code{log(kappa)} parameter for the GMRF;
+\code{atanh_rho}, optional, \code{arctan(rho)} AR1 temporal parameter.}
 
-\item{sp}{\code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
-of the domain}
+\item{sp}{A \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
+of the domain.}
 
-\item{smesh}{spatial mesh of class \code{"inla.mesh"}}
+\item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
 
-\item{tmesh}{optional, temporal mesh of class \code{"inla.mesh.1d"}}
+\item{tmesh}{Optional, a temporal mesh of class \code{\link[INLA]{inla.mesh.1d}}.}
 
-\item{covariates}{optional, a \code{matrix} of covariates at each
-\code{smesh} and \code{tmesh} node combination}
+\item{covariates}{Optional, a \code{matrix} of covariates at each
+\code{smesh} and \code{tmesh} node combination.}
 
-\item{locs}{2xn \code{data.frame} of locations x, y. If locations have
-time stapms then this is the third column of the 3xn matrix}
+\item{all}{Logical, if \code{TRUE} then all model components are returned.}
+}
+\value{
+A named list. If \code{all = FALSE} then only the simulated values of 
+the GMRF at each mesh node are returned, \code{x}, alongside the number of 
+events, \code{y}, simulated at each node.
 }
 \description{
-A simple to use wrapper for \code{fit_lgcp_tmb}
+\code{simulate_lgcp} simulates a LGCP using the \code{\link{TMB}} \code{C++}
+template. If \code{rho} is supplied in \code{parameters}
+as well as \code{tmesh} then times knots will also be returned.
+}
+\examples{
+\dontrun{
+data(xyt, package = "stelfi")
+domain <- as(xyt$window, "SpatialPolygons")
+smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+max.edge = 0.75, cutoff = 0.3)
+parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
+simulate_lgcp(parameters = parameters, sp = domain, smesh = smesh)
+}
+\dontrun{
+ndays <- 2
+w0 <- 2
+tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
+parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2)
+simulate_lgcp(parameters = parameters, sp = domain, smesh = smesh, tmesh = tmesh)
+}
 }

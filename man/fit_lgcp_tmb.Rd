@@ -2,10 +2,7 @@
 % Please edit documentation in R/fit_lgcp.r
 \name{fit_lgcp_tmb}
 \alias{fit_lgcp_tmb}
-\title{Function to fit a spatial or spatiotemporal log-Gaussian Cox process using
-\code{TMB} and the
-\code{R_inla} namespace for the spde construction of the latent field. For
-a simpler wrapper use \code{fit_lgcp()}}
+\title{Fit a spatial or spatiotemporal log-Gaussian Cox process (LGCP)}
 \usage{
 fit_lgcp_tmb(
   y,
@@ -26,74 +23,71 @@ fit_lgcp_tmb(
 )
 }
 \arguments{
-\item{y}{the vector of observations.
+\item{y}{The vector of observations.
 For spatial only, this is the vector of counts.
 For spatial + AR1 temporal, this vector needs to be
 arranged in the following way:
-y                 t
----------------------
-y_1               1
-y_2               1
-...
-y_n               1
-y_{n+1}           2
-y_{n+2}           2
-...
-y_{n * t_n - 1}   t_n
-y_{n * t_n}       t_n}
+\tabular{rr}{ y \tab  t \cr
+y_1  \tab             1 \cr
+y_2  \tab             1 \cr
+... \tab ... \cr
+y_n  \tab             1 \cr
+y_{n+1}  \tab         2 \cr
+y_{n+2}  \tab         2 \cr
+... \tab ... \cr
+y_{n * t_n - 1} \tab  t_n \cr
+y_{n * t_n}  \tab     t_n \cr
+}}
 
-\item{A}{the predicator matrix A, obtained from \code{r-inla}}
+\item{A}{The predictor matrix A, obtained from \code{\link[INLA]{inla.spde.make.A}}.}
 
-\item{designmat}{the design matrix for the fixed effects}
+\item{designmat}{The design matrix for the fixed effects.}
 
-\item{spde}{the structure of spde object as defined in \code{r-inla}.
-The minimal required components are M0, M1, M2}
+\item{spde}{The structure of SPDE object as defined in \code{\link[INLA]{inla.spde2.matern}}.
+The minimal required components are \code{M0}, \code{M1}, \code{M2}.}
 
-\item{w}{a vector of model weights; corresponds to the E term for
-poisson models in \code{INLA},
-see \code{INLA::inla.doc("poisson")} for more detail.}
+\item{w}{A vector of model weights; corresponds to the \code{E} term for
+poisson models, see \code{\link[INLA]{inla.doc("poisson")}} for more detail.}
 
-\item{idx}{a binary vector of the same size as the observation
-vector \code{y}.
-With this vector, the log-likelihood can be computed using a subset
-of the observations. 1 for contributing to the log-likelihood,
-and 0 otherwise.}
+\item{idx}{A binary vector of the same size as the observation
+vector \code{\link{y}}. With this vector, the log-likelihood can 
+be computed using a subset of the observations: 1 for contributing 
+to the log-likelihood, and 0 otherwise.}
 
 \item{beta}{A vector of fixed effects coefficients to be estimated
-(same length as \code{ncol(designmat)}}
+(same length as \code{ncol(\link{designmat})}.}
 
-\item{log_tau}{\code{log(tau)} parameter for the GMRF}
+\item{log_tau}{\code{log(tau)} parameter for the GMRF.}
 
-\item{log_kappa}{\code{log(kappa)} parameter for the GMRF}
+\item{log_kappa}{\code{log(kappa)} parameter for the GMRF.}
 
-\item{atanh_rho}{optional, \code{arctan(rho)} AR1 parameter}
+\item{atanh_rho}{Optional, \code{arctan(rho)} AR1 parameter.}
 
-\item{x}{the random field/effects
-This is the random field/effects. Set this variable random in
-\code{MadeADFun()}.
-This array is of size no. of random effect for each time knots
-(x.rows()) by no. of temporal
-knots (x.cols()), and hence the total number of random effects is
+\item{x}{The random field/effects. Set this variable random in
+\code{\link[TMB]{MadeADFun}}.
+The array is of size \code{n} of random effect for each time knot
+(x.rows()) by number of temporal
+knots (x.cols()). Therefore, the total number of random effects is
 x.rows() * x.cols().
 Each column represents a time knot:
-t
-                    1           2           3           ...           t_n
-----------------------------------------------------------------------
-random
-effects x.col(0)     x.col(1)    x.col(2)       ...         x.col(t_n - 1)
-----------------------------------------------------------------------}
+\tabular{r|rrrrr}{
+ t     \tab              1    \tab       2   \tab        3   \tab        ...    \tab       t_n \cr
+random effects \tab x.col(0)  \tab   x.col(1) \tab   x.col(2)  \tab     ...   \tab      x.col(t_n - 1)
+}}
 
-\item{tmb_silent}{logical, default `TRUE`:
+\item{tmb_silent}{Logical, default \code{TRUE}:
 TMB inner optimization tracing information will be printed.}
 
-\item{nlminb_silent}{logical, default `TRUE`:
+\item{nlminb_silent}{logical, default \code{TRUE}:
 print function and parameters every iteration.}
 
-\item{...}{arguments to pass into \code{nlminb()}}
+\item{...}{Optional extra arguments to pass into \code{\link[stats]{nlminb}}.}
 }
 \description{
-Function to fit a spatial or spatiotemporal log-Gaussian Cox process using
-\code{TMB} and the
+\code{fit_lgcp_tmb} fits a LGCP using \code{TMB} and the
 \code{R_inla} namespace for the spde construction of the latent field. For
-a simpler wrapper use \code{fit_lgcp()}
+a simpler wrapper use \code{\link{fit_lgcp}} as this is an internal function.
+}
+\seealso{
+\code{\link{fit_lgcp}}
 }

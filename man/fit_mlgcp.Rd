@@ -44,13 +44,13 @@ See fit_mlgcp_tmb header for further details
 \item{marks_covariates}{Which columns of the covariates apply to the marks.
 By default, all covariates apply to the marks only.}
 
-\item{tmb_silent}{logical, default `TRUE`:
+\item{tmb_silent}{Logical, default \code{TRUE}:
 TMB inner optimization tracing information will be printed.}
 
-\item{nlminb_silent}{logical, default `TRUE`:
+\item{nlminb_silent}{logical, default \code{TRUE}:
 print function and parameters every iteration.}
 
-\item{...}{arguments to pass into \code{nlminb()}}
+\item{...}{Optional extra arguments to pass into \code{\link[stats]{nlminb}}.}
 }
 \description{
 A simple to use wrapper for \code{fit_mlgcp_tmb}

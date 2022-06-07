@@ -1,8 +1,8 @@
 setClassUnion("numeric_or_missing", c("numeric", "missing"))
-#' Hawkes intensty function with decay historical dependence
+#' Hawkes intensity function
 #' @inheritParams sim_hawkes
 #' @inheritParams show_hawkes
-#' @param p vector of pseudo times at which to calculate the intensity
+#' @param p An optional vector of pseudo times at which to calculate the intensity.
 #' @export
 setGeneric("hawke_intensity",
            function(times, mu, alpha, beta, p, marks, background_param) {
@@ -29,7 +29,9 @@ setMethod("hawke_intensity",
               return(lam_p)
           })
 #' Reported parameter estimates
-#' @param object result of a call to \code{fit_hawkes()} or \code{fit_lgcp()}
+#' 
+#' \code{get_coefs} returns the parameter estimates for the fitted model.
+#' @param object result of a call to \code{\link{fit_hawkes}} or \code{\link{fit_lgcp}}
 #' @export
 setGeneric("get_coefs",
            function(object) {
@@ -43,9 +45,11 @@ setMethod("get_coefs",
           }
           )
 #' Estimated random field(s)
-#' @param object result of a call \code{fit_lgcp()}
-#' @param plot logical, if TRUE then field(s) plotted
-#' @param sd logical, if TRUE then standard errors of field returned 
+#' 
+#' \code{get_fields} returns 
+#' @param object The result of a call to \code{\link{fit_lgcp}}.
+#' @param plot Logical, if \code{TRUE} then the returned values are plotted.
+#' @param sd Logical, if \code{TRUE} then standard errors of field are returned. 
 #' @export
 get_fields <- function(object, smesh, tmesh, plot = FALSE, sd = FALSE) {
     idx <- ifelse(sd, 2, 1)
@@ -67,8 +71,8 @@ get_fields <- function(object, smesh, tmesh, plot = FALSE, sd = FALSE) {
       
 #' Function to find areas (weights) around the mesh nodes which are
 #' within the specified spatial polygon.
-#' Relies on inla.mesh.dual function from INLA spde-tutorial
-#' \href{SPDE gitbook}{https://becarioprecario.bitbucket.io/spde-gitbook/}
+#' Relies on the internal \code{\link{inla.mesh.dual}} function.
+#' @seealso \url{https://becarioprecario.bitbucket.io/spde-gitbook/}.
 #' @export
 get_weights <- function(mesh, sp, plot = FALSE){
     dmesh <- inla.mesh.dual(mesh)
@@ -88,26 +92,14 @@ get_weights <- function(mesh, sp, plot = FALSE){
     }
     return(list(weights = unlist(w), polys = dmesh))
 }
-#' Function that takes in a named  matrix of covariates with
-#' ncol equal to the number of covariates
-#' returns a list containing the effects ready to be
-#' read by \code{inla.stack} and a covariate formula,
-#' ready to be read by a call to \code{fit_lgcp_inla}
-make.covs <- function(covariates){
-    n.covs <- ncol(covariates)
-    for(i in 1:n.covs){
-        assign(colnames(covariates)[i],covariates[,i],envir = .GlobalEnv)
-    }
-    cov.effects <- sapply(colnames(covariates),get,simplify = FALSE)
-    cov.form <- paste(colnames(covariates),collapse = " + ")
-    return(list(cov.effects,cov.form))
-}
 
-#' Function that takes in a list of points 
+#' Internal function that takes in a list of points 
 #' (and optionally a weight or covariate for each point)
-#' and a mesh of polygons
-#' Returns either the number of points in each polygon or sum of the weights
-
+#' and a mesh of polygons.
+#' @param xy A data frame of locations.
+#' @param dmesh An object returned by \code{\link{inla.mesh.dual}}.
+#' @param weights A vector of weights at each node of \code{dmesh}.
+#' @returns Either the number of points in each polygon or sum of the weights.
 points.in.mesh <- function(xy, dmesh, weights){
   if (missing(weights)){
     sapply(1:length(dmesh), function(i){
