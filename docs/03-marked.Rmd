@@ -1,0 +1,32 @@
+# A marked log-Gaussian Cox Process {#marked}
+
+## The `fit_mlgcp()` function
+
+```{r}
+args(fit_mlgcp)
+```
+
+## Fitting a marked LGCP
+
+```{r, eval = FALSE}
+data(marked, package = "stelfi")
+loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
+domain <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(loc.d)),'0')))
+smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1), 
+                           max.edge = c(0.3, 0.7), cutoff = 0.05)
+locs <- cbind(x = marked$x, y = marked$y)
+marks <- cbind(m1 = marked$m1) ## Gaussian
+parameters <- list(betamarks = matrix(0, nrow = 1, ncol = ncol(marks)) ,
+              log_tau = rep(log(1), 2), log_kappa = rep(log(1), 2),
+              marks_coefs_pp = rep(0, ncol(marks)), betapp = 0)
+## matrix of "structural" fixed parameters relating to marks
+## e.g., log of element-wise standard deviation for Gaussian
+strfixed <- cbind(rep(log(0.25), nrow(marks)))
+fit <- fit_mlgcp(locs = locs, marks = marks,
+                 sp = domain, smesh = smesh,
+                 parameters = parameters, methods = 0,
+                 strfixed = strfixed, strparam = strparam, idx = idx,
+                 fields = 1, pp_covariates = matrix(1, ncol = 1, nrow = nrow(locs)),
+                 marks_covariates = matrix(1, ncol = ncol(marks), nrow = nrow(marks)))
+get_coefs(fit)
+```

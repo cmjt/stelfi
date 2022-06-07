@@ -1,4 +1,4 @@
-# log-Gaussian Cox Process {#lgcp}
+# A log-Gaussian Cox Process {#lgcp}
 
 ## The `fit_lgcp()` function
 
