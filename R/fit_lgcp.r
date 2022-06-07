@@ -1,5 +1,5 @@
 #' Fit a spatial or spatiotemporal log-Gaussian Cox process (LGCP)
-#' 
+#'
 #' \code{fit_lgcp_tmb} fits a LGCP using \code{TMB} and the
 #' \code{R_inla} namespace for the spde construction of the latent field. For
 #' a simpler wrapper use \code{\link{fit_lgcp}} as this is an internal function.
@@ -18,15 +18,17 @@
 #' y_{n * t_n - 1} \tab  t_n \cr
 #' y_{n * t_n}  \tab     t_n \cr
 #' }
-#' @param A The predictor matrix A, obtained from \code{\link[INLA]{inla.spde.make.A}}.
+#' @param A The predictor matrix A, obtained from
+#' \code{\link[INLA]{inla.spde.make.A}}.
 #' @param designmat The design matrix for the fixed effects.
-#' @param spde The structure of SPDE object as defined in \code{\link[INLA]{inla.spde2.matern}}.
+#' @param spde The structure of SPDE object as defined in
+#' \code{\link[INLA]{inla.spde2.matern}}.
 #' The minimal required components are \code{M0}, \code{M1}, \code{M2}.
 #' @param w A vector of model weights; corresponds to the \code{E} term for
 #' poisson models, see \code{\link[INLA]{inla.doc("poisson")}} for more detail.
 #' @param idx A binary vector of the same size as the observation
-#' vector \code{\link{y}}. With this vector, the log-likelihood can 
-#' be computed using a subset of the observations: 1 for contributing 
+#' vector \code{\link{y}}. With this vector, the log-likelihood can
+#' be computed using a subset of the observations: 1 for contributing
 #' to the log-likelihood, and 0 otherwise.
 #' @param beta A vector of fixed effects coefficients to be estimated
 #' (same length as \code{ncol(\link{designmat})}.
@@ -107,7 +109,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' data(xyt, package = "stelfi")
 #' domain <- as(xyt$window, "SpatialPolygons")
 #' locs <- data.frame(x = xyt$x, y = xyt$y)
-#' smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+#' smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain),
 #' max.edge = 0.75, cutoff = 0.3)
 #' fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh,
 #' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
@@ -167,7 +169,7 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
     if(!missing(covariates)) {
         designmat <- cbind(1, covariates)
     } else {
-        designmat <- matrix(rep(1, length(tmp$ypp) ), ncol = 1)
+        designmat <- matrix(rep(1, length(tmp$ypp)), ncol = 1)
     }
     ## Model fitting
     res <- fit_lgcp_tmb(y = tmp$ypp, A = tmp$A,
