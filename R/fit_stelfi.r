@@ -6,7 +6,7 @@
 #' print function and parameters every iteration.
 #' @inheritParams fit_hawkes
 #' @inheritParams fit_lgcp
-fit_hspde_tmb <- function(times , locs , sp,
+fit_hspde_tmb <- function(times, locs, sp,
                           mesh, lmat,
                           log_mu = 0, logit_abratio = 0, log_beta = 0,
                           log_kappa = 0, log_tau = 0, log_xsigma = 0,
@@ -123,6 +123,3 @@ fit_stelfi <-  function(times, locs, sp, smesh,  parameters,
     }
     return(res)
 }
-
-
-    

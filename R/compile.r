@@ -70,4 +70,8 @@ dll_stelfi <- function(x) {
 #' @importFrom stats optim qlogis runif
 #' @importFrom utils sessionInfo
 #' @importFrom grDevices dev.new
-#' @import INLA 
+#' @import INLA
+#' @importFrom grDevices dev.new
+#' @importFrom graphics points
+#' @importFrom stats ppoints qexp quantile runif
+#' @importFrom utils tail

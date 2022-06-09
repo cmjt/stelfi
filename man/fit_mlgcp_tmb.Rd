@@ -2,10 +2,7 @@
 % Please edit documentation in R/fit_mlgcp.r
 \name{fit_mlgcp_tmb}
 \alias{fit_mlgcp_tmb}
-\title{Function to fit a marked spatial log-Gaussian Cox
-process (LGCP) using \code{TMB} and the
-\code{R_inla} namespace for the spde construction of the latent field.
-For a simpler wrapper use \code{fit_mlgcp()}}
+\title{Fit a marked spatial log-Gaussian Cox process m(LGCP)}
 \usage{
 fit_mlgcp_tmb(
   ypp,
@@ -30,63 +27,73 @@ fit_mlgcp_tmb(
 )
 }
 \arguments{
-\item{ypp}{A vector for point process response (poisson) (see \code{fit_lgcp()})}
+\item{ypp}{The vector of observations.}
 
 \item{marks}{A matrix of marks for each observation of the point pattern}
 
 \item{lmat}{A sparse matrix mapping mesh points to the observations}
 
-\item{spde}{The structure of spde object as defined in \code{r-inla}.
-The minimal required components are M0, M1, M2.}
+\item{spde}{The structure of SPDE object as defined in
+\code{\link[INLA]{inla.spde2.matern}}.
+The minimal required components are \code{M0}, \code{M1}, \code{M2}.}
 
-\item{w}{a vector of model weights; corresponds to the E term for
-poisson models in \code{INLA},
-see \code{INLA::inla.doc("poisson")} for more detail.}
+\item{w}{A vector of model weights; corresponds to the \code{E} term for
+poisson models, see \code{\link[INLA]{inla.doc("poisson")}} for more detail.}
 
-\item{strfixed}{a matrix of fixed structural parameters.
+\item{strfixed}{A matrix of fixed structural parameters.
 Normal distribution: this is the log of element-wise standard deviation.
 Poisson distribution: not used
 Binomial distribution, this is the number of trials.
 The default input from R should be 1s, i.e., the Bernoulli distribution.
 Gamma distribution, this is the log of scale.}
 
-\item{methods}{integer:
-0 - normal distribution. Parameter estimated is mean
-1 - poisson distribution. Parameter estimated is intensity
-2 - binomial distribution. Parameter estimated is logit/probability
-3 - gamma distribution, the implementation in TMB is shape-scale.}
+\item{methods}{An integer value:
+\itemize{
+\item \code{0} (default), Gaussian distribution, parameter estimated is mean;
+\item \code{1}, Poisson distribution, parameter estimated is intensity;
+\item \code{2}, binomial distribution, parameter estimated is logit/probability;
+\item \code{3}, gamma distribution, the implementation in TMB is shape-scale.
+}}
 
-\item{betamarks}{starting value of the intercept term and covariate coefficient of each mark}
+\item{betamarks}{Numeric starting values of the intercept term and
+covariate coefficients of each mark.}
 
-\item{betapp}{starting value of the  intercept of point process}
+\item{betapp}{Numeric starting value of the  intercept of point process.}
 
-\item{marks_coefs_pp}{slope of mark lambda versus point process lambda}
+\item{marks_coefs_pp}{The numeric starting value of the mark lambda versus
+the point process lambda coefficient.}
 
-\item{log_kappa}{log of kappas for the random field(s). The first element is for the random field of the point process.}
+\item{log_kappa}{The numeric starting value of log of kappas for the
+random field(s). The first element is for the random field of the
+point process.}
 
-\item{log_tau}{log of taus for the random field(s). The first element is for the random field of the point process.}
+\item{log_tau}{The numeric starting value of log of taus for the
+random field(s). The first element is for the random field of the
+point process.}
 
-\item{cov_overlap}{whether or nor marks and point process share covariates. If not, marks_coef_pp applies to entire lambda of the point process.
-If there is overlap, it applies only to the point process random field.}
+\item{cov_overlap}{Logical, if \code{TRUE} then  marks and point process
+share covariates.
+If \code{FALSE}, \code{marks_coef_pp} applies to entire lambda of the point
+process. If there is overlap, it applies only to the point process random field.}
 
 \item{designmatpp}{Design matrix for point process. The first column is ones.
-If there are covariates, then the covariates are in the subsequent columns}
+If there are covariates, then the covariates are in the subsequent columns.}
 
-\item{designmatmarks}{Design matrix for marks}
+\item{designmatmarks}{The design matrix for the marks.}
 
-\item{fields}{Binary vector indicating whether there is a new random field for each mark.}
+\item{fields}{A binary vector indicating whether there is a new random
+field for each mark.}
 
-\item{tmb_silent}{logical, default `TRUE`:
+\item{tmb_silent}{Logical, default \code{TRUE}:
 TMB inner optimization tracing information will be printed.}
 
-\item{nlminb_silent}{logical, default `TRUE`:
+\item{nlminb_silent}{logical, default \code{TRUE}:
 print function and parameters every iteration.}
 
-\item{...}{arguments to pass into \code{nlminb()}}
+\item{...}{Optional extra arguments to pass into \code{\link[stats]{nlminb}}.}
 }
 \description{
-Function to fit a marked spatial log-Gaussian Cox
-process (LGCP) using \code{TMB} and the
+\code{fit_mlgcp_tmb} fits a marked LGCP using \code{TMB} and the
 \code{R_inla} namespace for the spde construction of the latent field.
-For a simpler wrapper use \code{fit_mlgcp()}
+For a simpler wrapper use \code{\link{fit_mlgcp}} as this is an internal function.
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_hawkes.r
 \name{fit_hawkes}
 \alias{fit_hawkes}
-\title{Function to fit a self-exciting Hawkes process using TMB}
+\title{Function to fit a self-exciting Hawkes process}
 \usage{
 fit_hawkes(
   times,
@@ -17,7 +17,8 @@ fit_hawkes(
 \arguments{
 \item{times}{a vector of numeric observation time points}
 
-\item{parameters}{a vector of named parmeters for the chosen model (see \code{model})
+\item{parameters}{a vector of named parmeters for the chosen model
+(see \code{model})
 "mu"--base rate of the hawkes process,
 "alpha"--intensity jump after an event occurence, and
 "beta"--exponential intensity decay}
@@ -37,5 +38,26 @@ print function and parameters every iteration.}
 \item{...}{arguments to pass into \code{optim()}}
 }
 \description{
-Function to fit a self-exciting Hawkes process using TMB
+\code{fit_hawkes} fits a range of self-exciting Hawkes processes using TMB
+}
+\examples{
+{
+\dontrun{
+data(retweets_niwa, package = "stelfi")
+times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
+params <- c(mu = 9, alpha = 3, beta = 10)
+fit_hawkes(times = times, parameters = params)
+}
+\dontrun{
+## A model with marks (ETAS-type)
+data("earthquakes", package = "stelfi")
+earthquakes <- earthquakes[order(earthquakes$origintime),]
+earthquakes <- earthquakes[!duplicated(earthquakes$origintime), ]
+times <- earthquakes$origintime
+times <- as.numeric(difftime(times, min(times), units = "mins"))
+marks <- earthquakes$magnitude
+params <- c(mu = 3, alpha = 0.05, beta = 1)
+fit_hawkes(times = times, parameters = params, marks = marks)
+}
+}
 }

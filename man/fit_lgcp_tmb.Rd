@@ -39,19 +39,21 @@ y_{n * t_n - 1} \tab  t_n \cr
 y_{n * t_n}  \tab     t_n \cr
 }}
 
-\item{A}{The predictor matrix A, obtained from \code{\link[INLA]{inla.spde.make.A}}.}
+\item{A}{The predictor matrix A, obtained from
+\code{\link[INLA]{inla.spde.make.A}}.}
 
 \item{designmat}{The design matrix for the fixed effects.}
 
-\item{spde}{The structure of SPDE object as defined in \code{\link[INLA]{inla.spde2.matern}}.
+\item{spde}{The structure of SPDE object as defined in
+\code{\link[INLA]{inla.spde2.matern}}.
 The minimal required components are \code{M0}, \code{M1}, \code{M2}.}
 
 \item{w}{A vector of model weights; corresponds to the \code{E} term for
 poisson models, see \code{\link[INLA]{inla.doc("poisson")}} for more detail.}
 
 \item{idx}{A binary vector of the same size as the observation
-vector \code{\link{y}}. With this vector, the log-likelihood can 
-be computed using a subset of the observations: 1 for contributing 
+vector \code{\link{y}}. With this vector, the log-likelihood can
+be computed using a subset of the observations: 1 for contributing
 to the log-likelihood, and 0 otherwise.}
 
 \item{beta}{A vector of fixed effects coefficients to be estimated

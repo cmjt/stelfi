@@ -13,7 +13,7 @@
 #' The default input from R should be 1s, i.e., the Bernoulli distribution.
 #' Gamma distribution, this is the log of scale.
 #' @param methods An integer value:
-#' \itemize
+#' \itemize{
 #' \item \code{0} (default), Gaussian distribution, parameter estimated is mean;
 #' \item \code{1}, Poisson distribution, parameter estimated is intensity;
 #' \item \code{2}, binomial distribution, parameter estimated is logit/probability;
@@ -78,6 +78,27 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' @param marks_covariates Which columns of the covariates apply to the marks.
 #' By default, all covariates apply to the marks only.
 #' @inheritParams fit_lgcp_tmb
+#' @examples{
+#' \dontrun{
+#' data(marked, package = "stelfi")
+#' loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
+#' domain <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(loc.d)),'0')))
+#' smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1),
+#' max.edge = c(0.3, 0.7), cutoff = 0.05)
+#' locs <- cbind(x = marked$x, y = marked$y)
+#' marks <- cbind(m1 = marked$m1) ## Gaussian
+#' parameters <- list(betamarks = matrix(0, nrow = 1, ncol = ncol(marks)),
+#' log_tau = rep(log(1), 2), log_kappa = rep(log(1), 2),
+#' marks_coefs_pp = rep(0, ncol(marks)), betapp = 0)
+#' strfixed <- cbind(rep(log(0.25), nrow(marks)))
+#' fit <- fit_mlgcp(locs = locs, marks = marks,
+#' sp = domain, smesh = smesh,
+#' parameters = parameters, methods = 0,
+#' strfixed = strfixed, strparam = strparam, idx = idx,
+#' fields = 1, pp_covariates = matrix(1, ncol = 1, nrow = nrow(locs)),
+#' marks_covariates = matrix(1, ncol = ncol(marks), nrow = nrow(marks)))
+#' }
+#' }
 #' @export
 fit_mlgcp <-  function(locs, sp, marks, smesh, parameters, methods,
                        strfixed, fields,

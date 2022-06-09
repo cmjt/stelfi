@@ -38,7 +38,7 @@ data(retweets_niwa, package = "stelfi")
 times <- unique(sort(as.numeric(difftime(retweets_niwa ,min(retweets_niwa),units = "mins"))))
 params <- c(mu = 9, alpha = 3, beta = 10)
 ## must have compiled TMB templates first use compile_stelfi()
-fit <- fit_hawkes(times = times, parameters = params) 
+fit <- fit_hawkes(times = times, parameters = params)
 pars <- get_coefs(fit)
 show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1], return_values = FALSE)
 }

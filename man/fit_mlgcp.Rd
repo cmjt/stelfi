@@ -23,19 +23,36 @@ fit_mlgcp(
 )
 }
 \arguments{
-\item{locs}{2xn \code{data.frame} of locations x, y. If locations have
-time stapms then this is the third column of the 3xn matrix}
+\item{locs}{A \code{data.frame} of \code{x} and \code{y} locations, 2xn.}
 
-\item{sp}{\code{SpatialPolygons} or \code{SpatialPolygonsDataFrame} of the domain}
+\item{sp}{A \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
+of the domain.}
 
-\item{smesh}{spatial mesh of class \code{"inla.mesh"}}
+\item{marks}{A matrix of marks for each observation of the point pattern}
+
+\item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
 
 \item{parameters}{a list of named parmeters:
-log_tau, log_kappa, betamarks, betapp, marks_coefs_pp. 
-See fit_mlgcp_tmb header for further details
-\code{smesh} and \code{tmesh} node combination.}
+log_tau, log_kappa, betamarks, betapp, marks_coefs_pp.
+See \code{\link{fit_mlgcp_tmb}} for further details.}
 
-\item{fields}{See fit_mlgcp_tmb header}
+\item{methods}{An integer value:
+\itemize{
+\item \code{0} (default), Gaussian distribution, parameter estimated is mean;
+\item \code{1}, Poisson distribution, parameter estimated is intensity;
+\item \code{2}, binomial distribution, parameter estimated is logit/probability;
+\item \code{3}, gamma distribution, the implementation in TMB is shape-scale.
+}}
+
+\item{strfixed}{A matrix of fixed structural parameters.
+Normal distribution: this is the log of element-wise standard deviation.
+Poisson distribution: not used
+Binomial distribution, this is the number of trials.
+The default input from R should be 1s, i.e., the Bernoulli distribution.
+Gamma distribution, this is the log of scale.}
+
+\item{fields}{A binary vector indicating whether there is a new random
+field for each mark.}
 
 \item{covariates}{Covariate(s) corresponding to each area in the spatial mesh}
 
@@ -54,4 +71,27 @@ print function and parameters every iteration.}
 }
 \description{
 A simple to use wrapper for \code{fit_mlgcp_tmb}
+}
+\examples{
+{
+\dontrun{
+data(marked, package = "stelfi")
+loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
+domain <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(loc.d)),'0')))
+smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1),
+max.edge = c(0.3, 0.7), cutoff = 0.05)
+locs <- cbind(x = marked$x, y = marked$y)
+marks <- cbind(m1 = marked$m1) ## Gaussian
+parameters <- list(betamarks = matrix(0, nrow = 1, ncol = ncol(marks)),
+log_tau = rep(log(1), 2), log_kappa = rep(log(1), 2),
+marks_coefs_pp = rep(0, ncol(marks)), betapp = 0)
+strfixed <- cbind(rep(log(0.25), nrow(marks)))
+fit <- fit_mlgcp(locs = locs, marks = marks,
+sp = domain, smesh = smesh,
+parameters = parameters, methods = 0,
+strfixed = strfixed, strparam = strparam, idx = idx,
+fields = 1, pp_covariates = matrix(1, ncol = 1, nrow = nrow(locs)),
+marks_covariates = matrix(1, ncol = ncol(marks), nrow = nrow(marks)))
+}
+}
 }

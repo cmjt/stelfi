@@ -58,7 +58,7 @@ the user friendly wrapper for the internal function \code{\link{fit_lgcp_tmb}}.
 data(xyt, package = "stelfi")
 domain <- as(xyt$window, "SpatialPolygons")
 locs <- data.frame(x = xyt$x, y = xyt$y)
-smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain),
 max.edge = 0.75, cutoff = 0.3)
 fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh,
 parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))

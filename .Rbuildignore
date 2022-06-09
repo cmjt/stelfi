@@ -1,12 +1,3 @@
-^doc$
+^docs$
 ^Meta$
-^vignettes/lgcp_files$
-^vignettes/lgcp_cache$
-^vignettes/hawkes_files$
-^vignettes/hawkes_cache$
-^vignettes/self-exciting_files$
-^vignettes/self-exciting_cache$
-^vignettes/spatio-temporal_cache$
-^vignettes/spatio-temporal_files$
-^vignettes/*\.md$
 render.sh

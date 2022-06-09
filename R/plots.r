@@ -8,14 +8,14 @@ setClassUnion("missing_or_numeric", c("numeric", "missing"))
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa ,min(retweets_niwa),units = "mins"))))
 #' params <- c(mu = 9, alpha = 3, beta = 10)
 #' ## must have compiled TMB templates first use compile_stelfi()
-#' fit <- fit_hawkes(times = times, parameters = params) 
+#' fit <- fit_hawkes(times = times, parameters = params)
 #' pars <- get_coefs(fit)
 #' show_hawkes(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1])
 #' }
 #' @export
 setGeneric("show_hawkes",
            function(times, mu, alpha, beta, marks = c(rep(1, length(times))),
-                    background_param = NULL){
+                    background_param = NULL) {
                standardGeneric("show_hawkes")
            })
 
@@ -25,8 +25,8 @@ setMethod("show_hawkes",
               n <- length(times)
               max <- max(times)
               p <- seq(0, max, length.out = 500)
-              lam.p <- hawke_intensity(mu = mu, alpha = alpha, beta = beta, times = times, 
-                                      p = p, marks= marks, background_param = background_param)
+              lam.p <- hawke_intensity(mu = mu, alpha = alpha, beta = beta, times = times,
+                                      p = p, marks = marks, background_param = background_param)
               ylab <- expression(lambda(t))
               col <- 1
               lmax <- max(lam.p)
@@ -51,13 +51,13 @@ setMethod("show_hawkes",
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa ,min(retweets_niwa),units = "mins"))))
 #' params <- c(mu = 9, alpha = 3, beta = 10)
 #' ## must have compiled TMB templates first use compile_stelfi()
-#' fit <- fit_hawkes(times = times, parameters = params) 
+#' fit <- fit_hawkes(times = times, parameters = params)
 #' pars <- get_coefs(fit)
 #' show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1], return_values = FALSE)
 #' }
 #' @export
 setGeneric("show_hawkes_GOF", # only for constant mu at this stage
-           function(times, mu, alpha, beta, marks = c(rep(1,length(times))),
+           function(times, mu, alpha, beta, marks = c(rep(1, length(times))),
                     background_param, plot = TRUE, return_values = TRUE) {
                    standardGeneric("show_hawkes_GOF")
            })

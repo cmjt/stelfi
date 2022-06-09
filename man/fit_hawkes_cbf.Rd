@@ -2,9 +2,7 @@
 % Please edit documentation in R/fit_hawkes.r
 \name{fit_hawkes_cbf}
 \alias{fit_hawkes_cbf}
-\title{Function to fit a self-exciting Hawkes process with custom background function (cbf) using TMB
-The \code{alpha} and \code{beta} parameters are estimated using TMB,
-parameters of the CBF are optimized in R}
+\title{Function to fit a self-exciting Hawkes process with a given custom background function}
 \usage{
 fit_hawkes_cbf(
   times,
@@ -22,23 +20,28 @@ fit_hawkes_cbf(
 \arguments{
 \item{times}{a vector of numeric observation time points}
 
-\item{parameters}{a vector of named parmeters for the chosen model (see \code{model})
+\item{parameters}{a vector of named parmeters for the chosen model
+(see \code{model})
 "mu"--base rate of the hawkes process,
 "alpha"--intensity jump after an event occurence, and
 "beta"--exponential intensity decay}
 
-\item{model}{a factor indicator specifying which model to fit:
-\code{1}, a hawkes process with exponential decay and cbf (default);
-\code{2}, a hawkes process and cbf with negative self-exciting intensity "jump".}
+\item{model}{A factor indicator specifying which model to fit:
+\itemize{
+\item \code{1}, a hawkes process with exponential decay and cbf (default);
+\item \code{2}, a hawkes process and cbf with negative
+self-exciting intensity "jump".
+}}
 
 \item{marks}{a vector of numerical marks, defaults to 1 (i.e., no marks)}
 
-\item{background}{a function taking one parameter and an independent variable, returning a scalar}
+\item{background}{A function taking one parameter and an
+independent variable, returning a scalar.}
 
-\item{background_integral}{the integral of background}
+\item{background_integral}{The integral of \code{background}.}
 
-\item{background_min}{a function taking one parameter and two points,
-returns min of background between those points}
+\item{background_min}{A function taking one parameter and two points,
+returns min of \code{background} between those points.}
 
 \item{tmb_silent}{logical, default `TRUE`:
 TMB inner optimization tracing information will be printed.}
@@ -46,11 +49,41 @@ TMB inner optimization tracing information will be printed.}
 \item{optim_silent}{logical, default `TRUE`:
 print function and parameters every iteration.}
 
-\item{background_parameter}{the parameter (which could be a list of multiple values)
-for the background function}
+\item{background_parameter}{The parameter(s)
+for the background function \code{background}.
+This could be a list of multiple values.}
 }
 \description{
-Function to fit a self-exciting Hawkes process with custom background function (cbf) using TMB
+\code{fit_hawkes_cbf} fits a range of self-exciting Hawkes processes
+with a given custom background function (cbf) using TMB using TMB.
 The \code{alpha} and \code{beta} parameters are estimated using TMB,
-parameters of the CBF are optimized in R
+parameters of the CBF are optimized in R.
+}
+\examples{
+{
+\dontrun{
+times <- hawkesbow::hawkes(1000, fun = function(y) {1 + 0.5*sin(y)},
+M = 1.5, repr = 0.5, family = "exp", rate = 2)$p
+## The background function must take a single parameter and
+## the time(s) at which it is evaluated
+background <- function(params,times) {
+A = exp(params[[1]])
+B = stats::plogis(params[[2]]) * A
+return(A + B  *sin(times))
+}
+## The background_integral function must take a
+## single parameter and the time at which it is evaluated
+background_integral <- function(params,x) {
+        A = exp(params[[1]])
+        B = stats::plogis(params[[2]]) * A
+        return((A*x)-B*cos(x))
+}
+param = list(alpha = 0.5, beta = 1.5)
+background_param = list(1,1)
+fit_hawkes_cbf(times = times, parameters = param,
+background = background,
+background_integral = background_integral,
+background_parameters = background_param)
+}
+}
 }

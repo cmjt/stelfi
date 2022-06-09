@@ -120,14 +120,14 @@ times <- hawkesbow::hawkes(1000, fun=function(y) {1+0.5*sin(y)}, M=1.5, repr=0.5
 We will attempt to recover these parameter values, modelling the background as $ \mu(t) = A + Bsin(t)$. The background will be written as a function of $x$ and $y$, where $A = e^x$ and $B= logit(y) e^x$. This formulation ensures the background is never negative. 
 
 ```{r}
-# The background function must take a single parameter and the time(s) at which it is evaluated
+## The background function must take a single parameter and the time(s) at which it is evaluated
 background <- function(params,times){
         A = exp(params[[1]])
         B = stats::plogis(params[[2]]) * A
         return(A + B*sin(times))
 }
 
-# The background_integral function must take a single parameter and the time at which it is evaluated
+## The background_integral function must take a single parameter and the time at which it is evaluated
 background_integral <- function(params,x){
         A = exp(params[[1]])
         B = stats::plogis(params[[2]]) * A
