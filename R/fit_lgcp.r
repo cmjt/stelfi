@@ -39,7 +39,7 @@
 #' knots (x.cols()). Therefore, the total number of random effects is
 #' x.rows() * x.cols().
 #' Each column represents a time knot:
-#' \tabular{r|rrrrr}{
+#' \tabular{rrrrrr}{
 #'  t     \tab              1    \tab       2   \tab        3   \tab        ...    \tab       t_n \cr
 #' random effects \tab x.col(0)  \tab   x.col(1) \tab   x.col(2)  \tab     ...   \tab      x.col(t_n - 1)
 #' }
@@ -85,7 +85,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 }
 #' Fit a spatial or spatiotemporal log-Gaussian Cox process (LGCP)
 #' 
-#' \code{fit_lgcp} fits a LGCP using \code{\link{TMB}} and the
+#' \code{fit_lgcp} fits a LGCP using \code{TMB} and the
 #' \code{R_inla} namespace for the spde construction of the latent field. Ths is
 #' the user friendly wrapper for the internal function \code{\link{fit_lgcp_tmb}}. 
 #' @seealso \code{\link{fit_lgcp_tmb}}.
@@ -227,7 +227,7 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
 }
 #' Simulate a log-Gaussian Cox process (LGCP)
 #' 
-#' \code{simulate_lgcp} simulates a LGCP using the \code{\link{TMB}} \code{C++}
+#' \code{simulate_lgcp} simulates a LGCP using the \code{TMB} \code{C++}
 #' template. If \code{rho} is supplied in \code{parameters}
 #' as well as \code{tmesh} then times knots will also be returned.
 #' @inheritParams fit_lgcp

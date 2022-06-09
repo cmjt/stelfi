@@ -72,7 +72,7 @@ The array is of size \code{n} of random effect for each time knot
 knots (x.cols()). Therefore, the total number of random effects is
 x.rows() * x.cols().
 Each column represents a time knot:
-\tabular{r|rrrrr}{
+\tabular{rrrrrr}{
  t     \tab              1    \tab       2   \tab        3   \tab        ...    \tab       t_n \cr
 random effects \tab x.col(0)  \tab   x.col(1) \tab   x.col(2)  \tab     ...   \tab      x.col(t_n - 1)
 }}

@@ -7,7 +7,7 @@
 dll_stelfi(x)
 }
 \arguments{
-\item{x}{Optional, if provided specifies which \code{\link{stelfi}} DLL to load.}
+\item{x}{Optional, if provided specifies which \code{stelfi} DLL to load.}
 }
 \description{
 \code{dll_stelfi} loads required DLLs for models fitted using TMB.

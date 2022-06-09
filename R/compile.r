@@ -39,7 +39,7 @@ compile_stelfi <- function() {
 #' \code{dll_stelfi} loads required DLLs for models fitted using TMB.
 #' For compiling the required templates see \code{\link{compile_stelfi}}.
 #' 
-#' @param x Optional, if provided specifies which \code{\link{stelfi}} DLL to load.
+#' @param x Optional, if provided specifies which \code{stelfi} DLL to load.
 #' @examples \dontrun{
 #' dll_stelfi()
 #' }

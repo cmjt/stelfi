@@ -32,7 +32,7 @@ the GMRF at each mesh node are returned, \code{x}, alongside the number of
 events, \code{y}, simulated at each node.
 }
 \description{
-\code{simulate_lgcp} simulates a LGCP using the \code{\link{TMB}} \code{C++}
+\code{simulate_lgcp} simulates a LGCP using the \code{TMB} \code{C++}
 template. If \code{rho} is supplied in \code{parameters}
 as well as \code{tmesh} then times knots will also be returned.
 }

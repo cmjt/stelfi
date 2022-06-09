@@ -49,7 +49,7 @@ print function and parameters every iteration.}
 A fitted \code{\link[TMB]{MakeADFun}} object.
 }
 \description{
-\code{fit_lgcp} fits a LGCP using \code{\link{TMB}} and the
+\code{fit_lgcp} fits a LGCP using \code{TMB} and the
 \code{R_inla} namespace for the spde construction of the latent field. Ths is
 the user friendly wrapper for the internal function \code{\link{fit_lgcp_tmb}}.
 }
