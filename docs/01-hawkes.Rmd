@@ -3,9 +3,9 @@
 A  univariate Hawkes process is defined to be a self-exciting temporal point process where the conditional intensity function is given by
 
  $$\lambda(t) = \mu(t) + \Sigma_{i:\tau_i<t}\nu(t-\tau_i)$$ 
- where where $\mu(t)$ is the background rate of the process and $\Sigma_{i:\tau_i<t}\nu(t-\tau_i)$ is some historic temporal dependence. First introduced by @hawkes
+ where where $\mu(t)$ is the background rate of the process and $\Sigma_{i:\tau_i<t}\nu(t-\tau_i)$ is some historic temporal dependence. First introduced by @hawkes, the classic homogeneous formulation is:
  
- $$\lambda(t) = \mu(t) + \alpha \Sigma_{i:\tau_i<t}\text{exp}(-\beta * (t-\tau_i)) $$ 
+ $$\lambda(t) = \mu + \alpha \Sigma_{i:\tau_i<t}\text{exp}(-\beta * (t-\tau_i)) $$ 
  
 ## The `fit_hawkes()` function
 
@@ -73,8 +73,10 @@ show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,
 
 Here we fit a univariate marked Hawkes process  where the conditional intensity function is given by
 
- $$\lambda(t; m(t)) = \mu(t) + \alpha \Sigma_{i:\tau_i<t}m(t-\tau_i)\text{exp}(-\beta * (t-\tau_i)) $$ 
-where $\mu(t)$ is the background rate of the process, $m(t)$ is the temporal mark and $\Sigma_{i:\tau_i<t}\nu(t-\tau_i)$ is some historic temporal dependence.
+ $$\lambda(t; m(t)) = \mu + \alpha \Sigma_{i:\tau_i<t}m(\tau_i)\text{exp}(-\beta * (t-\tau_i)) $$ 
+where $\mu$ is the background rate of the process and $m(t)$ is the temporal mark. Each event $i$ has an associated mark $\tau_i$ that multiples the self-exciting component of $\lambda$. 
+
+In this example, the events are earthquakes and the marks are the Richter magnitude of each earthquake. 
 
 ```{r}
 data("earthquakes")
@@ -105,9 +107,12 @@ show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,
 
 ## The `fit_hawkes_cbf()` function
 
-The previous two examples were homogenous; \mu(t) was constant. Inhomogenous Hawke's procceses are those with a non-constant background function \mu(t). In this example we used simulated data
+Here we fit a univariate *inhomogenous* marked Hawkes process where the conditional intensity function is given by
 
+ $$\lambda(t) = \mu(t) + \alpha \Sigma_{i:\tau_i<t}\text{exp}(-\beta * (t-\tau_i)) $$ 
+The background $\mu(t)$ is time varying, rather than being constant. 
 
+The following example uses simulated data. 
 
 ```{r}
 args(fit_hawkes_cbf)

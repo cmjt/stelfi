@@ -6,12 +6,12 @@
 #' @param ypp  The vector of observations.
 #' @param marks  A matrix of marks for each observation of the point pattern
 #' @param lmat A sparse matrix mapping mesh points to the observations
-#' @param strfixed A matrix of fixed structural parameters.
-#' Normal distribution: this is the log of element-wise standard deviation.
+#' @param strfixed A matrix of fixed structural parameters, defined for each event and mark. 
+#' Defaults to 1s. 
+#' Normal distribution: this is the log of standard deviation.
 #' Poisson distribution: not used
 #' Binomial distribution, this is the number of trials.
-#' The default input from R should be 1s, i.e., the Bernoulli distribution.
-#' Gamma distribution, this is the log of scale.
+#' Gamma distribution, this is the log of the scale.
 #' @param methods An integer value:
 #' \itemize{
 #' \item \code{0} (default), Gaussian distribution, parameter estimated is mean;
@@ -22,8 +22,8 @@
 #' @param betamarks Numeric starting values of the intercept term and
 #' covariate coefficients of each mark.
 #' @param betapp Numeric starting value of the  intercept of point process.
-#' @param marks_coefs_pp The numeric starting value of the mark lambda versus
-#' the point process lambda coefficient.
+#' @param marks_coefs_pp The numeric starting value of the coefficient that connects
+#' the mark intensity to the point process intensity. 
 #' @param log_kappa  The numeric starting value of log of kappas for the
 #' random field(s). The first element is for the random field of the
 #' point process.
@@ -31,20 +31,20 @@
 #' random field(s). The first element is for the random field of the
 #' point process.
 #' @param cov_overlap Logical, if \code{TRUE} then  marks and point process
-#' share covariates.
-#' If \code{FALSE}, \code{marks_coef_pp} applies to entire lambda of the point
-#' process. If there is overlap, it applies only to the point process random field.
+#' share covariates. In that case, To avoid parameter redundancy and non-identifiability
+#' {marks_coefs_pp} multiples only the GMRF of the point process. 
+#' If \code{FALSE}, \code{marks_coef_pp} multiples the full value of lambda
 #' @param designmatpp Design matrix for point process. The first column is ones.
 #' If there are covariates, then the covariates are in the subsequent columns.
 #' @param designmatmarks The design matrix for the marks.
 #' @param fields A binary vector indicating whether there is a new random
-#' field for each mark.
+#' field for each mark. By default, each mark has its own random field. 
 #' @inheritParams fit_lgcp_tmb
 fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
                           betamarks, betapp, marks_coefs_pp, log_kappa, log_tau,
                           cov_overlap, designmatpp, designmatmarks, fields,
                           tmb_silent, nlminb_silent, ...) {
-    if (!"markedLGCP" %in% getLoadedDLLs()) {
+    if (!"marked_lgcp" %in% getLoadedDLLs()) {
         stelfi::dll_stelfi("marked_lgcp")
     }
     data <- list(ymarks = marks, ypp = ypp, lmat = lmat,
@@ -70,7 +70,7 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' @param locs A \code{data.frame} of \code{x} and \code{y} locations, 2xn.
 #' @inheritParams fit_lgcp
 #' @inheritParams fit_mlgcp_tmb
-#' @param parameters a list of named parmeters:
+#' @param parameters a list of named parameters:
 #' log_tau, log_kappa, betamarks, betapp, marks_coefs_pp.
 #' See \code{\link{fit_mlgcp_tmb}} for further details.
 #' @param covariates Covariate(s) corresponding to each area in the spatial mesh
@@ -90,18 +90,14 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' parameters <- list(betamarks = matrix(0, nrow = 1, ncol = ncol(marks)),
 #' log_tau = rep(log(1), 2), log_kappa = rep(log(1), 2),
 #' marks_coefs_pp = rep(0, ncol(marks)), betapp = 0)
-#' strfixed <- cbind(rep(log(0.25), nrow(marks)))
 #' fit <- fit_mlgcp(locs = locs, marks = marks,
 #' sp = domain, smesh = smesh,
-#' parameters = parameters, methods = 0,
-#' strfixed = strfixed, strparam = strparam, idx = idx,
-#' fields = 1, pp_covariates = matrix(1, ncol = 1, nrow = nrow(locs)),
-#' marks_covariates = matrix(1, ncol = ncol(marks), nrow = nrow(marks)))
+#' parameters = parameters, methods = 0,fields = 1)
 #' }
 #' }
 #' @export
 fit_mlgcp <-  function(locs, sp, marks, smesh, parameters, methods,
-                       strfixed, fields,
+                       strfixed=matrix(1,nrow=nrow(locs),ncol=ncol(marks)), fields=rep(1,ncol(marks)),
                        covariates, pp_covariates, marks_covariates,
                        tmb_silent = TRUE, nlminb_silent = TRUE, ...) {
     ## read in parameters
@@ -141,7 +137,7 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters, methods,
         if (length(pp_covariates) > ncol(covariates))
             stop("pp_covariates has too many entries")
         if (length(marks_covariates) > ncol(covariates))
-            stop("pp_covariates has too many entries")
+            stop("marks_covariates has too many entries")
         if (length(betapp) != (length(pp_covariates) + 1))
             stop("The length of betapp must be one more than the length of pp_covariates")
         if (nrow(betamarks) != (length(marks_covariates) + 1))
@@ -166,16 +162,19 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters, methods,
     ## SPDE
     spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
     lmat <- INLA::inla.spde.make.A(smesh, locs)
-    ## overlap of covariates
-    if (length(Reduce(intersect, list(marks_covariates, pp_covariates))) > 0) {
-        cov_overlap <- 1
-    } else {
-        cov_overlap <- 0
-    }    ## Design matrices
+    
     if(!missing(covariates)) {
+        ## overlap of covariates
+        if (length(Reduce(intersect, list(marks_covariates, pp_covariates))) > 0) {
+          cov_overlap <- 1
+        } else {
+        cov_overlap <- 0
+        }    
+        ## Design matrices
         designmatpp <- cbind(1, covariates[,  pp_covariates])
         designmatmarks <- cbind(1, covariates[, marks_covariates])
     } else {
+        cov_overlap <- 0
         designmatpp <- matrix(rep(1, length(ypp)), ncol = 1)
         designmatmarks <- matrix(rep(1, length(ypp)), ncol = 1)
     }

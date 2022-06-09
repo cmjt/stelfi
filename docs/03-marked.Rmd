@@ -1,5 +1,16 @@
 # A marked log-Gaussian Cox Process {#marked}
 
+Each event in a spatial LGCP may have a scalar or vector mark associated with it. In that case, we are interested not only in the spatial intensity of the point process but also the spatial distribution of the marks and the correlation between the marks and the point process. 
+
+The intensity of the LGCP is as in the simple case:
+$$\Lambda_{pp}(s) = \text{exp}(\beta_{pp} + G_{pp}(s) + \epsilon)$$
+note the subscripts $pp$ indicating the point process. 
+
+The mark(s) have their own field:
+$$\Lambda_m(s)=\beta_{m}+G_m(s)+\alpha   log(\Lambda_{pp}(s)) +\epsilon$$
+where $\alpha$ are coefficient(s) linking the point process and the mark(s). 
+The meaning of $\Lambda_m(s)$ depends on the distribution of the marks. If the marks are from a Poisson distribution, it is the intensity (as with the point process). If the marks are from a Binomial distribution, it is the success probability, and the user must supply the number of trials for each event. If the marks are normally distributed, $\Lambda_m(s)$ models the mean, and the user must supply the standard deviation.
+The user can choose for the point processes and the marks to share a common GMRF, i.e. $G_m(s) = G_{pp}(s)$
 ## The `fit_mlgcp()` function
 
 ```{r}
@@ -19,14 +30,10 @@ marks <- cbind(m1 = marked$m1) ## Gaussian
 parameters <- list(betamarks = matrix(0, nrow = 1, ncol = ncol(marks)) ,
               log_tau = rep(log(1), 2), log_kappa = rep(log(1), 2),
               marks_coefs_pp = rep(0, ncol(marks)), betapp = 0)
-## matrix of "structural" fixed parameters relating to marks
-## e.g., log of element-wise standard deviation for Gaussian
-strfixed <- cbind(rep(log(0.25), nrow(marks)))
+
 fit <- fit_mlgcp(locs = locs, marks = marks,
                  sp = domain, smesh = smesh,
                  parameters = parameters, methods = 0,
-                 strfixed = strfixed, strparam = strparam, idx = idx,
-                 fields = 1, pp_covariates = matrix(1, ncol = 1, nrow = nrow(locs)),
-                 marks_covariates = matrix(1, ncol = ncol(marks), nrow = nrow(marks)))
+                 fields = 1)
 get_coefs(fit)
 ```
