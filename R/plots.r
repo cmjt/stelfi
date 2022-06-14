@@ -1,4 +1,5 @@
 setClassUnion("missing_or_numeric", c("numeric", "missing"))
+setClassUnion("missing_or_vector", c("vector", "missing"))
 #' Plots the Hawkes intensty function with decay historical dependence
 #' 
 #' @inheritParams sim_hawkes
@@ -15,13 +16,21 @@ setClassUnion("missing_or_numeric", c("numeric", "missing"))
 #' @export
 setGeneric("show_hawkes",
            function(times, mu, alpha, beta, marks = c(rep(1, length(times))),
-                    background_param = NULL) {
+                    obj = NULL, background_param = NULL) {
                standardGeneric("show_hawkes")
            })
 
 setMethod("show_hawkes",
-          c(times = "vector", alpha = "numeric", beta  = "numeric"),
-          function(times, mu, alpha, beta, marks, background_param) {
+          c(times = "missing_or_vector", alpha = "missing_or_numeric", beta  = "missing_or_numeric"),
+          function(times, mu, alpha, beta, marks, obj, background_param) {
+            if (!is.null(obj)) {
+              times = obj$env$data$times
+              marks = obj$env$data$marks
+              pars = get_coefs(obj)
+              mu = pars[1,1]
+              alpha = pars[2,1]
+              beta = pars[3,1]
+            }
               n <- length(times)
               max <- max(times)
               p <- seq(0, max, length.out = 500)
@@ -58,13 +67,22 @@ setMethod("show_hawkes",
 #' @export
 setGeneric("show_hawkes_GOF", # only for constant mu at this stage
            function(times, mu, alpha, beta, marks = c(rep(1, length(times))),
-                    background_param, plot = TRUE, return_values = TRUE) {
+                    obj = NULL, background_param, plot = TRUE, return_values = TRUE) {
                    standardGeneric("show_hawkes_GOF")
            })
 
 setMethod("show_hawkes_GOF",
-          c(times = "vector", alpha = "numeric", beta  = "numeric"),
-          function(times, mu, alpha, beta, marks, background_param, plot, return_values) {
+          c(times = "missing_or_vector", alpha = "missing_or_numeric", beta  = "missing_or_numeric"),
+          function(times, mu, alpha, beta, marks, obj, background_param, plot, return_values) {
+            
+            if (!is.null(obj)) {
+              times = obj$env$data$times
+              marks = obj$env$data$marks
+              pars = get_coefs(obj)
+              mu = pars[1,1]
+              alpha = pars[2,1]
+              beta = pars[3,1]
+            }
                   A <- numeric(length = length(times))
                   for(i in 2:length(times)) {
                           A[i] <- exp(-beta * (times[i] - times[i - 1])) * (marks[i-1] + A[i - 1])
