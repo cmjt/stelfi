@@ -10,9 +10,10 @@ link-citations: yes
 description: "Using `stelfi`"
 ---
 
-# Introduction {-}
+##### Charlotte M. Jones-Todd & Alec van Helsdingen
 
-## Installing `stelfi` {-}
+
+# Installation {-}
 
 The `stelfi` package can be installed from Github:
 
@@ -20,7 +21,7 @@ The `stelfi` package can be installed from Github:
 devtools::install_github("cmjt/stelfi")
 ```
 
-### Compiling templates {-}
+**Compiling templates**
 
 Before using the  `TMB` templates in `stelfi` you should use `compile_stelfi()` to compile them:
 
