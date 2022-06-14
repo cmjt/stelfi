@@ -11,15 +11,16 @@ $$\Lambda_m(s)=\beta_{m}+G_m(s)+\alpha   log(\Lambda_{pp}(s)) +\epsilon$$
 where $\alpha$ are coefficient(s) linking the point process and the mark(s). 
 The meaning of $\Lambda_m(s)$ depends on the distribution of the marks. If the marks are from a Poisson distribution, it is the intensity (as with the point process). If the marks are from a Binomial distribution, it is the success probability, and the user must supply the number of trials for each event. If the marks are normally distributed, $\Lambda_m(s)$ models the mean, and the user must supply the standard deviation.
 The user can choose for the point processes and the marks to share a common GMRF, i.e. $G_m(s) = G_{pp}(s)$
+
 ## The `fit_mlgcp()` function
 
 ```{r}
 args(fit_mlgcp)
 ```
 
-## Fitting a marked LGCP
+### Fitting a marked LGCP
 
-```{r, eval = FALSE}
+```{r}
 data(marked, package = "stelfi")
 loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
 domain <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(loc.d)),'0')))
@@ -28,12 +29,12 @@ smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1),
 locs <- cbind(x = marked$x, y = marked$y)
 marks <- cbind(m1 = marked$m1) ## Gaussian
 parameters <- list(betamarks = matrix(0, nrow = 1, ncol = ncol(marks)) ,
-              log_tau = rep(log(1), 2), log_kappa = rep(log(1), 2),
+              log_tau = log(1), log_kappa = log(1),
               marks_coefs_pp = rep(0, ncol(marks)), betapp = 0)
 
 fit <- fit_mlgcp(locs = locs, marks = marks,
                  sp = domain, smesh = smesh,
                  parameters = parameters, methods = 0,
-                 fields = 1)
+                 fields = 0)
 get_coefs(fit)
 ```

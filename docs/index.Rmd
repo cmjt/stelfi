@@ -1,6 +1,6 @@
 --- 
 title: "Fitting models using `stelfi`"
-author: ""
+author: "Charlotte M. Jones-Todd & Alec van Helsdingen"
 date: ""
 site: bookdown::bookdown_site
 documentclass: book
@@ -29,8 +29,7 @@ library(stelfi)
 ```
 
 ```{r compile, eval = FALSE}
-library(stelfi)
-compile_stelfi()
+stelfi::compile_stelfi()
 ```
 
 

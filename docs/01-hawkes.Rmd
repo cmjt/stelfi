@@ -10,12 +10,10 @@ A  univariate Hawkes process is defined to be a self-exciting temporal point pro
 ## The `fit_hawkes()` function
 
 ```{r}
-## devtools::load_all("~/Git/stelfi")
-library(stelfi)
 args(fit_hawkes)
 ```
 
-**Retweets**
+### Fitting a Hawkes model
 
 A [NIWA](https://niwa.co.nz/) scientist [found a working USB in the scat of a leopard seal](https://www.nzherald.co.nz/nz/news/article.cfm?c_id=1&objectid=12201147), they then [tweeted about it](https://twitter.com/niwa_nz/status/1092610541401587712) in the hopes of finding its owner.
 
@@ -30,7 +28,7 @@ times <- unique(sort(as.numeric(difftime(retweets_niwa ,min(retweets_niwa),units
 ```
 
 
-```{r plot hist, echo = FALSE, fig.cap = "Observed counts of retweet times.",fig.height = 5,fig.width = 8}
+```{r plot hist, echo = FALSE, fig.cap = "Observed counts of retweet times", fig.height = 5,fig.width = 8}
 # NIWA seal first tweet according to Twitter
 start <- lubridate::ymd_hms("2019-02-05 02:27:07")
 ## NIWA seal found owner tweet according to Twitter
@@ -69,7 +67,7 @@ show_hawkes(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1])
 show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1], return_values = FALSE)
 ```
 
-**ETAS marked model**
+### Fitting an ETAS-type marked model
 
 Here we fit a univariate marked Hawkes process  where the conditional intensity function is given by
 
@@ -107,6 +105,13 @@ show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,
 
 ## The `fit_hawkes_cbf()` function
 
+```{r}
+args(fit_hawkes_cbf)
+```
+
+
+### Fitting an inhomogenous Hawkes process
+
 Here we fit a univariate *inhomogenous* marked Hawkes process where the conditional intensity function is given by
 
  $$\lambda(t) = \mu(t) + \alpha \Sigma_{i:\tau_i<t}\text{exp}(-\beta * (t-\tau_i)) $$ 
@@ -115,7 +120,6 @@ The background $\mu(t)$ is time varying, rather than being constant.
 The following example uses simulated data. 
 
 ```{r}
-args(fit_hawkes_cbf)
 set.seed(1)
 library(hawkesbow)
 # Simulate a Hawkes process with mu = 1+sin(t), alpha=1, beta =2
@@ -144,12 +148,14 @@ fit <- fit_hawkes_cbf(times = times, parameters = param, background = background
 ```
 
 The estimated values of $A$ and $B$ respectively are 
+
 ```{r}
 exp(fit$background_parameters[1])
 plogis(fit$background_parameters[2]) * exp(fit$background_parameters[1])
 ```
 
 The estimated values of $\alpha$ and $\beta$ respectively are:
+
 ```{r}
 fit$alpha
 fit$beta
@@ -158,6 +164,8 @@ fit$beta
 ```{r, echo = TRUE,fig.height = 7,fig.width = 9}
 show_hawkes(times = times, mu = background, alpha = fit$alpha, beta = fit$beta, background_param = fit$background_parameters)
 ```
+
+
 ```{r, echo = TRUE,fig.height = 7,fig.width = 9}
 show_hawkes_GOF(times = times, mu = background_integral, alpha = fit$alpha, beta = fit$beta, background_param = fit$background_parameters, return_values = FALSE)
 ```

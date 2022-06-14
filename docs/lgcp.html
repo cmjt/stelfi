@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 2 log-Gaussian Cox Process | Fitting models using stelfi</title>
+  <title>Chapter 2 A log-Gaussian Cox Process | Fitting models using stelfi</title>
   <meta name="description" content="Using stelfi" />
   <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 2 log-Gaussian Cox Process | Fitting models using stelfi" />
+  <meta property="og:title" content="Chapter 2 A log-Gaussian Cox Process | Fitting models using stelfi" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Using stelfi" />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 2 log-Gaussian Cox Process | Fitting models using stelfi" />
+  <meta name="twitter:title" content="Chapter 2 A log-Gaussian Cox Process | Fitting models using stelfi" />
   
   <meta name="twitter:description" content="Using stelfi" />
   
@@ -29,7 +29,7 @@
   
   
 <link rel="prev" href="hawkes.html"/>
-<link rel="next" href="references.html"/>
+<link rel="next" href="marked.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -146,15 +146,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.1" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes-function"><i class="fa fa-check"></i><b>1.1</b> The <code>fit_hawkes()</code> function</a></li>
 <li class="chapter" data-level="1.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>1.2</b> The <code>fit_hawkes_cbf()</code> function</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>2</b> log-Gaussian Cox Process</a>
+<li class="chapter" data-level="2" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>2</b> A log-Gaussian Cox Process</a>
 <ul>
 <li class="chapter" data-level="2.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>2.1</b> The <code>fit_lgcp()</code> function</a></li>
 <li class="chapter" data-level="2.2" data-path="lgcp.html"><a href="lgcp.html#fitting-a-lgcp"><i class="fa fa-check"></i><b>2.2</b> Fitting a LGCP</a>
 <ul>
 <li class="chapter" data-level="2.2.1" data-path="lgcp.html"><a href="lgcp.html#spatial-only"><i class="fa fa-check"></i><b>2.2.1</b> Spatial only</a></li>
 <li class="chapter" data-level="2.2.2" data-path="lgcp.html"><a href="lgcp.html#spatiotemporal-lgcp"><i class="fa fa-check"></i><b>2.2.2</b> Spatiotemporal LGCP</a></li>
-<li class="chapter" data-level="2.2.3" data-path="lgcp.html"><a href="lgcp.html#simulating-a-lgcp"><i class="fa fa-check"></i><b>2.2.3</b> Simulating a LGCP</a></li>
+<li class="chapter" data-level="2.2.3" data-path="lgcp.html"><a href="lgcp.html#simulating-a-spatiotemporal-lgcp"><i class="fa fa-check"></i><b>2.2.3</b> Simulating a spatiotemporal LGCP</a></li>
+<li class="chapter" data-level="2.2.4" data-path="lgcp.html"><a href="lgcp.html#spatial-lgcp-with-covariates"><i class="fa fa-check"></i><b>2.2.4</b> Spatial LGCP with covariates</a></li>
 </ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="marked.html"><a href="marked.html"><i class="fa fa-check"></i><b>3</b> A marked log-Gaussian Cox Process</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="marked.html"><a href="marked.html#fitting-a-marked-lgcp"><i class="fa fa-check"></i><b>3.1</b> Fitting a marked LGCP</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
@@ -178,7 +183,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
             <section class="normal" id="section-">
 <div id="lgcp" class="section level1 hasAnchor" number="2">
-<h1><span class="header-section-number">Chapter 2</span> log-Gaussian Cox Process<a href="lgcp.html#lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<h1><span class="header-section-number">Chapter 2</span> A log-Gaussian Cox Process<a href="lgcp.html#lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>A Log-Gaussian Cox Process (LGCP) is a doubly stochastic spatial point process. In the simplest case, the intensity of the point process over space is given by:
+<span class="math display">\[\Lambda(s) = \text{exp}(\beta_0 + G(s) + \epsilon)\]</span>
+where <span class="math inline">\(\beta_0\)</span> is a constant, known as the intercept, <span class="math inline">\(G(s)\)</span> is a Gaussian Markov Random Field (GMRF) and <span class="math inline">\(\epsilon\)</span> an error term.</p>
+<p>It is conventional to use Matérn covariance function to define the covariance of the random field. This takes two parameters <span class="math inline">\(\tau\)</span> and <span class="math inline">\(\kappa\)</span>, commonly reported as <span class="math inline">\(r=\frac{\sqrt{8}}{\kappa}\)</span> and <span class="math inline">\(\sigma=\frac{1}{\sqrt{4\pi\kappa^2\tau^2}}\)</span>, where <span class="math inline">\(r\)</span> is the range and <span class="math inline">\(\sigma\)</span> is the standard deviation.</p>
 <div id="the-fit_lgcp-function" class="section level2 hasAnchor" number="2.1">
 <h2><span class="header-section-number">2.1</span> The <code>fit_lgcp()</code> function<a href="lgcp.html#the-fit_lgcp-function" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="lgcp.html#cb33-1"></a><span class="kw">args</span>(fit_lgcp)</span></code></pre></div>
@@ -262,6 +271,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="spatiotemporal-lgcp" class="section level3 hasAnchor" number="2.2.2">
 <h3><span class="header-section-number">2.2.2</span> Spatiotemporal LGCP<a href="lgcp.html#spatiotemporal-lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The LGCP model can also be used for spatiotemporal modelling where there is autoregressive temporal dependence.</p>
+<p>To achieve this, we choose an arbitrary number of time knots. The equation for an AR(1) process is as follows:
+<span class="math display">\[\Lambda_i(s) = \text{exp}(\beta_0 + G_i(s) + \epsilon)\]</span>
+where <span class="math inline">\(i\)</span> indexes the time knot. <span class="math inline">\(\Lambda_i(s)\)</span> is the field intensity at time knot <span class="math inline">\(i\)</span>, and <span class="math inline">\(G_i(s)\)</span> the GMRF at the same time knot. Each <span class="math inline">\(G_i(s)\)</span> shares common values for <span class="math inline">\(\tau\)</span> and <span class="math inline">\(\kappa\)</span>.</p>
+<p>Successive random fields are correlated through the formula
+<span class="math display">\[G_i(s)=\rho G_{i-1}(s) + \epsilon_i\]</span>
+where <span class="math inline">\(\rho\)</span> is a constant between -1 and +1, and <span class="math inline">\(\epsilon_i\)</span> is normally distributed with mean 0.</p>
 <div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="lgcp.html#cb44-1"></a>ndays &lt;-<span class="st"> </span><span class="dv">2</span></span>
 <span id="cb44-2"><a href="lgcp.html#cb44-2"></a>locs &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> xyt<span class="op">$</span>x, <span class="dt">y =</span> xyt<span class="op">$</span>y, <span class="dt">t =</span> xyt<span class="op">$</span>t)</span>
 <span id="cb44-3"><a href="lgcp.html#cb44-3"></a>w0 &lt;-<span class="st"> </span><span class="dv">2</span></span>
@@ -283,8 +299,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb47-2"><a href="lgcp.html#cb47-2"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>() <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="st">&quot;t = 2&quot;</span>)</span></code></pre></div>
 <p><img src="docs_files/figure-html/unnamed-chunk-19-2.png" width="672" /></p>
 </div>
-<div id="simulating-a-lgcp" class="section level3 hasAnchor" number="2.2.3">
-<h3><span class="header-section-number">2.2.3</span> Simulating a LGCP<a href="lgcp.html#simulating-a-lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="simulating-a-spatiotemporal-lgcp" class="section level3 hasAnchor" number="2.2.3">
+<h3><span class="header-section-number">2.2.3</span> Simulating a spatiotemporal LGCP<a href="lgcp.html#simulating-a-spatiotemporal-lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><strong>Option 1</strong> using <code>simulate_lgcp</code></p>
 <div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="lgcp.html#cb48-1"></a>parameters &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dt">beta =</span> <span class="dv">1</span>, <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">atanh_rho =</span> <span class="fl">0.2</span>)</span>
 <span id="cb48-2"><a href="lgcp.html#cb48-2"></a>simdata &lt;-<span class="st"> </span><span class="kw">simulate_lgcp</span>(<span class="dt">parameters =</span> parameters, <span class="dt">sp =</span> domain, <span class="dt">smesh =</span> smesh, <span class="dt">tmesh =</span> tmesh)</span>
@@ -296,6 +312,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb49-2"><a href="lgcp.html#cb49-2"></a><span class="kw">show_field</span>(simdata<span class="op">$</span>x[,<span class="dv">1</span>], <span class="dt">smesh =</span> smesh) <span class="op">+</span></span>
 <span id="cb49-3"><a href="lgcp.html#cb49-3"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</span></code></pre></div>
 <p><img src="docs_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+</div>
+<div id="spatial-lgcp-with-covariates" class="section level3 hasAnchor" number="2.2.4">
+<h3><span class="header-section-number">2.2.4</span> Spatial LGCP with covariates<a href="lgcp.html#spatial-lgcp-with-covariates" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We may wish to assign a scalar or vector covariate to the mesh and ascertain the relationship between the covariate and the intensity.
+A LGCP with covariates has an intensity function of the form:
+<span class="math display">\[\Lambda(s) = \text{exp}(\Sigma \beta C + G(s) + \epsilon)\]</span>
+where <span class="math inline">\(C\)</span> is the matrix of covariates and <span class="math inline">\(\beta\)</span> the coefficients that multiply the covariates. The first column of <span class="math inline">\(C\)</span> should be ones, so that the first element of <span class="math inline">\(beta\)</span> is an intercept.</p>
 
 </div>
 </div>
@@ -306,7 +329,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         </div>
       </div>
 <a href="hawkes.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="marked.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

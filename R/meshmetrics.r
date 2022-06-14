@@ -168,6 +168,7 @@ lmin <- function(mesh){
 #' data(horse_mesh, package = "stelfi")
 #' mesh_2_sf(horse_mesh)
 #' }
+#' @export
 mesh_2_sf <- function(mesh) {
   crs <- inla.CRS(inla.CRSargs(mesh$crs))
   triags <- sp::SpatialPolygonsDataFrame(
@@ -211,7 +212,8 @@ mesh_2_sf <- function(mesh) {
 #' data(horse_mesh, package = "stelfi")
 #' meshmetrics(horse_mesh)
 #' }
-meshmetrics <- function(mesh){
+#' @export
+meshmetrics <- function(mesh) {
   verts <- segments(mesh = mesh)
   angles <- mesh_ang(mesh = mesh, s = verts)
   tv <- mesh$graph$tv

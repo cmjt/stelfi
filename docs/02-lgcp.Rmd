@@ -12,9 +12,8 @@ It is conventional to use Matérn covariance function to define the covariance o
 args(fit_lgcp)
 ```
 
-## Fitting a LGCP
 
-### Spatial only
+### Fitting a spatial only LGCP
 
 ```{r}
 require(maptools)
@@ -37,7 +36,6 @@ plot_lambda(fit, smesh = smesh, border = domain) +
 
 ```{r}
 require(inlabru)
-require(ggplot2)
 matern <- INLA::inla.spde2.matern(smesh)
 cmp <- coordinates ~ mySmooth(coordinates, model = matern) + Intercept(1)
 coordinates(locs) <- c("x", "y")
@@ -45,10 +43,11 @@ system.time(fit_inla <- lgcp(cmp, locs,
                              samplers = domain,
                              domain = list(coordinates = smesh),
                              options = list(control.inla = list(int.strategy = "eb"))))
-summary(fit_inla)
+fit_inla$summary.fixed
+fit_inla$summary.hyperpar
 ```
 
-```{r, echo = FALSE, results = 'asis'}
+```{r, echo = FALSE, results = 'asis', eval = FALSE}
 lambda <- predict(fit_inla, pixels(smesh), ~ exp(mySmooth + Intercept))
 ggplot() +
     gg(lambda) +
@@ -56,11 +55,12 @@ ggplot() +
     coord_fixed() +
     scale_fill_viridis_c() +
     theme_void()
-
-
 ```
 
+
+
 ### Spatiotemporal LGCP
+
 The LGCP model can also be used for spatiotemporal modelling where there is autoregressive temporal dependence. 
 
 To achieve this, we choose an arbitrary number of time knots. The equation for an AR(1) process is as follows:
@@ -70,6 +70,7 @@ where $i$ indexes the time knot. $\Lambda_i(s)$ is the field intensity at time k
 Successive random fields are correlated through the formula
 $$G_i(s)=\rho G_{i-1}(s) + \epsilon_i$$
 where $\rho$ is a constant between -1 and +1, and $\epsilon_i$ is normally distributed with mean 0. 
+
 ```{r}
 ndays <- 2
 locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
@@ -109,8 +110,3 @@ show_field(simdata$x[,1], smesh = smesh) +
     ggplot2::theme_void()
 ```
 
-### Spatial LGCP with covariates
-We may wish to assign a scalar or vector covariate to the mesh and ascertain the relationship between the covariate and the intensity. 
-A LGCP with covariates has an intensity function of the form:
-$$\Lambda(s) = \text{exp}(\Sigma \beta C + G(s) + \epsilon)$$
-where $C$ is the matrix of covariates and $\beta$ the coefficients that multiply the covariates. The first column of $C$ should be ones, so that the first element of $beta$ is an intercept. 

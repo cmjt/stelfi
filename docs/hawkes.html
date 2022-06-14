@@ -146,15 +146,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.1" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes-function"><i class="fa fa-check"></i><b>1.1</b> The <code>fit_hawkes()</code> function</a></li>
 <li class="chapter" data-level="1.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>1.2</b> The <code>fit_hawkes_cbf()</code> function</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>2</b> log-Gaussian Cox Process</a>
+<li class="chapter" data-level="2" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>2</b> A log-Gaussian Cox Process</a>
 <ul>
 <li class="chapter" data-level="2.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>2.1</b> The <code>fit_lgcp()</code> function</a></li>
 <li class="chapter" data-level="2.2" data-path="lgcp.html"><a href="lgcp.html#fitting-a-lgcp"><i class="fa fa-check"></i><b>2.2</b> Fitting a LGCP</a>
 <ul>
 <li class="chapter" data-level="2.2.1" data-path="lgcp.html"><a href="lgcp.html#spatial-only"><i class="fa fa-check"></i><b>2.2.1</b> Spatial only</a></li>
 <li class="chapter" data-level="2.2.2" data-path="lgcp.html"><a href="lgcp.html#spatiotemporal-lgcp"><i class="fa fa-check"></i><b>2.2.2</b> Spatiotemporal LGCP</a></li>
-<li class="chapter" data-level="2.2.3" data-path="lgcp.html"><a href="lgcp.html#simulating-a-lgcp"><i class="fa fa-check"></i><b>2.2.3</b> Simulating a LGCP</a></li>
+<li class="chapter" data-level="2.2.3" data-path="lgcp.html"><a href="lgcp.html#simulating-a-spatiotemporal-lgcp"><i class="fa fa-check"></i><b>2.2.3</b> Simulating a spatiotemporal LGCP</a></li>
+<li class="chapter" data-level="2.2.4" data-path="lgcp.html"><a href="lgcp.html#spatial-lgcp-with-covariates"><i class="fa fa-check"></i><b>2.2.4</b> Spatial LGCP with covariates</a></li>
 </ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="marked.html"><a href="marked.html"><i class="fa fa-check"></i><b>3</b> A marked log-Gaussian Cox Process</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="marked.html"><a href="marked.html#fitting-a-marked-lgcp"><i class="fa fa-check"></i><b>3.1</b> Fitting a marked LGCP</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
@@ -181,8 +186,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 1</span> Hawkes process<a href="hawkes.html#hawkes" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>A univariate Hawkes process is defined to be a self-exciting temporal point process where the conditional intensity function is given by</p>
 <p><span class="math display">\[\lambda(t) = \mu(t) + \Sigma_{i:\tau_i&lt;t}\nu(t-\tau_i)\]</span>
-where where <span class="math inline">\(\mu(t)\)</span> is the background rate of the process and <span class="math inline">\(\Sigma_{i:\tau_i&lt;t}\nu(t-\tau_i)\)</span> is some historic temporal dependence. First introduced by <span class="citation">Hawkes (<a href="#ref-hawkes" role="doc-biblioref">1971</a>)</span></p>
-<p><span class="math display">\[\lambda(t) = \mu(t) + \alpha \Sigma_{i:\tau_i&lt;t}\text{exp}(-\beta * (t-\tau_i)) \]</span></p>
+where where <span class="math inline">\(\mu(t)\)</span> is the background rate of the process and <span class="math inline">\(\Sigma_{i:\tau_i&lt;t}\nu(t-\tau_i)\)</span> is some historic temporal dependence. First introduced by <span class="citation">Hawkes (<a href="#ref-hawkes" role="doc-biblioref">1971</a>)</span>, the classic homogeneous formulation is:</p>
+<p><span class="math display">\[\lambda(t) = \mu + \alpha \Sigma_{i:\tau_i&lt;t}\text{exp}(-\beta * (t-\tau_i)) \]</span></p>
 <div id="the-fit_hawkes-function" class="section level2 hasAnchor" number="1.1">
 <h2><span class="header-section-number">1.1</span> The <code>fit_hawkes()</code> function<a href="hawkes.html#the-fit_hawkes-function" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="hawkes.html#cb3-1"></a><span class="co">## devtools::load_all(&quot;~/Git/stelfi&quot;)</span></span>
@@ -222,8 +227,9 @@ where where <span class="math inline">\(\mu(t)\)</span> is the background rate o
 <p><img src="docs_files/figure-html/gof-1.png" width="864" /></p>
 <p><strong>ETAS marked model</strong></p>
 <p>Here we fit a univariate marked Hawkes process where the conditional intensity function is given by</p>
-<p><span class="math display">\[\lambda(t; m(t)) = \mu(t) + \alpha \Sigma_{i:\tau_i&lt;t}m(t-\tau_i)\text{exp}(-\beta * (t-\tau_i)) \]</span>
-where <span class="math inline">\(\mu(t)\)</span> is the background rate of the process, <span class="math inline">\(m(t)\)</span> is the temporal mark and <span class="math inline">\(\Sigma_{i:\tau_i&lt;t}\nu(t-\tau_i)\)</span> is some historic temporal dependence.</p>
+<p><span class="math display">\[\lambda(t; m(t)) = \mu + \alpha \Sigma_{i:\tau_i&lt;t}m(\tau_i)\text{exp}(-\beta * (t-\tau_i)) \]</span>
+where <span class="math inline">\(\mu\)</span> is the background rate of the process and <span class="math inline">\(m(t)\)</span> is the temporal mark. Each event <span class="math inline">\(i\)</span> has an associated mark <span class="math inline">\(\tau_i\)</span> that multiples the self-exciting component of <span class="math inline">\(\lambda\)</span>.</p>
+<p>In this example, the events are earthquakes and the marks are the Richter magnitude of each earthquake.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="hawkes.html#cb13-1"></a><span class="kw">data</span>(<span class="st">&quot;earthquakes&quot;</span>)</span>
 <span id="cb13-2"><a href="hawkes.html#cb13-2"></a><span class="kw">head</span>(earthquakes)</span></code></pre></div>
 <pre><code>##            origintime longitude  latitude magnitude     depth
@@ -255,7 +261,10 @@ where <span class="math inline">\(\mu(t)\)</span> is the background rate of the 
 </div>
 <div id="the-fit_hawkes_cbf-function" class="section level2 hasAnchor" number="1.2">
 <h2><span class="header-section-number">1.2</span> The <code>fit_hawkes_cbf()</code> function<a href="hawkes.html#the-fit_hawkes_cbf-function" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The previous two examples were homogenous; (t) was constant. Inhomogenous Hawke’s procceses are those with a non-constant background function (t). In this example we used simulated data</p>
+<p>Here we fit a univariate <em>inhomogenous</em> marked Hawkes process where the conditional intensity function is given by</p>
+<p><span class="math display">\[\lambda(t) = \mu(t) + \alpha \Sigma_{i:\tau_i&lt;t}\text{exp}(-\beta * (t-\tau_i)) \]</span>
+The background <span class="math inline">\(\mu(t)\)</span> is time varying, rather than being constant.</p>
+<p>The following example uses simulated data.</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="hawkes.html#cb19-1"></a><span class="kw">args</span>(fit_hawkes_cbf)</span></code></pre></div>
 <pre><code>## function (times, parameters, model = 1, marks = c(rep(1, length(times))), 
 ##     background, background_integral, background_parameters, background_min, 
@@ -266,14 +275,14 @@ where <span class="math inline">\(\mu(t)\)</span> is the background rate of the 
 <span id="cb21-3"><a href="hawkes.html#cb21-3"></a><span class="co"># Simulate a Hawkes process with mu = 1+sin(t), alpha=1, beta =2</span></span>
 <span id="cb21-4"><a href="hawkes.html#cb21-4"></a>times &lt;-<span class="st"> </span>hawkesbow<span class="op">::</span><span class="kw">hawkes</span>(<span class="dv">1000</span>, <span class="dt">fun=</span><span class="cf">function</span>(y) {<span class="dv">1</span><span class="fl">+0.5</span><span class="op">*</span><span class="kw">sin</span>(y)}, <span class="dt">M=</span><span class="fl">1.5</span>, <span class="dt">repr=</span><span class="fl">0.5</span>, <span class="dt">family=</span><span class="st">&quot;exp&quot;</span>, <span class="dt">rate=</span><span class="dv">2</span>)<span class="op">$</span>p</span></code></pre></div>
 <p>We will attempt to recover these parameter values, modelling the background as $ (t) = A + Bsin(t)$. The background will be written as a function of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, where <span class="math inline">\(A = e^x\)</span> and <span class="math inline">\(B= logit(y) e^x\)</span>. This formulation ensures the background is never negative.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="hawkes.html#cb22-1"></a><span class="co"># The background function must take a single parameter and the time(s) at which it is evaluated</span></span>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="hawkes.html#cb22-1"></a><span class="co">## The background function must take a single parameter and the time(s) at which it is evaluated</span></span>
 <span id="cb22-2"><a href="hawkes.html#cb22-2"></a>background &lt;-<span class="st"> </span><span class="cf">function</span>(params,times){</span>
 <span id="cb22-3"><a href="hawkes.html#cb22-3"></a>        A =<span class="st"> </span><span class="kw">exp</span>(params[[<span class="dv">1</span>]])</span>
 <span id="cb22-4"><a href="hawkes.html#cb22-4"></a>        B =<span class="st"> </span>stats<span class="op">::</span><span class="kw">plogis</span>(params[[<span class="dv">2</span>]]) <span class="op">*</span><span class="st"> </span>A</span>
 <span id="cb22-5"><a href="hawkes.html#cb22-5"></a>        <span class="kw">return</span>(A <span class="op">+</span><span class="st"> </span>B<span class="op">*</span><span class="kw">sin</span>(times))</span>
 <span id="cb22-6"><a href="hawkes.html#cb22-6"></a>}</span>
 <span id="cb22-7"><a href="hawkes.html#cb22-7"></a></span>
-<span id="cb22-8"><a href="hawkes.html#cb22-8"></a><span class="co"># The background_integral function must take a single parameter and the time at which it is evaluated</span></span>
+<span id="cb22-8"><a href="hawkes.html#cb22-8"></a><span class="co">## The background_integral function must take a single parameter and the time at which it is evaluated</span></span>
 <span id="cb22-9"><a href="hawkes.html#cb22-9"></a>background_integral &lt;-<span class="st"> </span><span class="cf">function</span>(params,x){</span>
 <span id="cb22-10"><a href="hawkes.html#cb22-10"></a>        A =<span class="st"> </span><span class="kw">exp</span>(params[[<span class="dv">1</span>]])</span>
 <span id="cb22-11"><a href="hawkes.html#cb22-11"></a>        B =<span class="st"> </span>stats<span class="op">::</span><span class="kw">plogis</span>(params[[<span class="dv">2</span>]]) <span class="op">*</span><span class="st"> </span>A</span>

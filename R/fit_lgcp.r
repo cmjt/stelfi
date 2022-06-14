@@ -49,7 +49,7 @@
 #' @param ... Optional extra arguments to pass into \code{\link[stats]{nlminb}}.
 #' @param tmb_silent Logical, default \code{TRUE}:
 #' TMB inner optimization tracing information will be printed.
-#' @param nlminb_silent logical, default \code{TRUE}:
+#' @param nlminb_silent Logical, default \code{TRUE}:
 #' print function and parameters every iteration.
 #' @seealso \code{\link{fit_lgcp}}
 fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,

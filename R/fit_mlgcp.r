@@ -6,8 +6,8 @@
 #' @param ypp  The vector of observations.
 #' @param marks  A matrix of marks for each observation of the point pattern
 #' @param lmat A sparse matrix mapping mesh points to the observations
-#' @param strfixed A matrix of fixed structural parameters, defined for each event and mark. 
-#' Defaults to 1s. 
+#' @param strfixed A matrix of fixed structural parameters, defined for each event and mark.
+#' Defaults to 1s.
 #' Normal distribution: this is the log of standard deviation.
 #' Poisson distribution: not used
 #' Binomial distribution, this is the number of trials.
@@ -23,7 +23,7 @@
 #' covariate coefficients of each mark.
 #' @param betapp Numeric starting value of the  intercept of point process.
 #' @param marks_coefs_pp The numeric starting value of the coefficient that connects
-#' the mark intensity to the point process intensity. 
+#' the mark intensity to the point process intensity.
 #' @param log_kappa  The numeric starting value of log of kappas for the
 #' random field(s). The first element is for the random field of the
 #' point process.
@@ -32,13 +32,13 @@
 #' point process.
 #' @param cov_overlap Logical, if \code{TRUE} then  marks and point process
 #' share covariates. In that case, To avoid parameter redundancy and non-identifiability
-#' {marks_coefs_pp} multiples only the GMRF of the point process. 
+#' {marks_coefs_pp} multiples only the GMRF of the point process.
 #' If \code{FALSE}, \code{marks_coef_pp} multiples the full value of lambda
 #' @param designmatpp Design matrix for point process. The first column is ones.
 #' If there are covariates, then the covariates are in the subsequent columns.
 #' @param designmatmarks The design matrix for the marks.
 #' @param fields A binary vector indicating whether there is a new random
-#' field for each mark. By default, each mark has its own random field. 
+#' field for each mark. By default, each mark has its own random field.
 #' @inheritParams fit_lgcp_tmb
 fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
                           betamarks, betapp, marks_coefs_pp, log_kappa, log_tau,
@@ -97,7 +97,8 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' }
 #' @export
 fit_mlgcp <-  function(locs, sp, marks, smesh, parameters, methods,
-                       strfixed=matrix(1,nrow=nrow(locs),ncol=ncol(marks)), fields=rep(1,ncol(marks)),
+                       strfixed = matrix(1, nrow = nrow(locs), ncol = ncol(marks)),
+                       fields = rep(1, ncol(marks)),
                        covariates, pp_covariates, marks_covariates,
                        tmb_silent = TRUE, nlminb_silent = TRUE, ...) {
     ## read in parameters
@@ -162,7 +163,6 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters, methods,
     ## SPDE
     spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
     lmat <- INLA::inla.spde.make.A(smesh, locs)
-    
     if(!missing(covariates)) {
         ## overlap of covariates
         if (length(Reduce(intersect, list(marks_covariates, pp_covariates))) > 0) {
