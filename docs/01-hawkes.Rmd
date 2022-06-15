@@ -157,15 +157,15 @@ plogis(fit$background_parameters[2]) * exp(fit$background_parameters[1])
 The estimated values of $\alpha$ and $\beta$ respectively are:
 
 ```{r}
-fit$alpha
-fit$beta
+ab = get_coefs(fit)[1:2,1]
+ab
 ```
 
 ```{r, echo = TRUE,fig.height = 7,fig.width = 9}
-show_hawkes(times = times, mu = background, alpha = fit$alpha, beta = fit$beta, background_param = fit$background_parameters)
+show_hawkes(obj = fit, mu = background)
 ```
 
 
 ```{r, echo = TRUE,fig.height = 7,fig.width = 9}
-show_hawkes_GOF(times = times, mu = background_integral, alpha = fit$alpha, beta = fit$beta, background_param = fit$background_parameters, return_values = FALSE)
+show_hawkes_GOF(obj = fit, mu = background_integral, return_values = FALSE)
 ```

@@ -211,7 +211,7 @@ fit_hawkes_cbf <- function(times, parameters,
             if (!"neg_alpha_custom_hawkes" %in% getLoadedDLLs()) {
                 dll_stelfi("neg_alpha_custom_hawkes")
             }
-                                        # Nested function to be passed into optim
+            # Nested function to be passed into optim
             OptimizeBackground <- function(background_parameters, times, parameters,
                                            marks, background, background_integral,
                                            background_min, tmb_silent = TRUE, optim_silent = TRUE){
@@ -244,7 +244,7 @@ fit_hawkes_cbf <- function(times, parameters,
                                 gr = NULL, times, parameters, marks, background,
                                 background_integral,
                                 background_min, tmb_silent, optim_silent)
-                                        # Need to run again to extract alpha and beta
+            # Need to run again to extract alpha and beta
             lambda <- background(opt$par, times)
             lambda_min <- numeric(length = length(times))
             for (k in 1:(length(times) - 1)) {
@@ -269,8 +269,7 @@ fit_hawkes_cbf <- function(times, parameters,
     obj$hessian <- TRUE
     trace <- if(optim_silent) 0 else 1
     opt2 <- stats::optim(obj$par, obj$fn, obj$gr, control = list(trace = trace))
-    res <- TMB::sdreport(obj)
-    return(list(alpha = res$value[1], beta = res$value[2],
-                background_parameters = opt$par,
-                objective = opt2$value))
+    obj$objective <- opt2$value
+    obj$background_parameters <- opt$par
+    return(obj)
 }

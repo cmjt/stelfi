@@ -41,7 +41,16 @@ setGeneric("get_coefs",
 setMethod("get_coefs",
           signature(object = "list"),
           function(object) {
-              summary(TMB::sdreport(object), "report")
+              table = summary(TMB::sdreport(object), "report")
+              
+              # The code below is for hawkes_cbf()
+              if("background_parameters" %in% names(object)) {
+                for (j in 1:length(object$background_parameters)) {
+                  table = rbind(table,c(object$background_parameters[j],NA))
+                  row.names(table)[j+2] = paste("BP",j)
+              }
+              }
+          return(table)
           }
           )
 #' Estimated random field(s)
