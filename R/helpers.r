@@ -43,7 +43,7 @@ setMethod("get_coefs",
           function(object) {
               table = summary(TMB::sdreport(object), "report")
               
-              # The code below is for hawkes_cbf()
+              # The code below is for fit_hawkes_cbf()
               if("background_parameters" %in% names(object)) {
                 for (j in 1:length(object$background_parameters)) {
                   table = rbind(table,c(object$background_parameters[j],NA))

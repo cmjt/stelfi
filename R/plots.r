@@ -4,6 +4,8 @@ setClassUnion("missing_or_vector", c("vector", "missing"))
 #' 
 #' @inheritParams sim_hawkes
 #' @param times A numeric vector of observed time points.
+#' @param obj An object returned by fit_hawkes() or fit_hawkes_cbf()
+#' If provided, the only other parameters required are \code{mu} and \code{background_param}, and only if \code{mu} is not constant. 
 #' @examples \dontrun{
 #' data(retweets_niwa, package = "stelfi")
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa ,min(retweets_niwa),units = "mins"))))
