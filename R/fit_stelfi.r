@@ -18,11 +18,13 @@ fit_hspde_tmb <- function(times, locs, sp,
     if (!"spdehawkes" %in% getLoadedDLLs()) {
         stelfi::dll_stelfi("spdehawkes")
     }
+    sp_sf = sf::st_as_sf(sp)
     innerloc <- Reduce(rbind, apply(mesh$graph$tv, 1, function(vt){
         temp = sp::Polygons(list(sp::Polygon(mesh$loc[rep(vt, length = length(vt) + 1), 1:2])), '0')
         temp = sp::SpatialPolygons(list(temp))
-        if (is.null(rgeos::gIntersection(temp, sp)))
-            rep(NULL, 3)
+        temp_sf = sf::st_as_sf(temp)
+        if (is.null(sf::st_intersection(temp_sf, sp_sf)))
+          rep(NULL, 3)
         else
             vt
     }))
@@ -58,11 +60,13 @@ fit_hspat_tmb <- function(times, locs, sp,
     if (!"spatialhawkes" %in% getLoadedDLLs()) {
         stelfi::dll_stelfi("spatialhawkes")
     }
+    sp_sf = sf::st_as_sf(sp)
     innerloc = Reduce(rbind, apply(mesh$graph$tv, 1, function(vt){
         temp = sp::Polygons(list(sp::Polygon(mesh$loc[rep(vt, length = length(vt) + 1), 1:2])), '0')
         temp = sp::SpatialPolygons(list(temp))
-        if (is.null(rgeos::gIntersection(temp, sp)))
-            rep(NULL, 3)
+        temp_sf = sf::st_as_sf(temp)
+        if (is.null(sf::st_intersection(temp_sf, sp_sf)))
+          rep(NULL, 3)
         else
             vt
     }))

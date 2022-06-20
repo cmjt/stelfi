@@ -89,7 +89,7 @@ get_weights <- function(mesh, sp, plot = FALSE){
     sp_sf <- sf::st_as_sf(sp)
     
     w <- sapply(1:length(dmesh), function(i) {
-      coord <- raster::geom(dmesh[i,])[,c("x","y")]
+      coord <- sf::st_coordinates(sf::st_as_sf(dmesh[i,]))[,1:2]
       coord <- sf::st_polygon(list(coord))
       if (sf::st_intersects(coord, sp_sf, sparse = FALSE))
         return(sf::st_area(sf::st_intersection(coord, sp_sf)))
@@ -118,7 +118,7 @@ points.in.mesh <- function(xy, dmesh, weights){
   xy <- sf::st_geometry(xy)
   if (missing(weights)){
     sapply(1:length(dmesh), function(i){
-      coord <- raster::geom(dmesh[i, ])[,c("x", "y")]
+      coord <- sf::st_coordinates(st_as_sf(dmesh[i,]))[,1:2]
       coord <- sf::st_polygon(list(coord))
       sum(sf::st_contains(coord, xy, sparse = FALSE) > 0)
     })
@@ -126,7 +126,7 @@ points.in.mesh <- function(xy, dmesh, weights){
   else {
     result = rep(0, length(dmesh))
     for (i in 1:length(dmesh)) {
-      coord <- raster::geom(dmesh[i, ])[,c("x", "y")]
+      coord <- sf::st_coordinates(st_as_sf(dmesh[i,]))[,1:2]
       coord <- sf::st_polygon(list(coord))
       temp_result <- sf::st_contains(coord, xy, sparse = FALSE)
       temp_result <- temp_result * weights
