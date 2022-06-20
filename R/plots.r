@@ -1,6 +1,6 @@
 setClassUnion("missing_or_numeric", c("numeric", "missing"))
 setClassUnion("missing_or_vector", c("vector", "missing"))
-#' Plots the Hawkes intensty function with decay historical dependence
+#' Plots the Hawkes intensity function with decay historical dependence
 #' 
 #' @inheritParams sim_hawkes
 #' @param times A numeric vector of observed time points.

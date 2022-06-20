@@ -85,17 +85,21 @@ get_fields <- function(object, smesh, tmesh, plot = FALSE, sd = FALSE) {
 #' @export
 get_weights <- function(mesh, sp, plot = FALSE){
     dmesh <- inla.mesh.dual(mesh)
-    sp::proj4string(dmesh) <- sp::proj4string(sp)
-    w <-  sapply(1:length(dmesh), function(i) {
-        if (rgeos::gIntersects(dmesh[i, ], sp))
-            return(rgeos::gArea(rgeos::gIntersection(dmesh[i, ], sp)))
-        else return(0)
+    # Convert sp to an object compatible with sf
+    sp_sf <- sf::st_as_sf(sp)
+    
+    w <- sapply(1:length(dmesh), function(i) {
+      coord <- raster::geom(dmesh[i,])[,c("x","y")]
+      coord <- sf::st_polygon(list(coord))
+      if (sf::st_intersects(coord, sp_sf, sparse = FALSE))
+        return(sf::st_area(sf::st_intersection(coord, sp_sf)))
+      else return(0)
     })
     if(missing(plot)) plot = FALSE
     if(plot){
-        sp::plot(dmesh, col = "grey")
-        sp::plot(mesh, add = TRUE, edge.color = "white")
-        sp::plot(sp,add = TRUE)
+        plot(dmesh, col = "grey")
+        plot(mesh, add = TRUE, edge.color = "white")
+        plot(sp,add = TRUE)
         points(mesh$loc,pch = 18)
         points(mesh$loc[unlist(w) == 0,],col = "white", pch = 18)
     }
@@ -107,22 +111,26 @@ get_weights <- function(mesh, sp, plot = FALSE){
 #' and a mesh of polygons.
 #' @param xy A data frame of locations.
 #' @param dmesh An object returned by \code{\link{inla.mesh.dual}}.
-#' @param weights A vector of weights at each node of \code{dmesh}.
+#' @param weights A vector of weights/covariates for each point
 #' @returns Either the number of points in each polygon or sum of the weights.
 points.in.mesh <- function(xy, dmesh, weights){
+  xy <- sf::st_as_sf(xy, coords=c("x","y"))
+  xy <- sf::st_geometry(xy)
   if (missing(weights)){
     sapply(1:length(dmesh), function(i){
       coord <- raster::geom(dmesh[i, ])[,c("x", "y")]
-      sum(sp::point.in.polygon(xy[, 1], xy[, 2], coord[, 1], coord[, 2]) > 0)
+      coord <- sf::st_polygon(list(coord))
+      sum(sf::st_contains(coord, xy, sparse = FALSE) > 0)
     })
   }
   else {
     result = rep(0, length(dmesh))
     for (i in 1:length(dmesh)) {
       coord <- raster::geom(dmesh[i, ])[,c("x", "y")]
-      temp_result = sp::point.in.polygon(xy[, 1], xy[, 2], coord[, 1], coord[, 2]) > 0
-      temp_result = temp_result * weights
-      result[i] = sum(temp_result)
+      coord <- sf::st_polygon(list(coord))
+      temp_result <- sf::st_contains(coord, xy, sparse = FALSE)
+      temp_result <- temp_result * weights
+      result[i] <- sum(temp_result)
     }
     return(result)
   }
