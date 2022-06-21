@@ -2,7 +2,8 @@
 #'
 #' \code{fit_hawkes} fits a range of self-exciting Hawkes processes using TMB
 #' @param times a vector of numeric observation time points
-#' @param parameters a vector of named parmeters for the chosen model
+#' @param parameters a vector of named parameters for the chosen model
+#' Default values used if not provided. 
 #' (see \code{model})
 #' "mu"--base rate of the hawkes process,
 #' "alpha"--intensity jump after an event occurence, and
@@ -36,14 +37,10 @@
 #' }
 #' }
 #' @export
-fit_hawkes <-  function(times, parameters, model = 1,
+fit_hawkes <-  function(times, parameters = list(), model = 1,
                         marks = c(rep(1, length(times))),
                         tmb_silent = TRUE,
                         optim_silent = TRUE, ...) {
-    ## parameters
-    mu <- parameters[["mu"]]
-    alpha <- parameters[["alpha"]]
-    beta <- parameters[["beta"]]
     ## general error checks
     for (i in 2:length(times)) {
         if ((times[i] - times[i - 1]) < 1.e-10)
@@ -53,6 +50,21 @@ fit_hawkes <-  function(times, parameters, model = 1,
         stop("marks must have same length as times")
     if (min(marks) < 0)
         stop("marks cannot be negative")
+  
+    ## parameters
+    alpha <- parameters[["alpha"]]
+    if (is.null(alpha)) {
+      alpha <- 0.5 * max(times) / length(times)
+    }
+    beta <- parameters[["beta"]]
+    if (is.null(beta)) {
+      beta <- 2 * alpha
+    }
+    mu <- parameters[["mu"]]
+    if (is.null(mu)) {
+      mu <- beta
+    }
+    
     if(model == 1) {
         ## error checks
         if (alpha > (beta / mean(marks)))
@@ -94,14 +106,13 @@ fit_hawkes <-  function(times, parameters, model = 1,
 #'
 #' \code{fit_hawkes_cbf} fits a range of self-exciting Hawkes processes
 #' with a given custom background function (cbf) using TMB using TMB.
-#' The \code{alpha} and \code{beta} parameters are estimated using TMB,
-#' parameters of the CBF are optimized in R.
+#' The \code{alpha} (model 1) or \code{a_par} (model 2) and \code{beta} parameters are estimated using TMB,
+#' parameters of the cbf are optimized in R.
 #' @inheritParams fit_hawkes
 #' @param model A factor indicator specifying which model to fit:
 #' \itemize{
-#' \item \code{1}, a hawkes process with exponential decay and cbf (default);
-#' \item \code{2}, a hawkes process and cbf with negative
-#' self-exciting intensity "jump".
+#' \item \code{1}, a Hawkes process with exponential decay and cbf (default), positive alpha.
+#' \item \code{2}, a Hawkes process with exponential decay and cbf, but alpha can be negative. 
 #' }
 #' @param background A function taking one parameter and an
 #' independent variable, returning a scalar.
@@ -138,7 +149,7 @@ fit_hawkes <-  function(times, parameters, model = 1,
 #' }
 #' }
 #' @export
-fit_hawkes_cbf <- function(times, parameters,
+fit_hawkes_cbf <- function(times, parameters=list(),
                            model = 1,
                            marks = c(rep(1, length(times))),
                            background, background_integral, background_parameters,
@@ -153,10 +164,19 @@ fit_hawkes_cbf <- function(times, parameters,
         stop("marks must have same length as times")
     if (min(marks) < 0)
         stop("marks cannot be negative")
+    
+    ## beta parameter
+    beta <- parameters[["beta"]]
+    if (is.null(beta)) {
+      beta <- max(times)/length(times)
+    }
+    
     if (model == 1){
-        ## parameters
+        ## alpha parameter
         alpha <- parameters[["alpha"]]
-        beta <- parameters[["beta"]]
+        if (is.null(alpha)) {
+          alpha <- 0.5 * beta
+        }
         ## error checks
         if (alpha > (beta/mean(marks)))
             stop("alpha must be smaller than or equal to beta divided by the mean of the marks")
@@ -204,9 +224,11 @@ fit_hawkes_cbf <- function(times, parameters,
                               DLL = "custom_hawkes", silent = tmb_silent)
     }else{
         if (model == 2){
-            ## parameters
+            ## a_par parameter
             a_par <- parameters[["a_par"]]
-            beta <- parameters[["beta"]]
+            if (is.null(a_par)) {
+              a_par <- 0
+            }
             ## check for DLL
             if (!"neg_alpha_custom_hawkes" %in% getLoadedDLLs()) {
                 dll_stelfi("neg_alpha_custom_hawkes")

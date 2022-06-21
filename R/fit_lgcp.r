@@ -101,6 +101,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' \code{log_tau}, the \code{log(tau)} parameter for the GMRF;
 #' \code{log_kappa}, \code{log(kappa)} parameter for the GMRF;
 #' \code{atanh_rho}, optional, \code{arctan(rho)} AR1 temporal parameter.
+#' Default values are used if not provided. 
 #' @param covariates Optional, a \code{matrix} of covariates at each
 #' \code{smesh} and \code{tmesh} node combination.
 #' @inheritParams fit_lgcp_tmb
@@ -124,13 +125,30 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' 
 #' }
 #' @export
-fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
+fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters=list(), covariates,
                       tmb_silent = TRUE,
                       nlminb_silent = TRUE, ...) {
-    ## svs
+    ## read in parameters
     log_tau <- parameters[["log_tau"]]
+    if (is.null(log_tau)) {
+      log_tau <- 0
+    }
     log_kappa <- parameters[["log_kappa"]]
+    if (is.null(log_kappa)) {
+      log_kappa <- 0
+    }
     beta <- parameters[["beta"]]
+    # default value of the intercept is log of the density of points
+    if (is.null(beta)) {
+      area <- sum(get_weights(smesh,sp)$w)
+      avg_rate <- log(nrow(locs)/area)
+      if (!missing(covariates)) {
+        beta <- numeric(length= 1 + ncol(covariates))
+        beta[1] <- avg_rate
+      } else {
+        beta <- avg_rate
+      }
+    }
     # Verify that arguments are correct size and class, and basic processing
     if(sum(names(locs) %in% c("x","y")) < 2)
         stop("Named variables x and y required in arg locs")
@@ -155,6 +173,9 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters, covariates,
         if (!missing(covariates)) if (nrow(covariates) != nrow(smesh$loc)*k)
             stop("nrow.covariates should be size of spatial mesh by number of time knots")
         atanh_rho <- parameters[["atanh_rho"]]
+        if (is.null(atanh_rho)) {
+          atanh_rho <- 0
+        }
         if (length(atanh_rho) != 1)
             stop("atanh_rho must be a single number")
     } else {
