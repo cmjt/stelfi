@@ -11,7 +11,7 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR(times);
   DATA_VECTOR(marks);
   Type marks_mean = marks.sum()/marks.size(); // Average mark
-  // parameters of the hawkes process
+  // parameters of the Hawkes process
   PARAMETER(log_mu);
   PARAMETER(logit_abratio);
   PARAMETER(log_beta);

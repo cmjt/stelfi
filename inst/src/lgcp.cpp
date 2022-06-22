@@ -1,6 +1,6 @@
 /* written by Xiangjie Xue, updated on 01/05/2021. */
-/* Linearisation of a matrix can be directly done using .vec() */
 /* Added simulation code on 20/05/2021. */
+/* Edited by Alec van Helsdingen, last update 22/06/2022 */
 #include <TMB.hpp>
 #include <numeric>
 #include <math.h> // for pi
@@ -127,7 +127,7 @@ Type objective_function<Type>::operator() ()
     transformed by A and add the fixed effects.
   */
   vector<Type> lambda = exp(A * x.vec() + designmat * beta) * w.cwiseEqual(0).select(vector<Type>::Ones(w.size()), w);
-  //vector<Type> lambda = exp(A * X.vec() + designmat * beta) * w.cwiseEqual(0).select(vector<Type>::Ones(w.size()), w);
+  
   for (int k=0;k<lambda.size();k++) {
     lambda(k) += 1e-50;
   }
@@ -158,6 +158,5 @@ Type objective_function<Type>::operator() ()
   ADREPORT(range);
   ADREPORT(stdev);
   REPORT(x);
-  //REPORT(X);
   return nll;
 }

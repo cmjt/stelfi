@@ -60,7 +60,7 @@ Type objective_function<Type>::operator() ()
   // spde part
   SparseMatrix<Type> Q = Q_spde(spde, kappa[0]) * pow(tau[0],2);
   // create the precision matrix from the spde model for the GMRF
-  // Type nll = 0.0;
+  
   int RFcount = 0;
   vector<Type> tempx = x.col(RFcount);
   vector<Type> temprf = x.col(0);
@@ -129,8 +129,6 @@ Type objective_function<Type>::operator() ()
     }
   }
 
-  // ? constrain beta? (see PARAMETER_MATRIX(beta)).
-  //nll -= sum(dnorm(beta_coef.vec(), Type(0.), Type(1. / sqrt(2.)), true));
   ADREPORT(betamarks);
   ADREPORT(betapp);
   ADREPORT(marks_coefs_pp);
