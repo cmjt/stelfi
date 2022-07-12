@@ -87,11 +87,15 @@ get_weights <- function(mesh, sp, plot = FALSE){
     dmesh <- inla.mesh.dual(mesh)
     # Convert sp to an object compatible with sf
     sp_sf <- sf::st_as_sf(sp)
+    st_crs(sp_sf) <- NA
+    if (!all(st_is_valid(sp_sf))) { # check for invalid geometries
+      sp_sf <- st_make_valid(sp_sf)
+    }
     
     w <- sapply(1:length(dmesh), function(i) {
       coord <- sf::st_coordinates(sf::st_as_sf(dmesh[i,]))[,1:2]
       coord <- sf::st_polygon(list(coord))
-      if (sf::st_intersects(coord, sp_sf, sparse = FALSE))
+      if (any(sf::st_intersects(coord, sp_sf, sparse = FALSE)))
         return(sf::st_area(sf::st_intersection(coord, sp_sf)))
       else return(0)
     })
