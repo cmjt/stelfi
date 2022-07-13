@@ -118,11 +118,11 @@ get_weights <- function(mesh, sp, plot = FALSE){
 #' @param weights A vector of weights/covariates for each point
 #' @returns Either the number of points in each polygon or sum of the weights.
 points.in.mesh <- function(xy, dmesh, weights){
-  xy <- sf::st_as_sf(xy, coords=c("x","y"))
+  xy <- sf::st_as_sf(xy, coords = c("x","y"))
   xy <- sf::st_geometry(xy)
   if (missing(weights)){
     sapply(1:length(dmesh), function(i){
-      coord <- sf::st_coordinates(st_as_sf(dmesh[i,]))[,1:2]
+      coord <- sf::st_coordinates(sf::st_as_sf(dmesh[i,]))[,1:2]
       coord <- sf::st_polygon(list(coord))
       sum(sf::st_contains(coord, xy, sparse = FALSE) > 0)
     })
