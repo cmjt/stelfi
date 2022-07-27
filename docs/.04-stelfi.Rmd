@@ -9,14 +9,14 @@ args(fit_stelfi)
 ## Hawkes spatial
 
 ```{r, eval = FALSE}
-data(xyt_stelfi)
-locs <- cbind(x = xyt_stelfi$x, y = xyt_stelfi$y)
-times <- xyt_stelfi$t
-loc.d <- cbind(c(-1, 1, 1, -1, -1), c(-1, -1, 1, 1, -1))
+data(xyt)
+locs <- cbind(x = xyt$x, y = xyt$y)
+times <- xyt$t
+loc.d <- cbind(c(0, 13, 13, 0, 0), c(-3, -3, 3, 3, -3))
 domain <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(loc.d)),'0')))
 smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
                             max.edge = 0.75, cutoff = 0.3)
-param <- list( mu = 5, alpha = 1, beta = 3, xsigma = 0.2,
+param <- list( mu = 4, alpha = 1, beta = 3, xsigma = 0.2,
              ysigma = 0.2, rho = 0.8)
 fit <- fit_stelfi(times = times, locs = locs, sp = domain, smesh = smesh, parameters = param,
                   gaussian = TRUE)
