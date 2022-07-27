@@ -247,7 +247,7 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
     return(lst)
 }
 #' Simulate a log-Gaussian Cox process (LGCP)
-#' 
+                                        #' 
 #' \code{simulate_lgcp} simulates a LGCP using the \code{TMB} \code{C++}
 #' template. If \code{rho} is supplied in \code{parameters}
 #' as well as \code{tmesh} then times knots will also be returned.
@@ -280,8 +280,6 @@ simulate_lgcp <- function(parameters, sp, smesh, tmesh, covariates,
     log_tau <- parameters[["log_tau"]]
     log_kappa <- parameters[["log_kappa"]]
     ## Verify that arguments are correct size and class, and basic processing
-    if(sum(names(locs) %in% c("x", "y")) < 2)
-        stop("Named variables x and y required in arg locs")
     if(!missing(covariates)) {
         if(!"matrix" %in% class(covariates))
             stop("arg covariates must be a matrix")
@@ -306,6 +304,7 @@ simulate_lgcp <- function(parameters, sp, smesh, tmesh, covariates,
         tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
     } else {
         locs <-  matrix(0, nrow = 10, ncol = 2)
+        locs <- data.frame(x = locs[,1], y = locs[,2])
         tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
         k <- 1
         if(!missing(covariates)) {
