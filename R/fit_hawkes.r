@@ -6,11 +6,13 @@
 #' Default values used if not provided. 
 #' (see \code{model})
 #' "mu"--base rate of the hawkes process,
-#' "alpha"--intensity jump after an event occurence, and
+#' "alpha"--intensity jump after an event occurrence (\code{model} = 1)
+#' "a_par" -- logit scale for alpha. alpha must be set so that the intensity never goes negative
+#'  and so that alpha <= beta. (\code{model} = 2)
 #' "beta"--exponential intensity decay
 #' @param model a factor indicator specifying which model to fit:
-#' \code{1}, a hawkes process with exponential decay (default);
-#' \code{2}, hawkes process with negative self-exciting intensity "jump".
+#' \code{1}, a Hawkes process with exponential decay (default);
+#' \code{2}, Hawkes process with a "jump" (alpha) that can be negative. 
 #' @param marks a vector of numerical marks, defaults to 1 (i.e., no marks)
 #' @param tmb_silent logical, default `TRUE`:
 #' TMB inner optimization tracing information will be printed.
@@ -106,7 +108,7 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
 #'
 #' \code{fit_hawkes_cbf} fits a range of self-exciting Hawkes processes
 #' with a given custom background function (cbf) using TMB using TMB.
-#' The \code{alpha} (model 1) or \code{a_par} (model 2) and \code{beta} parameters are estimated using TMB,
+#' The \code{alpha} (\code{model} = 1) or \code{a_par} (\code{model} = 2) and \code{beta} parameters are estimated using TMB,
 #' parameters of the cbf are optimized in R.
 #' @inheritParams fit_hawkes
 #' @param model A factor indicator specifying which model to fit:

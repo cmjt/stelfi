@@ -15,8 +15,8 @@ fit_hspde_tmb <- function(times, locs, sp,
                           reltol = 1e-12, abstol = 1e-12,
                           tmb_silent,
                           nlminb_silent, ...){
-    if (!"spdehawkes" %in% getLoadedDLLs()) {
-        stelfi::dll_stelfi("spdehawkes")
+    if (!"spde_hawkes" %in% getLoadedDLLs()) {
+        stelfi::dll_stelfi("spde_hawkes")
     }
     sp_sf = sf::st_as_sf(sp)
     innerloc <- Reduce(rbind, apply(mesh$graph$tv, 1, function(vt){
@@ -38,7 +38,7 @@ fit_hspde_tmb <- function(times, locs, sp,
                   atanh_rho = atanh_rho, log_kappa = log_kappa, log_tau = log_tau,
                   x = matrix(0, nrow = dim(lmat)[2], ncol = 1))
     obj <- TMB:::MakeADFun(data, param, hessian = TRUE, random = c("x"),
-                           DLL = "spdehawkes", silent = tmb_silent)
+                           DLL = "spde_hawkes", silent = tmb_silent)
     trace <- if(nlminb_silent) 0 else 1
     opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
     return(obj)
@@ -57,8 +57,8 @@ fit_hspat_tmb <- function(times, locs, sp,
                           reltol = 1e-12, abstol = 1e-12,
                           tmax = max(times),
                           tmb_silent, nlminb_silent, ...){
-    if (!"spatialhawkes" %in% getLoadedDLLs()) {
-        stelfi::dll_stelfi("spatialhawkes")
+    if (!"spatial_hawkes" %in% getLoadedDLLs()) {
+        stelfi::dll_stelfi("spatial_hawkes")
     }
     sp_sf = sf::st_as_sf(sp)
     innerloc = Reduce(rbind, apply(mesh$graph$tv, 1, function(vt){
@@ -79,7 +79,7 @@ fit_hspat_tmb <- function(times, locs, sp,
                   log_xsigma =  log_xsigma,
                   log_ysigma =  log_ysigma, atanh_rho = atanh_rho)
     obj <- TMB:::MakeADFun(data, param, hessian = TRUE,
-                           DLL = "spatialhawkes", silent = tmb_silent)
+                           DLL = "spatial_hawkes", silent = tmb_silent)
     trace <- if(nlminb_silent) 0 else 1
     opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
     return(obj)
