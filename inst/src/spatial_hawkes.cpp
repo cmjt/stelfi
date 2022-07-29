@@ -21,7 +21,8 @@ struct diffusionkernel {
         MVNORM_t<Type> bivnorm(Q);
         for (int j = 0; j < w.size(); ++j){
           vector<Type> loci = xyloc.row(j) - locs.row(i);
-          ans(i, j) = exp(-beta * (t - times[i]) - bivnorm(loci));
+          //ans(i, j) = exp(-beta * (t - times[i]) - bivnorm(loci));
+          ans(i, j) = exp(-beta * (t - times[i])) * bivnorm(loci);
         }
       }
     return ans * w;
@@ -127,7 +128,8 @@ Type objective_function<Type>::operator() ()
 
   Type nll = 0.0;
 
-  // For the definition of the explanation, see Reinhart (2018).
+  // For the definition of the explanation, see equation 8 of Reinhart (2018).
+  //https://projecteuclid.org/journals/statistical-science/volume-33/issue-3/A-Review-of-Self-Exciting-Spatio-Temporal-Point-Processes-and/10.1214/17-STS629.full
 
   // term-1
   // An APPROXIMATION of the integral of the field over the area.
@@ -146,7 +148,8 @@ Type objective_function<Type>::operator() ()
       if (times[j] - times[i] > 0){
         Q2 = Qbase * (times[j] - times[i]);
         loci = locs.row(j) - locs.row(i);
-        A[j] += exp(-beta * (times[j] - times[i]) - MVNORM(Q2)(loci));
+        //A[j] += exp(-beta * (times[j] - times[i]) - MVNORM(Q2)(loci));
+        A[j] += exp(-beta * (times[j] - times[i])) * MVNORM(Q2)(loci);
       }
   vector<Type> C = log(mu + alpha * A);
   nll -= sum(C);
