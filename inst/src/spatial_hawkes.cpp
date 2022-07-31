@@ -15,6 +15,7 @@ struct diffusionkernel {
     using namespace density;
     matrix<Type> ans(times.size(), w.size());
     ans.setZero();
+    //MVNORM_t<Type> bivnorm(Qbase);
     for (int i = 0; i < times.size(); ++i)
       if (t > times[i]){
         matrix<Type> Q = Qbase * (t - times[i]);
@@ -150,6 +151,7 @@ Type objective_function<Type>::operator() ()
         loci = locs.row(j) - locs.row(i);
         //A[j] += exp(-beta * (times[j] - times[i]) - MVNORM(Q2)(loci));
         A[j] += exp(-beta * (times[j] - times[i])) * MVNORM(Q2)(loci);
+        //A[j] += exp(-beta * (times[j] - times[i])) * MVNORM(Qbase)(loci);
       }
   vector<Type> C = log(mu + alpha * A);
   nll -= sum(C);
