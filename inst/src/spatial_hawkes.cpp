@@ -113,6 +113,7 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR(w);
   DATA_MATRIX(xyloc);
   DATA_SCALAR(tmax);
+  DATA_INTEGER(simple); // If 1, use time-independent Gaussian fields
   // parameters of the hawkes process
   PARAMETER(log_mu);
   PARAMETER(logit_abratio);
@@ -144,21 +145,50 @@ Type objective_function<Type>::operator() ()
   vector<Type> loci(2);
   vector<Type> A(times.size());
   A.setZero();
-  for (int j = 0; j < times.size(); ++j)
-    for (int i = 0; i < j; ++i)
-      if (times[j] - times[i] > 0){
-        Q2 = Qbase * (times[j] - times[i]);
-        loci = locs.row(j) - locs.row(i);
-        //A[j] += exp(-beta * (times[j] - times[i]) - MVNORM(Q2)(loci));
-        A[j] += exp(-beta * (times[j] - times[i])) * MVNORM(Q2)(loci);
-        //A[j] += exp(-beta * (times[j] - times[i])) * MVNORM(Qbase)(loci);
-      }
+  if (simple == 0) {
+    for (int j = 0; j < times.size(); ++j)
+      for (int i = 0; i < j; ++i)
+        if (times[j] - times[i] > 0){
+          Q2 = Qbase * (times[j] - times[i]);
+          loci = locs.row(j) - locs.row(i);
+          A[j] += exp(-beta * (times[j] - times[i])) * MVNORM(Q2)(loci);
+          //A[j] += exp(-beta * (times[j] - times[i])) * MVNORM(Qbase)(loci);
+        }
+  } else {
+    MVNORM_t<Type> bivnorm(Qbase);
+    for (int j = 0; j < times.size(); ++j)
+      for (int i = 0; i < j; ++i)
+        if (times[j] - times[i] > 0){
+          loci = locs.row(j) - locs.row(i);
+          A[j] += exp(-beta * (times[j] - times[i])) * bivnorm(loci);
+        }
+  }
   vector<Type> C = log(mu + alpha * A);
   nll -= sum(C);
 
   // term 3
-  diffusionkernel<Type> diffker(times, locs, beta, w, xyloc, Qbase);
-  nll += alpha * romberg::integrate(diffker, Type(0.), tmax);
+  if (simple == 0){
+    diffusionkernel<Type> diffker(times, locs, beta, w, xyloc, Qbase);
+    nll += alpha * romberg::integrate(diffker, Type(0.), tmax);
+  } else {
+    MVNORM_t<Type> bivnorm2(Qbase);
+    vector<Type> marks(times.size());
+    matrix<Type> ans(times.size(), w.size());
+    for (int j = 0; j < w.size(); ++j)
+      for (int k = 0; k < times.size(); ++k){
+        vector<Type> loci = xyloc.row(j) - locs.row(k);
+        ans(k, j) = bivnorm2(loci);
+      }
+    // can treat as a marked model. The mark is the volume of the Gaussian within the domain (0<=x<=1)
+    marks =  ans * w; 
+    vector<Type> B = vector<Type>::Zero(times.size());
+    
+    for(int i = 1; i < times.size(); ++i){
+      B[i] = exp(-beta * (times[i] - times[i - 1])) * (marks[i-1] + B[i - 1]);
+    }
+    
+    nll += ((alpha / beta) * Type(sum(marks)-marks.template tail<1>()[0])) - ((alpha/beta)*B.template tail<1>()[0]);
+  }
 
   SIMULATE {
     // This simulation process follows Algorithm 4 in Section 3.3 of Reinhart (2018).

@@ -56,6 +56,7 @@ fit_hspat_tmb <- function(times, locs, sp,
                           log_ysigma = 0, atanh_rho = 0, w,
                           reltol = 1e-12, abstol = 1e-12,
                           tmax = max(times),
+                          simple,
                           tmb_silent, nlminb_silent, ...){
     if (!"spatial_hawkes" %in% getLoadedDLLs()) {
         stelfi::dll_stelfi("spatial_hawkes")
@@ -73,7 +74,7 @@ fit_hspat_tmb <- function(times, locs, sp,
     data <- list(times = times, locs = locs, 
                  xyloc = mesh$loc[,1:2], reltol = reltol, abstol = abstol,
                   w = w, tmax = tmax,
-                 tv = innerloc)
+                 tv = innerloc, simple = simple)
     param <- list(log_mu = log_mu, logit_abratio = logit_abratio,
                   log_beta = log_beta,
                   log_xsigma =  log_xsigma,
@@ -89,6 +90,7 @@ fit_hspat_tmb <- function(times, locs, sp,
 #' @inheritParams fit_hspde_tmb
 fit_stelfi <-  function(times, locs, sp, smesh,  parameters,
                         gaussian = TRUE,
+                        simple = 0, 
                         tmb_silent = TRUE,
                         nlminb_silent = TRUE, ...) {
     ## convert svs
@@ -108,6 +110,7 @@ fit_stelfi <-  function(times, locs, sp, smesh,  parameters,
                              log_xsigma = log_xsigma,
                              log_ysigma = log_ysigma,
                              atanh_rho = atanh_rho,
+                             simple = simple,
                              tmb_silent = tmb_silent,
                              nlminb_silent = nlminb_silent, ...)
     }else{
