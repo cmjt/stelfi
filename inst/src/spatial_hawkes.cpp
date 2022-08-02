@@ -22,8 +22,7 @@ struct diffusionkernel {
         MVNORM_t<Type> bivnorm(Q);
         for (int j = 0; j < w.size(); ++j){
           vector<Type> loci = xyloc.row(j) - locs.row(i);
-          //ans(i, j) = exp(-beta * (t - times[i]) - bivnorm(loci));
-          ans(i, j) = exp(-beta * (t - times[i])) * bivnorm(loci);
+          ans(i, j) = exp(-beta * (t - times[i]) - bivnorm(loci));
         }
       }
     return ans * w;
@@ -151,8 +150,7 @@ Type objective_function<Type>::operator() ()
         if (times[j] - times[i] > 0){
           Q2 = Qbase * (times[j] - times[i]);
           loci = locs.row(j) - locs.row(i);
-          A[j] += exp(-beta * (times[j] - times[i])) * MVNORM(Q2)(loci);
-          //A[j] += exp(-beta * (times[j] - times[i])) * MVNORM(Qbase)(loci);
+          A[j] += exp(-beta * (times[j] - times[i]) - MVNORM(Q2)(loci)); // MVNORM returns -log of density
         }
   } else {
     MVNORM_t<Type> bivnorm(Qbase);
@@ -160,7 +158,7 @@ Type objective_function<Type>::operator() ()
       for (int i = 0; i < j; ++i)
         if (times[j] - times[i] > 0){
           loci = locs.row(j) - locs.row(i);
-          A[j] += exp(-beta * (times[j] - times[i])) * bivnorm(loci);
+          A[j] += exp(-beta * (times[j] - times[i]) - bivnorm(loci));
         }
   }
   vector<Type> C = log(mu + alpha * A);
@@ -177,7 +175,7 @@ Type objective_function<Type>::operator() ()
     for (int j = 0; j < w.size(); ++j)
       for (int k = 0; k < times.size(); ++k){
         vector<Type> loci = xyloc.row(j) - locs.row(k);
-        ans(k, j) = bivnorm2(loci);
+        ans(k, j) = exp(-bivnorm2(loci));
       }
     // can treat as a marked model. The mark is the volume of the Gaussian within the domain (0<=x<=1)
     marks =  ans * w; 
