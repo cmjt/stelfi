@@ -44,11 +44,11 @@ Type objective_function<Type>::operator() ()
   }
   
   Type Max = beta/marks_mean;
-  Type alpha = (exp(a_par) / (Type(1.) + exp(a_par)))*(Max+min(C)) - min(C);
+  Type alpha = ((exp(a_par) / (Type(1.) + exp(a_par)))*(Max+min(C))) - min(C);
 
   
   vector<Type> term_3vec = log(lambda + alpha * A);
-  nll = lambda_integral - ((alpha/beta)*A.template tail<1>()[0])+ ((alpha / beta) * Type(sum(marks)-marks.template tail<1>()[0])) - sum(term_3vec);
+  nll = lambda_integral + ((alpha/beta) * Type(sum(marks) - marks.template tail<1>()[0] - A.template tail<1>()[0])) - sum(term_3vec);
 
   //SIMULATE {
     //Type eps = 1e-10, t = 0, M = mu, U;
