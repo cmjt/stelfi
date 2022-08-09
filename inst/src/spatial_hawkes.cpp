@@ -145,20 +145,18 @@ Type objective_function<Type>::operator() ()
   vector<Type> A(times.size());
   A.setZero();
   if (simple == 0) {
-    for (int j = 0; j < times.size(); ++j)
-      for (int i = 0; i < j; ++i)
-        if (times[j] - times[i] > 0){
-          Q2 = Qbase * (times[j] - times[i]);
-          loci = locs.row(j) - locs.row(i);
-          A[j] += exp(-beta * (times[j] - times[i]) - MVNORM(Q2)(loci)); // MVNORM returns -log of density
-        }
+    for (int j = 1; j < times.size(); ++j)
+      for (int i = 0; i < j; ++i){
+        Q2 = Qbase * (times[j] - times[i]);
+        loci = locs.row(j) - locs.row(i);
+        A[j] += exp(-beta * (times[j] - times[i]) - MVNORM(Q2)(loci)); // MVNORM returns -log of density
+      }
   } else {
     MVNORM_t<Type> bivnorm(Qbase);
-    for (int j = 0; j < times.size(); ++j)
-      for (int i = 0; i < j; ++i)
-        if (times[j] - times[i] > 0){
-          loci = locs.row(j) - locs.row(i);
-          A[j] += exp(-beta * (times[j] - times[i]) - bivnorm(loci));
+    for (int j = 1; j < times.size(); ++j)
+      for (int i = 0; i < j; ++i){
+        loci = locs.row(j) - locs.row(i);
+        A[j] += exp(-beta * (times[j] - times[i]) - bivnorm(loci));
         }
   }
   vector<Type> C = log(mu + alpha * A);
@@ -177,15 +175,16 @@ Type objective_function<Type>::operator() ()
         vector<Type> loci = xyloc.row(j) - locs.row(k);
         ans(k, j) = exp(-bivnorm2(loci));
       }
-    // can treat as a marked model. The mark is the volume of the Gaussian within the domain (0<=x<=1)
+    // For the purposes of integrating lambda, can treat like a marked model. 
+    // The mark is the volume of the Gaussian within the domain (0<=V<=1)
     marks =  ans * w; 
     vector<Type> B = vector<Type>::Zero(times.size());
     
     for(int i = 1; i < times.size(); ++i){
-      B[i] = exp(-beta * (times[i] - times[i - 1])) * (marks[i-1] + B[i - 1]);
+      B[i] = exp(-beta * (times[i] - times[i - 1])) * (marks[i - 1] + B[i - 1]);
     }
     
-    nll += ((alpha / beta) * Type(sum(marks)-marks.template tail<1>()[0])) - ((alpha/beta)*B.template tail<1>()[0]);
+    nll += (alpha/beta) * Type(sum(marks) - marks.template tail<1>()[0] - B.template tail<1>()[0]);
   }
 
   SIMULATE {

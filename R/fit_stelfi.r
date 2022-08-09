@@ -41,6 +41,7 @@ fit_hspde_tmb <- function(times, locs, sp,
                            DLL = "spde_hawkes", silent = tmb_silent)
     trace <- if(nlminb_silent) 0 else 1
     opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
+    obj$objective <- opt$objective
     return(obj)
 }
 #' Function to fit a spatial hawkes process using \code{TMB}
@@ -83,6 +84,7 @@ fit_hspat_tmb <- function(times, locs, sp,
                            DLL = "spatial_hawkes", silent = tmb_silent)
     trace <- if(nlminb_silent) 0 else 1
     opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
+    obj$objective <- opt$objective
     return(obj)
 }
 #' Funtion to fit stelfi
@@ -93,13 +95,55 @@ fit_stelfi <-  function(times, locs, sp, smesh,  parameters,
                         simple = 0, 
                         tmb_silent = TRUE,
                         nlminb_silent = TRUE, ...) {
-    ## convert svs
+    ## parameters
     log_mu <- log(parameters[["mu"]])
+    if (is.null(log_mu)) {
+      log_mu <- log(0.5 * length(times)/max(times))
+    }
     logit_abratio <- stats::qlogis(parameters[["alpha"]] / parameters[["beta"]])
+    if (is.null(logit_abratio)) {
+      logit_abratio <- 0
+    }
     log_beta <- log(parameters[["beta"]])
+    if (is.null(log_beta)) {
+      log_beta <- log(2) - log_mu
+    }
     log_xsigma <-  log(parameters[["xsigma"]])
+    if (is.null(log_xsigma)) {
+      log_xsigma <- 0
+    }
     log_ysigma <-  log(parameters[["ysigma"]])
+    if (is.null(log_ysigma)) {
+      log_ysigma <- 0
+    }
     atanh_rho <- atanh(parameters[["rho"]])
+    if (is.null(atanh_rho)) {
+      atanh_rho <- 0
+    }
+    
+    ## error checking
+    for (i in 2:length(times)) {
+      if ((times[i] - times[i - 1]) < 1.e-10)
+        stop("times must be in ascending order with no simultaneous events")
+    }
+    
+    if (is.na(logit_abratio) || is.null(logit_abratio)) {
+      stop("alpha/beta must be between 0 and 1")
+    }
+    
+    if (is.na(log_beta) || is.null(log_beta)) {
+      stop("beta must be positive")
+    }
+    
+    if(!"matrix" %in% class(locs)) {
+      stop("arg locs must be a matrix")
+    }
+    
+    if (nrow(locs) != length(times)) {
+      stop("different number of times and spatial locations")
+    }
+    
+    
     ## weights
     w <- get_weights(mesh = smesh, sp = sp, plot = FALSE)$weights
     if(gaussian == TRUE){

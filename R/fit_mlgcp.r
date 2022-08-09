@@ -104,6 +104,41 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters=list(), methods,
     ## Verify args are correct size and class
     n_marks <- ncol(marks)
     n_fields <- sum(fields) + 1
+    
+    ## read in parameters
+    log_tau <- parameters[["log_tau"]]
+    if (is.null(log_tau)) {
+      log_tau <- numeric(n_fields)
+    }
+    log_kappa <- parameters[["log_kappa"]]
+    if (is.null(log_kappa)) {
+      log_kappa <- numeric(n_fields)
+    }
+    betamarks <- parameters[["betamarks"]]
+    if (is.null(betamarks)) {
+      if (!missing(covariates)) {
+        betamarks <- matrix(0, nrow = (length(marks_covariates) + 1), ncol = n_marks)
+      } else {
+        betamarks <- matrix(0, nrow = 1, ncol = n_marks)
+      }
+    }
+    betapp <- parameters[["betapp"]]
+    if (is.null(betapp)) {
+      area <- sum(get_weights(smesh,sp)$w)
+      avg_rate <- log(nrow(locs)/area)
+      if (!missing(covariates)) {
+        betapp <- numeric(length(pp_covariates))
+        betapp[1] <- avg_rate
+      } else {
+        betapp <- avg_rate
+      }
+    }
+    marks_coefs_pp <- parameters[["marks_coefs_pp"]]
+    if (is.null(marks_coefs_pp)) {
+      marks_coefs_pp = numeric(n_marks)
+    }
+    
+    ## error checking
     if (length(log_tau) != n_fields)
         stop("There must be one log_tau for each field")
     if (length(log_kappa) != n_fields)
@@ -146,39 +181,6 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters=list(), methods,
             stop("nrow.betamarks must be 1 if covariates missing")
     }
     
-    ## read in parameters
-    log_tau <- parameters[["log_tau"]]
-    if (is.null(log_tau)) {
-      log_tau <- numeric(n_fields)
-    }
-    log_kappa <- parameters[["log_kappa"]]
-    if (is.null(log_kappa)) {
-      log_kappa <- numeric(n_fields)
-    }
-    betamarks <- parameters[["betamarks"]]
-    if (is.null(betamarks)) {
-      if (!missing(covariates)) {
-        betamarks <- matrix(0, nrow = (length(marks_covariates) + 1), ncol = n_marks)
-      } else {
-        betamarks <- matrix(0, nrow = 1, ncol = n_marks)
-      }
-    }
-    betapp <- parameters[["betapp"]]
-    if (is.null(betapp)) {
-      area <- sum(get_weights(smesh,sp)$w)
-      avg_rate <- log(nrow(locs)/area)
-      if (!missing(covariates)) {
-        betapp <- numeric(length(pp_covariates))
-        betapp[1] <- avg_rate
-      } else {
-        betapp <- avg_rate
-      }
-    }
-    marks_coefs_pp <- parameters[["marks_coefs_pp"]]
-    if (is.null(marks_coefs_pp)) {
-      marks_coefs_pp = numeric(n_marks)
-    }
-
     ## data
     ## E
     w <- get_weights(mesh = smesh, sp = sp, plot = FALSE)
