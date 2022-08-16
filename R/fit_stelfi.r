@@ -6,15 +6,14 @@
 #' print function and parameters every iteration.
 #' @inheritParams fit_hawkes
 #' @inheritParams fit_lgcp
-fit_hspde_tmb <- function(times, locs, sp,
-                          mesh, lmat,
-                          log_mu = 0, logit_abratio = 0, log_beta = 0,
+fit_hspde_tmb <- function(times, locs, sp, mesh, 
+                          coefs, designmat, logit_abratio = 0, log_beta = 0,
                           log_kappa = 0, log_tau = 0, log_xsigma = 0,
                           log_ysigma = 0, atanh_rho = 0,
                           spde, w , tmax = max(times),
                           reltol = 1e-12, abstol = 1e-12,
-                          tmb_silent,
-                          nlminb_silent, ...){
+                          lmat = lmat, simple = simple,
+                          tmb_silent, nlminb_silent, ...){
     if (!"spde_hawkes" %in% getLoadedDLLs()) {
         stelfi::dll_stelfi("spde_hawkes")
     }
@@ -28,12 +27,11 @@ fit_hspde_tmb <- function(times, locs, sp,
         else
             vt
     }))
-    lmat <- INLA::inla.spde.make.A(mesh, locs)
     data <- list(times = times, locs = locs, 
                 xyloc = mesh$loc[,1:2], reltol = reltol, abstol = abstol,
                 spde = spde$param.inla[c("M0", "M1", "M2")], w = w, tmax = tmax,
-                tv = innerloc, lmat = lmat)
-    param <- list(log_mu = log_mu, logit_abratio = logit_abratio, log_beta = log_beta,
+                designmat = designmat, tv = innerloc, simple = simple, lmat = lmat)
+    param <- list(coefs = coefs, logit_abratio = logit_abratio, log_beta = log_beta,
                   log_xsigma =  log_xsigma, log_ysigma =  log_ysigma,
                   atanh_rho = atanh_rho, log_kappa = log_kappa, log_tau = log_tau,
                   x = matrix(0, nrow = dim(lmat)[2], ncol = 1))
@@ -52,12 +50,11 @@ fit_hspde_tmb <- function(times, locs, sp,
 #' @inheritParams fit_hawkes
 #' @inheritParams fit_lgcp
 fit_hspat_tmb <- function(times, locs, sp,
-                          mesh,log_mu = 0, logit_abratio = 0, log_beta = 0,
-                          log_xsigma = 0,
-                          log_ysigma = 0, atanh_rho = 0, w,
+                          mesh, coefs, designmat, logit_abratio = 0, log_beta = 0,
+                          log_xsigma = 0, log_ysigma = 0, atanh_rho = 0, w,
                           reltol = 1e-12, abstol = 1e-12,
                           tmax = max(times),
-                          simple,
+                          lmat, simple,
                           tmb_silent, nlminb_silent, ...){
     if (!"spatial_hawkes" %in% getLoadedDLLs()) {
         stelfi::dll_stelfi("spatial_hawkes")
@@ -74,9 +71,9 @@ fit_hspat_tmb <- function(times, locs, sp,
     }))
     data <- list(times = times, locs = locs, 
                  xyloc = mesh$loc[,1:2], reltol = reltol, abstol = abstol,
-                  w = w, tmax = tmax,
-                 tv = innerloc, simple = simple)
-    param <- list(log_mu = log_mu, logit_abratio = logit_abratio,
+                  w = w, tmax = tmax, designmat = designmat,
+                 tv = innerloc, simple = simple, lmat = lmat)
+    param <- list(coefs = coefs, logit_abratio = logit_abratio,
                   log_beta = log_beta,
                   log_xsigma =  log_xsigma,
                   log_ysigma =  log_ysigma, atanh_rho = atanh_rho)
@@ -90,15 +87,20 @@ fit_hspat_tmb <- function(times, locs, sp,
 #' Funtion to fit stelfi
 #' @inheritParams fit_hspat_tmb
 #' @inheritParams fit_hspde_tmb
-fit_stelfi <-  function(times, locs, sp, smesh,  parameters,
+fit_stelfi <-  function(times, locs, sp, smesh,  parameters, covariates, 
                         gaussian = TRUE,
                         simple = 0, 
                         tmb_silent = TRUE,
                         nlminb_silent = TRUE, ...) {
     ## parameters
-    log_mu <- log(parameters[["mu"]])
-    if (is.null(log_mu)) {
-      log_mu <- log(0.5 * length(times)/max(times))
+    coefs <- parameters[["coefs"]]
+    if (is.null(coefs)) {
+      if (!missing(covariates)){
+        coefs <- numeric(ncol(covariates) + 1)
+        coefs[0] <- log(0.5 * length(times)/max(times))
+      } else {
+        coefs <- c(log(0.5 * length(times)/max(times)))
+      }
     }
     logit_abratio <- stats::qlogis(parameters[["alpha"]] / parameters[["beta"]])
     if (is.null(logit_abratio)) {
@@ -121,6 +123,7 @@ fit_stelfi <-  function(times, locs, sp, smesh,  parameters,
       atanh_rho <- 0
     }
     
+    
     ## error checking
     for (i in 2:length(times)) {
       if ((times[i] - times[i - 1]) < 1.e-10)
@@ -135,28 +138,45 @@ fit_stelfi <-  function(times, locs, sp, smesh,  parameters,
       stop("beta must be positive")
     }
     
-    if(!"matrix" %in% class(locs)) {
-      stop("arg locs must be a matrix")
-    }
+    
+    if(sum(names(locs) %in% c("x","y")) < 2)
+      stop("Named variables x and y required in arg locs")
     
     if (nrow(locs) != length(times)) {
       stop("different number of times and spatial locations")
     }
     
+    ## design matrix and covariates
+    if(!missing(covariates)) {
+      if(length(coefs) != (ncol(covariates) + 1))
+        stop("arg coefs should be length ncol.covariates + 1")
+      if(nrow(covariates) != nrow(smesh$loc))
+         stop("nrow.covariates should be same as spatial mesh size")
+      designmat <- cbind(1, covariates)
+    } else {
+      if(length(coefs) != 1){
+        stop("arg coefs should be length 1 if covariates missing")
+      }
+      designmat <- matrix(rep(1, smesh$n), ncol = 1)
+    }
+    
+    
     
     ## weights
-    w <- get_weights(mesh = smesh, sp = sp, plot = FALSE)$weights
+    wobj <- get_weights(mesh = smesh, sp = sp, plot = FALSE)
+    w <- wobj$weights
+    locs = as.matrix(locs)
+    lmat <- INLA::inla.spde.make.A(smesh, locs)
     if(gaussian == TRUE){
-        res <- fit_hspat_tmb(times = times, locs = locs, sp = sp,
-                             w  = w,
-                             mesh = smesh, log_mu = log_mu,
-                             logit_abratio = logit_abratio, log_beta = log_beta,
-                             log_xsigma = log_xsigma,
-                             log_ysigma = log_ysigma,
-                             atanh_rho = atanh_rho,
-                             simple = simple,
-                             tmb_silent = tmb_silent,
-                             nlminb_silent = nlminb_silent, ...)
+      res <- fit_hspat_tmb(times = times, locs = locs, sp = sp, w  = w,
+                            mesh = smesh, coefs = coefs, designmat = designmat, 
+                            logit_abratio = logit_abratio, log_beta = log_beta,
+                            log_xsigma = log_xsigma,
+                            log_ysigma = log_ysigma,
+                            atanh_rho = atanh_rho,
+                            lmat = lmat, simple = simple,
+                            tmb_silent = tmb_silent,
+                            nlminb_silent = nlminb_silent, ...)
     }else{
         ## SPDE
         spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
@@ -164,11 +184,12 @@ fit_stelfi <-  function(times, locs, sp, smesh,  parameters,
         log_kappa <- log(parameters[["kappa"]])
           res <- fit_hspde_tmb(times = times, locs = locs, sp = sp,
                              spde = spde, w  = w,
-                             mesh = smesh, log_mu = log_mu,
+                             mesh = smesh, coefs = coefs, designmat = designmat,
                              logit_abratio = logit_abratio, log_beta = log_beta,
                              log_kappa = log_kappa,
                              log_tau = log_tau, log_xsigma =  log_xsigma,
                              log_ysigma =  log_ysigma, atanh_rho = atanh_rho,
+                             lmat = lmat, simple = simple,
                              tmb_silent = tmb_silent,
                              nlminb_silent = nlminb_silent, ...)
     }

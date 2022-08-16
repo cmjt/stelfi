@@ -110,17 +110,19 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR(times);
   DATA_MATRIX(locs);
   DATA_VECTOR(w);
+  DATA_SPARSE_MATRIX(lmat); // the predicator matrix
   DATA_MATRIX(xyloc);
   DATA_SCALAR(tmax);
   DATA_INTEGER(simple); // If 1, use time-independent Gaussian fields
-  // parameters of the hawkes process
-  PARAMETER(log_mu);
+  // parameters of the Hawkes process
+  DATA_MATRIX(designmat); // first column is 1s, the rest are spatial covariates 
+  PARAMETER_VECTOR(coefs); // first entry is log_mu, the rest are coefficients
   PARAMETER(logit_abratio);
   PARAMETER(log_beta);
   PARAMETER(log_xsigma);
   PARAMETER(log_ysigma);
   PARAMETER(atanh_rho);
-  Type mu = exp(log_mu);
+  Type mu = exp(coefs[0]);
   Type beta = exp(log_beta);
   Type alpha = exp(logit_abratio + log_beta) / (Type(1.) + exp(logit_abratio)); // enforcing 0 <= alpha <= beta;
   Type xsigma = exp(log_xsigma);
@@ -135,7 +137,8 @@ Type objective_function<Type>::operator() ()
   // term-1
   // An APPROXIMATION of the integral of the field over the area.
   // int_{t, s} mu(s).
-  nll += sum(w) * mu * tmax;
+  vector<Type> L = exp(designmat * coefs);
+  nll += (L * w).sum() * tmax;
 
   // term 2
   // sum_{i = 1}^n log(lambda(s_i, t_i)), where lambda(s, t) = mu(s_i) + \sum_{i: t_i < t} g(s - s_i, t - t_i)
@@ -159,7 +162,7 @@ Type objective_function<Type>::operator() ()
         A[j] += exp(-beta * (times[j] - times[i]) - bivnorm(loci));
         }
   }
-  vector<Type> C = log(mu + alpha * A);
+  vector<Type> C = log(lmat * L + alpha * A);
   nll -= sum(C);
 
   // term 3
@@ -187,7 +190,7 @@ Type objective_function<Type>::operator() ()
     nll += (alpha/beta) * Type(sum(marks) - marks.template tail<1>()[0] - B.template tail<1>()[0]);
   }
 
-  SIMULATE {
+  SIMULATE { // Only for constant background without covariates
     // This simulation process follows Algorithm 4 in Section 3.3 of Reinhart (2018).
     DATA_IMATRIX(tv);
     /* 
@@ -270,6 +273,7 @@ Type objective_function<Type>::operator() ()
   }
 
   ADREPORT(mu);
+  ADREPORT(coefs);
   ADREPORT(alpha);
   ADREPORT(beta);
   ADREPORT(xsigma);

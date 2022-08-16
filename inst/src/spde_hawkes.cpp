@@ -136,14 +136,17 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR(w);
   DATA_MATRIX(xyloc);
   DATA_SCALAR(tmax);
+  DATA_INTEGER(simple); // If 1, use time-independent Gaussian fields
   // parameters of the hawkes process
-  PARAMETER(log_mu);
+  DATA_MATRIX(designmat); // first column is 1s, the rest are spatial covariates 
+  PARAMETER_VECTOR(coefs); // first entry is log_mu, the rest are coefficients
   PARAMETER(logit_abratio);
   PARAMETER(log_beta);
   PARAMETER(log_xsigma);
   PARAMETER(log_ysigma);
   PARAMETER(atanh_rho);
-  Type mu = exp(log_mu);
+  Type log_mu = coefs[0];
+  Type mu = exp(coefs[0]);
   Type beta = exp(log_beta);
   Type alpha = exp(logit_abratio + log_beta) / (Type(1.) + exp(logit_abratio)); // enforcing 0 <= alpha <= beta;
   Type xsigma = exp(log_xsigma);
@@ -174,8 +177,8 @@ Type objective_function<Type>::operator() ()
   // term-1
   // An APPROXIMATION of the integral of the field over the area.
   // int_{t, s} mu(s).
-  vector<Type> D = exp(x + log_mu) * w;
-  nll += sum(D) * tmax;
+  vector<Type> L = exp(x + designmat * coefs);
+  nll += (L * w).sum() * tmax;
 
   // term 2
   // sum_{i = 1}^n log(lambda(s_i, t_i)), where lambda(s, t) = mu(s_i) + \sum_{i: t_i < t} g(s - s_i, t - t_i)
@@ -184,6 +187,7 @@ Type objective_function<Type>::operator() ()
   vector<Type> loci(2);
   vector<Type> A(times.size());
   A.setZero();
+  if (simple == 0){
   for (int j = 0; j < times.size(); ++j)
     for (int i = 0; i < j; ++i)
       if (times[j] - times[i] > 0){
@@ -191,12 +195,41 @@ Type objective_function<Type>::operator() ()
         loci = locs.row(j) - locs.row(i);
         A[j] += exp(-beta * (times[j] - times[i]) - MVNORM(Q2)(loci));
       }
-  vector<Type> C = log(exp(lmat * x + log_mu) + alpha * A);
+  } else {
+    MVNORM_t<Type> bivnorm(Qbase);
+    for (int j = 1; j < times.size(); ++j)
+      for (int i = 0; i < j; ++i){
+        loci = locs.row(j) - locs.row(i);
+        A[j] += exp(-beta * (times[j] - times[i]) - bivnorm(loci));
+      }
+  }
+  vector<Type> C = log(lmat * L + alpha * A);
   nll -= sum(C);
 
   // term 3
-  diffusionkernel<Type> diffker(times, locs, beta, w, xyloc, Qbase);
-  nll += alpha * romberg::integrate(diffker, Type(0.), tmax);
+  if (simple == 0){
+    diffusionkernel<Type> diffker(times, locs, beta, w, xyloc, Qbase);
+    nll += alpha * romberg::integrate(diffker, Type(0.), tmax);
+  } else {
+    MVNORM_t<Type> bivnorm2(Qbase);
+    vector<Type> marks(times.size());
+    matrix<Type> ans(times.size(), w.size());
+    for (int j = 0; j < w.size(); ++j)
+      for (int k = 0; k < times.size(); ++k){
+        vector<Type> loci = xyloc.row(j) - locs.row(k);
+        ans(k, j) = exp(-bivnorm2(loci));
+      }
+      // For the purposes of integrating lambda, can treat like a marked model. 
+      // The mark is the volume of the Gaussian within the domain (0<=V<=1)
+    marks =  ans * w; 
+    vector<Type> B = vector<Type>::Zero(times.size());
+    
+    for(int i = 1; i < times.size(); ++i){
+      B[i] = exp(-beta * (times[i] - times[i - 1])) * (marks[i - 1] + B[i - 1]);
+    }
+    
+    nll += (alpha/beta) * Type(sum(marks) - marks.template tail<1>()[0] - B.template tail<1>()[0]);
+  }
 
   SIMULATE {
     // This simulation process follows Algorithm 4 in Section 3.3 of Reinhart (2018).
@@ -284,6 +317,7 @@ Type objective_function<Type>::operator() ()
   }
 
   ADREPORT(mu);
+  ADREPORT(coefs);
   ADREPORT(alpha);
   ADREPORT(beta);
   ADREPORT(xsigma);
