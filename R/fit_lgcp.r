@@ -71,10 +71,9 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
                       log_tau = log_tau,
                       atanh_rho = atanh_rho, x = x)
     }
-    obj <- TMB::MakeADFun(data = data, parameters = param,
+    obj <- TMB::MakeADFun(data = data, parameters = param, hessian = TRUE,
                           random = c("x"), DLL = "lgcp",
                           silent = tmb_silent)
-    obj$hessian <- TRUE
     trace <- if(nlminb_silent) 0 else 1
     if (simulation == FALSE) {
         opt <- stats::nlminb(obj$par, obj$fn, obj$gr,

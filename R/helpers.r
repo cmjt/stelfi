@@ -88,6 +88,7 @@ get_weights <- function(mesh, sp, plot = FALSE){
     # Convert sp to an object compatible with sf
     sp_sf <- sf::st_as_sf(sp)
     st_crs(sp_sf) <- NA
+    #st_set_precision(sp_sf, 1.e-8)
     if (!all(st_is_valid(sp_sf))) { # check for invalid geometries
       sp_sf <- st_make_valid(sp_sf)
     }
@@ -120,6 +121,7 @@ get_weights <- function(mesh, sp, plot = FALSE){
 points.in.mesh <- function(xy, dmesh, weights){
   xy <- sf::st_as_sf(xy, coords = c("x","y"))
   xy <- sf::st_geometry(xy)
+  
   if (missing(weights)){
     sapply(1:length(dmesh), function(i){
       coord <- sf::st_coordinates(sf::st_as_sf(dmesh[i,]))[,1:2]

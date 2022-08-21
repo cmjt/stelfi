@@ -97,7 +97,7 @@ fit_stelfi <-  function(times, locs, sp, smesh,  parameters, covariates,
     if (is.null(coefs)) {
       if (!missing(covariates)){
         coefs <- numeric(ncol(covariates) + 1)
-        coefs[0] <- log(0.5 * length(times)/max(times))
+        coefs[1] <- log(0.5 * length(times)/max(times))
       } else {
         coefs <- c(log(0.5 * length(times)/max(times)))
       }
@@ -108,7 +108,7 @@ fit_stelfi <-  function(times, locs, sp, smesh,  parameters, covariates,
     }
     log_beta <- log(parameters[["beta"]])
     if (is.null(log_beta)) {
-      log_beta <- log(2) - log_mu
+      log_beta <- log(2) - log(coefs[1])
     }
     log_xsigma <-  log(parameters[["xsigma"]])
     if (is.null(log_xsigma)) {
@@ -163,8 +163,7 @@ fit_stelfi <-  function(times, locs, sp, smesh,  parameters, covariates,
     
     
     ## weights
-    wobj <- get_weights(mesh = smesh, sp = sp, plot = FALSE)
-    w <- wobj$weights
+    w <- get_weights(mesh = smesh, sp = sp, plot = FALSE)$weights
     locs = as.matrix(locs)
     lmat <- INLA::inla.spde.make.A(smesh, locs)
     if(gaussian == TRUE){
