@@ -2,7 +2,7 @@
 #'
 #' \code{fit_hawkes} fits a range of self-exciting Hawkes processes using TMB
 #' @param times a vector of numeric observation time points
-#' @param parameters a vector of named parameters for the chosen model
+#' @param parameters a list of named parameters for the chosen model
 #' Default values used if not provided. 
 #' (see \code{model})
 #' "mu"--base rate of the hawkes process,
