@@ -13,7 +13,7 @@ and a mesh of polygons.}
 
 \item{dmesh}{An object returned by \code{\link{inla.mesh.dual}}.}
 
-\item{weights}{A vector of weights at each node of \code{dmesh}.}
+\item{weights}{A vector of weights/covariates for each point}
 }
 \value{
 Either the number of points in each polygon or sum of the weights.

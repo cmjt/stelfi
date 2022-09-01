@@ -4,7 +4,7 @@
 \alias{mesh_ang}
 \title{Calculate all interior Delaunay triangulation triangle angles}
 \usage{
-mesh_ang(mesh, s)
+mesh_ang(mesh)
 }
 \arguments{
 \item{mesh}{A \code{\link[INLA]{inla.mesh.2d}} object.}

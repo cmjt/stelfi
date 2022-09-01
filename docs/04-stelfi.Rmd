@@ -27,6 +27,7 @@ get_coefs(fit)
 
 
 ## Hawkes spde
+
 ```{r, eval = FALSE}
 
 ## issues with time....

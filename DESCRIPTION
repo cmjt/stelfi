@@ -32,7 +32,7 @@ Description: A package for fitting a range of spatiotemporal point processes whi
 License: GPL
 URL: https://github.com/cmjt/stelfi
 LazyData: TRUE
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 Suggests: 
     testthat (>= 3.0.0),
     knitr,

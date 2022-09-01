@@ -10,6 +10,7 @@ show_hawkes_GOF(
   alpha,
   beta,
   marks = c(rep(1, length(times))),
+  obj = NULL,
   background_param,
   plot = TRUE,
   return_values = TRUE
@@ -24,6 +25,9 @@ show_hawkes_GOF(
 occurence}
 
 \item{beta}{numeric integer specifying exponential intensity decay}
+
+\item{obj}{An object returned by fit_hawkes() or fit_hawkes_cbf()
+If provided, the only other parameters required are \code{mu} and \code{background_param}, and only if \code{mu} is not constant.}
 
 \item{plot}{Logical, whether to plot GOF plots. Default \code{TRUE}.}
 

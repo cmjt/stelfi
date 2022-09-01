@@ -10,18 +10,21 @@ meshmetrics(mesh)
 \item{mesh}{A \code{\link[INLA]{inla.mesh.2d}} object.}
 }
 \value{
-A named list:
+An object of class \code{sf} with the following data:
 \itemize{ 
-\item \code{edges}, a data frame of \code{mesh} segments as returned by \code{\link{segments}};
-\item \code{triangles}, a data frame specifying, for each triangle in the triangulation, the
- \itemize{
+\item \code{V1}, \code{V2}, and \code{V3} corresponding vertecies of \code{mesh}
+matches \code{mesh$graph$tv}.
+\item \code{ID} numeric triangle id
+\item {angleA}, \code{angleB}, and \code{angleC} the interior angles of the triangles
 \item circumcircle radius \code{circumcircle_R},
 \item incircle radius \code{incircle_r}), 
 \item the assocoated centroid locations (\code{c_Ox, cOy} and \code{i_Ox, iOy}), 
 \item the radius-edge ratio \code{radius_edge}, and 
-\item the radius ratio \code{radius_ratio};
-}
-\item \code{angles}, a 3 x nvert dataframe of all triangle interior angles.
+\item the radius ratio \code{radius_ratio}
+\item \codea{area} triangle area
+\item \code{quality} a measure of triangle "quality" defined as
+\frac{4\sqrt{3}|A|}{\Sigma_{i = 1}^3 L_i^2},
+where A is the area and L_i is edge length.
 }
 }
 \description{

@@ -2,7 +2,8 @@
 % Please edit documentation in R/fit_stelfi.r
 \name{fit_stelfi}
 \alias{fit_stelfi}
-\title{Funtion to fit stelfi}
+\title{Function to fit a spatiotemporal Hawkes model. 
+The self-excitement is Gaussian in space and exponentially decaying in time.}
 \usage{
 fit_stelfi(
   times,
@@ -10,7 +11,9 @@ fit_stelfi(
   sp,
   smesh,
   parameters,
-  gaussian = TRUE,
+  covariates,
+  GMRF = FALSE,
+  time_independent = TRUE,
   tmb_silent = TRUE,
   nlminb_silent = TRUE,
   ...
@@ -19,20 +22,38 @@ fit_stelfi(
 \arguments{
 \item{times}{a vector of numeric observation time points}
 
-\item{locs}{A \code{data.frame} of \code{x} and \code{y} locations, 2xn. If locations have
-time stamps then this should be the third column of the supplied 3xn matrix.}
+\item{locs}{A \code{data.frame} of \code{x} and \code{y} locations, 2xn.}
 
 \item{sp}{A \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
 of the domain.}
 
+\item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
+
+\item{parameters}{a list of named parameters
+Default values used if not provided. 
+"coefs"--logged base rate of the Hawkes process and coefficients of covariates
+"alpha"--intensity jump after an event occurrence
+"beta"-- rate of exponential decay of intensity after event occurrence
+"tau"-- \code{tau} parameter for the GMRF (only if \code{GMRF} == TRUE)
+"kappa"--\code{kappa} parameter for the GMRF (only if \code{GMRF} == TRUE)}
+
+\item{covariates}{Optional, a \code{matrix} of covariates at each
+\code{smesh} node.}
+
+\item{GMRF}{logical, default FALSE. If TRUE, a spatial Gaussian Markov Random Field is fitted.}
+
+\item{time_independent}{logical, default TRUE. If FALSE, Gaussian kernels have a covariate matrix that is proportional to time since the event. 
+Warning, this is very memory intensive.}
+
 \item{tmb_silent}{logical, default `TRUE`:
 TMB inner optimization tracing information will be printed.}
 
-\item{nlminb_silent}{logical, default `TRUE`:
+\item{nlminb_silent}{Logical, default \code{TRUE}:
 print function and parameters every iteration.}
 
 \item{...}{arguments to pass into \code{optim()}}
 }
 \description{
-Funtion to fit stelfi
+Function to fit a spatiotemporal Hawkes model. 
+The self-excitement is Gaussian in space and exponentially decaying in time.
 }

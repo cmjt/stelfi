@@ -13,13 +13,13 @@ mesh_2_sf(mesh)
 \item{mesh}{A \code{\link[INLA]{inla.mesh.2d}} object.}
 }
 \value{
-A \code{\link[sf]{st_as_sf}}.
+A \code{\link[sf]{sf}}.
 }
 \description{
 Transform a \code{\link[INLA]{inla.mesh.2d}} into a \code{\link[sf]{sf}}
 }
 \details{
-Modified from function suggested by Finn in the
+Modified from \code{sp} based function suggested by Finn in the
 R-inla discussion Google Group \url{https://groups.google.com/g/r-inla-discussion-group/c/z1n1exlZrKM}.
 }
 \examples{

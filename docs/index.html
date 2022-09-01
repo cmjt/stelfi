@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Fitting models using stelfi</title>
   <meta name="description" content="Using stelfi" />
-  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.27 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Fitting models using stelfi" />
   <meta property="og:type" content="book" />
@@ -48,33 +48,31 @@
 
 
 
-<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 
 
 <style type="text/css">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -83,9 +81,9 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  {  }
 @media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+a.sourceLine::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -136,33 +134,31 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Installation</a></li>
-<li class="chapter" data-level="1" data-path="hawkes.html"><a href="hawkes.html"><i class="fa fa-check"></i><b>1</b> Hawkes process</a>
-<ul>
-<li class="chapter" data-level="1.1" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes-function"><i class="fa fa-check"></i><b>1.1</b> The <code>fit_hawkes()</code> function</a>
-<ul>
+<li class="chapter" data-level="1" data-path="hawkes.html"><a href="hawkes.html"><i class="fa fa-check"></i><b>1</b> Hawkes process</a><ul>
+<li class="chapter" data-level="1.1" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes-function"><i class="fa fa-check"></i><b>1.1</b> The <code>fit_hawkes()</code> function</a><ul>
 <li class="chapter" data-level="1.1.1" data-path="hawkes.html"><a href="hawkes.html#fitting-a-hawkes-model"><i class="fa fa-check"></i><b>1.1.1</b> Fitting a Hawkes model</a></li>
 <li class="chapter" data-level="1.1.2" data-path="hawkes.html"><a href="hawkes.html#fitting-an-etas-type-marked-model"><i class="fa fa-check"></i><b>1.1.2</b> Fitting an ETAS-type marked model</a></li>
 </ul></li>
-<li class="chapter" data-level="1.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>1.2</b> The <code>fit_hawkes_cbf()</code> function</a>
-<ul>
+<li class="chapter" data-level="1.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>1.2</b> The <code>fit_hawkes_cbf()</code> function</a><ul>
 <li class="chapter" data-level="1.2.1" data-path="hawkes.html"><a href="hawkes.html#fitting-an-inhomogenous-hawkes-process"><i class="fa fa-check"></i><b>1.2.1</b> Fitting an inhomogenous Hawkes process</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>2</b> A log-Gaussian Cox Process</a>
-<ul>
-<li class="chapter" data-level="2.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>2.1</b> The <code>fit_lgcp()</code> function</a>
-<ul>
+<li class="chapter" data-level="2" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>2</b> A log-Gaussian Cox Process</a><ul>
+<li class="chapter" data-level="2.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>2.1</b> The <code>fit_lgcp()</code> function</a><ul>
 <li class="chapter" data-level="2.1.1" data-path="lgcp.html"><a href="lgcp.html#fitting-a-spatial-only-lgcp"><i class="fa fa-check"></i><b>2.1.1</b> Fitting a spatial only LGCP</a></li>
 <li class="chapter" data-level="2.1.2" data-path="lgcp.html"><a href="lgcp.html#spatiotemporal-lgcp"><i class="fa fa-check"></i><b>2.1.2</b> Spatiotemporal LGCP</a></li>
 <li class="chapter" data-level="2.1.3" data-path="lgcp.html"><a href="lgcp.html#simulating-a-spatiotemporal-lgcp"><i class="fa fa-check"></i><b>2.1.3</b> Simulating a spatiotemporal LGCP</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="marked.html"><a href="marked.html"><i class="fa fa-check"></i><b>3</b> A marked log-Gaussian Cox Process</a>
-<ul>
-<li class="chapter" data-level="3.1" data-path="marked.html"><a href="marked.html#the-fit_mlgcp-function"><i class="fa fa-check"></i><b>3.1</b> The <code>fit_mlgcp()</code> function</a>
-<ul>
+<li class="chapter" data-level="3" data-path="marked.html"><a href="marked.html"><i class="fa fa-check"></i><b>3</b> A marked log-Gaussian Cox Process</a><ul>
+<li class="chapter" data-level="3.1" data-path="marked.html"><a href="marked.html#the-fit_mlgcp-function"><i class="fa fa-check"></i><b>3.1</b> The <code>fit_mlgcp()</code> function</a><ul>
 <li class="chapter" data-level="3.1.1" data-path="marked.html"><a href="marked.html#fitting-a-marked-lgcp"><i class="fa fa-check"></i><b>3.1.1</b> Fitting a marked LGCP</a></li>
 </ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="stelfi.html"><a href="stelfi.html"><i class="fa fa-check"></i><b>4</b> Spatiotemporal self-exciting model</a><ul>
+<li class="chapter" data-level="4.1" data-path="stelfi.html"><a href="stelfi.html#the-fit_stelfi-function"><i class="fa fa-check"></i><b>4.1</b> The <code>fit_stelfi()</code> function</a></li>
+<li class="chapter" data-level="4.2" data-path="stelfi.html"><a href="stelfi.html#hawkes-spatial"><i class="fa fa-check"></i><b>4.2</b> Hawkes spatial</a></li>
+<li class="chapter" data-level="4.3" data-path="stelfi.html"><a href="stelfi.html#hawkes-spde"><i class="fa fa-check"></i><b>4.3</b> Hawkes spde</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
@@ -189,13 +185,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1 class="title">Fitting models using <code>stelfi</code></h1>
 <p class="author"><em>Charlotte M. Jones-Todd &amp; Alec van Helsdingen</em></p>
 </div>
-<div id="installation" class="section level1 unnumbered hasAnchor" number="">
+<div id="installation" class="section level1 unnumbered hasAnchor">
 <h1>Installation<a href="index.html#installation" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>The <code>stelfi</code> package can be installed from Github:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="index.html#cb1-1"></a>devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;cmjt/stelfi&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;cmjt/stelfi&quot;</span>)</a></code></pre></div>
 <p><strong>Compiling templates</strong></p>
 <p>Before using the <code>TMB</code> templates in <code>stelfi</code> you should use <code>compile_stelfi()</code> to compile them:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="index.html#cb2-1"></a>stelfi<span class="op">::</span><span class="kw">compile_stelfi</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">stelfi<span class="op">::</span><span class="kw">compile_stelfi</span>()</a></code></pre></div>
 
 </div>
             </section>

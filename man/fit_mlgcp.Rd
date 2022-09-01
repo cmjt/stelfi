@@ -10,10 +10,10 @@ fit_mlgcp(
   sp,
   marks,
   smesh,
-  parameters,
+  parameters = list(),
   methods,
-  strfixed,
-  fields,
+  strfixed = matrix(1, nrow = nrow(locs), ncol = ncol(marks)),
+  fields = rep(1, ncol(marks)),
   covariates,
   pp_covariates,
   marks_covariates,
@@ -32,7 +32,7 @@ of the domain.}
 
 \item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
 
-\item{parameters}{a list of named parmeters:
+\item{parameters}{a list of named parameters:
 log_tau, log_kappa, betamarks, betapp, marks_coefs_pp.
 See \code{\link{fit_mlgcp_tmb}} for further details.}
 
@@ -44,15 +44,15 @@ See \code{\link{fit_mlgcp_tmb}} for further details.}
 \item \code{3}, gamma distribution, the implementation in TMB is shape-scale.
 }}
 
-\item{strfixed}{A matrix of fixed structural parameters.
-Normal distribution: this is the log of element-wise standard deviation.
+\item{strfixed}{A matrix of fixed structural parameters, defined for each event and mark.
+Defaults to 1s.
+Normal distribution: this is the log of standard deviation.
 Poisson distribution: not used
 Binomial distribution, this is the number of trials.
-The default input from R should be 1s, i.e., the Bernoulli distribution.
-Gamma distribution, this is the log of scale.}
+Gamma distribution, this is the log of the scale.}
 
 \item{fields}{A binary vector indicating whether there is a new random
-field for each mark.}
+field for each mark. By default, each mark has its own random field.}
 
 \item{covariates}{Covariate(s) corresponding to each area in the spatial mesh}
 
@@ -64,7 +64,7 @@ By default, all covariates apply to the marks only.}
 \item{tmb_silent}{Logical, default \code{TRUE}:
 TMB inner optimization tracing information will be printed.}
 
-\item{nlminb_silent}{logical, default \code{TRUE}:
+\item{nlminb_silent}{Logical, default \code{TRUE}:
 print function and parameters every iteration.}
 
 \item{...}{Optional extra arguments to pass into \code{\link[stats]{nlminb}}.}
@@ -85,13 +85,9 @@ marks <- cbind(m1 = marked$m1) ## Gaussian
 parameters <- list(betamarks = matrix(0, nrow = 1, ncol = ncol(marks)),
 log_tau = rep(log(1), 2), log_kappa = rep(log(1), 2),
 marks_coefs_pp = rep(0, ncol(marks)), betapp = 0)
-strfixed <- cbind(rep(log(0.25), nrow(marks)))
 fit <- fit_mlgcp(locs = locs, marks = marks,
 sp = domain, smesh = smesh,
-parameters = parameters, methods = 0,
-strfixed = strfixed, strparam = strparam, idx = idx,
-fields = 1, pp_covariates = matrix(1, ncol = 1, nrow = nrow(locs)),
-marks_covariates = matrix(1, ncol = ncol(marks), nrow = nrow(marks)))
+parameters = parameters, methods = 0,fields = 1)
 }
 }
 }

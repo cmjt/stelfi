@@ -80,7 +80,7 @@ random effects \tab x.col(0)  \tab   x.col(1) \tab   x.col(2)  \tab     ...   \t
 \item{tmb_silent}{Logical, default \code{TRUE}:
 TMB inner optimization tracing information will be printed.}
 
-\item{nlminb_silent}{logical, default \code{TRUE}:
+\item{nlminb_silent}{Logical, default \code{TRUE}:
 print function and parameters every iteration.}
 
 \item{...}{Optional extra arguments to pass into \code{\link[stats]{nlminb}}.}

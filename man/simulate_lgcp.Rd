@@ -12,7 +12,8 @@ simulate_lgcp(parameters, sp, smesh, tmesh, covariates, all = FALSE)
 (same length as \code{ncol(covariates)} + 1 );
 \code{log_tau}, the \code{log(tau)} parameter for the GMRF;
 \code{log_kappa}, \code{log(kappa)} parameter for the GMRF;
-\code{atanh_rho}, optional, \code{arctan(rho)} AR1 temporal parameter.}
+\code{atanh_rho}, optional, \code{arctan(rho)} AR1 temporal parameter.
+Default values are used if not provided.}
 
 \item{sp}{A \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
 of the domain.}

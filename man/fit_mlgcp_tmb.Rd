@@ -40,12 +40,12 @@ The minimal required components are \code{M0}, \code{M1}, \code{M2}.}
 \item{w}{A vector of model weights; corresponds to the \code{E} term for
 poisson models, see \code{\link[INLA]{inla.doc("poisson")}} for more detail.}
 
-\item{strfixed}{A matrix of fixed structural parameters.
-Normal distribution: this is the log of element-wise standard deviation.
+\item{strfixed}{A matrix of fixed structural parameters, defined for each event and mark.
+Defaults to 1s.
+Normal distribution: this is the log of standard deviation.
 Poisson distribution: not used
 Binomial distribution, this is the number of trials.
-The default input from R should be 1s, i.e., the Bernoulli distribution.
-Gamma distribution, this is the log of scale.}
+Gamma distribution, this is the log of the scale.}
 
 \item{methods}{An integer value:
 \itemize{
@@ -60,8 +60,8 @@ covariate coefficients of each mark.}
 
 \item{betapp}{Numeric starting value of the  intercept of point process.}
 
-\item{marks_coefs_pp}{The numeric starting value of the mark lambda versus
-the point process lambda coefficient.}
+\item{marks_coefs_pp}{The numeric starting value of the coefficient that connects
+the mark intensity to the point process intensity.}
 
 \item{log_kappa}{The numeric starting value of log of kappas for the
 random field(s). The first element is for the random field of the
@@ -72,9 +72,9 @@ random field(s). The first element is for the random field of the
 point process.}
 
 \item{cov_overlap}{Logical, if \code{TRUE} then  marks and point process
-share covariates.
-If \code{FALSE}, \code{marks_coef_pp} applies to entire lambda of the point
-process. If there is overlap, it applies only to the point process random field.}
+share covariates. In that case, To avoid parameter redundancy and non-identifiability
+{marks_coefs_pp} multiples only the GMRF of the point process.
+If \code{FALSE}, \code{marks_coef_pp} multiples the full value of lambda}
 
 \item{designmatpp}{Design matrix for point process. The first column is ones.
 If there are covariates, then the covariates are in the subsequent columns.}
@@ -82,12 +82,12 @@ If there are covariates, then the covariates are in the subsequent columns.}
 \item{designmatmarks}{The design matrix for the marks.}
 
 \item{fields}{A binary vector indicating whether there is a new random
-field for each mark.}
+field for each mark. By default, each mark has its own random field.}
 
 \item{tmb_silent}{Logical, default \code{TRUE}:
 TMB inner optimization tracing information will be printed.}
 
-\item{nlminb_silent}{logical, default \code{TRUE}:
+\item{nlminb_silent}{Logical, default \code{TRUE}:
 print function and parameters every iteration.}
 
 \item{...}{Optional extra arguments to pass into \code{\link[stats]{nlminb}}.}

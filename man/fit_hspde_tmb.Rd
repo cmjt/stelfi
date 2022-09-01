@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_stelfi.r
 \name{fit_hspde_tmb}
 \alias{fit_hspde_tmb}
-\title{Function to fit a spde spatial hawkes process using \code{TMB} and the
+\title{Function to fit a spde spatial Hawkes process using \code{TMB} and the
 \code{R_inla} namespace for the spde construction of the latent field.}
 \usage{
 fit_hspde_tmb(
@@ -10,8 +10,8 @@ fit_hspde_tmb(
   locs,
   sp,
   mesh,
-  lmat,
-  log_mu = 0,
+  coefs,
+  designmat,
   logit_abratio = 0,
   log_beta = 0,
   log_kappa = 0,
@@ -24,6 +24,8 @@ fit_hspde_tmb(
   tmax = max(times),
   reltol = 1e-12,
   abstol = 1e-12,
+  lmat = lmat,
+  simple = simple,
   tmb_silent,
   nlminb_silent,
   ...
@@ -47,6 +49,6 @@ print function and parameters every iteration.}
 \item{...}{arguments to pass into \code{optim()}}
 }
 \description{
-Function to fit a spde spatial hawkes process using \code{TMB} and the
+Function to fit a spde spatial Hawkes process using \code{TMB} and the
 \code{R_inla} namespace for the spde construction of the latent field.
 }

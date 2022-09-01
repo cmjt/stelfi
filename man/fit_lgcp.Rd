@@ -9,7 +9,7 @@ fit_lgcp(
   sp,
   smesh,
   tmesh,
-  parameters,
+  parameters = list(),
   covariates,
   tmb_silent = TRUE,
   nlminb_silent = TRUE,
@@ -32,7 +32,8 @@ of the domain.}
 (same length as \code{ncol(covariates)} + 1 );
 \code{log_tau}, the \code{log(tau)} parameter for the GMRF;
 \code{log_kappa}, \code{log(kappa)} parameter for the GMRF;
-\code{atanh_rho}, optional, \code{arctan(rho)} AR1 temporal parameter.}
+\code{atanh_rho}, optional, \code{arctan(rho)} AR1 temporal parameter.
+Default values are used if not provided.}
 
 \item{covariates}{Optional, a \code{matrix} of covariates at each
 \code{smesh} and \code{tmesh} node combination.}
@@ -40,7 +41,7 @@ of the domain.}
 \item{tmb_silent}{Logical, default \code{TRUE}:
 TMB inner optimization tracing information will be printed.}
 
-\item{nlminb_silent}{logical, default \code{TRUE}:
+\item{nlminb_silent}{Logical, default \code{TRUE}:
 print function and parameters every iteration.}
 
 \item{...}{Optional extra arguments to pass into \code{\link[stats]{nlminb}}.}

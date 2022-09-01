@@ -6,7 +6,7 @@
 \usage{
 fit_hawkes(
   times,
-  parameters,
+  parameters = list(),
   model = 1,
   marks = c(rep(1, length(times))),
   tmb_silent = TRUE,
@@ -17,15 +17,18 @@ fit_hawkes(
 \arguments{
 \item{times}{a vector of numeric observation time points}
 
-\item{parameters}{a vector of named parmeters for the chosen model
+\item{parameters}{a list of named parameters for the chosen model
+Default values used if not provided. 
 (see \code{model})
 "mu"--base rate of the hawkes process,
-"alpha"--intensity jump after an event occurence, and
+"alpha"--intensity jump after an event occurrence (\code{model} = 1)
+"a_par" -- logit scale for alpha. alpha must be set so that the intensity never goes negative
+ and so that alpha <= beta. (\code{model} = 2)
 "beta"--exponential intensity decay}
 
 \item{model}{a factor indicator specifying which model to fit:
-\code{1}, a hawkes process with exponential decay (default);
-\code{2}, hawkes process with negative self-exciting intensity "jump".}
+\code{1}, a Hawkes process with exponential decay (default);
+\code{2}, Hawkes process with a "jump" (alpha) that can be negative.}
 
 \item{marks}{a vector of numerical marks, defaults to 1 (i.e., no marks)}
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.r
 \name{show_hawkes}
 \alias{show_hawkes}
-\title{Plots the Hawkes intensty function with decay historical dependence}
+\title{Plots the Hawkes intensity function with decay historical dependence}
 \usage{
 show_hawkes(
   times,
@@ -10,6 +10,7 @@ show_hawkes(
   alpha,
   beta,
   marks = c(rep(1, length(times))),
+  obj = NULL,
   background_param = NULL
 )
 }
@@ -22,9 +23,12 @@ show_hawkes(
 occurence}
 
 \item{beta}{numeric integer specifying exponential intensity decay}
+
+\item{obj}{An object returned by fit_hawkes() or fit_hawkes_cbf()
+If provided, the only other parameters required are \code{mu} and \code{background_param}, and only if \code{mu} is not constant.}
 }
 \description{
-Plots the Hawkes intensty function with decay historical dependence
+Plots the Hawkes intensity function with decay historical dependence
 }
 \examples{
 \dontrun{

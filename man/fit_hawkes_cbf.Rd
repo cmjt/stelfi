@@ -6,7 +6,7 @@
 \usage{
 fit_hawkes_cbf(
   times,
-  parameters,
+  parameters = list(),
   model = 1,
   marks = c(rep(1, length(times))),
   background,
@@ -20,17 +20,19 @@ fit_hawkes_cbf(
 \arguments{
 \item{times}{a vector of numeric observation time points}
 
-\item{parameters}{a vector of named parmeters for the chosen model
+\item{parameters}{a list of named parameters for the chosen model
+Default values used if not provided. 
 (see \code{model})
 "mu"--base rate of the hawkes process,
-"alpha"--intensity jump after an event occurence, and
+"alpha"--intensity jump after an event occurrence (\code{model} = 1)
+"a_par" -- logit scale for alpha. alpha must be set so that the intensity never goes negative
+ and so that alpha <= beta. (\code{model} = 2)
 "beta"--exponential intensity decay}
 
 \item{model}{A factor indicator specifying which model to fit:
 \itemize{
-\item \code{1}, a hawkes process with exponential decay and cbf (default);
-\item \code{2}, a hawkes process and cbf with negative
-self-exciting intensity "jump".
+\item \code{1}, a Hawkes process with exponential decay and cbf (default), positive alpha.
+\item \code{2}, a Hawkes process with exponential decay and cbf, but alpha can be negative. 
 }}
 
 \item{marks}{a vector of numerical marks, defaults to 1 (i.e., no marks)}
@@ -56,8 +58,8 @@ This could be a list of multiple values.}
 \description{
 \code{fit_hawkes_cbf} fits a range of self-exciting Hawkes processes
 with a given custom background function (cbf) using TMB using TMB.
-The \code{alpha} and \code{beta} parameters are estimated using TMB,
-parameters of the CBF are optimized in R.
+The \code{alpha} (\code{model} = 1) or \code{a_par} (\code{model} = 2) and \code{beta} parameters are estimated using TMB,
+parameters of the cbf are optimized in R.
 }
 \examples{
 {

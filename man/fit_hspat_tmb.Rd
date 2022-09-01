@@ -2,14 +2,15 @@
 % Please edit documentation in R/fit_stelfi.r
 \name{fit_hspat_tmb}
 \alias{fit_hspat_tmb}
-\title{Function to fit a spatial hawkes process using \code{TMB}}
+\title{Function to fit a spatial Hawkes process using \code{TMB}}
 \usage{
 fit_hspat_tmb(
   times,
   locs,
   sp,
   mesh,
-  log_mu = 0,
+  coefs,
+  designmat,
   logit_abratio = 0,
   log_beta = 0,
   log_xsigma = 0,
@@ -19,6 +20,8 @@ fit_hspat_tmb(
   reltol = 1e-12,
   abstol = 1e-12,
   tmax = max(times),
+  lmat,
+  simple,
   tmb_silent,
   nlminb_silent,
   ...
@@ -36,11 +39,11 @@ of the domain.}
 \item{tmb_silent}{logical, default `TRUE`:
 TMB inner optimization tracing information will be printed.}
 
-\item{nlminb_silent}{logical, default `TRUE`:
+\item{nlminb_silent}{Logical, default \code{TRUE}:
 print function and parameters every iteration.}
 
 \item{...}{arguments to pass into \code{optim()}}
 }
 \description{
-Function to fit a spatial hawkes process using \code{TMB}
+Function to fit a spatial Hawkes process using \code{TMB}
 }
