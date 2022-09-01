@@ -104,7 +104,6 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters=list(), methods,
     ## Verify args are correct size and class
     n_marks <- ncol(marks)
     n_fields <- sum(fields) + 1
-    
     ## read in parameters
     log_tau <- parameters[["log_tau"]]
     if (is.null(log_tau)) {
@@ -186,8 +185,7 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters=list(), methods,
     w <- get_weights(mesh = smesh, sp = sp, plot = FALSE)
     w_areas <- w$weights
     polys <- w$polys
-
-    ypp <- points.in.mesh(locs, polys)
+    ypp <- points.in.mesh(as.data.frame(locs), polys)
     ## SPDE
     spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
     lmat <- INLA::inla.spde.make.A(smesh, locs)
