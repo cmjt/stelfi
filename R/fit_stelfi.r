@@ -99,6 +99,7 @@ fit_hspat_tmb <- function(times, locs, sp,
 #' @inheritParams fit_hawkes
 #' @inheritParams fit_lgcp
 #' @inheritParams fit_hspat_tmb
+#' @export
 fit_stelfi <-  function(times, locs, sp, smesh,  parameters, covariates, 
                         GMRF = FALSE,
                         time_independent = TRUE, 
