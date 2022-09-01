@@ -22,7 +22,25 @@ ang <- function(a, b, c){
   angC <- acos(cosC)
   return(angC*180/pi)
 }
-
+#' Sin function to calculate the area of a triangle given
+#' edge lengths a, b and angle C.
+#' 
+#' @param a A numeric triangle edgelength (opposite angle A).
+#' @param b A numeric triangle edgelength (opposite angle B).
+#' @param angC angle (in degrees)
+#' @examples \dontrun{
+#' A <- c(1, 1)
+#' B <- c(2, 1)
+#' C <- c(2.5, 1.5)
+#' a <- dist(B, C)
+#' b <- dist(A, C)
+#' c <- dist(A, B)
+#' angC <- ang( a, b, c)
+#' tri_area(a, b, angC)
+#' }
+tri_area <- function(a, b, angC){
+    (1/2)*a*b*sin(angC/(180/pi))
+}
 #' Calculate cicumcircle radius given vertex A, B, C
 #' locations of a triangle
 #' 
@@ -120,7 +138,7 @@ segments <- function(mesh){
 #' s <- segments(horse_mesh)
 #' mesh_ang(horse_mesh, s)
 #' }
-mesh_ang <- function(mesh, s){
+mesh_ang <- function(mesh){
   tv <- mesh$graph$tv
   angs <- matrix(numeric(3*nrow(tv)), ncol = 3)
   for(i in 1:nrow(tv)){
@@ -134,6 +152,9 @@ mesh_ang <- function(mesh, s){
     angs[i, 2] <- ang(dists[2], dists[3], dists[1])
     angs[i, 3] <- ang(dists[3], dists[1], dists[2])
   }
+  angs <- as.data.frame(angs)
+  names(angs) <- c("angleA", "angleB", "angleC")
+  angs$ID <- 1:nrow(angs)
   return(angs)
 }
 #' Calculate minimum edge length for each triangle in a given Delaunay triangulation
@@ -161,33 +182,31 @@ lmin <- function(mesh){
 #' 
 #' @inheritParams meshmetrics
 #' @source \url{https://groups.google.com/g/r-inla-discussion-group/c/z1n1exlZrKM}
-#' @details Modified from function suggested by Finn in the
+#' @details Modified from \code{sp} based function suggested by Finn in the
 #' R-inla discussion Google Group \url{https://groups.google.com/g/r-inla-discussion-group/c/z1n1exlZrKM}.
-#' @returns A \code{\link[sf]{st_as_sf}}.
+#' @returns A \code{\link[sf]{sf}}.
 #' @examples \dontrun{
 #' data(horse_mesh, package = "stelfi")
 #' mesh_2_sf(horse_mesh)
 #' }
 #' @export
 mesh_2_sf <- function(mesh) {
-  crs <- inla.CRS(inla.CRSargs(mesh$crs))
-  triags <- sp::SpatialPolygonsDataFrame(
-    Sr <- sp::SpatialPolygons(lapply(
-      1:nrow(mesh$graph$tv),
-      function(x) {
-        tv <- mesh$graph$tv[x, , drop = TRUE]
-        sp::Polygons(list(sp::Polygon(mesh$loc[tv[c(1, 3, 2, 1)],
-                                               1:2,
-                                               drop = FALSE])),
-                     ID = x)
-      }
-    ),
-    proj4string = crs
-    ),
-    data = as.data.frame(mesh$graph$tv[, c(1, 3, 2), drop = FALSE]),
-    match.ID = FALSE
-  )
-  sf::st_as_sf(triags)
+    st <- sf::st_sfc(lapply(
+                  1:nrow(mesh$graph$tv),
+                  function(x) {
+                      tv <- mesh$graph$tv[x, , drop = TRUE]
+                      sf::st_polygon(list(mesh$loc[tv[c(1, 3, 2, 1)],
+                                                   1:2,
+                                                   drop = FALSE]))
+                      
+                  }
+              )
+              )
+    dat <- as.data.frame(mesh$graph$tv[, c(1, 3, 2), drop = FALSE])
+    dat$ID <- 1:length(st)
+    res <- sf::st_sf(dat,
+                     geometry = st)
+    return(res)
 }
 #' Calculate a number of different \code{\link[INLA]{inla.mesh.2d}} attributes
 #' 
@@ -195,18 +214,21 @@ mesh_2_sf <- function(mesh) {
 #' Delaunay triangulation.
 #' 
 #' @param mesh A \code{\link[INLA]{inla.mesh.2d}} object.
-#' @return A named list:
+#' @return An object of class \code{sf} with the following data:
 #' \itemize{ 
-#' \item \code{edges}, a data frame of \code{mesh} segments as returned by \code{\link{segments}};
-#' \item \code{triangles}, a data frame specifying, for each triangle in the triangulation, the
-#'  \itemize{
+#' \item \code{V1}, \code{V2}, and \code{V3} corresponding vertecies of \code{mesh}
+#' matches \code{mesh$graph$tv}.
+#' \item \code{ID} numeric triangle id
+#' \item {angleA}, \code{angleB}, and \code{angleC} the interior angles of the triangles
 #' \item circumcircle radius \code{circumcircle_R},
 #' \item incircle radius \code{incircle_r}), 
 #' \item the assocoated centroid locations (\code{c_Ox, cOy} and \code{i_Ox, iOy}), 
 #' \item the radius-edge ratio \code{radius_edge}, and 
-#' \item the radius ratio \code{radius_ratio};
-#' }
-#' \item \code{angles}, a 3 x nvert dataframe of all triangle interior angles.
+#' \item the radius ratio \code{radius_ratio}
+#' \item \codea{area} triangle area
+#' \item \code{quality} a measure of triangle "quality" defined as
+#' \frac{4\sqrt{3}|A|}{\Sigma_{i = 1}^3 L_i^2},
+#' where A is the area and L_i is edge length.
 #' }
 #' @examples \dontrun{
 #' data(horse_mesh, package = "stelfi")
@@ -214,53 +236,34 @@ mesh_2_sf <- function(mesh) {
 #' }
 #' @export
 meshmetrics <- function(mesh) {
-  verts <- segments(mesh = mesh)
-  angles <- mesh_ang(mesh = mesh, s = verts)
+  angles <- mesh_ang(mesh = mesh)
   tv <- mesh$graph$tv
-  c_R <- i_R <- numeric(nrow(tv))
+  c_R <- i_R <- area <- quality <- numeric(nrow(tv))
   c_O <- i_O <- matrix(rep(0, 2*nrow(tv)), ncol = 2)
   for (i in 1:nrow(tv)){
     A <- mesh$loc[tv[i,1], 1:2]
     B <- mesh$loc[tv[i,2], 1:2]
     C <- mesh$loc[tv[i,3], 1:2]
+    a <-  dist(B, C)
+    b <- dist(A, C)
+    c <- dist(A, B)
     c_R[i] <- circum_R(A, B , C)
     i_R[i] <- incircle_r(A, B , C)
     c_O[i, ] <- circum_O(A, B, C)
     i_O[i, ] <- incircle_O(A, B, C)
+    area[i] <- abs(tri_area(a = a, b = b,
+                            angC = ang(a , b, c)))
+    quality[i] <- (4*sqrt(3)*abs(area[i]))/(sum(c(a,b,c)^2))
   }
   mn <- lmin(mesh)
-  df <- data.frame(incircle_r = i_R, circumcircle_R = c_R,
+  sf <- mesh_2_sf(mesh)
+  df <- data.frame(ID = 1:nrow(sf),incircle_r = i_R,
+                   circumcircle_R = c_R,
                    c_Ox = c_O[, 1],  c_Oy = c_O[, 2],
                    i_Ox = i_O[, 1],  i_Oy = i_O[, 2],
-                   radius_edge = c_R/mn, radius_ratio = i_R/c_R)
-  sf <- mesh_2_sf(mesh)
-  return(list(edges = verts, triangles = df,
-              angles = angles,
-              sf = sf))
-}
-#' Plot a \code{\link[INLA]{inla.mesh.2d}} object by attribute
-#' 
-#' @inheritParams meshmetrics
-#' @param radius-edge Logical, if \code{TRUE} (default) then the radius-edge ratio
-#' of each triancle in the Delaunay triangulation is plotted. If \code{FALSE}
-#' then the radius-ratio is plotted.
-#' @seealso \code{\link{meshmetrics}}
-#' @examples \dontrun{
-#' data(horse_mesh, package = "stelfi")
-#' plot_mesh(horse_mesh)
-#' plot_mesh(horse_mesh,  radius_edge = FALSE)
-#' }
-#' @export
-plot_mesh <- function(mesh, radius_edge = TRUE){
-  attributes <- meshmetrics(mesh)
-  if(radius_edge){
-    tmp <-  ggplot2::ggplot(attributes$sf, ggplot2::aes(fill = attributes$triangles$radius_edge)) +
-      ggplot2::geom_sf(colour = NA) + ggplot2::theme_void() +
-      ggplot2::scale_fill_continuous(name = "Radius-edge Ratio")
-  }else{
-    tmp <-  ggplot2::ggplot(attributes$sf, ggplot2::aes(fill = attributes$triangles$radius_ratio)) +
-      ggplot2::geom_sf(colour = NA) + ggplot2::theme_void() +
-      ggplot2::scale_fill_continuous(name = "Radius-ratio")
-  }
-  tmp
+                   radius_edge = c_R/mn, radius_ratio = i_R/c_R,
+                   area = area, quality = quality)
+  sf <- dplyr::left_join(sf, angles, by = "ID")
+  sf <- dplyr::left_join(sf, df, by = "ID")
+  return(sf)
 }
