@@ -47,7 +47,7 @@ compile_stelfi <- function() {
 dll_stelfi <- function(x) {
     dll_dir <- paste(system.file(package = "stelfi"), "/bin/", sep = "")
     is_windows <- length(grep("Windows", utils::sessionInfo()$running)) > 0
-    if(missing(x)){
+    if(missing(x)) {
         for (i in paste(dll_dir, list.files(dll_dir), sep = "")) {
             dyn.load(i)
         }

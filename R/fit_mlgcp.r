@@ -116,15 +116,16 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters=list(), methods,
     betamarks <- parameters[["betamarks"]]
     if (is.null(betamarks)) {
       if (!missing(covariates)) {
-        betamarks <- matrix(0, nrow = (length(marks_covariates) + 1), ncol = n_marks)
+          betamarks <- matrix(0, nrow = (length(marks_covariates) + 1),
+                              ncol = n_marks)
       } else {
         betamarks <- matrix(0, nrow = 1, ncol = n_marks)
       }
     }
     betapp <- parameters[["betapp"]]
     if (is.null(betapp)) {
-      area <- sum(get_weights(smesh,sp)$w)
-      avg_rate <- log(nrow(locs)/area)
+      area <- sum(get_weights(smesh, sp)$w)
+      avg_rate <- log(nrow(locs) / area)
       if (!missing(covariates)) {
         betapp <- numeric(length(pp_covariates))
         betapp[1] <- avg_rate
@@ -134,9 +135,8 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters=list(), methods,
     }
     marks_coefs_pp <- parameters[["marks_coefs_pp"]]
     if (is.null(marks_coefs_pp)) {
-      marks_coefs_pp = numeric(n_marks)
+      marks_coefs_pp <- numeric(n_marks)
     }
-    
     ## error checking
     if (length(log_tau) != n_fields)
         stop("There must be one log_tau for each field")
@@ -179,7 +179,6 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters=list(), methods,
         if (nrow(betamarks) != 1)
             stop("nrow.betamarks must be 1 if covariates missing")
     }
-    
     ## data
     ## E
     w <- get_weights(mesh = smesh, sp = sp, plot = FALSE)
@@ -195,7 +194,7 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters=list(), methods,
           cov_overlap <- 1
         } else {
         cov_overlap <- 0
-        }    
+        }
         ## Design matrices
         designmatpp <- cbind(1, covariates[,  pp_covariates])
         designmatmarks <- cbind(1, covariates[, marks_covariates])

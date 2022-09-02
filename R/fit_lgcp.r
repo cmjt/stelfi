@@ -83,10 +83,10 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
     return(obj)
 }
 #' Fit a spatial or spatiotemporal log-Gaussian Cox process (LGCP)
-#' 
+#'
 #' \code{fit_lgcp} fits a LGCP using \code{TMB} and the
 #' \code{R_inla} namespace for the spde construction of the latent field. Ths is
-#' the user friendly wrapper for the internal function \code{\link{fit_lgcp_tmb}}. 
+#' the user friendly wrapper for the internal function \code{\link{fit_lgcp_tmb}}.
 #' @seealso \code{\link{fit_lgcp_tmb}}.
 #' @param sp A \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
 #' of the domain.
@@ -100,7 +100,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' \code{log_tau}, the \code{log(tau)} parameter for the GMRF;
 #' \code{log_kappa}, \code{log(kappa)} parameter for the GMRF;
 #' \code{atanh_rho}, optional, \code{arctan(rho)} AR1 temporal parameter.
-#' Default values are used if not provided. 
+#' Default values are used if not provided.
 #' @param covariates Optional, a \code{matrix} of covariates at each
 #' \code{smesh} and \code{tmesh} node combination.
 #' @inheritParams fit_lgcp_tmb
@@ -252,14 +252,14 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
 #' as well as \code{tmesh} then times knots will also be returned.
 #' @inheritParams fit_lgcp
 #' @param all Logical, if \code{TRUE} then all model components are returned.
-#' @return A named list. If \code{all = FALSE} then only the simulated values of 
-#' the GMRF at each mesh node are returned, \code{x}, alongside the number of 
+#' @return A named list. If \code{all = FALSE} then only the simulated values of
+#' the GMRF at each mesh node are returned, \code{x}, alongside the number of
 #' events, \code{y}, simulated at each node.
 #'
 #' @examples \dontrun{
 #' data(xyt, package = "stelfi")
 #' domain <- as(xyt$window, "SpatialPolygons")
-#' smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+#' smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain),
 #' max.edge = 0.75, cutoff = 0.3)
 #' parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
 #' simulate_lgcp(parameters = parameters, sp = domain, smesh = smesh)

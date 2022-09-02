@@ -52,7 +52,6 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
         stop("marks must have same length as times")
     if (min(marks) < 0)
         stop("marks cannot be negative")
-  
     ## parameters
     alpha <- parameters[["alpha"]]
     if (is.null(alpha)) {
@@ -66,7 +65,6 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
     if (is.null(mu)) {
       mu <- 0.5 / beta
     }
-    
     if(model == 1) {
         ## error checks
         if (alpha > (beta / mean(marks)))
@@ -94,7 +92,8 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
                                   parameters = list(log_mu = log(mu),
                                                     a_par = alpha,
                                                     log_beta = log(beta)),
-                                  hessian = TRUE, DLL = "neg_alpha_hawkes", silent = tmb_silent)
+                                  hessian = TRUE, DLL = "neg_alpha_hawkes",
+                                  silent = tmb_silent)
         }
     }
     trace <- if(optim_silent) 0 else 1
@@ -103,17 +102,21 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
     return(obj)
 }
 
-#' Function to fit a self-exciting Hawkes process with a given custom background function
+#' Function to fit a self-exciting Hawkes process with a given custom
+#' background function
 #'
 #' \code{fit_hawkes_cbf} fits a range of self-exciting Hawkes processes
 #' with a given custom background function (cbf) using TMB using TMB.
-#' The \code{alpha} (\code{model} = 1) or \code{a_par} (\code{model} = 2) and \code{beta} parameters are estimated using TMB,
+#' The \code{alpha} (\code{model} = 1) or \code{a_par} (\code{model} = 2)
+#' and \code{beta} parameters are estimated using TMB,
 #' parameters of the cbf are optimized in R.
 #' @inheritParams fit_hawkes
 #' @param model A factor indicator specifying which model to fit:
 #' \itemize{
-#' \item \code{1}, a Hawkes process with exponential decay and cbf (default), positive alpha.
-#' \item \code{2}, a Hawkes process with exponential decay and cbf, but alpha can be negative. 
+#' \item \code{1}, a Hawkes process with exponential decay and cbf (default),
+#' positive alpha.
+#' \item \code{2}, a Hawkes process with exponential decay and cbf,
+#' but alpha can be negative.
 #' }
 #' @param background A function taking one parameter and an
 #' independent variable, returning a scalar.
@@ -157,29 +160,27 @@ fit_hawkes_cbf <- function(times, parameters=list(),
                            background_min,
                            tmb_silent = TRUE, optim_silent = TRUE) {
     ## general error checks
-    for (i in 2:length(times)){
-        if ((times[i]-times[i-1])<1.e-10)
+    for (i in 2:length(times)) {
+        if ((times[i] - times[i - 1]) < 1.e-10)
             stop("times must be in ascending order with no simultaneous events")
     }
     if (length(marks) != length(times))
         stop("marks must have same length as times")
     if (min(marks) < 0)
-        stop("marks cannot be negative")
-    
+        stop("marks cannot be negative") 
     ## beta parameter
     beta <- parameters[["beta"]]
     if (is.null(beta)) {
-      beta <- max(times)/length(times)
-    }
-    
-    if (model == 1){
+      beta <- max(times) / length(times)
+    } 
+    if (model == 1) {
         ## alpha parameter
         alpha <- parameters[["alpha"]]
         if (is.null(alpha)) {
           alpha <- 0.5 * beta
         }
         ## error checks
-        if (alpha > (beta/mean(marks)))
+        if (alpha > (beta / mean(marks)))
             stop("alpha must be smaller than or equal to beta divided by the mean of the marks")
         if (alpha < 0)
             stop("alpha must be non-negative")
@@ -201,22 +202,24 @@ fit_hawkes_cbf <- function(times, parameters=list(),
                                               lambda_integral = lambda_integral, marks = marks),
                                   parameters = list(logit_abratio = stats::qlogis(alpha / (beta / mean(marks))),
                                                     log_beta = log(beta)),
-                                  hessian = TRUE, DLL = "custom_hawkes", silent = tmb_silent)
+                                  hessian = TRUE, DLL = "custom_hawkes",
+                                  silent = tmb_silent)
             trace <- if(optim_silent) 0 else 1
             opt <- stats::optim(obj$par, obj$fn, obj$gr, control = list(trace = 0))
             return(opt$value)
         }
         
-        opt <- stats::optim(par = background_parameters, fn = OptimizeBackground, 
-                            gr = NULL, times, parameters, marks, background, background_integral,
+        opt <- stats::optim(par = background_parameters, fn = OptimizeBackground,
+                            gr = NULL, times, parameters, marks, background,
+                            background_integral,
                             tmb_silent, optim_silent)
         ## Need to run again to extract alpha and beta
         lambda <- background(opt$par, times)
-        lambda_integral <- background_integral(opt$par, tail(times,n=1)) -
+        lambda_integral <- background_integral(opt$par, tail(times, n = 1)) -
             background_integral(opt$par, 0)
         alpha <- parameters[["alpha"]]
         beta <- parameters[["beta"]]
-        obj <- TMB::MakeADFun(data = list(times = times, lambda = lambda, 
+        obj <- TMB::MakeADFun(data = list(times = times, lambda = lambda,
                                           lambda_integral = lambda_integral,
                                           marks = marks),
                               parameters = list(logit_abratio = stats::qlogis(alpha / beta),
@@ -236,14 +239,14 @@ fit_hawkes_cbf <- function(times, parameters=list(),
             # Nested function to be passed into optim
             OptimizeBackground <- function(background_parameters, times, parameters,
                                            marks, background, background_integral,
-                                           background_min, tmb_silent = TRUE, optim_silent = TRUE){
+                                           background_min, tmb_silent = TRUE, optim_silent = TRUE) {
                 lambda <- background(background_parameters, times)
                 lambda_min <- numeric(length = length(times))
                 for (k in 1:(length(times) - 1)) {
                     lambda_min[k] <- background_min(background_parameters, times[k], times[k + 1])
                 }
                 lambda_min[length(times)] <- background(background_parameters, tail(times, n = 1))
-                if (min(lambda-lambda_min) < 0) stop("lambda_min incorrectly defined: lambda_min > lambda")
+                if (min(lambda - lambda_min) < 0) stop("lambda_min incorrectly defined: lambda_min > lambda")
                 lambda_integral <- background_integral(background_parameters, tail(times, n = 1)) -
                     background_integral(background_parameters, 0)
                 
