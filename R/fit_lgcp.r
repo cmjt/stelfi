@@ -237,7 +237,7 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
                               group = agg.dat$time, mesh.group = tmesh)
         idx <- rep(1, length(ypp))
     }else{
-        ypp <- points.in.mesh(locs, polys)
+        ypp <- points_in_mesh(locs, polys)
         expected <- w_areas
         A <- Matrix::sparseMatrix(i = 1:nv, j = 1:nv, x = 1)
         idx <- expected > 0

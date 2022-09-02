@@ -82,14 +82,13 @@ get_fields <- function(object, smesh, tmesh, plot = FALSE, sd = FALSE) {
 #' Relies on the internal \code{\link{inla.mesh.dual}} function.
 #' @seealso \url{https://becarioprecario.bitbucket.io/spde-gitbook/}.
 #' @export
-get_weights <- function(mesh, sp, plot = FALSE){
+get_weights <- function(mesh, sp, plot = FALSE) {
     dmesh <- inla.mesh.dual(mesh)
     # Convert sp to an object compatible with sf
     sp_sf <- sf::st_as_sf(sp)
-    st_crs(sp_sf) <- NA
-    #st_set_precision(sp_sf, 1.e-8)
+    sf::st_crs(sp_sf) <- NA
     if (!all(st_is_valid(sp_sf))) { # check for invalid geometries
-      sp_sf <- st_make_valid(sp_sf)
+      sp_sf <- sf::st_make_valid(sp_sf)
     }
     w <- sapply(1:length(dmesh), function(i) {
       coord <- sf::st_coordinates(sf::st_as_sf(dmesh[i, ]))[, 1:2]
@@ -115,8 +114,8 @@ get_weights <- function(mesh, sp, plot = FALSE){
 #' @param xy A data frame of locations.
 #' @param dmesh An object returned by \code{\link{inla.mesh.dual}}.
 #' @param weights A vector of weights/covariates for each point
-#' @returns Either the number of points in each polygon or sum of the weights.
-points.in.mesh <- function(xy, dmesh, weights) {
+#' @return Either the number of points in each polygon or sum of the weights.
+points_in_mesh <- function(xy, dmesh, weights) {
   xy <- sf::st_as_sf(xy, coords = c("x", "y"))
   xy <- sf::st_geometry(xy)
   if (missing(weights)) {
@@ -137,4 +136,49 @@ points.in.mesh <- function(xy, dmesh, weights) {
     }
     return(result)
   }
+}
+#' Internal function to construct the `dual` mesh
+#'
+#' @return a \code{sf} object of the Voronoi tesselation
+#' centered at each \code{mesh} node.
+#' @seealso \url{http://www.r-inla.org/spde-book} and \url{https://becarioprecario.bitbucket.io/spde-gitbook/}
+#' @source \url{http://www.r-inla.org/spde-book}
+dual_mesh <- function(mesh) {
+    if (mesh$manifold == 'R2') {
+        ce <- t(sapply(1:nrow(mesh$graph$tv), function(i)
+            colMeans(mesh$loc[mesh$graph$tv[i, ], 1:2])))
+        pls <- lapply(1:mesh$n, function(i) {
+            p <- unique(Reduce('rbind', lapply(1:3, function(k) {
+                j <- which(mesh$graph$tv[, k] == i)
+                if (length(j) > 0)
+                    return(rbind(ce[j, , drop = FALSE],
+                                 cbind(mesh$loc[mesh$graph$tv[j, k], 1] +
+                                       mesh$loc[mesh$graph$tv[j, c(2:3, 1)[k]], 1],
+                                       mesh$loc[mesh$graph$tv[j, k], 2] +
+                                       mesh$loc[mesh$graph$tv[j, c(2:3, 1)[k]], 2]) / 2))
+                else return(ce[j, , drop = FALSE])
+            })))
+            j1 <- which(mesh$segm$bnd$idx[, 1] == i)
+            j2 <- which(mesh$segm$bnd$idx[, 2] == i)
+            if ((length(j1) > 0) | (length(j2) > 0)) {
+                p <- unique(rbind(mesh$loc[i, 1:2], p,
+                                  mesh$loc[mesh$segm$bnd$idx[j1, 1], 1:2] / 2 +
+                                  mesh$loc[mesh$segm$bnd$idx[j1, 2], 1:2] / 2,
+                                  mesh$loc[mesh$segm$bnd$idx[j2, 1], 1:2] / 2 +
+                                  mesh$loc[mesh$segm$bnd$idx[j2, 2], 1:2] / 2))
+                yy <- p[, 2] - mean(p[, 2]) / 2 - mesh$loc[i, 2] / 2
+                xx <- p[, 1] - mean(p[, 1]) / 2 - mesh$loc[i, 1] / 2
+            }
+            else {
+                yy <- p[, 2] - mesh$loc[i, 2]
+                xx <- p[, 1] - mesh$loc[i, 1]
+            }
+            p <- p[order(atan2(yy, xx)), ]
+            ## close polygons
+            p <- rbind(p, p[1, ])
+            sf::st_polygon(list(p))
+        })
+        return(sf::st_sf(sf::st_sfc(pls)))
+    }
+    else stop("It only works for R2!")
 }

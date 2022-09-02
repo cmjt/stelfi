@@ -184,7 +184,7 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters=list(), methods,
     w <- get_weights(mesh = smesh, sp = sp, plot = FALSE)
     w_areas <- w$weights
     polys <- w$polys
-    ypp <- points.in.mesh(as.data.frame(locs), polys)
+    ypp <- points_in_mesh(as.data.frame(locs), polys)
     ## SPDE
     spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
     lmat <- INLA::inla.spde.make.A(smesh, locs)
@@ -210,7 +210,8 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters=list(), methods,
                          betapp = betapp, marks_coefs_pp = marks_coefs_pp,
                          log_kappa = log_kappa, log_tau = log_tau,
                          designmatpp = designmatpp,
-                         designmatmarks = designmatmarks, cov_overlap = cov_overlap,
+                         designmatmarks = designmatmarks,
+                         cov_overlap = cov_overlap,
                          fields = fields, tmb_silent = tmb_silent,
                          nlminb_silent = nlminb_silent, ...)
     return(res)
