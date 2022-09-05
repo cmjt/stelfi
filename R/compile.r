@@ -68,10 +68,10 @@ dll_stelfi <- function(x) {
 #' @import spatstat.core
 #' @import spatstat.geom
 #' @importFrom stats optim qlogis runif
-#' @importFrom utils sessionInfo
+#' @importFrom utils sessionInfo tail
 #' @importFrom grDevices dev.new
 #' @import INLA
 #' @importFrom grDevices dev.new
 #' @importFrom graphics points
 #' @importFrom stats ppoints qexp quantile runif
-#' @importFrom utils tail
+NULL

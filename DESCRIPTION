@@ -17,17 +17,11 @@ Authors@R:
            role = "ctb"))
 Depends:
     R (>= 4.1.2),
-    sf,
-    spatstat.core,
-    spatstat.geom,
 Imports:
     TMB (>= 1.7.20),
     Rcpp (>= 1.0.6),
     Matrix,
-    ggplot2,
-    patchwork,
-    rgeos,
-    sp
+    ggplot2
 Description: A package for fitting a range of spatiotemporal point processes which include latent fields.
 License: GPL
 URL: https://github.com/cmjt/stelfi

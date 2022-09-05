@@ -20,7 +20,8 @@ Transform a \code{\link[INLA]{inla.mesh.2d}} into a \code{\link[sf]{sf}}
 }
 \details{
 Modified from \code{sp} based function suggested by Finn in the
-R-inla discussion Google Group \url{https://groups.google.com/g/r-inla-discussion-group/c/z1n1exlZrKM}.
+R-inla discussion Google Group
+\url{https://groups.google.com/g/r-inla-discussion-group/c/z1n1exlZrKM}.
 }
 \examples{
 \dontrun{

@@ -96,3 +96,22 @@ test_that("LGCP model fitting (marked)", {
     expect_equal(pars[2], 2.74, tolerance = 0.1)
     expect_equal(pars[3], -0.279, tolerance = 0.01)
 })
+test_that("Spatial self-exciting", {
+    data(xyt, package = "stelfi")
+    N <- 50
+    locs <- data.frame(x = xyt$x[1:N], y = xyt$y[1:N])
+    times <- xyt$t[1:N]
+    loc.d <- cbind(c(0, 13, 13, 0, 0), c(-3, -3, 3, 3, -3))
+    domain <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(loc.d)),'0')))
+    smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+                                max.edge = 0.75, cutoff = 0.3)
+    param <- list( mu = 3, alpha = 1, beta = 3, xsigma = 0.2,
+                  ysigma = 0.2, rho = 0.8)
+    fit <- fit_stelfi(times = times, locs = locs, sp = domain,
+                      smesh = smesh, parameters = param,
+                      gaussian = TRUE)
+    pars <- as.numeric(get_coefs(fit)[, 1])
+    expect_equal(pars[1], 0.21, tolerance = 0.1)
+    expect_equal(pars[2], -1.55, tolerance = 0.1)
+    expect_equal(pars[7], -0.15, tolerance = 0.1)
+})

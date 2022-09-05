@@ -132,7 +132,7 @@ segments <- function(mesh) {
 #' @inheritParams meshmetrics
 #' @param s A dataframe of Delaunay triangulation segments as returned by
 #' \code{\link{segments}}.
-#' #' @examples \dontrun{
+#' @examples \dontrun{
 #' data(horse_mesh, package = "stelfi")
 #' s <- segments(horse_mesh)
 #' mesh_ang(horse_mesh, s)

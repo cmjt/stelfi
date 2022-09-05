@@ -39,11 +39,13 @@ Plot the compensator and other associated goodness of fit metrics for a Hawkes p
 \examples{
 \dontrun{
 data(retweets_niwa, package = "stelfi")
-times <- unique(sort(as.numeric(difftime(retweets_niwa ,min(retweets_niwa),units = "mins"))))
+times <- unique(sort(as.numeric(difftime(retweets_niwa,
+min(retweets_niwa),units = "mins"))))
 params <- c(mu = 9, alpha = 3, beta = 10)
 ## must have compiled TMB templates first use compile_stelfi()
 fit <- fit_hawkes(times = times, parameters = params)
 pars <- get_coefs(fit)
-show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1], return_values = FALSE)
+show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1],
+beta = pars[3,1], return_values = FALSE)
 }
 }

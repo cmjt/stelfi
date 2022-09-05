@@ -193,9 +193,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="hawkes-spatial" class="section level2 hasAnchor">
 <h2><span class="header-section-number">4.2</span> Hawkes spatial<a href="stelfi.html#hawkes-spatial" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb56-1" title="1"><span class="kw">data</span>(xyt)</a>
-<a class="sourceLine" id="cb56-2" title="2">N =<span class="st"> </span><span class="dv">50</span></a>
-<a class="sourceLine" id="cb56-3" title="3">locs &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">x =</span> xyt<span class="op">$</span>x[<span class="dv">1</span><span class="op">:</span>N], <span class="dt">y =</span> xyt<span class="op">$</span>y[<span class="dv">1</span><span class="op">:</span>N])</a>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb56-1" title="1"><span class="kw">data</span>(xyt, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</a>
+<a class="sourceLine" id="cb56-2" title="2">N &lt;-<span class="st"> </span><span class="dv">50</span></a>
+<a class="sourceLine" id="cb56-3" title="3">locs &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> xyt<span class="op">$</span>x[<span class="dv">1</span><span class="op">:</span>N], <span class="dt">y =</span> xyt<span class="op">$</span>y[<span class="dv">1</span><span class="op">:</span>N])</a>
 <a class="sourceLine" id="cb56-4" title="4">times &lt;-<span class="st"> </span>xyt<span class="op">$</span>t[<span class="dv">1</span><span class="op">:</span>N]</a>
 <a class="sourceLine" id="cb56-5" title="5">loc.d &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">13</span>, <span class="dv">13</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="op">-</span><span class="dv">3</span>, <span class="dv">-3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">-3</span>))</a>
 <a class="sourceLine" id="cb56-6" title="6">domain &lt;-<span class="st"> </span>sp<span class="op">::</span><span class="kw">SpatialPolygons</span>(<span class="kw">list</span>(sp<span class="op">::</span><span class="kw">Polygons</span>(<span class="kw">list</span>(sp<span class="op">::</span><span class="kw">Polygon</span>(loc.d)),<span class="st">&#39;0&#39;</span>)))</a>
@@ -203,21 +203,36 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="cb56-8" title="8">                            <span class="dt">max.edge =</span> <span class="fl">0.75</span>, <span class="dt">cutoff =</span> <span class="fl">0.3</span>)</a>
 <a class="sourceLine" id="cb56-9" title="9">param &lt;-<span class="st"> </span><span class="kw">list</span>( <span class="dt">mu =</span> <span class="dv">3</span>, <span class="dt">alpha =</span> <span class="dv">1</span>, <span class="dt">beta =</span> <span class="dv">3</span>, <span class="dt">xsigma =</span> <span class="fl">0.2</span>,</a>
 <a class="sourceLine" id="cb56-10" title="10">             <span class="dt">ysigma =</span> <span class="fl">0.2</span>, <span class="dt">rho =</span> <span class="fl">0.8</span>)</a>
-<a class="sourceLine" id="cb56-11" title="11">t_stelfi &lt;-<span class="st"> </span><span class="kw">system.time</span>(fit &lt;-<span class="st"> </span><span class="kw">fit_stelfi</span>(<span class="dt">times =</span> times, <span class="dt">locs =</span> locs, <span class="dt">sp =</span> domain, <span class="dt">smesh =</span> smesh, <span class="dt">parameters =</span> param,</a>
-<a class="sourceLine" id="cb56-12" title="12">                  <span class="dt">gaussian =</span> <span class="ot">TRUE</span>, <span class="dt">simple =</span> <span class="dv">1</span>))</a>
-<a class="sourceLine" id="cb56-13" title="13"><span class="kw">print</span>(t_stelfi)</a>
-<a class="sourceLine" id="cb56-14" title="14"><span class="kw">get_coefs</span>(fit)</a></code></pre></div>
+<a class="sourceLine" id="cb56-11" title="11">fit &lt;-<span class="st"> </span><span class="kw">fit_stelfi</span>(<span class="dt">times =</span> times, <span class="dt">locs =</span> locs, <span class="dt">sp =</span> domain, <span class="dt">smesh =</span> smesh, <span class="dt">parameters =</span> param,</a>
+<a class="sourceLine" id="cb56-12" title="12">                  <span class="dt">gaussian =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb56-13" title="13"><span class="kw">get_coefs</span>(fit)</a></code></pre></div>
+<pre><code>##           Estimate  Std. Error
+## mu       0.2107757  0.10548520
+## coefs   -1.5569605  0.50046178
+## alpha  147.3462330 30.26455375
+## beta   147.3462337 30.26455352
+## xsigma   0.6443609  0.08992145
+## ysigma   0.2519132  0.04074381
+## rho     -0.1586818  0.19678702</code></pre>
 </div>
 <div id="hawkes-spde" class="section level2 hasAnchor">
 <h2><span class="header-section-number">4.3</span> Hawkes spde<a href="stelfi.html#hawkes-spde" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb57-1" title="1"><span class="co">## issues with time....</span></a>
-<a class="sourceLine" id="cb57-2" title="2">param &lt;-<span class="st"> </span><span class="kw">list</span>( <span class="dt">mu =</span> <span class="dv">5</span>, <span class="dt">alpha =</span> <span class="dv">1</span>, <span class="dt">beta =</span> <span class="dv">3</span>, <span class="dt">kappa =</span> <span class="fl">0.9</span>, <span class="dt">tau =</span> <span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb57-3" title="3">              <span class="dt">xsigma =</span> <span class="fl">0.2</span>,</a>
-<a class="sourceLine" id="cb57-4" title="4">              <span class="dt">ysigma =</span> <span class="fl">0.2</span>, <span class="dt">rho =</span> <span class="fl">0.8</span>)</a>
-<a class="sourceLine" id="cb57-5" title="5">fit &lt;-<span class="st"> </span><span class="kw">fit_stelfi</span>(<span class="dt">times =</span> times, <span class="dt">locs =</span> locs, <span class="dt">sp =</span> domain,</a>
-<a class="sourceLine" id="cb57-6" title="6">                  <span class="dt">smesh =</span> smesh, <span class="dt">parameters =</span> param,</a>
-<a class="sourceLine" id="cb57-7" title="7">                  <span class="dt">gaussian =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb57-8" title="8"><span class="kw">get_coefs</span>(fit)</a></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb58-1" title="1"><span class="co">## issues with time....</span></a>
+<a class="sourceLine" id="cb58-2" title="2">param &lt;-<span class="st"> </span><span class="kw">list</span>( <span class="dt">mu =</span> <span class="dv">5</span>, <span class="dt">alpha =</span> <span class="dv">1</span>, <span class="dt">beta =</span> <span class="dv">3</span>, <span class="dt">kappa =</span> <span class="fl">0.9</span>, <span class="dt">tau =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb58-3" title="3">              <span class="dt">xsigma =</span> <span class="fl">0.2</span>,</a>
+<a class="sourceLine" id="cb58-4" title="4">              <span class="dt">ysigma =</span> <span class="fl">0.2</span>, <span class="dt">rho =</span> <span class="fl">0.8</span>)</a>
+<a class="sourceLine" id="cb58-5" title="5">fit &lt;-<span class="st"> </span><span class="kw">fit_stelfi</span>(<span class="dt">times =</span> times, <span class="dt">locs =</span> locs, <span class="dt">sp =</span> domain,</a>
+<a class="sourceLine" id="cb58-6" title="6">                  <span class="dt">smesh =</span> smesh, <span class="dt">parameters =</span> param,</a>
+<a class="sourceLine" id="cb58-7" title="7">                  <span class="dt">gaussian =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb58-8" title="8"><span class="kw">get_coefs</span>(fit)</a></code></pre></div>
+<pre><code>##           Estimate  Std. Error
+## mu       0.2107757  0.10548520
+## coefs   -1.5569605  0.50046178
+## alpha  147.3462330 30.26455375
+## beta   147.3462337 30.26455352
+## xsigma   0.6443609  0.08992145
+## ysigma   0.2519132  0.04074381
+## rho     -0.1586818  0.19678702</code></pre>
 
 </div>
 </div>

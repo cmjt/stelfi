@@ -2,7 +2,8 @@
 % Please edit documentation in R/fit_hawkes.r
 \name{fit_hawkes_cbf}
 \alias{fit_hawkes_cbf}
-\title{Function to fit a self-exciting Hawkes process with a given custom background function}
+\title{Function to fit a self-exciting Hawkes process with a given custom
+background function}
 \usage{
 fit_hawkes_cbf(
   times,
@@ -31,8 +32,10 @@ Default values used if not provided.
 
 \item{model}{A factor indicator specifying which model to fit:
 \itemize{
-\item \code{1}, a Hawkes process with exponential decay and cbf (default), positive alpha.
-\item \code{2}, a Hawkes process with exponential decay and cbf, but alpha can be negative. 
+\item \code{1}, a Hawkes process with exponential decay and cbf (default),
+positive alpha.
+\item \code{2}, a Hawkes process with exponential decay and cbf,
+but alpha can be negative.
 }}
 
 \item{marks}{a vector of numerical marks, defaults to 1 (i.e., no marks)}
@@ -58,7 +61,8 @@ This could be a list of multiple values.}
 \description{
 \code{fit_hawkes_cbf} fits a range of self-exciting Hawkes processes
 with a given custom background function (cbf) using TMB using TMB.
-The \code{alpha} (\code{model} = 1) or \code{a_par} (\code{model} = 2) and \code{beta} parameters are estimated using TMB,
+The \code{alpha} (\code{model} = 1) or \code{a_par} (\code{model} = 2)
+and \code{beta} parameters are estimated using TMB,
 parameters of the cbf are optimized in R.
 }
 \examples{

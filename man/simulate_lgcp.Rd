@@ -28,8 +28,8 @@ of the domain.}
 \item{all}{Logical, if \code{TRUE} then all model components are returned.}
 }
 \value{
-A named list. If \code{all = FALSE} then only the simulated values of 
-the GMRF at each mesh node are returned, \code{x}, alongside the number of 
+A named list. If \code{all = FALSE} then only the simulated values of
+the GMRF at each mesh node are returned, \code{x}, alongside the number of
 events, \code{y}, simulated at each node.
 }
 \description{
@@ -41,7 +41,7 @@ as well as \code{tmesh} then times knots will also be returned.
 \dontrun{
 data(xyt, package = "stelfi")
 domain <- as(xyt$window, "SpatialPolygons")
-smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain),
 max.edge = 0.75, cutoff = 0.3)
 parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
 simulate_lgcp(parameters = parameters, sp = domain, smesh = smesh)

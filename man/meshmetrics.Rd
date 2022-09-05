@@ -11,15 +11,17 @@ meshmetrics(mesh)
 }
 \value{
 An object of class \code{sf} with the following data:
-\itemize{ 
-\item \code{V1}, \code{V2}, and \code{V3} corresponding vertecies of \code{mesh}
-matches \code{mesh$graph$tv}.
+\itemize{
+\item \code{V1}, \code{V2}, and \code{V3} corresponding vertecies
+of \code{mesh} matches \code{mesh$graph$tv}.
 \item \code{ID} numeric triangle id
-\item \code{angleA}, \code{angleB}, and \code{angleC} the interior angles of the triangles
+\item \code{angleA}, \code{angleB}, and \code{angleC} the
+interior angles of the triangles
 \item circumcircle radius \code{circumcircle_R},
-\item incircle radius \code{incircle_r}), 
-\item the assocoated centroid locations (\code{c_Ox, cOy} and \code{i_Ox, iOy}), 
-\item the radius-edge ratio \code{radius_edge}, and 
+\item incircle radius \code{incircle_r}),
+\item the assocoated centroid locations (\code{c_Ox, cOy}
+and \code{i_Ox, iOy}),
+\item the radius-edge ratio \code{radius_edge}, and
 \item the radius ratio \code{radius_ratio}
 \item \code{area} triangle area
 \item \code{quality} a measure of triangle "quality" defined as
