@@ -166,7 +166,7 @@ fit_stelfi <-  function(times, locs, sp, smesh,  parameters, covariates,
       designmat <- matrix(rep(1, smesh$n), ncol = 1)
     }
     ## weights
-    w <- get_weights(mesh = smesh, sp = sp, plot = FALSE)$weights
+    w <- get_weights(mesh = smesh, sf = sf::st_as_sf(sp), plot = FALSE)$weights
     locs <- as.matrix(locs)
     lmat <- INLA::inla.spde.make.A(smesh, locs)
     if(!GMRF) { ## No GMRF

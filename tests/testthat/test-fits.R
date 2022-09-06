@@ -22,7 +22,6 @@ test_that("Simple Hawkes model fitting", {
 })
 test_that("Non-homogeneous Hawkes model fitting", {
     set.seed(1)
-    library(hawkesbow)
     times <- hawkesbow::hawkes(1000, fun = function(y) {
         1 + 0.5 * sin(y)
     }, M = 1.5, repr = 0.5, family = "exp", rate = 2)$p
@@ -45,7 +44,7 @@ test_that("Non-homogeneous Hawkes model fitting", {
     estA <- exp(fit$background_parameters[1])
     estB <- plogis(fit$background_parameters[2]) * exp(fit$background_parameters[1])
     expect_equal(estA, 1.03, tolerance = 0.1)
-    expect_equal(estB, 0.56, tolerance = 0.1) 
+    expect_equal(estB, 0.56, tolerance = 0.1)
 })
 test_that("LGCP model fitting (spatial)", {
     require(maptools)
@@ -54,18 +53,23 @@ test_that("LGCP model fitting (spatial)", {
     locs <- data.frame(x = xyt$x, y = xyt$y)
     smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain),
                                 max.edge = 0.75, cutoff = 0.3)
-    system.time(fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh,
+    fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh,
                                 parameters = c(beta = 0, log_tau = log(1),
-                                               log_kappa = log(1))))
+                                               log_kappa = log(1)))
     pars <- as.numeric(get_coefs(fit)[, 1])
     expect_equal(pars[1], 2.45, tolerance = 0.5)
     expect_equal(pars[2], -1.32, tolerance = 0.1)
     expect_equal(pars[3], 0.95, tolerance = 0.1)
 })
 test_that("LGCP model fitting (spatiotemporal)", {
+    require(maptools)
+    data(xyt, package = "stelfi")
+    domain <- as(xyt$window, "SpatialPolygons")
     ndays <- 2
     locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
     w0 <- 2
+    smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain),
+                                max.edge = 0.75, cutoff = 0.3)
     tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
     fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh, tmesh = tmesh,
                     parameters = c(beta = 0, log_tau = log(1),
@@ -103,9 +107,9 @@ test_that("Spatial self-exciting", {
     times <- xyt$t[1:N]
     loc.d <- cbind(c(0, 13, 13, 0, 0), c(-3, -3, 3, 3, -3))
     domain <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(loc.d)),'0')))
-    smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+    smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain),
                                 max.edge = 0.75, cutoff = 0.3)
-    param <- list( mu = 3, alpha = 1, beta = 3, xsigma = 0.2,
+    param <- list(mu = 3, alpha = 1, beta = 3, xsigma = 0.2,
                   ysigma = 0.2, rho = 0.8)
     fit <- fit_stelfi(times = times, locs = locs, sp = domain,
                       smesh = smesh, parameters = param,

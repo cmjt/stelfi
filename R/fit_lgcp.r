@@ -139,7 +139,7 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters=list(), covariates,
     beta <- parameters[["beta"]]
     # default value of the intercept is log of the density of points
     if (is.null(beta)) {
-      area <- sum(get_weights(smesh,sp)$w)
+      area <- sum(get_weights(smesh, sf::st_as_sf(sp))$weights)
       avg_rate <- log(nrow(locs)/area)
       if (!missing(covariates)) {
         beta <- numeric(length= 1 + ncol(covariates))
@@ -211,21 +211,19 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters=list(), covariates,
 #' @inheritParams fit_lgcp
 prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
     ## E
-    w <- get_weights(mesh = smesh, sp = sp, plot = FALSE)
+    w <- get_weights(mesh = smesh, sf = sf::st_as_sf(sp), plot = FALSE)
     w_areas <- w$weights
-    polys <- w$polys
     nv <- smesh$n
     ## SPDE
     spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
     ## spatial or spatiotemporal
     if (!missing(tmesh)) {
         k <- length(tmesh$loc)
-        area <- factor(sp::over(sp::SpatialPoints(cbind(xyt$x, xyt$y)), polys),
-                       levels = 1:length(polys))
-
+        area <- factor(sf::st_intersection(sf::st_as_sf(locs, coords = c("x", "y")), w)$ID,
+                       levels = 1:nrow(w))
         t.breaks <- sort(c(tmesh$loc[c(1, k)],
                            tmesh$loc[2:k - 1] / 2 + tmesh$loc[2:k] / 2))
-        time <- factor(findInterval(xyt$t, t.breaks),
+        time <- factor(findInterval(locs$t, t.breaks),
                        levels = 1:(length(t.breaks) - 1))
         agg.dat <- as.data.frame(table(area, time))
         for(j in 1:2) # set time and area as integer
@@ -237,7 +235,7 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
                               group = agg.dat$time, mesh.group = tmesh)
         idx <- rep(1, length(ypp))
     }else{
-        ypp <- points_in_mesh(locs, polys)
+        ypp <- points_in_mesh(locs, w)
         expected <- w_areas
         A <- Matrix::sparseMatrix(i = 1:nv, j = 1:nv, x = 1)
         idx <- expected > 0
@@ -303,7 +301,7 @@ simulate_lgcp <- function(parameters, sp, smesh, tmesh, covariates,
         tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
     } else {
         locs <-  matrix(0, nrow = 10, ncol = 2)
-        locs <- data.frame(x = locs[,1], y = locs[,2])
+        locs <- data.frame(x = locs[, 1], y = locs[, 2])
         tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
         k <- 1
         if(!missing(covariates)) {

@@ -124,7 +124,7 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters=list(), methods,
     }
     betapp <- parameters[["betapp"]]
     if (is.null(betapp)) {
-      area <- sum(get_weights(smesh, sp)$w)
+      area <- sum(get_weights(smesh, sf::st_as_sf(sp))$weights)
       avg_rate <- log(nrow(locs) / area)
       if (!missing(covariates)) {
         betapp <- numeric(length(pp_covariates))
@@ -181,10 +181,9 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters=list(), methods,
     }
     ## data
     ## E
-    w <- get_weights(mesh = smesh, sp = sp, plot = FALSE)
+    w <- get_weights(mesh = smesh, sf = sf::st_as_sf(sp), plot = FALSE)
     w_areas <- w$weights
-    polys <- w$polys
-    ypp <- points_in_mesh(as.data.frame(locs), polys)
+    ypp <- points_in_mesh(as.data.frame(locs), w)
     ## SPDE
     spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
     lmat <- INLA::inla.spde.make.A(smesh, locs)

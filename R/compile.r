@@ -58,20 +58,19 @@ dll_stelfi <- function(x) {
     }
 }
 #' @importFrom TMB compile MakeADFun sdreport
-#' @import Rcpp
-#' @import Matrix
 #' @importFrom ggplot2 ggplot aes xlab geom_line theme_minimal geom_histogram
 #' @importFrom gridExtra grid.arrange
+#' @importFrom stats optim qlogis runif
+#' @importFrom utils sessionInfo tail
+#' @importFrom grDevices dev.new
+#' @importFrom graphics points
+#' @importFrom stats ppoints qexp quantile runif
 #' @import rgeos
 #' @import sf
 #' @import sp
 #' @import spatstat.core
 #' @import spatstat.geom
-#' @importFrom stats optim qlogis runif
-#' @importFrom utils sessionInfo tail
-#' @importFrom grDevices dev.new
+#' @import Rcpp
+#' @import Matrix
 #' @import INLA
-#' @importFrom grDevices dev.new
-#' @importFrom graphics points
-#' @importFrom stats ppoints qexp quantile runif
 NULL

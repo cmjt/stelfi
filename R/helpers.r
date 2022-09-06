@@ -79,55 +79,59 @@ get_fields <- function(object, smesh, tmesh, plot = FALSE, sd = FALSE) {
       
 #' Function to find areas (weights) around the mesh nodes which are
 #' within the specified spatial polygon.
-#' Relies on the internal \code{\link{inla.mesh.dual}} function.
+#' Relies on the internal \code{\link{dual_mesh}} function.
 #' @seealso \url{https://becarioprecario.bitbucket.io/spde-gitbook/}.
 #' @export
-get_weights <- function(mesh, sp, plot = FALSE) {
-    dmesh <- inla.mesh.dual(mesh)
-    # Convert sp to an object compatible with sf
-    sp_sf <- sf::st_as_sf(sp)
-    sf::st_crs(sp_sf) <- NA
-    if (!all(st_is_valid(sp_sf))) { # check for invalid geometries
-      sp_sf <- sf::st_make_valid(sp_sf)
+get_weights <- function(mesh, sf, plot = FALSE) {
+    dmesh <- dual_mesh(mesh)
+    sf::st_crs(sf) <- NA
+    if (!all(sf::st_is_valid(sf))) {
+        ## check for invalid geometries
+        sf <- sf::st_make_valid(sf)
     }
-    w <- sapply(1:length(dmesh), function(i) {
-      coord <- sf::st_coordinates(sf::st_as_sf(dmesh[i, ]))[, 1:2]
-      coord <- sf::st_polygon(list(coord))
-      if (any(sf::st_intersects(coord, sp_sf, sparse = FALSE)))
-        return(sf::st_area(sf::st_intersection(coord, sp_sf)))
-      else return(0)
+    w <- sapply(1:nrow(dmesh), function(i) {
+        coord <- sf::st_coordinates(dmesh[i, ])[, 1:2]
+        coord <- sf::st_polygon(list(coord))
+        if (any(sf::st_intersects(coord, sf, sparse = FALSE)))
+            return(sf::st_area(sf::st_intersection(coord, sf)))
+        else return(0)
     })
+    weights <- data.frame(ID = 1:nrow(dmesh), weights = unlist(w))
+    res <- dplyr::left_join(dmesh, weights, by = "ID")
     if(missing(plot)) plot <- FALSE
     if(plot) {
-        plot(dmesh, col = "grey")
-        plot(mesh, add = TRUE, edge.color = "white")
-        plot(sp, add = TRUE)
-        points(mesh$loc, pch = 18)
-        points(mesh$loc[unlist(w) == 0, ], col = "white", pch = 18)
+        p <-  ggplot2::ggplot(res) +
+            ggplot2::geom_sf(ggplot2::aes(fill = weights)) +
+            ggplot2::geom_sf(data = stelfi:::mesh_2_sf(mesh),
+                             col = "white", fill = NA) +
+            ggplot2::geom_sf(data = sf, fill = NA) +
+            ggplot2::theme_void()
+        print(p)
+    }else{
+        return(res)
     }
-    return(list(weights = unlist(w), polys = dmesh))
 }
 
 #' Internal function that takes in a list of points
 #' (and optionally a weight or covariate for each point)
 #' and a mesh of polygons.
 #' @param xy A data frame of locations.
-#' @param dmesh An object returned by \code{\link{inla.mesh.dual}}.
+#' @param dmesh An object returned by \code{\link{dual_mesh}}.
 #' @param weights A vector of weights/covariates for each point
 #' @return Either the number of points in each polygon or sum of the weights.
 points_in_mesh <- function(xy, dmesh, weights) {
   xy <- sf::st_as_sf(xy, coords = c("x", "y"))
   xy <- sf::st_geometry(xy)
   if (missing(weights)) {
-    sapply(1:length(dmesh), function(i) {
+    sapply(1:nrow(dmesh), function(i) {
       coord <- sf::st_coordinates(sf::st_as_sf(dmesh[i, ]))[, 1:2]
       coord <- sf::st_polygon(list(coord))
       sum(sf::st_contains(coord, xy, sparse = FALSE) > 0)
     })
   }
   else {
-    result <- rep(0, length(dmesh))
-    for (i in 1:length(dmesh)) {
+    result <- rep(0, nrow(dmesh))
+    for (i in 1:nrow(dmesh)) {
       coord <- sf::st_coordinates(sf::st_as_sf(dmesh[i, ]))[, 1:2]
       coord <- sf::st_polygon(list(coord))
       temp_result <- sf::st_contains(coord, xy, sparse = FALSE)
@@ -178,7 +182,10 @@ dual_mesh <- function(mesh) {
             p <- rbind(p, p[1, ])
             sf::st_polygon(list(p))
         })
-        return(sf::st_sf(sf::st_sfc(pls)))
+        geometry <- sf::st_sfc(pls)
+        dat <- data.frame(ID = 1:length(geometry))
+        return(sf::st_sf(dat,
+                         geometry = geometry))
     }
     else stop("It only works for R2!")
 }
