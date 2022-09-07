@@ -8,7 +8,7 @@ The self-excitement is Gaussian in space and exponentially decaying in time.}
 fit_stelfi(
   times,
   locs,
-  sp,
+  sf,
   smesh,
   parameters,
   covariates,
@@ -24,7 +24,7 @@ fit_stelfi(
 
 \item{locs}{A \code{data.frame} of \code{x} and \code{y} locations, 2xn.}
 
-\item{sp}{A \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
+\item{sf}{An \code{sf} of type \code{POLYGON} specifying the region
 of the domain.}
 
 \item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}

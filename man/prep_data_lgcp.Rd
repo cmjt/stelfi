@@ -4,13 +4,13 @@
 \alias{prep_data_lgcp}
 \title{Internal function to prep data as per \code{link{INLA}} stack}
 \usage{
-prep_data_lgcp(locs, sp, smesh, tmesh)
+prep_data_lgcp(locs, sf, smesh, tmesh)
 }
 \arguments{
 \item{locs}{A \code{data.frame} of \code{x} and \code{y} locations, 2xn. If locations have
 time stamps then this should be the third column of the supplied 3xn matrix.}
 
-\item{sp}{A \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
+\item{sf}{An \code{sf} of type \code{POLYGON} specifying the region
 of the domain.}
 
 \item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}

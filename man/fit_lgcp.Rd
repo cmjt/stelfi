@@ -6,7 +6,7 @@
 \usage{
 fit_lgcp(
   locs,
-  sp,
+  sf,
   smesh,
   tmesh,
   parameters = list(),
@@ -20,7 +20,7 @@ fit_lgcp(
 \item{locs}{A \code{data.frame} of \code{x} and \code{y} locations, 2xn. If locations have
 time stamps then this should be the third column of the supplied 3xn matrix.}
 
-\item{sp}{A \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
+\item{sf}{An \code{sf} of type \code{POLYGON} specifying the region
 of the domain.}
 
 \item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
@@ -57,11 +57,12 @@ the user friendly wrapper for the internal function \code{\link{fit_lgcp_tmb}}.
 \examples{
 \dontrun{
 data(xyt, package = "stelfi")
-domain <- as(xyt$window, "SpatialPolygons")
+domain <- sf::st_as_sf(xyt$window)
 locs <- data.frame(x = xyt$x, y = xyt$y)
-smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain),
+bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+smesh <- INLA::inla.mesh.2d(boundary = bnd,
 max.edge = 0.75, cutoff = 0.3)
-fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh,
+fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 }
 \dontrun{
@@ -69,7 +70,7 @@ ndays <- 2
 locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
 w0 <- 2
 tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
-fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh, tmesh = tmesh,
+fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh, tmesh = tmesh,
  parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2))
 
 }

@@ -4,7 +4,7 @@
 \alias{simulate_lgcp}
 \title{Simulate a log-Gaussian Cox process (LGCP)}
 \usage{
-simulate_lgcp(parameters, sp, smesh, tmesh, covariates, all = FALSE)
+simulate_lgcp(parameters, sf, smesh, tmesh, covariates, all = FALSE)
 }
 \arguments{
 \item{parameters}{A named list of parameters:
@@ -15,7 +15,7 @@ simulate_lgcp(parameters, sp, smesh, tmesh, covariates, all = FALSE)
 \code{atanh_rho}, optional, \code{arctan(rho)} AR1 temporal parameter.
 Default values are used if not provided.}
 
-\item{sp}{A \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
+\item{sf}{An \code{sf} of type \code{POLYGON} specifying the region
 of the domain.}
 
 \item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
@@ -40,17 +40,18 @@ as well as \code{tmesh} then times knots will also be returned.
 \examples{
 \dontrun{
 data(xyt, package = "stelfi")
-domain <- as(xyt$window, "SpatialPolygons")
-smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain),
+domain <- sf::st_as_sf(xyt$window)
+bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+smesh <- INLA::inla.mesh.2d(boundary = bnd,
 max.edge = 0.75, cutoff = 0.3)
 parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
-simulate_lgcp(parameters = parameters, sp = domain, smesh = smesh)
+simulate_lgcp(parameters = parameters, sf = domain, smesh = smesh)
 }
 \dontrun{
 ndays <- 2
 w0 <- 2
 tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
 parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2)
-simulate_lgcp(parameters = parameters, sp = domain, smesh = smesh, tmesh = tmesh)
+simulate_lgcp(parameters = parameters, sf = domain, smesh = smesh, tmesh = tmesh)
 }
 }

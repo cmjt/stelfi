@@ -8,7 +8,7 @@
 fit_hspde_tmb(
   times,
   locs,
-  sp,
+  sf,
   mesh,
   coefs,
   designmat,
@@ -37,7 +37,7 @@ fit_hspde_tmb(
 \item{locs}{A \code{data.frame} of \code{x} and \code{y} locations, 2xn. If locations have
 time stamps then this should be the third column of the supplied 3xn matrix.}
 
-\item{sp}{A \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
+\item{sf}{An \code{sf} of type \code{POLYGON} specifying the region
 of the domain.}
 
 \item{tmb_silent}{logical, default `TRUE`:

@@ -11,7 +11,7 @@ points_in_mesh(xy, dmesh, weights)
 \arguments{
 \item{xy}{A data frame of locations.}
 
-\item{dmesh}{An object returned by \code{\link{inla.mesh.dual}}.}
+\item{dmesh}{An object returned by \code{\link{dual_mesh}}.}
 
 \item{weights}{A vector of weights/covariates for each point}
 }

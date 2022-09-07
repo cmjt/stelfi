@@ -7,7 +7,7 @@ log-Gaussian Cox process using \code{TMB}}
 \usage{
 fit_mlgcp(
   locs,
-  sp,
+  sf,
   marks,
   smesh,
   parameters = list(),
@@ -25,7 +25,7 @@ fit_mlgcp(
 \arguments{
 \item{locs}{A \code{data.frame} of \code{x} and \code{y} locations, 2xn.}
 
-\item{sp}{A \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
+\item{sf}{An \code{sf} of type \code{POLYGON} specifying the region
 of the domain.}
 
 \item{marks}{A matrix of marks for each observation of the point pattern}
@@ -77,7 +77,7 @@ A simple to use wrapper for \code{fit_mlgcp_tmb}
 \dontrun{
 data(marked, package = "stelfi")
 loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
-domain <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(loc.d)),'0')))
+domain <- sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(loc.d))))
 smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1),
 max.edge = c(0.3, 0.7), cutoff = 0.05)
 locs <- cbind(x = marked$x, y = marked$y)
@@ -86,7 +86,7 @@ parameters <- list(betamarks = matrix(0, nrow = 1, ncol = ncol(marks)),
 log_tau = rep(log(1), 2), log_kappa = rep(log(1), 2),
 marks_coefs_pp = rep(0, ncol(marks)), betapp = 0)
 fit <- fit_mlgcp(locs = locs, marks = marks,
-sp = domain, smesh = smesh,
+sf = domain, smesh = smesh,
 parameters = parameters, methods = 0,fields = 1)
 }
 }

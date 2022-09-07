@@ -19,13 +19,13 @@ Plot the lambda estimate from a fitted LGCP model
 }
 \examples{
 \dontrun{
-require(maptools)
 data(xyt, package = "stelfi")
-domain <- as(xyt$window, "SpatialPolygons")
+domain <- sf::st_as_sf(xyt$window)
 locs <- data.frame(x = xyt$x, y = xyt$y)
-smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+smesh <- INLA::inla.mesh.2d(boundary = bnd, 
 max.edge = 0.75, cutoff = 0.3)
-fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh,
+fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 plot_lambda(fit, smesh = smesh, border = domain)
 }

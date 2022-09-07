@@ -82,7 +82,7 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' \dontrun{
 #' data(marked, package = "stelfi")
 #' loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
-#' domain <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(loc.d)),'0')))
+#' domain <- sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(loc.d))))
 #' smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1),
 #' max.edge = c(0.3, 0.7), cutoff = 0.05)
 #' locs <- cbind(x = marked$x, y = marked$y)
@@ -91,12 +91,12 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' log_tau = rep(log(1), 2), log_kappa = rep(log(1), 2),
 #' marks_coefs_pp = rep(0, ncol(marks)), betapp = 0)
 #' fit <- fit_mlgcp(locs = locs, marks = marks,
-#' sp = domain, smesh = smesh,
+#' sf = domain, smesh = smesh,
 #' parameters = parameters, methods = 0,fields = 1)
 #' }
 #' }
 #' @export
-fit_mlgcp <-  function(locs, sp, marks, smesh, parameters=list(), methods,
+fit_mlgcp <-  function(locs, sf, marks, smesh, parameters=list(), methods,
                        strfixed = matrix(1, nrow = nrow(locs), ncol = ncol(marks)),
                        fields = rep(1, ncol(marks)),
                        covariates, pp_covariates, marks_covariates,
@@ -124,7 +124,7 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters=list(), methods,
     }
     betapp <- parameters[["betapp"]]
     if (is.null(betapp)) {
-      area <- sum(get_weights(smesh, sf::st_as_sf(sp))$weights)
+      area <- sum(get_weights(smesh, sf)$weights)
       avg_rate <- log(nrow(locs) / area)
       if (!missing(covariates)) {
         betapp <- numeric(length(pp_covariates))
@@ -181,7 +181,7 @@ fit_mlgcp <-  function(locs, sp, marks, smesh, parameters=list(), methods,
     }
     ## data
     ## E
-    w <- get_weights(mesh = smesh, sf = sf::st_as_sf(sp), plot = FALSE)
+    w <- get_weights(mesh = smesh, sf = sf, plot = FALSE)
     w_areas <- w$weights
     ypp <- points_in_mesh(as.data.frame(locs), w)
     ## SPDE

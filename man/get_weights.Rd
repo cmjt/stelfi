@@ -4,14 +4,14 @@
 \alias{get_weights}
 \title{Function to find areas (weights) around the mesh nodes which are
 within the specified spatial polygon.
-Relies on the internal \code{\link{inla.mesh.dual}} function.}
+Relies on the internal \code{\link{dual_mesh}} function.}
 \usage{
-get_weights(mesh, sp, plot = FALSE)
+get_weights(mesh, sf, plot = FALSE)
 }
 \description{
 Function to find areas (weights) around the mesh nodes which are
 within the specified spatial polygon.
-Relies on the internal \code{\link{inla.mesh.dual}} function.
+Relies on the internal \code{\link{dual_mesh}} function.
 }
 \seealso{
 \url{https://becarioprecario.bitbucket.io/spde-gitbook/}.

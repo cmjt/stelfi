@@ -4,15 +4,16 @@
 \alias{show_field}
 \title{Plot estimated random field(s) of a fitted LGCP}
 \usage{
-show_field(x, smesh, dims = c(500, 500), border)
+show_field(x, smesh, dims = c(500, 500), sf)
 }
 \arguments{
 \item{x}{A vector of values for each \code{smesh} node.}
 
 \item{dims}{A numeric vector of length 2 specifying
-the spatial pixel resolution. By default \code{= c(500,500)}.}
+the spatial pixel resolution. By default \code{ = c(500,500)}.}
 
-\item{border}{Optional, a \code{SpatialPolygons} object of the domain border.}
+\item{sf}{Optional, an \code{sf} of type \code{POLYGON} specifying the region
+of the domain.}
 }
 \description{
 Plot estimated random field(s) of a fitted LGCP
@@ -20,12 +21,13 @@ Plot estimated random field(s) of a fitted LGCP
 \examples{
 \dontrun{
 data(xyt, package = "stelfi")
-domain <- as(xyt$window, "SpatialPolygons")
-smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+domain <- sf::st_as_sf(xyt$window)
+bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+smesh <- INLA::inla.mesh.2d(boundary = bnd, 
 max.edge = 0.75, cutoff = 0.3)
 parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
-simdata <- simulate_lgcp(parameters = parameters, sp = domain, smesh = smesh)
-show_field(simdata$x, smesh = smesh)
+simdata <- simulate_lgcp(parameters = parameters, sf = domain, smesh = smesh)
+show_field(simdata$x, smesh = smesh, sf = domain)
 }
 }
 \seealso{

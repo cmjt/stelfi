@@ -178,42 +178,40 @@ setMethod("show_hawkes_GOF",
 #' 
 #' @param x A vector of values for each \code{smesh} node.
 #' @param dims A numeric vector of length 2 specifying
-#' the spatial pixel resolution. By default \code{= c(500,500)}.
-#' @param border Optional, a \code{SpatialPolygons} object of the domain border.
+#' the spatial pixel resolution. By default \code{ = c(500,500)}.
+#' @param sf Optional, an \code{sf} of type \code{POLYGON} specifying the region
+#' of the domain.
 #' @inheritParams get_fields
 #' @seealso \code{\link{plot_lambda}} and \code{\link{get_fields}}
 #' @examples \dontrun{
 #' data(xyt, package = "stelfi")
-#' domain <- as(xyt$window, "SpatialPolygons")
-#' smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+#' domain <- sf::st_as_sf(xyt$window)
+#' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+#' smesh <- INLA::inla.mesh.2d(boundary = bnd, 
 #' max.edge = 0.75, cutoff = 0.3)
 #' parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
-#' simdata <- simulate_lgcp(parameters = parameters, sp = domain, smesh = smesh)
-#' show_field(simdata$x, smesh = smesh)
+#' simdata <- simulate_lgcp(parameters = parameters, sf = domain, smesh = smesh)
+#' show_field(simdata$x, smesh = smesh, sf = domain)
 #' }
 #' @export
-show_field <- function(x, smesh, dims = c(500,500), border) {
+show_field <- function(x, smesh, dims = c(500,500), sf) {
     nx <- dims[1]
     ny <- dims[2]
-    px <- inlabru::pixels(smesh, nx = nx, ny = ny)
-    A <- INLA::inla.spde.make.A(smesh, px)
-    px$color <- as.vector(A %*% x)
-    ## Convert border data from Spatial Polygons to dataframe
-    if (!missing(border)) {
-        border_f <- ggplot2::fortify(border)
-    }
-
-    plt <- ggplot2::ggplot(as.data.frame(px), ggplot2::aes(x, y)) +
-        ggplot2::geom_tile(ggplot2::aes(fill = color)) +
+    xs <- seq(min(smesh$loc[, 1]), max(smesh$loc[, 1]), length = nx)
+    ys <- seq(min(smesh$loc[, 2]), max(smesh$loc[, 2]), length = ny)
+    pixels <- expand.grid(x = xs, y = ys)
+    pxl <- sf::st_multipoint(as.matrix(pixels))
+    A <- INLA::inla.spde.make.A(smesh, pxl)
+    pixels$color <-  as.vector(A %*% x)
+    plt <- ggplot2::ggplot() +
+        ggplot2::geom_tile(data = pixels, ggplot2::aes(x = x, y = y, fill = color)) +
         ggplot2::labs(fill = "") + 
         ggplot2::scale_fill_viridis_c(option = "D") +
         ggplot2::coord_equal() 
     
-    if (!missing(border)) {
+    if (!missing(sf)) {
         plt <- plt +
-            ggplot2::geom_polygon(data = border_f, ggplot2::aes(x = long, y = lat,
-                                                                group = group),
-                                  fill = NA, color = 'black')
+            ggplot2::geom_sf(data = sf, fill = NA, size = 2)
     }
     plt
 
@@ -223,13 +221,13 @@ show_field <- function(x, smesh, dims = c(500,500), border) {
 #' @inheritParams get_fields
 #' @seealso \code{\link{show_field}} and \code{\link{get_fields}}
 #' @examples \dontrun{
-#' require(maptools)
 #' data(xyt, package = "stelfi")
-#' domain <- as(xyt$window, "SpatialPolygons")
+#' domain <- sf::st_as_sf(xyt$window)
 #' locs <- data.frame(x = xyt$x, y = xyt$y)
-#' smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+#' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+#' smesh <- INLA::inla.mesh.2d(boundary = bnd, 
 #' max.edge = 0.75, cutoff = 0.3)
-#' fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh,
+#' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 #' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 #' plot_lambda(fit, smesh = smesh, border = domain)
 #' }

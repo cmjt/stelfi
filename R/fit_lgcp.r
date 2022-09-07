@@ -88,7 +88,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' \code{R_inla} namespace for the spde construction of the latent field. Ths is
 #' the user friendly wrapper for the internal function \code{\link{fit_lgcp_tmb}}.
 #' @seealso \code{\link{fit_lgcp_tmb}}.
-#' @param sp A \code{SpatialPolygons} or \code{SpatialPolygonsDataFrame}
+#' @param sf An \code{sf} of type \code{POLYGON} specifying the region
 #' of the domain.
 #' @param locs A \code{data.frame} of \code{x} and \code{y} locations, 2xn. If locations have
 #' time stamps then this should be the third column of the supplied 3xn matrix.
@@ -107,11 +107,12 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' @return A fitted \code{\link[TMB]{MakeADFun}} object.
 #' @examples \dontrun{
 #' data(xyt, package = "stelfi")
-#' domain <- as(xyt$window, "SpatialPolygons")
+#' domain <- sf::st_as_sf(xyt$window)
 #' locs <- data.frame(x = xyt$x, y = xyt$y)
-#' smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain),
+#' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+#' smesh <- INLA::inla.mesh.2d(boundary = bnd,
 #' max.edge = 0.75, cutoff = 0.3)
-#' fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh,
+#' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 #' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 #' }
 #' \dontrun{
@@ -119,12 +120,12 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
 #' w0 <- 2
 #' tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
-#' fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh, tmesh = tmesh,
+#' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh, tmesh = tmesh,
 #'  parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2))
 #' 
 #' }
 #' @export
-fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters=list(), covariates,
+fit_lgcp <-  function(locs, sf, smesh, tmesh, parameters=list(), covariates,
                       tmb_silent = TRUE,
                       nlminb_silent = TRUE, ...) {
     ## read in parameters
@@ -139,7 +140,7 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters=list(), covariates,
     beta <- parameters[["beta"]]
     # default value of the intercept is log of the density of points
     if (is.null(beta)) {
-      area <- sum(get_weights(smesh, sf::st_as_sf(sp))$weights)
+      area <- sum(get_weights(smesh, sf)$weights)
       avg_rate <- log(nrow(locs)/area)
       if (!missing(covariates)) {
         beta <- numeric(length= 1 + ncol(covariates))
@@ -167,7 +168,7 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters=list(), covariates,
     if (!missing(tmesh)) {
         if(!"t" %in% names(locs))
             stop("Need a variable named t in arg locs")
-        tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
+        tmp <- prep_data_lgcp(locs = locs, sf = sf, smesh = smesh, tmesh = tmesh)
         k <- length(tmesh$loc)
         if (!missing(covariates)) if (nrow(covariates) != nrow(smesh$loc)*k)
             stop("nrow.covariates should be size of spatial mesh by number of time knots")
@@ -180,7 +181,7 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters=list(), covariates,
     } else {
         if (!missing(covariates)) if(nrow(covariates) != nrow(smesh$loc))
             stop("nrow.covariates should be same as spatial mesh size")
-        tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
+        tmp <- prep_data_lgcp(locs = locs, sf = sf, smesh = smesh)
         k <- 1
         atanh_rho <- NULL
     }
@@ -209,9 +210,9 @@ fit_lgcp <-  function(locs, sp, smesh, tmesh, parameters=list(), covariates,
 
 #' Internal function to prep data as per \code{link{INLA}} stack
 #' @inheritParams fit_lgcp
-prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
+prep_data_lgcp <- function(locs, sf, smesh, tmesh) {
     ## E
-    w <- get_weights(mesh = smesh, sf = sf::st_as_sf(sp), plot = FALSE)
+    w <- get_weights(mesh = smesh, sf = sf, plot = FALSE)
     w_areas <- w$weights
     nv <- smesh$n
     ## SPDE
@@ -219,20 +220,19 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
     ## spatial or spatiotemporal
     if (!missing(tmesh)) {
         k <- length(tmesh$loc)
-        area <- factor(sf::st_intersection(sf::st_as_sf(locs, coords = c("x", "y")), w)$ID,
-                       levels = 1:nrow(w))
         t.breaks <- sort(c(tmesh$loc[c(1, k)],
                            tmesh$loc[2:k - 1] / 2 + tmesh$loc[2:k] / 2))
         time <- factor(findInterval(locs$t, t.breaks),
                        levels = 1:(length(t.breaks) - 1))
-        agg.dat <- as.data.frame(table(area, time))
-        for(j in 1:2) # set time and area as integer
-            agg.dat[[j]] <- as.integer(as.character(agg.dat[[j]]))
-        ypp <- agg.dat$Freq
+        y.pp <- list()
+        for(i in unique(time)) {
+            y.pp[[i]] <-  points_in_mesh(locs[time == i, ], w)
+        }
+        ypp <- as.numeric(unlist(y.pp))
         w.t <- Matrix::diag(INLA::inla.mesh.fem(tmesh)$c0)
-        expected <- w_areas[agg.dat$area] * (w.t[agg.dat$time])
-        A <- INLA::inla.spde.make.A(smesh, smesh$loc[agg.dat$area, ],
-                              group = agg.dat$time, mesh.group = tmesh)
+        expected <- w_areas[rep(1:nv, k)] * (w.t[rep(1:k, each = nv)])
+        A <- INLA::inla.spde.make.A(smesh, smesh$loc[rep(1:nv, k), ],
+                              group = rep(1:k, each = nv), mesh.group = tmesh)
         idx <- rep(1, length(ypp))
     }else{
         ypp <- points_in_mesh(locs, w)
@@ -256,21 +256,22 @@ prep_data_lgcp <- function(locs, sp, smesh, tmesh) {
 #'
 #' @examples \dontrun{
 #' data(xyt, package = "stelfi")
-#' domain <- as(xyt$window, "SpatialPolygons")
-#' smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain),
+#' domain <- sf::st_as_sf(xyt$window)
+#' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+#' smesh <- INLA::inla.mesh.2d(boundary = bnd,
 #' max.edge = 0.75, cutoff = 0.3)
 #' parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
-#' simulate_lgcp(parameters = parameters, sp = domain, smesh = smesh)
+#' simulate_lgcp(parameters = parameters, sf = domain, smesh = smesh)
 #' }
 #' \dontrun{
 #' ndays <- 2
 #' w0 <- 2
 #' tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
 #' parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2)
-#' simulate_lgcp(parameters = parameters, sp = domain, smesh = smesh, tmesh = tmesh)
+#' simulate_lgcp(parameters = parameters, sf = domain, smesh = smesh, tmesh = tmesh)
 #' }
 #' @export
-simulate_lgcp <- function(parameters, sp, smesh, tmesh, covariates,
+simulate_lgcp <- function(parameters, sf, smesh, tmesh, covariates,
                           all = FALSE) {
     ## svs
     beta <- parameters[["beta"]]
@@ -291,18 +292,18 @@ simulate_lgcp <- function(parameters, sp, smesh, tmesh, covariates,
     ## prepare variables
     if (!missing(tmesh)) {
         locs <- matrix(0, nrow = 10, ncol = 3)
-        tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
+        tmp <- prep_data_lgcp(locs = locs, sf = sf, smesh = smesh, tmesh = tmesh)
         atanh_rho <- parameters[["atanh_rho"]]
         k <- length(tmesh$loc)
         if (!missing(covariates)) if (nrow(covariates) != nrow(smesh$loc) * k)
                                       stop("nrow.covariates should be size of spatial mesh by number of time knots")
         if (length(atanh_rho) != 1)
             stop("atanh_rho must be a single number")
-        tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh, tmesh = tmesh)
+        tmp <- prep_data_lgcp(locs = locs, sf = sf, smesh = smesh, tmesh = tmesh)
     } else {
         locs <-  matrix(0, nrow = 10, ncol = 2)
         locs <- data.frame(x = locs[, 1], y = locs[, 2])
-        tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
+        tmp <- prep_data_lgcp(locs = locs, sf = sf, smesh = smesh)
         k <- 1
         if(!missing(covariates)) {
             if(length(beta) != (ncol(covariates) + 1))
@@ -310,7 +311,7 @@ simulate_lgcp <- function(parameters, sp, smesh, tmesh, covariates,
         }
         k <- 1
         atanh_rho <- NULL
-        tmp <- prep_data_lgcp(locs = locs, sp = sp, smesh = smesh)
+        tmp <- prep_data_lgcp(locs = locs, sf = sf, smesh = smesh)
     }
     ## Designmat
     if(!missing(covariates)) {

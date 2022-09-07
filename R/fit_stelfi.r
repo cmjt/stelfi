@@ -6,7 +6,7 @@
 #' print function and parameters every iteration.
 #' @inheritParams fit_hawkes
 #' @inheritParams fit_lgcp
-fit_hspde_tmb <- function(times, locs, sp, mesh,
+fit_hspde_tmb <- function(times, locs, sf, mesh,
                           coefs, designmat, logit_abratio = 0, log_beta = 0,
                           log_kappa = 0, log_tau = 0, log_xsigma = 0,
                           log_ysigma = 0, atanh_rho = 0,
@@ -17,12 +17,9 @@ fit_hspde_tmb <- function(times, locs, sp, mesh,
     if (!"spde_hawkes" %in% getLoadedDLLs()) {
         stelfi::dll_stelfi("spde_hawkes")
     }
-    sp_sf <- sf::st_as_sf(sp)
     innerloc <- Reduce(rbind, apply(mesh$graph$tv, 1, function(vt) {
-        temp <- sp::Polygons(list(sp::Polygon(mesh$loc[rep(vt, length = length(vt) + 1), 1:2])), '0')
-        temp <- sp::SpatialPolygons(list(temp))
-        temp_sf <- sf::st_as_sf(temp)
-        if (is.null(sf::st_intersection(temp_sf, sp_sf)))
+        temp <-  sf::st_polygon(list(mesh$loc[rep(vt, length = length(vt) + 1), 1:2]))
+        if (is.null(sf::st_intersection(temp, sf)))
           rep(NULL, 3)
         else
             vt
@@ -46,7 +43,7 @@ fit_hspde_tmb <- function(times, locs, sp, mesh,
 #' @inheritParams fit_hawkes
 #' @inheritParams fit_lgcp
 #' @inheritParams fit_hspde_tmb
-fit_hspat_tmb <- function(times, locs, sp,
+fit_hspat_tmb <- function(times, locs, sf,
                           mesh, coefs, designmat, logit_abratio = 0, log_beta = 0,
                           log_xsigma = 0, log_ysigma = 0, atanh_rho = 0, w,
                           reltol = 1e-12, abstol = 1e-12,
@@ -56,12 +53,9 @@ fit_hspat_tmb <- function(times, locs, sp,
     if (!"spatial_hawkes" %in% getLoadedDLLs()) {
         stelfi::dll_stelfi("spatial_hawkes")
     }
-    sp_sf <- sf::st_as_sf(sp)
     innerloc <- Reduce(rbind, apply(mesh$graph$tv, 1, function(vt) {
-        temp <- sp::Polygons(list(sp::Polygon(mesh$loc[rep(vt, length = length(vt) + 1), 1:2])), '0')
-        temp <- sp::SpatialPolygons(list(temp))
-        temp_sf <- sf::st_as_sf(temp)
-        if (is.null(sf::st_intersection(temp_sf, sp_sf)))
+        temp <-  sf::st_polygon(list(mesh$loc[rep(vt, length = length(vt) + 1), 1:2]))
+        if (is.null(sf::st_intersection(temp, sf)))
           rep(NULL, 3)
         else
             vt
@@ -101,7 +95,7 @@ fit_hspat_tmb <- function(times, locs, sp,
 #' @inheritParams fit_lgcp
 #' @inheritParams fit_hspat_tmb
 #' @export
-fit_stelfi <-  function(times, locs, sp, smesh,  parameters, covariates,
+fit_stelfi <-  function(times, locs, sf, smesh,  parameters, covariates,
                         GMRF = FALSE,
                         time_independent = TRUE,
                         tmb_silent = TRUE,
@@ -166,11 +160,11 @@ fit_stelfi <-  function(times, locs, sp, smesh,  parameters, covariates,
       designmat <- matrix(rep(1, smesh$n), ncol = 1)
     }
     ## weights
-    w <- get_weights(mesh = smesh, sf = sf::st_as_sf(sp), plot = FALSE)$weights
+    w <- get_weights(mesh = smesh, sf = sf, plot = FALSE)$weights
     locs <- as.matrix(locs)
     lmat <- INLA::inla.spde.make.A(smesh, locs)
     if(!GMRF) { ## No GMRF
-      res <- fit_hspat_tmb(times = times, locs = locs, sp = sp, w  = w,
+      res <- fit_hspat_tmb(times = times, locs = locs, sf = sf, w  = w,
                             mesh = smesh, coefs = coefs, designmat = designmat,
                             logit_abratio = logit_abratio, log_beta = log_beta,
                             log_xsigma = log_xsigma,
@@ -183,7 +177,7 @@ fit_stelfi <-  function(times, locs, sp, smesh,  parameters, covariates,
         spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
         log_tau <- log(parameters[["tau"]])
         log_kappa <- log(parameters[["kappa"]])
-        res <- fit_hspde_tmb(times = times, locs = locs, sp = sp,
+        res <- fit_hspde_tmb(times = times, locs = locs, sf = sf,
                             spde = spde, w  = w,
                             mesh = smesh, coefs = coefs, designmat = designmat,
                             logit_abratio = logit_abratio, log_beta = log_beta,
