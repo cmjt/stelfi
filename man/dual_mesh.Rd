@@ -9,6 +9,9 @@
 \usage{
 dual_mesh(mesh)
 }
+\arguments{
+\item{mesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
+}
 \value{
 a \code{sf} object of the Voronoi tesselation
 centered at each \code{mesh} node.

@@ -38,7 +38,7 @@ fit_mlgcp_tmb(
 The minimal required components are \code{M0}, \code{M1}, \code{M2}.}
 
 \item{w}{A vector of model weights; corresponds to the \code{E} term for
-poisson models, see \code{\link[INLA]{inla.doc("poisson")}} for more detail.}
+poisson models, see \code{INLA::inla.doc("poisson")} for more detail.}
 
 \item{strfixed}{A matrix of fixed structural parameters, defined for each event and mark.
 Defaults to 1s.
@@ -84,13 +84,13 @@ If there are covariates, then the covariates are in the subsequent columns.}
 \item{fields}{A binary vector indicating whether there is a new random
 field for each mark. By default, each mark has its own random field.}
 
-\item{tmb_silent}{Logical, default \code{TRUE}:
+\item{tmb_silent}{\code{logical}, default \code{TRUE}:
 TMB inner optimization tracing information will be printed.}
 
 \item{nlminb_silent}{Logical, default \code{TRUE}:
 print function and parameters every iteration.}
 
-\item{...}{Optional extra arguments to pass into \code{\link[stats]{nlminb}}.}
+\item{...}{optional extra arguments to pass into \code{\link[stats]{nlminb}}.}
 }
 \description{
 \code{fit_mlgcp_tmb} fits a marked LGCP using \code{TMB} and the

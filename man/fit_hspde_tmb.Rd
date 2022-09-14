@@ -9,7 +9,7 @@ fit_hspde_tmb(
   times,
   locs,
   sf,
-  mesh,
+  smesh,
   coefs,
   designmat,
   logit_abratio = 0,
@@ -40,10 +40,45 @@ time stamps then this should be the third column of the supplied 3xn matrix.}
 \item{sf}{An \code{sf} of type \code{POLYGON} specifying the region
 of the domain.}
 
+\item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
+
+\item{coefs}{TODO}
+
+\item{designmat}{TODO}
+
+\item{logit_abratio}{logit ration of a, b parameters of the temporal Hawkes process}
+
+\item{log_beta}{the \code{log(beta)} base rate of the Hawkes process}
+
+\item{log_kappa}{the \code{log(kappa)} parameter for the GMRF}
+
+\item{log_tau}{the \code{log(tau)} parameter for the GMRF}
+
+\item{log_xsigma}{TODO}
+
+\item{log_ysigma}{TODO}
+
+\item{atanh_rho}{optional, \code{arctan(rho)} AR1 parameter.}
+
+\item{spde}{TODO}
+
+\item{w}{A vector of model weights; corresponds to the \code{E} term for
+poisson models, see \code{INLA::inla.doc("poisson")} for more detail.}
+
+\item{tmax}{TODO}
+
+\item{reltol}{\code{numeric}, relative tolerance (default  \code{1e-12})}
+
+\item{abstol}{\code{numeric}, absolute tolerance (default  \code{1e-12})}
+
+\item{lmat}{TODO}
+
+\item{simple}{TODO}
+
 \item{tmb_silent}{logical, default `TRUE`:
 TMB inner optimization tracing information will be printed.}
 
-\item{nlminb_silent}{logical, default `TRUE`:
+\item{nlminb_silent}{Logical, default \code{TRUE}:
 print function and parameters every iteration.}
 
 \item{...}{arguments to pass into \code{optim()}}

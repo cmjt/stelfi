@@ -49,7 +49,7 @@ y_{n * t_n}  \tab     t_n \cr
 The minimal required components are \code{M0}, \code{M1}, \code{M2}.}
 
 \item{w}{A vector of model weights; corresponds to the \code{E} term for
-poisson models, see \code{\link[INLA]{inla.doc("poisson")}} for more detail.}
+poisson models, see \code{INLA::inla.doc("poisson")} for more detail.}
 
 \item{idx}{A binary vector of the same size as the observation
 vector \code{\link{y}}. With this vector, the log-likelihood can
@@ -57,16 +57,16 @@ be computed using a subset of the observations: 1 for contributing
 to the log-likelihood, and 0 otherwise.}
 
 \item{beta}{A vector of fixed effects coefficients to be estimated
-(same length as \code{ncol(\link{designmat})}.}
+(same length as \code{ncol(designmat)}.}
 
 \item{log_tau}{\code{log(tau)} parameter for the GMRF.}
 
 \item{log_kappa}{\code{log(kappa)} parameter for the GMRF.}
 
-\item{atanh_rho}{Optional, \code{arctan(rho)} AR1 parameter.}
+\item{atanh_rho}{optional, \code{arctan(rho)} AR1 parameter.}
 
 \item{x}{The random field/effects. Set this variable random in
-\code{\link[TMB]{MadeADFun}}.
+\code{TMB::MadeADFun}.
 The array is of size \code{n} of random effect for each time knot
 (x.rows()) by number of temporal
 knots (x.cols()). Therefore, the total number of random effects is
@@ -77,19 +77,18 @@ Each column represents a time knot:
 random effects \tab x.col(0)  \tab   x.col(1) \tab   x.col(2)  \tab     ...   \tab      x.col(t_n - 1)
 }}
 
-\item{tmb_silent}{Logical, default \code{TRUE}:
+\item{tmb_silent}{\code{logical}, default \code{TRUE}:
 TMB inner optimization tracing information will be printed.}
 
 \item{nlminb_silent}{Logical, default \code{TRUE}:
 print function and parameters every iteration.}
 
-\item{...}{Optional extra arguments to pass into \code{\link[stats]{nlminb}}.}
+\item{simulation}{\code{logical}, simulate data, default \code{FALSE}.}
+
+\item{...}{optional extra arguments to pass into \code{\link[stats]{nlminb}}.}
 }
 \description{
 \code{fit_lgcp_tmb} fits a LGCP using \code{TMB} and the
 \code{R_inla} namespace for the spde construction of the latent field. For
 a simpler wrapper use \code{\link{fit_lgcp}} as this is an internal function.
-}
-\seealso{
-\code{\link{fit_lgcp}}
 }

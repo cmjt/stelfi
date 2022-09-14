@@ -4,7 +4,7 @@
 \alias{hawke_intensity}
 \title{Hawkes intensity function}
 \usage{
-hawke_intensity(times, mu, alpha, beta, p, marks, background_param)
+hawke_intensity(times, mu, alpha, beta, p, marks, background_parameters)
 }
 \arguments{
 \item{times}{A numeric vector of observed time points.}
@@ -17,6 +17,12 @@ occurence}
 \item{beta}{numeric integer specifying exponential intensity decay}
 
 \item{p}{An optional vector of pseudo times at which to calculate the intensity.}
+
+\item{marks}{a vector of numerical marks, defaults to 1 (i.e., no marks)}
+
+\item{background_parameters}{The parameter(s)
+for the background function \code{background}.
+This could be a list of multiple values.}
 }
 \description{
 Hawkes intensity function

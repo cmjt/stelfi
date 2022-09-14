@@ -22,9 +22,7 @@ test_that("Simple Hawkes model fitting", {
 })
 test_that("Non-homogeneous Hawkes model fitting", {
     set.seed(1)
-    times <- hawkesbow::hawkes(1000, fun = function(y) {
-        1 + 0.5 * sin(y)
-    }, M = 1.5, repr = 0.5, family = "exp", rate = 2)$p
+    times <- sim_hawkes(mu = 0.3, alpha = 4, beta = 5)
     background <- function(params, times) {
         A <- exp(params[[1]])
         B <- stats::plogis(params[[2]]) * A
@@ -43,8 +41,8 @@ test_that("Non-homogeneous Hawkes model fitting", {
                           background_parameters = background_param)
     estA <- exp(fit$background_parameters[1])
     estB <- plogis(fit$background_parameters[2]) * exp(fit$background_parameters[1])
-    expect_equal(estA, 1.03, tolerance = 0.1)
-    expect_equal(estB, 0.56, tolerance = 0.1)
+    expect_equal(estA, 0.2387370, tolerance = 0.1)
+    expect_equal(estB, 0.02600446, tolerance = 0.1)
 })
 test_that("LGCP model fitting (spatial)", {
     data(xyt, package = "stelfi")

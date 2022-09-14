@@ -16,24 +16,32 @@ Authors@R:
            family = "Xue",
            role = "ctb"))
 Depends:
-    R (>= 4.1.2),
+    R (>= 4.1.0),
 Imports:
     TMB (>= 1.7.20),
     Rcpp (>= 1.0.6),
-    Matrix,
-    ggplot2
+    ggplot2 (>= 3.3.6),
+    dplyr (>= 1.0.8),
+    gridExtra (>= 2.3),
+    reshape2 (>= 1.4.4),
+    sf (>= 1.0.8),
+    INLA,
+    Matrix
 Description: A package for fitting a range of spatiotemporal point processes which include latent fields.
 License: GPL
 URL: https://github.com/cmjt/stelfi
 LazyData: TRUE
+LazyDataCompression:xz
 RoxygenNote: 7.2.1
-Suggests: 
+Suggests:
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
     maptools,
     parallel,
     spatstat.utils,
+    spatstat.geom,
+    rgdal,
     methods
 VignetteBuilder: knitr
 Config/testthat/edition: 3

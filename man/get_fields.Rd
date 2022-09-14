@@ -7,11 +7,15 @@
 get_fields(object, smesh, tmesh, plot = FALSE, sd = FALSE)
 }
 \arguments{
-\item{object}{The result of a call to \code{\link{fit_lgcp}}.}
+\item{object}{the result of a call to \code{\link{fit_lgcp}}.}
 
-\item{plot}{Logical, if \code{TRUE} then the returned values are plotted.}
+\item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
 
-\item{sd}{Logical, if \code{TRUE} then standard errors of field are returned.}
+\item{tmesh}{Optional, a temporal mesh of class \code{\link[INLA]{inla.mesh.1d}}.}
+
+\item{plot}{\code{logical}, if \code{TRUE} then the returned values are plotted.}
+
+\item{sd}{\code{logical}, if \code{TRUE} then standard errors of field are returned.}
 }
 \description{
 \code{get_fields} returns

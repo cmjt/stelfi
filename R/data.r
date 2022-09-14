@@ -83,7 +83,9 @@ NULL
 #' \item{country}{country (IRAQ)}
 #' \item{latitude}{latitude location}
 #' \item{longitude}{longitude location}
-#' \item{sucess}{Logical fatal or not. TRUE = fatal}
+#' \item{utm.x}{x-coord location UTM}
+#' \item{utm.y}{y-coord location UTM}
+#' \item{success}{\code{logical} wheather attack was fatal or not, \code{TRUE} = fatal}
 #' \item{nkill}{number of fatalities per attack}
 #' \item{specificity}{spatial accuracy of event: 1 = most accurate, 5 = worst}
 #' \item{gname}{character name of attack perpetrators (ISIL)}
@@ -103,4 +105,51 @@ NULL
 #'
 #' @format  A \code{SpatialPolygonsDataFrame} of New Zeland in NZTM
 #' @name nz
+NULL
+#' Example marked point pattern data set
+#'
+#' @format A data frame with 159 rows and 5 variables:
+#' \describe{
+#' \item{x}{x coordinate}
+#' \item{y}{y coordinate}
+#' \item{m1}{mark, Gaussian distributed}
+#' \item{m2}{mark, Bernoulli distributed}
+#' \item{m3}{mark, Gamma distributed}
+#' }
+#' @name marked
+NULL
+#' A self-exciting spatiotemporal point pattern of class \code{stppp}
+#'
+#' @format A \code{stppp} object with 653 observations
+#' \describe{
+#' \item{window}{domain of the point pattern of class \code{owin}}
+#' \item{n}{number of observations, 653}
+#' \item{x}{x coordinate}
+#' \item{y}{y coordinate}
+#' \item{markformat}{\code{none}}
+#' \item{t}{timestamp of points}
+#' \item{tlim}{time frame \code{0 2}}
+#' }
+#' @name xyt
+NULL
+#' UFO sightings in the USA
+#'
+#' Subset of data sourced from the UFO Sightings Map
+#' (\url{https://www.arcgis.com/apps/webappviewer/index.html?id=ddda71d5211f47e782b12f3f8d06246e}).
+#' 
+#' @format A data frame with 97027 observations and 12 variables
+#' \describe{
+#' \item{city}{city where sighting was reported}
+#' \item{state}{state code where sighting was reported}
+#' \item{date_time}{\code{POSIXct}, time and date of sighting}
+#' \item{city_latitude}{latitude of sighting}
+#' \item{city_longitude}{longitude of sighting}
+#' }
+#' @source \url{https://data.world/timothyrenner/ufo-sightings#}
+#' @name ufo
+NULL
+#' Example \code{inla.mesh}
+#'
+#' @format A \code{inla.mesh} based on the outline of a horse
+#' @name horse_mesh
 NULL

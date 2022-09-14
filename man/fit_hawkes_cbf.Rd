@@ -24,7 +24,7 @@ fit_hawkes_cbf(
 \item{parameters}{a list of named parameters for the chosen model
 Default values used if not provided. 
 (see \code{model})
-"mu"--base rate of the hawkes process,
+"mu"--base rate of the Hawkes process,
 "alpha"--intensity jump after an event occurrence (\code{model} = 1)
 "a_par" -- logit scale for alpha. alpha must be set so that the intensity never goes negative
  and so that alpha <= beta. (\code{model} = 2)
@@ -45,6 +45,10 @@ independent variable, returning a scalar.}
 
 \item{background_integral}{The integral of \code{background}.}
 
+\item{background_parameters}{The parameter(s)
+for the background function \code{background}.
+This could be a list of multiple values.}
+
 \item{background_min}{A function taking one parameter and two points,
 returns min of \code{background} between those points.}
 
@@ -53,10 +57,6 @@ TMB inner optimization tracing information will be printed.}
 
 \item{optim_silent}{logical, default `TRUE`:
 print function and parameters every iteration.}
-
-\item{background_parameter}{The parameter(s)
-for the background function \code{background}.
-This could be a list of multiple values.}
 }
 \description{
 \code{fit_hawkes_cbf} fits a range of self-exciting Hawkes processes
@@ -68,7 +68,8 @@ parameters of the cbf are optimized in R.
 \examples{
 {
 \dontrun{
-times <- hawkesbow::hawkes(1000, fun = function(y) {1 + 0.5*sin(y)},
+require(hawkesbow)
+times <- hawkes(1000, fun = function(y) {1 + 0.5*sin(y)},
 M = 1.5, repr = 0.5, family = "exp", rate = 2)$p
 ## The background function must take a single parameter and
 ## the time(s) at which it is evaluated

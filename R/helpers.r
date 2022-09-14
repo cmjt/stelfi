@@ -1,63 +1,51 @@
-setClassUnion("numeric_or_missing", c("numeric", "missing"))
 #' Hawkes intensity function
+#' 
 #' @inheritParams sim_hawkes
 #' @inheritParams show_hawkes
+#' @inheritParams fit_hawkes
 #' @param p An optional vector of pseudo times at which to calculate the intensity.
 #' @export
-setGeneric("hawke_intensity",
-           function(times, mu, alpha, beta, p, marks, background_param) {
-           })
-
-setMethod("hawke_intensity",
-          c(times = "vector", alpha = "numeric",
-            beta  = "numeric", p = "numeric_or_missing"),
-          function(times, mu, alpha, beta,
-                   p, marks, background_param) {
-              if (missing(p)) p <- times
-              lam <- function(p, mark, mu) {
-                  mu + mark * alpha * sum(exp(-beta * (p - times))[times < p])
-              }
-              lam_p <- rep(0, length(p))
-              if (class(mu) == "function") {
-                mus <- mu(background_param, p)
-              } else {
-                mus <- rep(mu, length(p))
-              }
-              for (i in seq_along(p)) {
-                  lam_p[i] <- lam(p[i], marks[i], mus[i])
-              }
-              return(lam_p)
-          })
-#' Reported parameter estimates
+hawke_intensity <- function(times, mu, alpha, beta,
+                            p, marks, background_parameters) {
+    if (missing(p)) p <- times
+    lam <- function(p, mark, mu) {
+        mu + mark * alpha * sum(exp(-beta * (p - times))[times < p])
+    }
+    lam_p <- rep(0, length(p))
+    if (class(mu) == "function") {
+        mus <- mu(background_parameters, p)
+    } else {
+        mus <- rep(mu, length(p))
+    }
+    for (i in seq_along(p)) {
+        lam_p[i] <- lam(p[i], marks[i], mus[i])
+    }
+    return(lam_p)
+}
+#' EXtract reported parameter estimates from fitted models
 #'
 #' \code{get_coefs} returns the parameter estimates for the fitted model.
 #' @param object result of a call to \code{\link{fit_hawkes}} or \code{\link{fit_lgcp}}
 #' @export
-setGeneric("get_coefs",
-           function(object) {
-               standardGeneric("get_coefs")
-           }
-           )
-setMethod("get_coefs",
-          signature(object = "list"),
-          function(object) {
-              table <- summary(TMB::sdreport(object), "report")  
-              ## The code below is for fit_hawkes_cbf()
-              if("background_parameters" %in% names(object)) {
-                for (j in 1:length(object$background_parameters)) {
-                  table <- rbind(table, c(object$background_parameters[j], NA))
-                  row.names(table)[j + 2] <- paste("BP", j)
-              }
-              }
-          return(table)
-          }
-          )
+get_coefs <- function(object) {
+    table <- summary(TMB::sdreport(object), "report")  
+    ## The code below is for fit_hawkes_cbf()
+    if("background_parameters" %in% names(object)) {
+        for (j in 1:length(object$background_parameters)) {
+            table <- rbind(table, c(object$background_parameters[j], NA))
+            row.names(table)[j + 2] <- paste("BP", j)
+        }
+    }
+    return(table)
+}
+
 #' Estimated random field(s)
 #'
 #' \code{get_fields} returns
-#' @param object The result of a call to \code{\link{fit_lgcp}}.
-#' @param plot Logical, if \code{TRUE} then the returned values are plotted.
-#' @param sd Logical, if \code{TRUE} then standard errors of field are returned.
+#' @param object the result of a call to \code{\link{fit_lgcp}}.
+#' @param plot \code{logical}, if \code{TRUE} then the returned values are plotted.
+#' @param sd \code{logical}, if \code{TRUE} then standard errors of field are returned.
+#' @inheritParams fit_lgcp
 #' @export
 get_fields <- function(object, smesh, tmesh, plot = FALSE, sd = FALSE) {
     idx <- ifelse(sd, 2, 1)
@@ -75,11 +63,16 @@ get_fields <- function(object, smesh, tmesh, plot = FALSE, sd = FALSE) {
         if(plot) print(show_field(x, smesh))
     }
     return(x)
-}
-      
+}    
 #' Function to find areas (weights) around the mesh nodes which are
 #' within the specified spatial polygon.
+#' 
 #' Relies on the internal \code{\link{dual_mesh}} function.
+#'
+#' @param mesh a spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.
+#' @param sf optional, an \code{sf} of type \code{POLYGON} specifying the region
+#' of the domain.
+#' @param plot \code{logical}, plot the calculated \code{mesh} weights, default \code{FALSE}.
 #' @seealso \url{https://becarioprecario.bitbucket.io/spde-gitbook/}.
 #' @export
 get_weights <- function(mesh, sf, plot = FALSE) {
@@ -102,7 +95,7 @@ get_weights <- function(mesh, sf, plot = FALSE) {
     if(plot) {
         p <-  ggplot2::ggplot(res) +
             ggplot2::geom_sf(ggplot2::aes(fill = weights)) +
-            ggplot2::geom_sf(data = stelfi:::mesh_2_sf(mesh),
+            ggplot2::geom_sf(data = mesh_2_sf(mesh),
                              col = "white", fill = NA) +
             ggplot2::geom_sf(data = sf, fill = NA) +
             ggplot2::theme_void()
@@ -143,6 +136,7 @@ points_in_mesh <- function(xy, dmesh, weights) {
 }
 #' Internal function to construct the `dual` mesh
 #'
+#' @param mesh A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.
 #' @return a \code{sf} object of the Voronoi tesselation
 #' centered at each \code{mesh} node.
 #' @seealso \url{http://www.r-inla.org/spde-book} and \url{https://becarioprecario.bitbucket.io/spde-gitbook/}

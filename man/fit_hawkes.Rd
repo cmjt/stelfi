@@ -20,7 +20,7 @@ fit_hawkes(
 \item{parameters}{a list of named parameters for the chosen model
 Default values used if not provided. 
 (see \code{model})
-"mu"--base rate of the hawkes process,
+"mu"--base rate of the Hawkes process,
 "alpha"--intensity jump after an event occurrence (\code{model} = 1)
 "a_par" -- logit scale for alpha. alpha must be set so that the intensity never goes negative
  and so that alpha <= beta. (\code{model} = 2)

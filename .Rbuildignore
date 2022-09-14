@@ -1,3 +1,4 @@
 ^docs$
 ^Meta$
 render.sh
+^inst/bin$

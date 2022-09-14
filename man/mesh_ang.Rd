@@ -8,9 +8,6 @@ mesh_ang(mesh)
 }
 \arguments{
 \item{mesh}{A \code{\link[INLA]{inla.mesh.2d}} object.}
-
-\item{s}{A dataframe of Delaunay triangulation segments as returned by
-\code{\link{segments}}.}
 }
 \description{
 Calculate all interior Delaunay triangulation triangle angles
@@ -18,7 +15,6 @@ Calculate all interior Delaunay triangulation triangle angles
 \examples{
 \dontrun{
 data(horse_mesh, package = "stelfi")
-s <- segments(horse_mesh)
-mesh_ang(horse_mesh, s)
+mesh_ang(horse_mesh)
 }
 }

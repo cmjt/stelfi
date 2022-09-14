@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.r
 \name{get_coefs}
 \alias{get_coefs}
-\title{Reported parameter estimates}
+\title{EXtract reported parameter estimates from fitted models}
 \usage{
 get_coefs(object)
 }

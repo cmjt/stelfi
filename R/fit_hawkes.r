@@ -5,7 +5,7 @@
 #' @param parameters a list of named parameters for the chosen model
 #' Default values used if not provided. 
 #' (see \code{model})
-#' "mu"--base rate of the hawkes process,
+#' "mu"--base rate of the Hawkes process,
 #' "alpha"--intensity jump after an event occurrence (\code{model} = 1)
 #' "a_par" -- logit scale for alpha. alpha must be set so that the intensity never goes negative
 #'  and so that alpha <= beta. (\code{model} = 2)
@@ -121,14 +121,15 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
 #' @param background A function taking one parameter and an
 #' independent variable, returning a scalar.
 #' @param background_integral The integral of \code{background}.
-#' @param background_parameter The parameter(s)
+#' @param background_parameters The parameter(s)
 #' for the background function \code{background}.
 #' This could be a list of multiple values.
 #' @param background_min A function taking one parameter and two points,
 #' returns min of \code{background} between those points.
 #' @examples{
 #' \dontrun{
-#' times <- hawkesbow::hawkes(1000, fun = function(y) {1 + 0.5*sin(y)},
+#' require(hawkesbow)
+#' times <- hawkes(1000, fun = function(y) {1 + 0.5*sin(y)},
 #' M = 1.5, repr = 0.5, family = "exp", rate = 2)$p
 #' ## The background function must take a single parameter and
 #' ## the time(s) at which it is evaluated
@@ -189,7 +190,7 @@ fit_hawkes_cbf <- function(times, parameters=list(),
             dll_stelfi("custom_hawkes")
         }
         ## Nested function to be passed into optim
-        OptimizeBackground <- function(background_parameters, times, parameters,
+        optimize_background_one <- function(background_parameters, times, parameters,
                                        marks, background, background_integral,
                                        tmb_silent = TRUE, optim_silent = TRUE){
             lambda <- background(background_parameters, times)
@@ -209,7 +210,7 @@ fit_hawkes_cbf <- function(times, parameters=list(),
             return(opt$value)
         }
         
-        opt <- stats::optim(par = background_parameters, fn = OptimizeBackground,
+        opt <- stats::optim(par = background_parameters, fn = optimize_background_one,
                             gr = NULL, times, parameters, marks, background,
                             background_integral,
                             tmb_silent, optim_silent)
@@ -237,7 +238,7 @@ fit_hawkes_cbf <- function(times, parameters=list(),
                 dll_stelfi("neg_alpha_custom_hawkes")
             }
             # Nested function to be passed into optim
-            OptimizeBackground <- function(background_parameters, times, parameters,
+            optimize_background_two <- function(background_parameters, times, parameters,
                                            marks, background, background_integral,
                                            background_min, tmb_silent = TRUE, optim_silent = TRUE) {
                 lambda <- background(background_parameters, times)
@@ -265,11 +266,11 @@ fit_hawkes_cbf <- function(times, parameters=list(),
                 return(opt$value)
             }
             
-            opt <- stats::optim(par = background_parameters, fn = OptimizeBackground,
+            opt <- stats::optim(par = background_parameters, fn =  optimize_background_two,
                                 gr = NULL, times, parameters, marks, background,
                                 background_integral,
                                 background_min, tmb_silent, optim_silent)
-            # Need to run again to extract alpha and beta
+            ## Need to run again to extract alpha and beta
             lambda <- background(opt$par, times)
             lambda_min <- numeric(length = length(times))
             for (k in 1:(length(times) - 1)) {

@@ -1,12 +1,23 @@
 #' Function to fit a spde spatial Hawkes process using \code{TMB} and the
 #' \code{R_inla} namespace for the spde construction of the latent field.
-#' @param tmb_silent logical, default `TRUE`:
-#' TMB inner optimization tracing information will be printed.
-#' @param nlminb_silent logical, default `TRUE`:
-#' print function and parameters every iteration.
+#' @param coefs TODO
+#' @param designmat TODO
+#' @param logit_abratio logit ration of a, b parameters of the temporal Hawkes process
+#' @param log_beta the \code{log(beta)} base rate of the Hawkes process
+#' @param log_kappa the \code{log(kappa)} parameter for the GMRF
+#' @param log_tau the \code{log(tau)} parameter for the GMRF
+#' @param log_xsigma TODO
+#' @param log_ysigma TODO
+#' @param spde TODO
+#' @param tmax TODO
+#' @param reltol \code{numeric}, relative tolerance (default  \code{1e-12})
+#' @param abstol \code{numeric}, absolute tolerance (default  \code{1e-12})
+#' @param lmat TODO
+#' @param simple TODO
 #' @inheritParams fit_hawkes
 #' @inheritParams fit_lgcp
-fit_hspde_tmb <- function(times, locs, sf, mesh,
+#' @inheritParams fit_lgcp_tmb
+fit_hspde_tmb <- function(times, locs, sf, smesh,
                           coefs, designmat, logit_abratio = 0, log_beta = 0,
                           log_kappa = 0, log_tau = 0, log_xsigma = 0,
                           log_ysigma = 0, atanh_rho = 0,
@@ -17,22 +28,22 @@ fit_hspde_tmb <- function(times, locs, sf, mesh,
     if (!"spde_hawkes" %in% getLoadedDLLs()) {
         stelfi::dll_stelfi("spde_hawkes")
     }
-    innerloc <- Reduce(rbind, apply(mesh$graph$tv, 1, function(vt) {
-        temp <-  sf::st_polygon(list(mesh$loc[rep(vt, length = length(vt) + 1), 1:2]))
+    innerloc <- Reduce(rbind, apply(smesh$graph$tv, 1, function(vt) {
+        temp <-  sf::st_polygon(list(smesh$loc[rep(vt, length = length(vt) + 1), 1:2]))
         if (is.null(sf::st_intersection(temp, sf)))
           rep(NULL, 3)
         else
             vt
     }))
     data <- list(times = times, locs = locs,
-                xyloc = mesh$loc[, 1:2], reltol = reltol, abstol = abstol,
+                xyloc = smesh$loc[, 1:2], reltol = reltol, abstol = abstol,
                 spde = spde$param.inla[c("M0", "M1", "M2")], w = w, tmax = tmax,
                 designmat = designmat, tv = innerloc, simple = simple, lmat = lmat)
     param <- list(coefs = coefs, logit_abratio = logit_abratio, log_beta = log_beta,
                   log_xsigma =  log_xsigma, log_ysigma =  log_ysigma,
                   atanh_rho = atanh_rho, log_kappa = log_kappa, log_tau = log_tau,
                   x = matrix(0, nrow = dim(lmat)[2], ncol = 1))
-    obj <- TMB:::MakeADFun(data, param, hessian = TRUE, random = c("x"),
+    obj <- TMB::MakeADFun(data, param, hessian = TRUE, random = c("x"),
                            DLL = "spde_hawkes", silent = tmb_silent)
     trace <- if(nlminb_silent) 0 else 1
     opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
@@ -40,11 +51,9 @@ fit_hspde_tmb <- function(times, locs, sf, mesh,
     return(obj)
 }
 #' Function to fit a spatial Hawkes process using \code{TMB}
-#' @inheritParams fit_hawkes
-#' @inheritParams fit_lgcp
 #' @inheritParams fit_hspde_tmb
 fit_hspat_tmb <- function(times, locs, sf,
-                          mesh, coefs, designmat, logit_abratio = 0, log_beta = 0,
+                          smesh, coefs, designmat, logit_abratio = 0, log_beta = 0,
                           log_xsigma = 0, log_ysigma = 0, atanh_rho = 0, w,
                           reltol = 1e-12, abstol = 1e-12,
                           tmax = max(times),
@@ -53,22 +62,22 @@ fit_hspat_tmb <- function(times, locs, sf,
     if (!"spatial_hawkes" %in% getLoadedDLLs()) {
         stelfi::dll_stelfi("spatial_hawkes")
     }
-    innerloc <- Reduce(rbind, apply(mesh$graph$tv, 1, function(vt) {
-        temp <-  sf::st_polygon(list(mesh$loc[rep(vt, length = length(vt) + 1), 1:2]))
+    innerloc <- Reduce(rbind, apply(smesh$graph$tv, 1, function(vt) {
+        temp <-  sf::st_polygon(list(smesh$loc[rep(vt, length = length(vt) + 1), 1:2]))
         if (is.null(sf::st_intersection(temp, sf)))
           rep(NULL, 3)
         else
             vt
     }))
     data <- list(times = times, locs = locs, 
-                 xyloc = mesh$loc[,1:2], reltol = reltol, abstol = abstol,
+                 xyloc = smesh$loc[,1:2], reltol = reltol, abstol = abstol,
                   w = w, tmax = tmax, designmat = designmat,
                  tv = innerloc, simple = simple, lmat = lmat)
     param <- list(coefs = coefs, logit_abratio = logit_abratio,
                   log_beta = log_beta,
                   log_xsigma =  log_xsigma,
                   log_ysigma =  log_ysigma, atanh_rho = atanh_rho)
-    obj <- TMB:::MakeADFun(data, param, hessian = TRUE,
+    obj <- TMB::MakeADFun(data, param, hessian = TRUE,
                            DLL = "spatial_hawkes", silent = tmb_silent)
     trace <- if(nlminb_silent) 0 else 1
     opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
@@ -165,7 +174,7 @@ fit_stelfi <-  function(times, locs, sf, smesh,  parameters, covariates,
     lmat <- INLA::inla.spde.make.A(smesh, locs)
     if(!GMRF) { ## No GMRF
       res <- fit_hspat_tmb(times = times, locs = locs, sf = sf, w  = w,
-                            mesh = smesh, coefs = coefs, designmat = designmat,
+                            smesh = smesh, coefs = coefs, designmat = designmat,
                             logit_abratio = logit_abratio, log_beta = log_beta,
                             log_xsigma = log_xsigma,
                             log_ysigma = log_ysigma,
@@ -179,7 +188,7 @@ fit_stelfi <-  function(times, locs, sf, smesh,  parameters, covariates,
         log_kappa <- log(parameters[["kappa"]])
         res <- fit_hspde_tmb(times = times, locs = locs, sf = sf,
                             spde = spde, w  = w,
-                            mesh = smesh, coefs = coefs, designmat = designmat,
+                            smesh = smesh, coefs = coefs, designmat = designmat,
                             logit_abratio = logit_abratio, log_beta = log_beta,
                             log_kappa = log_kappa,
                             log_tau = log_tau, log_xsigma =  log_xsigma,

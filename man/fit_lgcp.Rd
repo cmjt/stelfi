@@ -38,13 +38,13 @@ Default values are used if not provided.}
 \item{covariates}{Optional, a \code{matrix} of covariates at each
 \code{smesh} and \code{tmesh} node combination.}
 
-\item{tmb_silent}{Logical, default \code{TRUE}:
+\item{tmb_silent}{\code{logical}, default \code{TRUE}:
 TMB inner optimization tracing information will be printed.}
 
 \item{nlminb_silent}{Logical, default \code{TRUE}:
 print function and parameters every iteration.}
 
-\item{...}{Optional extra arguments to pass into \code{\link[stats]{nlminb}}.}
+\item{...}{optional extra arguments to pass into \code{\link[stats]{nlminb}}.}
 }
 \value{
 A fitted \code{\link[TMB]{MakeADFun}} object.
@@ -74,7 +74,4 @@ fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh, tmesh = tmesh,
  parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2))
 
 }
-}
-\seealso{
-\code{\link{fit_lgcp_tmb}}.
 }

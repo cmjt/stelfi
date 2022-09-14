@@ -9,10 +9,12 @@ show_field(x, smesh, dims = c(500, 500), sf)
 \arguments{
 \item{x}{A vector of values for each \code{smesh} node.}
 
+\item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
+
 \item{dims}{A numeric vector of length 2 specifying
 the spatial pixel resolution. By default \code{ = c(500,500)}.}
 
-\item{sf}{Optional, an \code{sf} of type \code{POLYGON} specifying the region
+\item{sf}{optional, an \code{sf} of type \code{POLYGON} specifying the region
 of the domain.}
 }
 \description{

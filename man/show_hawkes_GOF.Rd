@@ -9,11 +9,11 @@ show_hawkes_GOF(
   mu,
   alpha,
   beta,
-  marks = c(rep(1, length(times))),
-  obj = NULL,
-  background_param,
-  plot = TRUE,
-  return_values = TRUE
+  marks,
+  obj,
+  background_parameters,
+  plot,
+  return_values
 )
 }
 \arguments{
@@ -26,8 +26,14 @@ occurence}
 
 \item{beta}{numeric integer specifying exponential intensity decay}
 
+\item{marks}{a vector of numerical marks, defaults to 1 (i.e., no marks)}
+
 \item{obj}{An object returned by fit_hawkes() or fit_hawkes_cbf()
-If provided, the only other parameters required are \code{mu} and \code{background_param}, and only if \code{mu} is not constant.}
+If provided, the only other parameters required are \code{mu} and \code{background_parameters}, and only if \code{mu} is not constant.}
+
+\item{background_parameters}{The parameter(s)
+for the background function \code{background}.
+This could be a list of multiple values.}
 
 \item{plot}{Logical, whether to plot GOF plots. Default \code{TRUE}.}
 

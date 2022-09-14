@@ -10,9 +10,26 @@ plot_lambda(
   smesh,
   tmesh,
   dims = c(500, 500),
-  border,
+  sf,
   timestamp = 1
 )
+}
+\arguments{
+\item{fit}{a fitted model object for, for example, \code{fit_lgcp()}.}
+
+\item{covariates}{Optional, a \code{matrix} of covariates at each
+\code{smesh} and \code{tmesh} node combination.}
+
+\item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
+
+\item{tmesh}{Optional, a temporal mesh of class \code{\link[INLA]{inla.mesh.1d}}.}
+
+\item{dims}{2D spatial resolution to plot, default \code{c(500,500)}.}
+
+\item{sf}{An \code{sf} of type \code{POLYGON} specifying the region
+of the domain.}
+
+\item{timestamp}{index of time stamp to plot, default 1.}
 }
 \description{
 Plot the lambda estimate from a fitted LGCP model
@@ -27,7 +44,7 @@ smesh <- INLA::inla.mesh.2d(boundary = bnd,
 max.edge = 0.75, cutoff = 0.3)
 fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
-plot_lambda(fit, smesh = smesh, border = domain)
+plot_lambda(fit, smesh = smesh, sf = domain)
 }
 }
 \seealso{

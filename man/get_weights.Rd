@@ -3,14 +3,19 @@
 \name{get_weights}
 \alias{get_weights}
 \title{Function to find areas (weights) around the mesh nodes which are
-within the specified spatial polygon.
-Relies on the internal \code{\link{dual_mesh}} function.}
+within the specified spatial polygon.}
 \usage{
 get_weights(mesh, sf, plot = FALSE)
 }
+\arguments{
+\item{mesh}{a spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
+
+\item{sf}{optional, an \code{sf} of type \code{POLYGON} specifying the region
+of the domain.}
+
+\item{plot}{\code{logical}, plot the calculated \code{mesh} weights, default \code{FALSE}.}
+}
 \description{
-Function to find areas (weights) around the mesh nodes which are
-within the specified spatial polygon.
 Relies on the internal \code{\link{dual_mesh}} function.
 }
 \seealso{

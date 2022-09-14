@@ -12,7 +12,9 @@ A data frame with 4208 rows and 16 variables:
 \item{country}{country (IRAQ)}
 \item{latitude}{latitude location}
 \item{longitude}{longitude location}
-\item{sucess}{Logical fatal or not. TRUE = fatal}
+\item{utm.x}{x-coord location UTM}
+\item{utm.y}{y-coord location UTM}
+\item{success}{\code{logical} wheather attack was fatal or not, \code{TRUE} = fatal}
 \item{nkill}{number of fatalities per attack}
 \item{specificity}{spatial accuracy of event: 1 = most accurate, 5 = worst}
 \item{gname}{character name of attack perpetrators (ISIL)}

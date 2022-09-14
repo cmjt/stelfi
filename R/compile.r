@@ -58,7 +58,7 @@ dll_stelfi <- function(x) {
     }
 }
 #' @importFrom TMB compile MakeADFun sdreport
-#' @importFrom ggplot2 ggplot aes xlab ylab geom_line theme_minimal geom_histogram
+#' @importFrom ggplot2 ggplot aes xlab ylab geom_line theme_minimal geom_histogram .data
 #' geom_sf theme ggtitle geom_abline theme_void
 #' @importFrom gridExtra grid.arrange
 #' @importFrom grid textGrob gpar

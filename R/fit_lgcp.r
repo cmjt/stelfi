@@ -25,15 +25,15 @@
 #' \code{\link[INLA]{inla.spde2.matern}}.
 #' The minimal required components are \code{M0}, \code{M1}, \code{M2}.
 #' @param w A vector of model weights; corresponds to the \code{E} term for
-#' poisson models, see \code{\link[INLA]{inla.doc("poisson")}} for more detail.
+#' poisson models, see \code{INLA::inla.doc("poisson")} for more detail.
 #' @param idx A binary vector of the same size as the observation
 #' vector \code{\link{y}}. With this vector, the log-likelihood can
 #' be computed using a subset of the observations: 1 for contributing
 #' to the log-likelihood, and 0 otherwise.
 #' @param beta A vector of fixed effects coefficients to be estimated
-#' (same length as \code{ncol(\link{designmat})}.
+#' (same length as \code{ncol(designmat)}.
 #' @param x The random field/effects. Set this variable random in
-#' \code{\link[TMB]{MadeADFun}}.
+#' \code{TMB::MadeADFun}.
 #' The array is of size \code{n} of random effect for each time knot
 #' (x.rows()) by number of temporal
 #' knots (x.cols()). Therefore, the total number of random effects is
@@ -45,13 +45,9 @@
 #' }
 #' @param log_tau \code{log(tau)} parameter for the GMRF.
 #' @param log_kappa \code{log(kappa)} parameter for the GMRF.
-#' @param atanh_rho Optional, \code{arctan(rho)} AR1 parameter.
-#' @param ... Optional extra arguments to pass into \code{\link[stats]{nlminb}}.
-#' @param tmb_silent Logical, default \code{TRUE}:
-#' TMB inner optimization tracing information will be printed.
-#' @param nlminb_silent Logical, default \code{TRUE}:
-#' print function and parameters every iteration.
-#' @seealso \code{\link{fit_lgcp}}
+#' @param atanh_rho optional, \code{arctan(rho)} AR1 parameter.
+#' @param simulation \code{logical}, simulate data, default \code{FALSE}.
+#' @inheritParams fit_lgcp
 fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
                           log_tau, log_kappa,
                           atanh_rho, x, tmb_silent,
@@ -87,7 +83,6 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' \code{fit_lgcp} fits a LGCP using \code{TMB} and the
 #' \code{R_inla} namespace for the spde construction of the latent field. Ths is
 #' the user friendly wrapper for the internal function \code{\link{fit_lgcp_tmb}}.
-#' @seealso \code{\link{fit_lgcp_tmb}}.
 #' @param sf An \code{sf} of type \code{POLYGON} specifying the region
 #' of the domain.
 #' @param locs A \code{data.frame} of \code{x} and \code{y} locations, 2xn. If locations have
@@ -103,7 +98,11 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' Default values are used if not provided.
 #' @param covariates Optional, a \code{matrix} of covariates at each
 #' \code{smesh} and \code{tmesh} node combination.
-#' @inheritParams fit_lgcp_tmb
+#' @param tmb_silent \code{logical}, default \code{TRUE}:
+#' TMB inner optimization tracing information will be printed.
+#' @param nlminb_silent Logical, default \code{TRUE}:
+#' print function and parameters every iteration.
+#' @param ... optional extra arguments to pass into \code{\link[stats]{nlminb}}.
 #' @return A fitted \code{\link[TMB]{MakeADFun}} object.
 #' @examples \dontrun{
 #' data(xyt, package = "stelfi")
@@ -125,7 +124,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' 
 #' }
 #' @export
-fit_lgcp <-  function(locs, sf, smesh, tmesh, parameters=list(), covariates,
+fit_lgcp <-  function(locs, sf, smesh, tmesh, parameters = list(), covariates,
                       tmb_silent = TRUE,
                       nlminb_silent = TRUE, ...) {
     ## read in parameters
