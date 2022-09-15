@@ -184,7 +184,9 @@ lmin <- function(mesh) {
 #' @returns A \code{\link[sf]{sf}}.
 #' @examples \dontrun{
 #' data(horse_mesh, package = "stelfi")
-#' mesh_2_sf(horse_mesh)
+#' sf <- mesh_2_sf(horse_mesh)
+#' require(ggplot2)
+#' ggplot(sf) + geom_sf()
 #' }
 #' @export
 mesh_2_sf <- function(mesh) {
@@ -230,7 +232,9 @@ mesh_2_sf <- function(mesh) {
 #' }
 #' @examples \dontrun{
 #' data(horse_mesh, package = "stelfi")
-#' meshmetrics(horse_mesh)
+#' metrics <- meshmetrics(horse_mesh)
+#' require(ggplot2)
+#' ggplot(metrics) + geom_sf(aes(fill = radius_ratio))
 #' }
 #' @export
 meshmetrics <- function(mesh) {

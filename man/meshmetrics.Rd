@@ -36,6 +36,8 @@ Delaunay triangulation.
 \examples{
 \dontrun{
 data(horse_mesh, package = "stelfi")
-meshmetrics(horse_mesh)
+metrics <- meshmetrics(horse_mesh)
+require(ggplot2)
+ggplot(metrics) + geom_sf(aes(fill = radius_ratio))
 }
 }

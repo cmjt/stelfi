@@ -26,6 +26,8 @@ R-inla discussion Google Group
 \examples{
 \dontrun{
 data(horse_mesh, package = "stelfi")
-mesh_2_sf(horse_mesh)
+sf <- mesh_2_sf(horse_mesh)
+require(ggplot2)
+ggplot(sf) + geom_sf()
 }
 }
