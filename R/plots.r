@@ -16,7 +16,8 @@
 #' show_hawkes(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1])
 #' }
 #' @export
-show_hawkes <-  function(times, mu, alpha, beta, marks, obj, background_parameters) {
+show_hawkes <-  function(times = NULL, mu, alpha, beta, marks = rep(1, length(times)), 
+                         obj = NULL, background_parameters) {
     if (!is.null(obj)) {
         times = obj$env$data$times
         marks = obj$env$data$marks

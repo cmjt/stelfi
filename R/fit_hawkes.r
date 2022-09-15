@@ -80,7 +80,7 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
                               parameters = list(log_mu = log(mu),
                                                 logit_abratio = stats::qlogis(alpha / (beta / mean(marks))),
                                                 log_beta = log(beta)),
-                              DLL = "hawkes", silent = tmb_silent)
+                              hessian = TRUE, DLL = "hawkes", silent = tmb_silent)
     }else{
         if (model == 2) {
             ## check for DLL
@@ -92,8 +92,7 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
                                   parameters = list(log_mu = log(mu),
                                                     a_par = alpha,
                                                     log_beta = log(beta)),
-                                  hessian = TRUE, DLL = "neg_alpha_hawkes",
-                                  silent = tmb_silent)
+                                  hessian = TRUE, DLL = "neg_alpha_hawkes", silent = tmb_silent)
         }
     }
     trace <- if(optim_silent) 0 else 1
@@ -203,8 +202,7 @@ fit_hawkes_cbf <- function(times, parameters=list(),
                                               lambda_integral = lambda_integral, marks = marks),
                                   parameters = list(logit_abratio = stats::qlogis(alpha / (beta / mean(marks))),
                                                     log_beta = log(beta)),
-                                  hessian = TRUE, DLL = "custom_hawkes",
-                                  silent = tmb_silent)
+                                  hessian = TRUE, DLL = "custom_hawkes", silent = tmb_silent)
             trace <- if(optim_silent) 0 else 1
             opt <- stats::optim(obj$par, obj$fn, obj$gr, control = list(trace = 0))
             return(opt$value)
@@ -225,7 +223,7 @@ fit_hawkes_cbf <- function(times, parameters=list(),
                                           marks = marks),
                               parameters = list(logit_abratio = stats::qlogis(alpha / beta),
                                                 log_beta = log(beta)),
-                              DLL = "custom_hawkes", silent = tmb_silent)
+                              hessian = TRUE, DLL = "custom_hawkes", silent = tmb_silent)
     }else{
         if (model == 2){
             ## a_par parameter
@@ -259,8 +257,7 @@ fit_hawkes_cbf <- function(times, parameters=list(),
                                                   marks = marks),
                                       parameters = list(a_par = a_par,
                                                         log_beta = log(beta)),
-                                      DLL = "neg_alpha_custom_hawkes", silent = tmb_silent)
-                obj$hessian <- TRUE
+                                      hessian = TRUE, DLL = "neg_alpha_custom_hawkes", silent = tmb_silent)
                 trace <- if(optim_silent) 0 else 1
                 opt <- stats::optim(obj$par, obj$fn, obj$gr, control = list(trace = trace))
                 return(opt$value)
@@ -288,11 +285,10 @@ fit_hawkes_cbf <- function(times, parameters=list(),
                                               marks = marks),
                                   parameters = list(a_par = a_par,
                                                     log_beta = log(beta)),
-                                  DLL = "neg_alpha_custom_hawkes", silent = tmb_silent)
+                                  hessian = TRUE, DLL = "neg_alpha_custom_hawkes", silent = tmb_silent)
             
         }
     }
-    obj$hessian <- TRUE
     trace <- if(optim_silent) 0 else 1
     opt2 <- stats::optim(obj$par, obj$fn, obj$gr, control = list(trace = trace))
     obj$objective <- opt2$value

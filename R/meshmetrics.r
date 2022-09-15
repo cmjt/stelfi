@@ -265,3 +265,30 @@ meshmetrics <- function(mesh) {
   sf <- dplyr::left_join(sf, df, by = "ID")
   return(sf)
 }
+
+#' Plot a \code{\link[INLA]{inla.mesh.2d}} object by attribute
+#' 
+#' @inheritParams meshmetrics
+#' @param radius-edge Logical, if \code{TRUE} (default) then the radius-edge ratio
+#' of each triangle in the Delaunay triangulation is plotted. If \code{FALSE}
+#' then the radius-ratio is plotted.
+#' @seealso \code{\link{meshmetrics}}
+#' @examples \dontrun{
+#' data(horse_mesh, package = "stelfi")
+#' plot_mesh(horse_mesh)
+#' plot_mesh(horse_mesh,  radius_edge = FALSE)
+#' }
+#' @export
+plot_mesh <- function(mesh, radius_edge = TRUE){
+  attributes <- meshmetrics(mesh)
+  if(radius_edge){
+    tmp <-  ggplot2::ggplot(attributes$geometry, ggplot2::aes(fill = attributes$radius_edge)) +
+      ggplot2::geom_sf(colour = NA) + ggplot2::theme_void() +
+      ggplot2::scale_fill_continuous(type = "viridis", name = "Radius-edge Ratio")
+  }else{
+    tmp <-  ggplot2::ggplot(attributes$geometry, ggplot2::aes(fill = attributes$radius_ratio)) +
+      ggplot2::geom_sf(colour = NA) + ggplot2::theme_void() +
+      ggplot2::scale_fill_continuous(type = "viridis", name = "Radius-ratio")
+  }
+  tmp
+}
