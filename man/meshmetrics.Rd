@@ -30,7 +30,7 @@ where A is the area and L_i is edge length.
 }
 }
 \description{
-\code{meshmetrics} calculates a number of gemoetric attributes for a given
+`meshmetrics()` calculates a number of geometric attributes for a given
 Delaunay triangulation.
 }
 \examples{

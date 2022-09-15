@@ -70,6 +70,7 @@ dll_stelfi <- function(x) {
 #' st_make_valid st_polygon st_intersects st_intersection st_area st_geometry st_contains
 #' @importFrom dplyr left_join
 #' @importFrom reshape2 melt
+#' @importFrom methods is
 #' @importFrom Matrix diag sparseMatrix
 #' @importFrom INLA inla.spde.make.A inla.spde2.matern
 NULL

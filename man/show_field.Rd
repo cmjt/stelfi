@@ -2,23 +2,24 @@
 % Please edit documentation in R/plots.r
 \name{show_field}
 \alias{show_field}
-\title{Plot estimated random field(s) of a fitted LGCP}
+\title{Plot the estimated random field(s) of a fitted LGCP}
 \usage{
-show_field(x, smesh, dims = c(500, 500), sf)
+show_field(x, smesh, sf, dims = c(500, 500))
 }
 \arguments{
 \item{x}{A vector of values for each \code{smesh} node.}
 
 \item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
 
-\item{dims}{A numeric vector of length 2 specifying
-the spatial pixel resolution. By default \code{ = c(500,500)}.}
-
-\item{sf}{optional, an \code{sf} of type \code{POLYGON} specifying the region
+\item{sf}{Optional, \code{sf} of type \code{POLYGON} specifying the region
 of the domain.}
+
+\item{dims}{A numeric vector of length 2 specifying
+the spatial pixel resolution. Default \code{c(500,500)}.}
 }
 \description{
-Plot estimated random field(s) of a fitted LGCP
+`show_field()` plots the values of \code{x} at each node of \code{smesh}, with
+optional control over resolutions using \code{dims}.
 }
 \examples{
 \dontrun{
@@ -33,5 +34,5 @@ show_field(simdata$x, smesh = smesh, sf = domain)
 }
 }
 \seealso{
-\code{\link{plot_lambda}} and \code{\link{get_fields}}
+\code{\link{show_lambda}} and \code{\link{get_fields}}
 }

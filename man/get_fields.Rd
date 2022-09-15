@@ -4,19 +4,35 @@
 \alias{get_fields}
 \title{Estimated random field(s)}
 \usage{
-get_fields(object, smesh, tmesh, plot = FALSE, sd = FALSE)
+get_fields(obj, smesh, tmesh, plot = FALSE, sd = FALSE)
 }
 \arguments{
-\item{object}{the result of a call to \code{\link{fit_lgcp}}.}
+\item{obj}{A fitted model object returned by \code{\link{fit_lgcp}}.}
 
 \item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
 
 \item{tmesh}{Optional, a temporal mesh of class \code{\link[INLA]{inla.mesh.1d}}.}
 
-\item{plot}{\code{logical}, if \code{TRUE} then the returned values are plotted.}
+\item{plot}{Logical, if \code{TRUE} then the returned values are plotted.
+Default \code{FALSE}.}
 
-\item{sd}{\code{logical}, if \code{TRUE} then standard errors of field are returned.}
+\item{sd}{Logical, if \code{TRUE} then standard errors returned.
+Default \code{FALSE}.}
 }
 \description{
-\code{get_fields} returns
+`get_fields()` extracts the estimated mean, or standard deviation, of the 
+values of the Gaussian Markov random field for a fitted log-Gaussian
+Cox process model at each node of \code{smesh}.
+}
+\examples{
+\dontrun{
+data(xyt, package = "stelfi")
+domain <- sf::st_as_sf(xyt$window)
+locs <- data.frame(x = xyt$x, y = xyt$y)
+bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
+parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
+get_fields(fit, smesh, plot = TRUE)
+}
 }

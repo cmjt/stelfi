@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_hawkes.r
 \name{fit_hawkes}
 \alias{fit_hawkes}
-\title{Function to fit a self-exciting Hawkes process}
+\title{Self-exciting Hawkes process}
 \usage{
 fit_hawkes(
   times,
@@ -15,43 +15,44 @@ fit_hawkes(
 )
 }
 \arguments{
-\item{times}{a vector of numeric observation time points}
+\item{times}{A vector of numeric observed time points.}
 
-\item{parameters}{a list of named parameters for the chosen model
-Default values used if not provided. 
-(see \code{model})
-"mu"--base rate of the Hawkes process,
-"alpha"--intensity jump after an event occurrence (\code{model} = 1)
-"a_par" -- logit scale for alpha. alpha must be set so that the intensity never goes negative
- and so that alpha <= beta. (\code{model} = 2)
-"beta"--exponential intensity decay}
+\item{parameters}{A named list of named parameters for the chosen model:
+\itemize{
+\item \code{mu}, base rate of the Hawkes process,
+\item \code{alpha} (supplied if \code{model = 1}), intensity jump after an event occurrence,
+\item \code{a_par} (supplied if \code{model} = 2), logit scale for \code{alpha} (must be 
+set so that the intensity never goes negative and so that \code{alpha} <= \code{beta}), and
+\item \code{beta}, exponential intensity decay.
+}}
 
-\item{model}{a factor indicator specifying which model to fit:
-\code{1}, a Hawkes process with exponential decay (default);
-\code{2}, Hawkes process with a "jump" (alpha) that can be negative.}
+\item{model}{A numeric indicator specifying which model to fit:
+\itemize{
+\item \code{1}, Hawkes process with exponential decay (default);
+\item \code{2}, Hawkes process with an \code{alpha} that can be negative.
+}}
 
-\item{marks}{a vector of numerical marks, defaults to 1 (i.e., no marks)}
+\item{marks}{Optional, a vector of numeric marks, defaults to 1 (i.e., no marks).}
 
-\item{tmb_silent}{logical, default `TRUE`:
+\item{tmb_silent}{Logical, default `TRUE`:
 TMB inner optimization tracing information will be printed.}
 
-\item{optim_silent}{logical, default `TRUE`:
+\item{optim_silent}{Logical, default `TRUE`:
 print function and parameters every iteration.}
 
 \item{...}{arguments to pass into \code{optim()}}
 }
 \description{
-\code{fit_hawkes} fits a range of self-exciting Hawkes processes using TMB
+`fit_hawkes()` fits a self-exciting Hawkes process using \code{TMB}.
 }
 \examples{
 {
 \dontrun{
+## simple Hawkes model
 data(retweets_niwa, package = "stelfi")
-times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
+times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa), units = "mins"))))
 params <- c(mu = 9, alpha = 3, beta = 10)
 fit_hawkes(times = times, parameters = params)
-}
-\dontrun{
 ## A model with marks (ETAS-type)
 data("earthquakes", package = "stelfi")
 earthquakes <- earthquakes[order(earthquakes$origintime),]

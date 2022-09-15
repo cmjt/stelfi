@@ -84,7 +84,7 @@ If there are covariates, then the covariates are in the subsequent columns.}
 \item{fields}{A binary vector indicating whether there is a new random
 field for each mark. By default, each mark has its own random field.}
 
-\item{tmb_silent}{\code{logical}, default \code{TRUE}:
+\item{tmb_silent}{Logical, default \code{TRUE}:
 TMB inner optimization tracing information will be printed.}
 
 \item{nlminb_silent}{Logical, default \code{TRUE}:

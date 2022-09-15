@@ -2,8 +2,7 @@
 % Please edit documentation in R/fit_mlgcp.r
 \name{fit_mlgcp}
 \alias{fit_mlgcp}
-\title{Function to fit a spatial  marked
-log-Gaussian Cox process using \code{TMB}}
+\title{Marked spatial log-Gaussian Cox process m(LGCP)}
 \usage{
 fit_mlgcp(
   locs,
@@ -61,7 +60,7 @@ field for each mark. By default, each mark has its own random field.}
 \item{marks_covariates}{Which columns of the covariates apply to the marks.
 By default, all covariates apply to the marks only.}
 
-\item{tmb_silent}{\code{logical}, default \code{TRUE}:
+\item{tmb_silent}{Logical, default \code{TRUE}:
 TMB inner optimization tracing information will be printed.}
 
 \item{nlminb_silent}{Logical, default \code{TRUE}:
@@ -70,7 +69,9 @@ print function and parameters every iteration.}
 \item{...}{optional extra arguments to pass into \code{\link[stats]{nlminb}}.}
 }
 \description{
-A simple to use wrapper for \code{fit_mlgcp_tmb}
+`fit_mlgcp_tmb()` fits a marked LGCP using \code{TMB} and the
+\code{R_inla} namespace for the spde construction of the latent field.
+A simple to use wrapper for \code{\link{fit_mlgcp_tmb}}.
 }
 \examples{
 {

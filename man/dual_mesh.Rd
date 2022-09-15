@@ -13,7 +13,7 @@ dual_mesh(mesh)
 \item{mesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
 }
 \value{
-a \code{sf} object of the Voronoi tesselation
+An \code{sf} object of the Voronoi tessellation
 centered at each \code{mesh} node.
 }
 \description{

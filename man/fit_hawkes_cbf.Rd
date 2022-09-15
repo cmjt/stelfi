@@ -2,8 +2,7 @@
 % Please edit documentation in R/fit_hawkes.r
 \name{fit_hawkes_cbf}
 \alias{fit_hawkes_cbf}
-\title{Function to fit a self-exciting Hawkes process with a given custom
-background function}
+\title{Self-exciting Hawkes process with a given custom background function}
 \usage{
 fit_hawkes_cbf(
   times,
@@ -19,26 +18,26 @@ fit_hawkes_cbf(
 )
 }
 \arguments{
-\item{times}{a vector of numeric observation time points}
+\item{times}{A vector of numeric observed time points.}
 
-\item{parameters}{a list of named parameters for the chosen model
-Default values used if not provided. 
-(see \code{model})
-"mu"--base rate of the Hawkes process,
-"alpha"--intensity jump after an event occurrence (\code{model} = 1)
-"a_par" -- logit scale for alpha. alpha must be set so that the intensity never goes negative
- and so that alpha <= beta. (\code{model} = 2)
-"beta"--exponential intensity decay}
-
-\item{model}{A factor indicator specifying which model to fit:
+\item{parameters}{A named list of named parameters for the chosen model:
 \itemize{
-\item \code{1}, a Hawkes process with exponential decay and cbf (default),
-positive alpha.
-\item \code{2}, a Hawkes process with exponential decay and cbf,
-but alpha can be negative.
+\item \code{mu}, base rate of the Hawkes process,
+\item \code{alpha} (supplied if \code{model = 1}), intensity jump after an event occurrence,
+\item \code{a_par} (supplied if \code{model} = 2), logit scale for \code{alpha} (must be 
+set so that the intensity never goes negative and so that \code{alpha} <= \code{beta}), and
+\item \code{beta}, exponential intensity decay.
 }}
 
-\item{marks}{a vector of numerical marks, defaults to 1 (i.e., no marks)}
+\item{model}{A numeric indicator specifying which model to fit:
+\itemize{
+\item \code{1}, a Hawkes process with exponential decay and 
+custom background function (default) with positive \code{alpha}.
+\item \code{2}, a Hawkes process with exponential decay and 
+custom background function where \code{alpha} can be negative.
+}}
+
+\item{marks}{Optional, a vector of numeric marks, defaults to 1 (i.e., no marks).}
 
 \item{background}{A function taking one parameter and an
 independent variable, returning a scalar.}
@@ -52,18 +51,18 @@ This could be a list of multiple values.}
 \item{background_min}{A function taking one parameter and two points,
 returns min of \code{background} between those points.}
 
-\item{tmb_silent}{logical, default `TRUE`:
+\item{tmb_silent}{Logical, default `TRUE`:
 TMB inner optimization tracing information will be printed.}
 
-\item{optim_silent}{logical, default `TRUE`:
+\item{optim_silent}{Logical, default `TRUE`:
 print function and parameters every iteration.}
 }
 \description{
-\code{fit_hawkes_cbf} fits a range of self-exciting Hawkes processes
-with a given custom background function (cbf) using TMB using TMB.
+`fit_hawkes_cbf()` fits a self-exciting Hawkes processes
+with a given custom background function using `TMB`.
 The \code{alpha} (\code{model} = 1) or \code{a_par} (\code{model} = 2)
-and \code{beta} parameters are estimated using TMB,
-parameters of the cbf are optimized in R.
+and \code{beta} parameters are estimated using `TMB`;
+parameters of the custom background function are optimized in `R`.
 }
 \examples{
 {

@@ -77,7 +77,7 @@ Each column represents a time knot:
 random effects \tab x.col(0)  \tab   x.col(1) \tab   x.col(2)  \tab     ...   \tab      x.col(t_n - 1)
 }}
 
-\item{tmb_silent}{\code{logical}, default \code{TRUE}:
+\item{tmb_silent}{Logical, default \code{TRUE}:
 TMB inner optimization tracing information will be printed.}
 
 \item{nlminb_silent}{Logical, default \code{TRUE}:

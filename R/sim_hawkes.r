@@ -1,40 +1,37 @@
-setClassUnion("numeric_or_missing", c("numeric", "missing"))
-setClassUnion("logical_or_missing", c("logical", "missing"))
-setClassUnion("character_or_missing", c("character", "missing"))
-#' Function to simulate a self-exciting Hawkes process.
+#' Simulate a self-exciting Hawkes process.
 #'
-#' There are two methods to simulate the process: if \code{method = "1"}
-#' sumiualtes a
-#' univariate hawkes process as \code{R}  package \code{hawkes}';
-#' if \code{method = "2"} as per algorithm defined in
+#' `sim_hawkes()` simulates a self-exciting Hawkes process. 
+#' 
+#' @details Option of two methods to simultae a Hawkes process: 
+#' if \code{method = "1"} then a univariate Hawkes process as 
+#' \code{hawkes::simulateHawkes()} is simulated,
+#' if \code{method = "2"} then algorithm defined in
 #' \url{https://radhakrishna.typepad.com/mle-of-hawkes-self-exciting-process.pdf}
+#' is used.
 #'
-#' @docType methods
-#' @rdname sim_hawkes
-#' @param mu numeric integer specifying base rate of the hawkes process
-#' @param alpha numeric integer specifying intensity jump after an event
-#' occurence
-#' @param beta numeric integer specifying exponential intensity decay
-#' @param n numeric depending on method: if \code{method = "1"} specifying
-#' end of the time
-#' line within which to simulate the proces, or \code{method = "2"}. By
-#' default = 100.
-#' specifying the number of timepoints to simulate.
-#' @param plot logical if \code{TRUE} data plotted along with the intensity.
-#' By default is \code{FALSE}.
-#' @param seed seed by default = 123
-#' @param method a character "1" or "2" specifying the method (see above)
-#' to simulate hawkes process.
-#' By default = "1".
+#' @param mu A numeric specifying base rate of the Hawkes process.
+#' @param alpha A numeric specifying intensity jump after an event
+#' occurrence.
+#' @param beta A numeric specifying exponential intensity decay
+#' @param n A numeric depending on method: if \code{method = "1"} specifies
+#' end of the time line within which to simulate the process, 
+#' if \code{method = "2"} specifies the number of observations to simulate.
+#' Default, \code{100}.
+#' @param plot Logical, if \code{TRUE} data plotted along with the intensity.
+#' Default, \code{FALSE}.
+#' @param seed The seed. Default, \code{123}
+#' @param method A character "1" or "2" specifying the method (see details)
+#' to simulate Hawkes process. Default,\code{"1"}.
+#' @examples \dontrun{
+#' sim_hawkes(10.2, 3.1, 8.9)
+#' sim_hawkes(10.2, 3.1, 8.9, method = "2")
+#' }
 #' @export
-sim_hawkes <- function(mu, alpha, beta, n, plot, seed, method) {
+sim_hawkes <- function(mu, alpha, beta, n = 100, plot = FALSE, 
+                       seed = 123, method = "1") {
     if (alpha >= beta) {
         stop("alpha must be less then beta")
     }
-    if (missing(n)) n <- 100
-    if (missing(seed)) seed <- 123
-    if (missing(plot)) plot <- FALSE
-    if (missing(method)) method <- "1"
     if (!method %in% c("1", "2")) {
         stop("method should be either \"1\" or \"2\"")
     }
@@ -59,7 +56,7 @@ sim_hawkes <- function(mu, alpha, beta, n, plot, seed, method) {
                 times <- c(times, t)
             }
         }
-        if (plot) show_hawkes(times, mu, alpha, beta)
+        if (plot) show_hawkes(list(times = times, params = c(mu, alpha, beta)))
         return(times)
     }else{
         if (method == "2"){
@@ -93,7 +90,7 @@ sim_hawkes <- function(mu, alpha, beta, n, plot, seed, method) {
                 times <- c(times, t_next)
                 k <- length(times)
             }
-            if (plot) show_hawkes(times, mu, alpha, beta)
+            if (plot) show_hawkes(list(times = times, params = c(mu, alpha, beta)))
             return(times)
         }
     }

@@ -206,7 +206,7 @@ mesh_2_sf <- function(mesh) {
 }
 #' Calculate a number of different \code{\link[INLA]{inla.mesh.2d}} attributes
 #' 
-#' \code{meshmetrics} calculates a number of gemoetric attributes for a given
+#' `meshmetrics()` calculates a number of geometric attributes for a given
 #' Delaunay triangulation.
 #' 
 #' @param mesh A \code{\link[INLA]{inla.mesh.2d}} object.

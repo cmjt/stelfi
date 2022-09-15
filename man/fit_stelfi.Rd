@@ -2,8 +2,7 @@
 % Please edit documentation in R/fit_stelfi.r
 \name{fit_stelfi}
 \alias{fit_stelfi}
-\title{Function to fit a spatiotemporal Hawkes model.
-The self-excitement is Gaussian in space and exponentially decaying in time.}
+\title{Spatiotemporal Hawkes model}
 \usage{
 fit_stelfi(
   times,
@@ -20,7 +19,7 @@ fit_stelfi(
 )
 }
 \arguments{
-\item{times}{a vector of numeric observation time points}
+\item{times}{A vector of numeric observed time points.}
 
 \item{locs}{A \code{data.frame} of \code{x} and \code{y} locations, 2xn.}
 
@@ -29,24 +28,26 @@ of the domain.}
 
 \item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
 
-\item{parameters}{a list of named parameters
-Default values used if not provided.
-"coefs"--logged base rate of the Hawkes process and coefficients of covariates
-"alpha"--intensity jump after an event occurrence
-"beta"-- rate of exponential decay of intensity after event occurrence
-"tau"-- \code{tau} parameter for the GMRF (only if \code{GMRF} == TRUE)
-"kappa"--\code{kappa} parameter for the GMRF (only if \code{GMRF} == TRUE)}
+\item{parameters}{A list of named parameters:
+\itemize{
+\item \code{coefs}, logged base rate of the Hawkes process and coefficients of covariates
+\item \code{alpha}, intensity jump after an event occurrence
+\item \code{beta},  rate of exponential decay of intensity after event occurrence
+\item \code{tau},  \eqn{\tau} parameter for the GMRF (supplied only if \code{GMRF = TRUE})
+\item \code{kappa}, \eqn{\kappa} parameter for the GMRF (supplied only if \code{GMRF = TRUE})
+}}
 
 \item{covariates}{Optional, a \code{matrix} of covariates at each
 \code{smesh} node.}
 
-\item{GMRF}{logical, default FALSE. If TRUE, a spatial Gaussian Markov Random Field is fitted.}
+\item{GMRF}{Logical, default `FALSE`. If `TRUE`, a Gaussian Markov
+Random Field is included as a latent spatial effect.}
 
-\item{time_independent}{logical, default TRUE. If FALSE, Gaussian kernels have a
+\item{time_independent}{Logical, default `TRUE`. If `FALSE`, Gaussian kernels have a
 covariate matrix that is proportional to time since the event.
 Warning, this is very memory intensive.}
 
-\item{tmb_silent}{logical, default `TRUE`:
+\item{tmb_silent}{Logical, default `TRUE`:
 TMB inner optimization tracing information will be printed.}
 
 \item{nlminb_silent}{Logical, default \code{TRUE}:
@@ -55,6 +56,27 @@ print function and parameters every iteration.}
 \item{...}{arguments to pass into \code{optim()}}
 }
 \description{
-Function to fit a spatiotemporal Hawkes model.
-The self-excitement is Gaussian in space and exponentially decaying in time.
+`fit_stelfi()` fits spatiotemporal Hawkes models. The self-excitement is 
+Gaussian in space and exponentially decaying in time.
+}
+\examples{
+\dontrun{
+## No GMRF
+data(xyt, package = "stelfi")
+N <- 50
+locs <- data.frame(x = xyt$x[1:N], y = xyt$y[1:N])
+times <- xyt$t[1:N]
+domain <- sf::st_as_sf(xyt$window)
+bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3) 
+param <- list( mu = 3, alpha = 1, beta = 3, xsigma = 0.2, ysigma = 0.2, rho = 0.8)
+fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh, parameters = param) 
+get_coefs(fit)
+## GMRF
+param <- list( mu = 5, alpha = 1, beta = 3, kappa = 0.9, tau = 1, xsigma = 0.2,
+ysigma = 0.2, rho = 0.8)
+fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh,
+parameters = param, GMRF = TRUE)
+get_coefs(fit)
+}
 }

@@ -1,18 +1,25 @@
 #' Hawkes intensity function
 #' 
+#' `hawkes_intensity()` calculates the Hawkes intensity given a vector
+#' of time points and parameter values
+#' 
 #' @inheritParams sim_hawkes
-#' @inheritParams show_hawkes
-#' @inheritParams fit_hawkes
 #' @param p An optional vector of pseudo times at which to calculate the intensity.
+#' @inheritParams fit_hawkes_cbf
+#' @examples \dontrun{
+#' times <- sim_hawkes(10.2, 3.1, 8.9, method = "2")
+#' hawkes_intensity(times = times, 10.2, 3.1, 8.9)
+#' }
 #' @export
-hawke_intensity <- function(times, mu, alpha, beta,
-                            p, marks, background_parameters) {
+hawkes_intensity <- function(times, mu, alpha, beta,
+                            p, marks = rep(1, length(times)), 
+                            background_parameters) {
     if (missing(p)) p <- times
     lam <- function(p, mark, mu) {
         mu + mark * alpha * sum(exp(-beta * (p - times))[times < p])
     }
     lam_p <- rep(0, length(p))
-    if (class(mu) == "function") {
+    if (methods::is(mu, "function")) {
         mus <- mu(background_parameters, p)
     } else {
         mus <- rep(mu, length(p))
@@ -22,17 +29,35 @@ hawke_intensity <- function(times, mu, alpha, beta,
     }
     return(lam_p)
 }
-#' EXtract reported parameter estimates from fitted models
+#' Extract reported parameter estimates
 #'
-#' \code{get_coefs} returns the parameter estimates for the fitted model.
-#' @param object result of a call to \code{\link{fit_hawkes}} or \code{\link{fit_lgcp}}
+#' `get_coefs()` returns the parameter estimates for the fitted model.
+#' 
+#' @param obj A fitted model object.
+#' @examples \dontrun{
+#' ## Hawkes
+#' data(retweets_niwa, package = "stelfi")
+#' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
+#' params <- c(mu = 9, alpha = 3, beta = 10)
+#' fit <- fit_hawkes(times = times, parameters = params)
+#' get_coefs(fit)
+#' ## LGCP
+#' data(xyt, package = "stelfi")
+#' domain <- sf::st_as_sf(xyt$window)
+#' locs <- data.frame(x = xyt$x, y = xyt$y)
+#' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+#' smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+#' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
+#' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
+#' get_coefs(fit)
+#' }
 #' @export
-get_coefs <- function(object) {
-    table <- summary(TMB::sdreport(object), "report")  
+get_coefs <- function(obj) {
+    table <- summary(TMB::sdreport(obj), "report")  
     ## The code below is for fit_hawkes_cbf()
-    if("background_parameters" %in% names(object)) {
-        for (j in 1:length(object$background_parameters)) {
-            table <- rbind(table, c(object$background_parameters[j], NA))
+    if("background_parameters" %in% names(obj)) {
+        for (j in 1:length(obj$background_parameters)) {
+            table <- rbind(table, c(obj$background_parameters[j], NA))
             row.names(table)[j + 2] <- paste("BP", j)
         }
     }
@@ -40,16 +65,32 @@ get_coefs <- function(object) {
 }
 
 #' Estimated random field(s)
+#' 
+#' `get_fields()` extracts the estimated mean, or standard deviation, of the 
+#' values of the Gaussian Markov random field for a fitted log-Gaussian
+#' Cox process model at each node of \code{smesh}.
 #'
-#' \code{get_fields} returns
-#' @param object the result of a call to \code{\link{fit_lgcp}}.
-#' @param plot \code{logical}, if \code{TRUE} then the returned values are plotted.
-#' @param sd \code{logical}, if \code{TRUE} then standard errors of field are returned.
+#' 
+#' @param obj A fitted model object returned by \code{\link{fit_lgcp}}.
+#' @param plot Logical, if \code{TRUE} then the returned values are plotted.
+#' Default \code{FALSE}.
+#' @param sd Logical, if \code{TRUE} then standard errors returned.
+#' Default \code{FALSE}.
 #' @inheritParams fit_lgcp
+#' @examples \dontrun{
+#' data(xyt, package = "stelfi")
+#' domain <- sf::st_as_sf(xyt$window)
+#' locs <- data.frame(x = xyt$x, y = xyt$y)
+#' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+#' smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+#' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
+#' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
+#' get_fields(fit, smesh, plot = TRUE)
+#' }
 #' @export
-get_fields <- function(object, smesh, tmesh, plot = FALSE, sd = FALSE) {
+get_fields <- function(obj, smesh, tmesh, plot = FALSE, sd = FALSE) {
     idx <- ifelse(sd, 2, 1)
-    x <- summary(TMB::sdreport(object),"random")[,idx]
+    x <- summary(TMB::sdreport(obj),"random")[,idx]
     if(!missing(tmesh)) {
         ind <- rep(seq(tmesh$n), each = smesh$n)
         x <- split(x, ind)
@@ -62,17 +103,28 @@ get_fields <- function(object, smesh, tmesh, plot = FALSE, sd = FALSE) {
     }else{
         if(plot) print(show_field(x, smesh))
     }
-    return(x)
+    return(as.vector(x))
 }    
-#' Function to find areas (weights) around the mesh nodes which are
-#' within the specified spatial polygon.
+#' Mesh weights
 #' 
-#' Relies on the internal \code{\link{dual_mesh}} function.
+#' `get_weights()` calculates the  areas (weights) around the mesh nodes that 
+#' are within the specified spatial polygon \code{sf}. Calls the internal 
+#' \code{\link{dual_mesh}} function.
 #'
-#' @param mesh a spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.
-#' @param sf optional, an \code{sf} of type \code{POLYGON} specifying the region
+#' @param mesh A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}} or
+#' \code{\link[INLA]{inla.mesh}}.
+#' @param sf An \code{sf} of type \code{POLYGON} specifying the region
 #' of the domain.
-#' @param plot \code{logical}, plot the calculated \code{mesh} weights, default \code{FALSE}.
+#' @param plot Logical, whether to plot the calculated \code{mesh} weights. 
+#' Default, \code{FALSE}.
+#' @examples \dontrun{
+#' data(horse_mesh, package = "stelfi")
+#' url_start <- "https://gist.githubusercontent.com/cmjt/9a5e43cce69a3babb129b0a448e65752/raw"
+#' url_end <- "/8653d11cb6ace667a3f5683982ae82366a3ac5d2/horse.csv"
+#' horse <- read.csv(paste(url_start, url_end, sep = ""))
+#' sf <- sf::st_sfc(sf::st_polygon(list(as.matrix(rbind(horse, head(horse, 1))))))
+#' get_weights(horse_mesh, sf, plot = TRUE)
+#' }
 #' @seealso \url{https://becarioprecario.bitbucket.io/spde-gitbook/}.
 #' @export
 get_weights <- function(mesh, sf, plot = FALSE) {
@@ -91,7 +143,6 @@ get_weights <- function(mesh, sf, plot = FALSE) {
     })
     weights <- data.frame(ID = 1:nrow(dmesh), weights = unlist(w))
     res <- dplyr::left_join(dmesh, weights, by = "ID")
-    if(missing(plot)) plot <- FALSE
     if(plot) {
         p <-  ggplot2::ggplot(res) +
             ggplot2::geom_sf(ggplot2::aes(fill = weights)) +
@@ -110,8 +161,7 @@ get_weights <- function(mesh, sf, plot = FALSE) {
 #' and a mesh of polygons.
 #' @param xy A data frame of locations.
 #' @param dmesh An object returned by \code{\link{dual_mesh}}.
-#' @param weights A vector of weights/covariates for each point
-#' @return Either the number of points in each polygon or sum of the weights.
+#' @param weights A vector of weights/covariates for each point.
 points_in_mesh <- function(xy, dmesh, weights) {
   xy <- sf::st_as_sf(xy, coords = c("x", "y"))
   xy <- sf::st_geometry(xy)
@@ -137,7 +187,7 @@ points_in_mesh <- function(xy, dmesh, weights) {
 #' Internal function to construct the `dual` mesh
 #'
 #' @param mesh A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.
-#' @return a \code{sf} object of the Voronoi tesselation
+#' @return An \code{sf} object of the Voronoi tessellation
 #' centered at each \code{mesh} node.
 #' @seealso \url{http://www.r-inla.org/spde-book} and \url{https://becarioprecario.bitbucket.io/spde-gitbook/}
 #' @source \url{http://www.r-inla.org/spde-book}

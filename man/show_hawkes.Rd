@@ -2,40 +2,36 @@
 % Please edit documentation in R/plots.r
 \name{show_hawkes}
 \alias{show_hawkes}
-\title{Plots the Hawkes intensity function with decay historical dependence}
+\title{Plot Hawkes intensity}
 \usage{
-show_hawkes(times, mu, alpha, beta, marks, obj, background_parameters)
+show_hawkes(obj)
 }
 \arguments{
-\item{times}{A numeric vector of observed time points.}
-
-\item{mu}{numeric integer specifying base rate of the hawkes process}
-
-\item{alpha}{numeric integer specifying intensity jump after an event
-occurence}
-
-\item{beta}{numeric integer specifying exponential intensity decay}
-
-\item{marks}{a vector of numerical marks, defaults to 1 (i.e., no marks)}
-
-\item{obj}{An object returned by fit_hawkes() or fit_hawkes_cbf()
-If provided, the only other parameters required are \code{mu} and \code{background_parameters}, and only if \code{mu} is not constant.}
-
-\item{background_parameters}{The parameter(s)
-for the background function \code{background}.
-This could be a list of multiple values.}
+\item{obj}{Either object returned by \code{fit_hawkes()}/\code{fit_hawkes_cbf()} 
+or a named list with elements \code{times} and \code{params}. If the latter, 
+then \code{times} should be a numeric vector of observed time points, and 
+\code{params} must contain, \code{alpha} (intensity jump after an event occurrence) 
+and \code{beta} (exponential intensity decay). In addition, should contain 
+either \code{mu} (base rate of the Hawkes process) or \code{background_parameters}
+(parameter(s) for the assumed non-homogeneous background function;
+could be a list of multiple values). 
+May also contain \code{marks} (a vector of numerical marks).}
 }
 \description{
-Plots the Hawkes intensity function with decay historical dependence
+`show_hawkes()` plots a Hawkes intensity function, options to extend to 
+non-homogeneous background intensity.
 }
 \examples{
 \dontrun{
 data(retweets_niwa, package = "stelfi")
-times <- unique(sort(as.numeric(difftime(retweets_niwa ,min(retweets_niwa),units = "mins"))))
+times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
 params <- c(mu = 9, alpha = 3, beta = 10)
+show_hawkes(list(times = times, params = params))
 ## must have compiled TMB templates first use compile_stelfi()
 fit <- fit_hawkes(times = times, parameters = params)
-pars <- get_coefs(fit)
-show_hawkes(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1])
+show_hawkes(fit)
 }
+}
+\seealso{
+[hawkes_intensity()] [fit_hawkes_cbf()]
 }

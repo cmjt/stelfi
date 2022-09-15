@@ -1,32 +1,34 @@
-#' Function to fit a self-exciting Hawkes process
+#' Self-exciting Hawkes process
 #'
-#' \code{fit_hawkes} fits a range of self-exciting Hawkes processes using TMB
-#' @param times a vector of numeric observation time points
-#' @param parameters a list of named parameters for the chosen model
-#' Default values used if not provided. 
-#' (see \code{model})
-#' "mu"--base rate of the Hawkes process,
-#' "alpha"--intensity jump after an event occurrence (\code{model} = 1)
-#' "a_par" -- logit scale for alpha. alpha must be set so that the intensity never goes negative
-#'  and so that alpha <= beta. (\code{model} = 2)
-#' "beta"--exponential intensity decay
-#' @param model a factor indicator specifying which model to fit:
-#' \code{1}, a Hawkes process with exponential decay (default);
-#' \code{2}, Hawkes process with a "jump" (alpha) that can be negative. 
-#' @param marks a vector of numerical marks, defaults to 1 (i.e., no marks)
-#' @param tmb_silent logical, default `TRUE`:
+#' `fit_hawkes()` fits a self-exciting Hawkes process using \code{TMB}.
+#' 
+#' @param times A vector of numeric observed time points.
+#' @param parameters A named list of named parameters for the chosen model:
+#' \itemize{
+#' \item \code{mu}, base rate of the Hawkes process,
+#' \item \code{alpha} (supplied if \code{model = 1}), intensity jump after an event occurrence,
+#' \item \code{a_par} (supplied if \code{model} = 2), logit scale for \code{alpha} (must be 
+#' set so that the intensity never goes negative and so that \code{alpha} <= \code{beta}), and
+#' \item \code{beta}, exponential intensity decay.
+#' }
+#' @param model A numeric indicator specifying which model to fit:
+#' \itemize{
+#' \item \code{1}, Hawkes process with exponential decay (default);
+#' \item \code{2}, Hawkes process with an \code{alpha} that can be negative.
+#' }
+#' @param marks Optional, a vector of numeric marks, defaults to 1 (i.e., no marks).
+#' @param tmb_silent Logical, default `TRUE`:
 #' TMB inner optimization tracing information will be printed.
-#' @param optim_silent logical, default `TRUE`:
+#' @param optim_silent Logical, default `TRUE`:
 #' print function and parameters every iteration.
 #' @param ... arguments to pass into \code{optim()}
 #' @examples{
 #' \dontrun{
+#' ## simple Hawkes model
 #' data(retweets_niwa, package = "stelfi")
-#' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
+#' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa), units = "mins"))))
 #' params <- c(mu = 9, alpha = 3, beta = 10)
 #' fit_hawkes(times = times, parameters = params)
-#' }
-#' \dontrun{
 #' ## A model with marks (ETAS-type)
 #' data("earthquakes", package = "stelfi")
 #' earthquakes <- earthquakes[order(earthquakes$origintime),]
@@ -102,21 +104,21 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
     return(obj)
 }
 
-#' Function to fit a self-exciting Hawkes process with a given custom
-#' background function
+#' Self-exciting Hawkes process with a given custom background function
 #'
-#' \code{fit_hawkes_cbf} fits a range of self-exciting Hawkes processes
-#' with a given custom background function (cbf) using TMB using TMB.
+#' `fit_hawkes_cbf()` fits a self-exciting Hawkes processes
+#' with a given custom background function using `TMB`.
 #' The \code{alpha} (\code{model} = 1) or \code{a_par} (\code{model} = 2)
-#' and \code{beta} parameters are estimated using TMB,
-#' parameters of the cbf are optimized in R.
+#' and \code{beta} parameters are estimated using `TMB`;
+#' parameters of the custom background function are optimized in `R`.
+#' 
 #' @inheritParams fit_hawkes
-#' @param model A factor indicator specifying which model to fit:
+#' @param model A numeric indicator specifying which model to fit:
 #' \itemize{
-#' \item \code{1}, a Hawkes process with exponential decay and cbf (default),
-#' positive alpha.
-#' \item \code{2}, a Hawkes process with exponential decay and cbf,
-#' but alpha can be negative.
+#' \item \code{1}, a Hawkes process with exponential decay and 
+#' custom background function (default) with positive \code{alpha}.
+#' \item \code{2}, a Hawkes process with exponential decay and 
+#' custom background function where \code{alpha} can be negative.
 #' }
 #' @param background A function taking one parameter and an
 #' independent variable, returning a scalar.
@@ -154,7 +156,7 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
 #' }
 #' }
 #' @export
-fit_hawkes_cbf <- function(times, parameters=list(),
+fit_hawkes_cbf <- function(times, parameters = list(),
                            model = 1,
                            marks = c(rep(1, length(times))),
                            background, background_integral, background_parameters,

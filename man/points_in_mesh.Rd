@@ -13,10 +13,7 @@ points_in_mesh(xy, dmesh, weights)
 
 \item{dmesh}{An object returned by \code{\link{dual_mesh}}.}
 
-\item{weights}{A vector of weights/covariates for each point}
-}
-\value{
-Either the number of points in each polygon or sum of the weights.
+\item{weights}{A vector of weights/covariates for each point.}
 }
 \description{
 Internal function that takes in a list of points

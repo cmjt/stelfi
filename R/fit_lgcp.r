@@ -78,11 +78,12 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
     }
     return(obj)
 }
-#' Fit a spatial or spatiotemporal log-Gaussian Cox process (LGCP)
+#' Spatial or spatiotemporal log-Gaussian Cox process (LGCP)
 #'
-#' \code{fit_lgcp} fits a LGCP using \code{TMB} and the
+#' `fit_lgcp()` fits a LGCP using \code{TMB} and the
 #' \code{R_inla} namespace for the spde construction of the latent field. Ths is
 #' the user friendly wrapper for the internal function \code{\link{fit_lgcp_tmb}}.
+#' 
 #' @param sf An \code{sf} of type \code{POLYGON} specifying the region
 #' of the domain.
 #' @param locs A \code{data.frame} of \code{x} and \code{y} locations, 2xn. If locations have
@@ -98,13 +99,14 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' Default values are used if not provided.
 #' @param covariates Optional, a \code{matrix} of covariates at each
 #' \code{smesh} and \code{tmesh} node combination.
-#' @param tmb_silent \code{logical}, default \code{TRUE}:
+#' @param tmb_silent Logical, default \code{TRUE}:
 #' TMB inner optimization tracing information will be printed.
 #' @param nlminb_silent Logical, default \code{TRUE}:
 #' print function and parameters every iteration.
 #' @param ... optional extra arguments to pass into \code{\link[stats]{nlminb}}.
-#' @return A fitted \code{\link[TMB]{MakeADFun}} object.
+#' 
 #' @examples \dontrun{
+#' ## spatial only
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
 #' locs <- data.frame(x = xyt$x, y = xyt$y)
@@ -113,8 +115,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' max.edge = 0.75, cutoff = 0.3)
 #' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 #' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
-#' }
-#' \dontrun{
+#' ## spatiotemporal
 #' ndays <- 2
 #' locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
 #' w0 <- 2

@@ -2,56 +2,41 @@
 % Please edit documentation in R/plots.r
 \name{show_hawkes_GOF}
 \alias{show_hawkes_GOF}
-\title{Plot the compensator and other associated goodness of fit metrics for a Hawkes process}
+\title{Plot the compensator and other goodness-of-fit metrics for a Hawkes process}
 \usage{
-show_hawkes_GOF(
-  times,
-  mu,
-  alpha,
-  beta,
-  marks,
-  obj,
-  background_parameters,
-  plot,
-  return_values
-)
+show_hawkes_GOF(obj, plot = TRUE, return_values = FALSE)
 }
 \arguments{
-\item{times}{A numeric vector of observed time points.}
+\item{obj}{Either object returned by \code{fit_hawkes()}/\code{fit_hawkes_cbf()} 
+or a named list with elements \code{times} and \code{params}. If the latter, 
+then \code{times} should be a numeric vector of observed time points, and 
+\code{params} must contain, \code{alpha} (intensity jump after an event occurrence) 
+and \code{beta} (exponential intensity decay). In addition, should contain 
+either \code{mu} (base rate of the Hawkes process) or \code{background_parameters}
+(parameter(s) for the assumed non-homogeneous background function;
+could be a list of multiple values). 
+May also contain \code{marks} (a vector of numerical marks).}
 
-\item{mu}{numeric integer specifying base rate of the hawkes process}
+\item{plot}{Logical, whether to plot  goodness-of-fit plots. Default \code{TRUE}.}
 
-\item{alpha}{numeric integer specifying intensity jump after an event
-occurence}
-
-\item{beta}{numeric integer specifying exponential intensity decay}
-
-\item{marks}{a vector of numerical marks, defaults to 1 (i.e., no marks)}
-
-\item{obj}{An object returned by fit_hawkes() or fit_hawkes_cbf()
-If provided, the only other parameters required are \code{mu} and \code{background_parameters}, and only if \code{mu} is not constant.}
-
-\item{background_parameters}{The parameter(s)
-for the background function \code{background}.
-This could be a list of multiple values.}
-
-\item{plot}{Logical, whether to plot GOF plots. Default \code{TRUE}.}
-
-\item{return_values}{Logical, whether to return GOF values. Default \code{TRUE}.}
+\item{return_values}{Logical, whether to return GOF values. Default \code{FALSE}.}
 }
 \description{
-Plot the compensator and other associated goodness of fit metrics for a Hawkes process
+`show_hawkes_GOF` plots a number of goodness-of-fit plots for a fitted
+Hawkes process. Includes 1) a comparison of the  compensator and observed 
+events, 2) a histogram of transformed interarrival times, 3) a Q-Q plot of 
+transformed interarrival times, and 4) the CDF of consecutive interarrival 
+times, In addition, results of a Kolmogorov-Smirnov and
+Ljung-Box hypothesis test for the interarrival times are printed.
 }
 \examples{
 \dontrun{
 data(retweets_niwa, package = "stelfi")
-times <- unique(sort(as.numeric(difftime(retweets_niwa,
-min(retweets_niwa),units = "mins"))))
+times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
 params <- c(mu = 9, alpha = 3, beta = 10)
+show_hawkes_GOF(list(times = times, params = params))
 ## must have compiled TMB templates first use compile_stelfi()
 fit <- fit_hawkes(times = times, parameters = params)
-pars <- get_coefs(fit)
-show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1],
-beta = pars[3,1], return_values = FALSE)
+show_hawkes_GOF(fit)
 }
 }

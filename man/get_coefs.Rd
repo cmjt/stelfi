@@ -2,13 +2,32 @@
 % Please edit documentation in R/helpers.r
 \name{get_coefs}
 \alias{get_coefs}
-\title{EXtract reported parameter estimates from fitted models}
+\title{Extract reported parameter estimates}
 \usage{
-get_coefs(object)
+get_coefs(obj)
 }
 \arguments{
-\item{object}{result of a call to \code{\link{fit_hawkes}} or \code{\link{fit_lgcp}}}
+\item{obj}{A fitted model object.}
 }
 \description{
-\code{get_coefs} returns the parameter estimates for the fitted model.
+`get_coefs()` returns the parameter estimates for the fitted model.
+}
+\examples{
+\dontrun{
+## Hawkes
+data(retweets_niwa, package = "stelfi")
+times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
+params <- c(mu = 9, alpha = 3, beta = 10)
+fit <- fit_hawkes(times = times, parameters = params)
+get_coefs(fit)
+## LGCP
+data(xyt, package = "stelfi")
+domain <- sf::st_as_sf(xyt$window)
+locs <- data.frame(x = xyt$x, y = xyt$y)
+bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
+parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
+get_coefs(fit)
+}
 }

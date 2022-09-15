@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_lgcp.r
 \name{fit_lgcp}
 \alias{fit_lgcp}
-\title{Fit a spatial or spatiotemporal log-Gaussian Cox process (LGCP)}
+\title{Spatial or spatiotemporal log-Gaussian Cox process (LGCP)}
 \usage{
 fit_lgcp(
   locs,
@@ -38,7 +38,7 @@ Default values are used if not provided.}
 \item{covariates}{Optional, a \code{matrix} of covariates at each
 \code{smesh} and \code{tmesh} node combination.}
 
-\item{tmb_silent}{\code{logical}, default \code{TRUE}:
+\item{tmb_silent}{Logical, default \code{TRUE}:
 TMB inner optimization tracing information will be printed.}
 
 \item{nlminb_silent}{Logical, default \code{TRUE}:
@@ -46,16 +46,14 @@ print function and parameters every iteration.}
 
 \item{...}{optional extra arguments to pass into \code{\link[stats]{nlminb}}.}
 }
-\value{
-A fitted \code{\link[TMB]{MakeADFun}} object.
-}
 \description{
-\code{fit_lgcp} fits a LGCP using \code{TMB} and the
+`fit_lgcp()` fits a LGCP using \code{TMB} and the
 \code{R_inla} namespace for the spde construction of the latent field. Ths is
 the user friendly wrapper for the internal function \code{\link{fit_lgcp_tmb}}.
 }
 \examples{
 \dontrun{
+## spatial only
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
 locs <- data.frame(x = xyt$x, y = xyt$y)
@@ -64,8 +62,7 @@ smesh <- INLA::inla.mesh.2d(boundary = bnd,
 max.edge = 0.75, cutoff = 0.3)
 fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
-}
-\dontrun{
+## spatiotemporal
 ndays <- 2
 locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
 w0 <- 2

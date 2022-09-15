@@ -3,6 +3,7 @@
 #' \code{fit_mlgcp_tmb} fits a marked LGCP using \code{TMB} and the
 #' \code{R_inla} namespace for the spde construction of the latent field.
 #' For a simpler wrapper use \code{\link{fit_mlgcp}} as this is an internal function.
+#' 
 #' @param ypp  The vector of observations.
 #' @param marks  A matrix of marks for each observation of the point pattern
 #' @param lmat A sparse matrix mapping mesh points to the observations
@@ -63,10 +64,12 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
                          control = list(trace = trace), ...)
     return(obj)
 }
-#' Function to fit a spatial  marked
-#' log-Gaussian Cox process using \code{TMB}
+#' Marked spatial log-Gaussian Cox process m(LGCP)
 #'
-#' A simple to use wrapper for \code{fit_mlgcp_tmb}
+#' `fit_mlgcp_tmb()` fits a marked LGCP using \code{TMB} and the
+#' \code{R_inla} namespace for the spde construction of the latent field.
+#' A simple to use wrapper for \code{\link{fit_mlgcp_tmb}}.
+#' 
 #' @param locs A \code{data.frame} of \code{x} and \code{y} locations, 2xn.
 #' @inheritParams fit_lgcp
 #' @inheritParams fit_mlgcp_tmb

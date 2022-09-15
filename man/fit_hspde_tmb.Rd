@@ -32,7 +32,7 @@ fit_hspde_tmb(
 )
 }
 \arguments{
-\item{times}{a vector of numeric observation time points}
+\item{times}{A vector of numeric observed time points.}
 
 \item{locs}{A \code{data.frame} of \code{x} and \code{y} locations, 2xn. If locations have
 time stamps then this should be the third column of the supplied 3xn matrix.}
@@ -75,7 +75,7 @@ poisson models, see \code{INLA::inla.doc("poisson")} for more detail.}
 
 \item{simple}{TODO}
 
-\item{tmb_silent}{logical, default `TRUE`:
+\item{tmb_silent}{Logical, default `TRUE`:
 TMB inner optimization tracing information will be printed.}
 
 \item{nlminb_silent}{Logical, default \code{TRUE}:

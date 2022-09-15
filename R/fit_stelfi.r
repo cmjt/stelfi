@@ -84,25 +84,49 @@ fit_hspat_tmb <- function(times, locs, sf,
     obj$objective <- opt$objective
     return(obj)
 }
-#' Function to fit a spatiotemporal Hawkes model.
-#' The self-excitement is Gaussian in space and exponentially decaying in time.
+#' Spatiotemporal Hawkes model
+#' 
+#' `fit_stelfi()` fits spatiotemporal Hawkes models. The self-excitement is 
+#' Gaussian in space and exponentially decaying in time.
+#' 
 #' @param locs A \code{data.frame} of \code{x} and \code{y} locations, 2xn.
-#' @param parameters a list of named parameters
-#' Default values used if not provided.
-#' "coefs"--logged base rate of the Hawkes process and coefficients of covariates
-#' "alpha"--intensity jump after an event occurrence
-#' "beta"-- rate of exponential decay of intensity after event occurrence
-#' "tau"-- \code{tau} parameter for the GMRF (only if \code{GMRF} == TRUE)
-#' "kappa"--\code{kappa} parameter for the GMRF (only if \code{GMRF} == TRUE)
+#' @param parameters A list of named parameters:
+#' \itemize{
+#' \item \code{coefs}, logged base rate of the Hawkes process and coefficients of covariates
+#' \item \code{alpha}, intensity jump after an event occurrence
+#' \item \code{beta},  rate of exponential decay of intensity after event occurrence
+#' \item \code{tau},  \eqn{\tau} parameter for the GMRF (supplied only if \code{GMRF = TRUE})
+#' \item \code{kappa}, \eqn{\kappa} parameter for the GMRF (supplied only if \code{GMRF = TRUE})
+#' }
 #' @param covariates Optional, a \code{matrix} of covariates at each
 #' \code{smesh} node.
-#' @param GMRF logical, default FALSE. If TRUE, a spatial Gaussian Markov Random Field is fitted.
-#' @param time_independent logical, default TRUE. If FALSE, Gaussian kernels have a
+#' @param GMRF Logical, default `FALSE`. If `TRUE`, a Gaussian Markov
+#'  Random Field is included as a latent spatial effect.
+#' @param time_independent Logical, default `TRUE`. If `FALSE`, Gaussian kernels have a
 #' covariate matrix that is proportional to time since the event.
 #' Warning, this is very memory intensive.
 #' @inheritParams fit_hawkes
 #' @inheritParams fit_lgcp
 #' @inheritParams fit_hspat_tmb
+#' @examples \dontrun{
+#' ## No GMRF
+#' data(xyt, package = "stelfi")
+#' N <- 50
+#' locs <- data.frame(x = xyt$x[1:N], y = xyt$y[1:N])
+#' times <- xyt$t[1:N]
+#' domain <- sf::st_as_sf(xyt$window)
+#' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+#' smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3) 
+#' param <- list( mu = 3, alpha = 1, beta = 3, xsigma = 0.2, ysigma = 0.2, rho = 0.8)
+#' fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh, parameters = param) 
+#' get_coefs(fit)
+#' ## GMRF
+#' param <- list( mu = 5, alpha = 1, beta = 3, kappa = 0.9, tau = 1, xsigma = 0.2,
+#' ysigma = 0.2, rho = 0.8)
+#' fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh,
+#' parameters = param, GMRF = TRUE)
+#' get_coefs(fit)
+#' }
 #' @export
 fit_stelfi <-  function(times, locs, sf, smesh,  parameters, covariates,
                         GMRF = FALSE,
