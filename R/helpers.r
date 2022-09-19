@@ -15,8 +15,10 @@ hawkes_intensity <- function(times, mu, alpha, beta,
                             p, marks = rep(1, length(times)), 
                             background_parameters) {
     if (missing(p)) p <- times
-    lam <- function(p, mark, mu) {
-        mu + mark * alpha * sum(exp(-beta * (p - times))[times < p])
+    lam <- function(p, mu) {
+      A <- exp(-beta * (p - times))[times < p]
+      A <- append(A, rep(0, length(times) - length(A)))
+      mu + alpha * sum(marks * A)
     }
     lam_p <- rep(0, length(p))
     if (methods::is(mu, "function")) {
@@ -25,7 +27,7 @@ hawkes_intensity <- function(times, mu, alpha, beta,
         mus <- rep(mu, length(p))
     }
     for (i in seq_along(p)) {
-        lam_p[i] <- lam(p[i], marks[i], mus[i])
+        lam_p[i] <- lam(p[i], mus[i])
     }
     return(lam_p)
 }
