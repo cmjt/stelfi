@@ -1,9 +1,9 @@
-#' Serial killers of the UK
+#' Serial killers of the UK, 1828 - 2015
 #'
 #' A dataset containing the names and number of recorded
-#' murders commited by UK serial killers
+#' murders commited by some infamous UK serial killers 1828 - 2015.
 #'
-#' @format A dataframe with 62 rows and 8 variables
+#' @format A dataframe with 62 rows and 8 variables:
 #' \describe{
 #' \item{Number.of.kills}{approx number of murders committed}
 #' \item{Years}{The years of operation}
@@ -17,34 +17,33 @@
 #' @source \url{http://www.murderuk.com/}
 #' @name serial_uk
 NULL
-#' Murders of NZ
-#' A dataset of recorded murder cases in New Zealand 2004--2019
+#' Murders of NZ, 2004 - 2019
+#' 
+#' A dataset of recorded murder cases in New Zealand 2004 - 2019.
 #'
-#' @format A dataframe with 967 rows and 13 variables
+#' @format A simple features dataframe, of type \code{POINT}, with 967 observations and 11 fields:
 #' \describe{
-#' \item{Latitude}{approximate latitude of murder}
-#' \item{Longitude}{approximate longitude of murder}
-#' \item{Sex}{biological sex of victim}
-#' \item{Age}{age of victim (years)}
-#' \item{Date}{month and day of murder}
-#' \item{Year}{year}
-#' \item{Cause}{cause of death}
-#' \item{Killer}{killer}
-#' \item{Name}{name of victim}
-#' \item{Full_date}{date object of observation on single days}
-#' \item{Month}{month name of observation}
-#' \item{Cause_cat}{cause of death as category}
+#' \item{Sex}{Biological sex of victim}
+#' \item{Age}{Age of victim (years)}
+#' \item{Date}{Month and day of murder}
+#' \item{Year}{Year}
+#' \item{Cause}{Cause of death}
+#' \item{Killer}{Killer}
+#' \item{Name}{Name of victim}
+#' \item{Full_date}{Date object of observation on single days}
+#' \item{Month}{Month name of observation}
+#' \item{Cause_cat}{Cause of death as category}
 #' \item{Region}{NZ region}
 #' }
-#' @references \url{https://interactives.stuff.co.nz/2019/the-homicide-report/}
 #' @source Data scraped and cleaned by Charlie Timmings,
-#' honours student at the University of Auckland.
+#' honours student at the University of Aucklandfrom the website
+#' \url{https://interactives.stuff.co.nz/2019/the-homicide-report/}
 #' @name murders_nz
 NULL
-#' NIWA's viral leopard seal Tweet
+#' Retweets of NIWA's viral leopard seal Tweet
 #'
 #' A dataset of retweet times of NIWA's viral leopard seal tweet
-#' on the 5th Feb 2019
+#' on the 5th Feb 2019 (\url{https://twitter.com/niwa_nz/status/1092610541401587712}).
 #'
 #' @format A vector of length 4890
 #' \describe{
@@ -53,29 +52,27 @@ NULL
 #' @source \url{https://twitter.com/niwa_nz/status/1092610541401587712}
 #' @name retweets_niwa
 NULL
-#' Canterbury, NZ earthquakes
+#' Earthquakes (Canterbury, NZ), 2010 - 2014
 #'
-#' A dataset taken containing earthquake information in Canterbury,
-#' New Zealand 16-Jan-2010--24-Dec-2014
+#' Earthquake data from Canterbury,
+#' New Zealand 16-Jan-2010--24-Dec-2014.
 #'
-#' @format A data frame containing 3824 rows and 5 variables:
+#' @format A simple features dataframe, of type \code{POINT}, with 3824 observations and 3 fields:
 #' \describe{
 #' \item{origintime}{The UTC time of the event's occurrence}
-#' \item{longitude}{longitude location}
-#' \item{latitude}{latitude location}
 #' \item{magnitude}{The magnitude of the earthquake}
 #' \item{depth}{The focal depth of the event (km)}
 #' }
 #' @source \url{http://quakesearch.geonet.org.nz/}
 #' @name earthquakes
 NULL
-#' Terrorism in Iraq 2013--2017
+#' Terrorism in Iraq, 2013 - 2017
 #'
 #' A dataset containing information of terrorism activity carried out
 #' by the Islamic State of Iraq and the Levant (ISIL) in Iraq,
-#' 2013--2017
+#' 2013 - 2017.
 #'
-#' @format A data frame with 4208 rows and 16 variables:
+#' @format  A simple features dataframe, of type \code{POINT}, with 4208 observations and 16 fields:
 #' \describe{
 #' \item{iyear}{numeric year 2013--2017}
 #' \item{imonth}{numeric month index 1--12}
@@ -99,13 +96,6 @@ NULL
 #' @source \url{http://www.start.umd.edu/gtd/}
 #' @name terrorism
 NULL
-#' New Zealand polygon
-#'
-#' Spatial Polygon of NZ
-#'
-#' @format  A \code{SpatialPolygonsDataFrame} of New Zeland in NZTM
-#' @name nz
-NULL
 #' Example marked point pattern data set
 #'
 #' @format A data frame with 159 rows and 5 variables:
@@ -118,35 +108,73 @@ NULL
 #' }
 #' @name marked
 NULL
-#' A self-exciting spatiotemporal point pattern of class \code{stppp}
+#' Self-exciting point pattern
+#'
+#' Simulated self-exciting spatiotemporal point pattern of class \code{stppp}
 #'
 #' @format A \code{stppp} object with 653 observations
 #' \describe{
-#' \item{window}{domain of the point pattern of class \code{owin}}
-#' \item{n}{number of observations, 653}
+#' \item{window}{Domain of the point pattern of class \code{owin}}
+#' \item{n}{Number of observations, 653}
 #' \item{x}{x coordinate}
 #' \item{y}{y coordinate}
 #' \item{markformat}{\code{none}}
-#' \item{t}{timestamp of points}
-#' \item{tlim}{time frame \code{0 2}}
+#' \item{t}{Timestamp of points}
+#' \item{tlim}{Time frame \code{0 2}}
 #' }
 #' @name xyt
 NULL
-#' UFO sightings in the USA
+#' UFO sightings in the USA, 1969 - 2021
 #'
 #' Subset of data sourced from the UFO Sightings Map
 #' (\url{https://www.arcgis.com/apps/webappviewer/index.html?id=ddda71d5211f47e782b12f3f8d06246e}).
 #' 
-#' @format A data frame with 97027 observations and 12 variables
+#' @format A simple features dataframe, of type \code{POINT}, with 72703 observations and 3 fields:
 #' \describe{
 #' \item{city}{city where sighting was reported}
 #' \item{state}{state code where sighting was reported}
 #' \item{date_time}{\code{POSIXct}, time and date of sighting}
-#' \item{city_latitude}{latitude of sighting}
-#' \item{city_longitude}{longitude of sighting}
 #' }
 #' @source \url{https://data.world/timothyrenner/ufo-sightings#}
 #' @name ufo
+NULL
+#' Bigfoot (Sasquatch) sightings in the USA, 2000 - 2005
+#'
+#' Subset of data sourced from the Bigfoot Field Researchers Organization (BFRO)
+#' (\url{https://data.world/timothyrenner/bfro-sightings-data}).
+#' 
+#' @format A simple features dataframe, of type \code{POINT}, with 972 observations and 27 fields:
+#' \describe{
+#' \item{observed}{Text observation summary}
+#' \item{location_details}{Text location summary}
+#' \item{county}{County}
+#' \item{state}{State}
+#' \item{season}{Season}
+#' \item{title}{Report title}
+#' \item{date}{Date}
+#' \item{number}{Report number}
+#' \item{classification}{Report classification}
+#' \item{geohash}{Geohash code}
+#' \item{temperature_high}{Repotred weather measure}
+#' \item{temperature_mid}{Repotred weather measure}
+#' \item{temperature_low}{Repotred weather measure}
+#' \item{dew_point}{Repotred weather measure}
+#' \item{humidity}{Repotred weather measure}
+#' \item{cloud_cover}{Repotred weather measure}
+#' \item{moon_phase}{Repotred measure}
+#' \item{precip_intensity}{Repotred weather measure}
+#' \item{precip_probability}{Repotred weather measure}
+#' \item{precip_type}{Repotred weather measure}
+#' \item{pressure}{Repotred weather measure}
+#' \item{summary}{Text weather summary}
+#' \item{uv_index}{Repotred weather measure}
+#' \item{visibility}{Repotred weather measure}
+#' \item{wind_bearing}{Repotred weather measure}
+#' \item{wind_speed}{Repotred weather measure}
+#' \item{year}{Year}
+#' }
+#' @source \url{https://data.world/timothyrenner/bfro-sightings-data}
+#' @name bigfoot
 NULL
 #' Example \code{inla.mesh}
 #'
