@@ -1,5 +1,20 @@
 # Spatiotemporal self-exciting model {#stelfi}
 
+Although the Hawkes process is traditionally formulated as a temporal point process, it is also possible to formulate a spatiotemporal version of the Hawkes process.
+
+For the spatiotemporal Hawkes processes fitted by this package, temporal self-excitement follows an exponential decay function. The self-excitement over space follows a Gaussian distribution centered at the triggering event. There are two formulations of this model. The default is that the Gaussian function has a fixed covariance matrix, independent of time. Alternatively, covariance can be directly proportional to time, meaning that the self-excitement radiates out from the center over time. This can be appropriate when the mechanism causing self-excitement travels at a finite speed, but is very memory-intensive. 
+
+The intensity function used by stelfi is:
+
+$$\lambda(s,t) = \mu + \alpha \Sigma_{i:\tau_i<t}(\text{exp}(-\beta * (t-\tau_i)) G_i(s-x_i, t - \tau_i)) $$ 
+where $\mu$ is the background rate, $\beta$ is the rate of temporal decay, $\alpha$ is the increase in intensity after an event, $\tau_i$ are the event times, $x_i$ are the event locations (in 2D Euclidean space) and $G_i(s-x_i, t - \tau_i)$ is the spatial self-excitement kernel.
+
+For the version with time-independent spatial excitement:
+$G_i(s-x_i, t - \tau_i) = N(0, \Sigma)(s - x_i)$
+
+For the version with time-dependent spatial excitement:
+$G_i(s-x_i, t - \tau_i) = N(0, (t-\tau_i)\Sigma)(s - x_i)$
+
 ## The `fit_stelfi()` function
 
 ```{r}
@@ -10,31 +25,26 @@ args(fit_stelfi)
 
 ```{r}
 data(xyt, package = "stelfi")
-N <- 50
+N <- 100
 locs <- data.frame(x = xyt$x[1:N], y = xyt$y[1:N])
 times <- xyt$t[1:N]
-loc.d <- cbind(c(0, 13, 13, 0, 0), c(-3, -3, 3, 3, -3))
-domain <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(loc.d)),'0')))
+domain <- as(xyt$window, "SpatialPolygons")
+domain.sf <- sf::st_as_sf(domain)
 smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
                             max.edge = 0.75, cutoff = 0.3)
-param <- list( mu = 3, alpha = 1, beta = 3, xsigma = 0.2,
-             ysigma = 0.2, rho = 0.8)
-fit <- fit_stelfi(times = times, locs = locs, sp = domain, smesh = smesh, parameters = param,
-                  gaussian = TRUE)
+param <- list(mu = 1, alpha = 3, beta = 6, xsigma = 0.2,
+             ysigma = 0.2, rho = 0)
+fit <- fit_stelfi(times = times, locs = locs, sf = domain.sf, smesh = smesh, parameters = param)
 get_coefs(fit)
 ```
-
 
 ## Hawkes spde
 
 ```{r}
-
 ## issues with time....
-param <- list( mu = 5, alpha = 1, beta = 3, kappa = 0.9, tau = 1,
-              xsigma = 0.2,
-              ysigma = 0.2, rho = 0.8)
-fit <- fit_stelfi(times = times, locs = locs, sp = domain,
-                  smesh = smesh, parameters = param,
-                  gaussian = FALSE)
+param <- list(mu = 1, alpha = 3, beta = 6, kappa = 2, tau = 1, xsigma = 0.2, ysigma = 0.2, rho = 0)
+fit <- fit_stelfi(times = times, locs = locs, sf = domain.sf, smesh = smesh, parameters = param, GMRF = TRUE)
 get_coefs(fit)
+res = TMB::sdreport(fit)
+show_field(res$par.random, smesh = smesh, sf = domain.sf)
 ```
