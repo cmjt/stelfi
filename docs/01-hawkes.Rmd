@@ -46,7 +46,7 @@ mtext(1,line = 1, at = c(start,end),text = c("NIWA \n tweeted","USB owner \n fou
 ```{r fit model,results = 'hide',cache = TRUE}
 params <- c(mu = 9, alpha = 3, beta = 10)
 ## must have compiled TMB templates first use compile_stelfi()
-fit <- fit_hawkes(times = times,parameters = params) 
+fit <- fit_hawkes(times = times, parameters = params) 
 ```
 
 
@@ -59,12 +59,12 @@ pars
 
 
 ```{r plot, echo = TRUE,fig.height = 7,fig.width = 9}
-show_hawkes(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1])
+show_hawkes(fit)
 ```
 
 
 ```{r gof, echo = TRUE,fig.height = 7,fig.width = 9}
-show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1], return_values = FALSE)
+show_hawkes_GOF(fit)
 ```
 
 ### Fitting an ETAS-type marked model
@@ -93,12 +93,12 @@ pars
 ```
 
 ```{r, echo = TRUE,fig.height = 7,fig.width = 9}
-show_hawkes(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1], marks = marks)
+show_hawkes(fit)
 ```
 
 
 ```{r, echo = TRUE,fig.height = 7,fig.width = 9}
-show_hawkes_GOF(times = times, mu = pars[1,1], alpha = pars[2,1], beta = pars[3,1], marks = marks, return_values = FALSE)
+show_hawkes_GOF(fit)
 ```
 
 
@@ -159,13 +159,4 @@ The estimated values of $\alpha$ and $\beta$ respectively are:
 ```{r}
 ab = get_coefs(fit)[1:2,1]
 ab
-```
-
-```{r, echo = TRUE,fig.height = 7,fig.width = 9}
-show_hawkes(obj = fit, mu = background)
-```
-
-
-```{r, echo = TRUE,fig.height = 7,fig.width = 9}
-show_hawkes_GOF(obj = fit, mu = background_integral, return_values = FALSE)
 ```

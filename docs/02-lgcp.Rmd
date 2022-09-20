@@ -16,47 +16,22 @@ args(fit_lgcp)
 ### Fitting a spatial only LGCP
 
 ```{r}
-require(maptools)
 data(xyt, package = "stelfi")
-domain <- as(xyt$window, "SpatialPolygons")
+domain <- sf::st_as_sf(xyt$window)
 locs <- data.frame(x = xyt$x, y = xyt$y)
-smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
-                      max.edge = 0.75, cutoff = 0.3)
-system.time(fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh,
-                            parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1))))
+bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+smesh <- INLA::inla.mesh.2d(boundary = bnd,
+                                max.edge = 0.75, cutoff = 0.3)
+fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
+                                parameters = c(beta = 0, log_tau = log(1),
+                                               log_kappa = log(1)))
 get_coefs(fit)
 ```
 
-```{r}
-plot_lambda(fit, smesh = smesh, border = domain) +
-    ggplot2::theme_void()
-```
-
-**Comparing to `inlabru`**
 
 ```{r}
-require(inlabru)
-matern <- INLA::inla.spde2.matern(smesh)
-cmp <- coordinates ~ mySmooth(coordinates, model = matern) + Intercept(1)
-coordinates(locs) <- c("x", "y")
-system.time(fit_inla <- lgcp(cmp, locs,
-                             samplers = domain,
-                             domain = list(coordinates = smesh),
-                             options = list(control.inla = list(int.strategy = "eb"))))
-fit_inla$summary.fixed
-fit_inla$summary.hyperpar
+show_lambda(fit, smesh = smesh) + theme_void()
 ```
-
-```{r, echo = FALSE, results = 'asis', eval = FALSE}
-lambda <- predict(fit_inla, pixels(smesh), ~ exp(mySmooth + Intercept))
-ggplot() +
-    gg(lambda) +
-    gg(domain) +
-    coord_fixed() +
-    scale_fill_viridis_c() +
-    theme_void()
-```
-
 
 
 ### Spatiotemporal LGCP
@@ -72,21 +47,25 @@ $$G_i(s)=\rho G_{i-1}(s) + \epsilon_i$$
 where $\rho$ is a constant between -1 and +1, and $\epsilon_i$ is normally distributed with mean 0. 
 
 ```{r}
-ndays <- 2
+ ndays <- 2
 locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
+bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
 w0 <- 2
+smesh <- INLA::inla.mesh.2d(boundary = bnd,
+                                max.edge = 0.75, cutoff = 0.3)
 tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
-fit <- fit_lgcp(locs = locs, sp = domain, smesh = smesh, tmesh = tmesh,
-                parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2))
+fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh, tmesh = tmesh,
+                    parameters = c(beta = 0, log_tau = log(1),
+                                   log_kappa = log(1), atanh_rho = 0.2))
 get_coefs(fit)
 ```
 
 
 ```{r}
 
-plot_lambda(fit, smesh = smesh, tmesh = tmesh, timestamp = 1) +
+show_lambda(fit, smesh = smesh, tmesh = tmesh, timestamp = 1) +
     ggplot2::theme_void() + ggplot2::ggtitle("t = 2")
-plot_lambda(fit, smesh = smesh, tmesh = tmesh, timestamp = 2) +
+show_lambda(fit, smesh = smesh, tmesh = tmesh, timestamp = 2) +
     ggplot2::theme_void() + ggplot2::ggtitle("t = 2")
 
 ```
@@ -97,7 +76,7 @@ plot_lambda(fit, smesh = smesh, tmesh = tmesh, timestamp = 2) +
 
 ```{r}
 parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2)
-simdata <- simulate_lgcp(parameters = parameters, sp = domain, smesh = smesh, tmesh = tmesh)
+simdata <- simulate_lgcp(parameters = parameters, sf = domain, smesh = smesh, tmesh = tmesh)
 show_field(simdata$x[,1], smesh = smesh) +
     ggplot2::theme_void()
 ```
