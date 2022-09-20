@@ -2,15 +2,13 @@
 % Please edit documentation in R/data.r
 \name{ufo}
 \alias{ufo}
-\title{UFO sightings in the USA}
+\title{UFO sightings in the USA, 1969 - 2021}
 \format{
-A data frame with 97027 observations and 12 variables
+A simple features dataframe, of type \code{POINT}, with 72703 observations and 3 fields:
 \describe{
 \item{city}{city where sighting was reported}
 \item{state}{state code where sighting was reported}
 \item{date_time}{\code{POSIXct}, time and date of sighting}
-\item{city_latitude}{latitude of sighting}
-\item{city_longitude}{longitude of sighting}
 }
 }
 \source{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/data.r
 \name{retweets_niwa}
 \alias{retweets_niwa}
-\title{NIWA's viral leopard seal Tweet}
+\title{Retweets of NIWA's viral leopard seal Tweet}
 \format{
 A vector of length 4890
 \describe{
@@ -14,5 +14,5 @@ A vector of length 4890
 }
 \description{
 A dataset of retweet times of NIWA's viral leopard seal tweet
-on the 5th Feb 2019
+on the 5th Feb 2019 (\url{https://twitter.com/niwa_nz/status/1092610541401587712}).
 }

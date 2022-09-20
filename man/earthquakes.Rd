@@ -2,13 +2,11 @@
 % Please edit documentation in R/data.r
 \name{earthquakes}
 \alias{earthquakes}
-\title{Canterbury, NZ earthquakes}
+\title{Earthquakes (Canterbury, NZ), 2010 - 2014}
 \format{
-A data frame containing 3824 rows and 5 variables:
+A simple features dataframe, of type \code{POINT}, with 3824 observations and 3 fields:
 \describe{
 \item{origintime}{The UTC time of the event's occurrence}
-\item{longitude}{longitude location}
-\item{latitude}{latitude location}
 \item{magnitude}{The magnitude of the earthquake}
 \item{depth}{The focal depth of the event (km)}
 }
@@ -17,6 +15,6 @@ A data frame containing 3824 rows and 5 variables:
 \url{http://quakesearch.geonet.org.nz/}
 }
 \description{
-A dataset taken containing earthquake information in Canterbury,
-New Zealand 16-Jan-2010--24-Dec-2014
+Earthquake data from Canterbury,
+New Zealand 16-Jan-2010--24-Dec-2014.
 }

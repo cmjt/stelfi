@@ -2,9 +2,9 @@
 % Please edit documentation in R/data.r
 \name{terrorism}
 \alias{terrorism}
-\title{Terrorism in Iraq 2013--2017}
+\title{Terrorism in Iraq, 2013 - 2017}
 \format{
-A data frame with 4208 rows and 16 variables:
+A simple features dataframe, of type \code{POINT}, with 4208 observations and 16 fields:
 \describe{
 \item{iyear}{numeric year 2013--2017}
 \item{imonth}{numeric month index 1--12}
@@ -32,5 +32,5 @@ A data frame with 4208 rows and 16 variables:
 \description{
 A dataset containing information of terrorism activity carried out
 by the Islamic State of Iraq and the Levant (ISIL) in Iraq,
-2013--2017
+2013 - 2017.
 }

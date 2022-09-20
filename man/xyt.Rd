@@ -2,19 +2,19 @@
 % Please edit documentation in R/data.r
 \name{xyt}
 \alias{xyt}
-\title{A self-exciting spatiotemporal point pattern of class \code{stppp}}
+\title{Self-exciting point pattern}
 \format{
 A \code{stppp} object with 653 observations
 \describe{
-\item{window}{domain of the point pattern of class \code{owin}}
-\item{n}{number of observations, 653}
+\item{window}{Domain of the point pattern of class \code{owin}}
+\item{n}{Number of observations, 653}
 \item{x}{x coordinate}
 \item{y}{y coordinate}
 \item{markformat}{\code{none}}
-\item{t}{timestamp of points}
-\item{tlim}{time frame \code{0 2}}
+\item{t}{Timestamp of points}
+\item{tlim}{Time frame \code{0 2}}
 }
 }
 \description{
-A self-exciting spatiotemporal point pattern of class \code{stppp}
+Simulated self-exciting spatiotemporal point pattern of class \code{stppp}
 }

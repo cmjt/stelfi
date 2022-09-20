@@ -2,34 +2,28 @@
 % Please edit documentation in R/data.r
 \name{murders_nz}
 \alias{murders_nz}
-\title{Murders of NZ
-A dataset of recorded murder cases in New Zealand 2004--2019}
+\title{Murders of NZ, 2004 - 2019}
 \format{
-A dataframe with 967 rows and 13 variables
+A simple features dataframe, of type \code{POINT}, with 967 observations and 11 fields:
 \describe{
-\item{Latitude}{approximate latitude of murder}
-\item{Longitude}{approximate longitude of murder}
-\item{Sex}{biological sex of victim}
-\item{Age}{age of victim (years)}
-\item{Date}{month and day of murder}
-\item{Year}{year}
-\item{Cause}{cause of death}
-\item{Killer}{killer}
-\item{Name}{name of victim}
-\item{Full_date}{date object of observation on single days}
-\item{Month}{month name of observation}
-\item{Cause_cat}{cause of death as category}
+\item{Sex}{Biological sex of victim}
+\item{Age}{Age of victim (years)}
+\item{Date}{Month and day of murder}
+\item{Year}{Year}
+\item{Cause}{Cause of death}
+\item{Killer}{Killer}
+\item{Name}{Name of victim}
+\item{Full_date}{Date object of observation on single days}
+\item{Month}{Month name of observation}
+\item{Cause_cat}{Cause of death as category}
 \item{Region}{NZ region}
 }
 }
 \source{
 Data scraped and cleaned by Charlie Timmings,
-honours student at the University of Auckland.
+honours student at the University of Aucklandfrom the website
+\url{https://interactives.stuff.co.nz/2019/the-homicide-report/}
 }
 \description{
-Murders of NZ
-A dataset of recorded murder cases in New Zealand 2004--2019
-}
-\references{
-\url{https://interactives.stuff.co.nz/2019/the-homicide-report/}
+A dataset of recorded murder cases in New Zealand 2004 - 2019.
 }

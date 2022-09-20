@@ -2,9 +2,9 @@
 % Please edit documentation in R/data.r
 \name{serial_uk}
 \alias{serial_uk}
-\title{Serial killers of the UK}
+\title{Serial killers of the UK, 1828 - 2015}
 \format{
-A dataframe with 62 rows and 8 variables
+A dataframe with 62 rows and 8 variables:
 \describe{
 \item{Number.of.kills}{approx number of murders committed}
 \item{Years}{The years of operation}
@@ -21,5 +21,5 @@ A dataframe with 62 rows and 8 variables
 }
 \description{
 A dataset containing the names and number of recorded
-murders commited by UK serial killers
+murders commited by some infamous UK serial killers 1828 - 2015.
 }
