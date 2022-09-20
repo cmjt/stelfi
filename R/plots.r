@@ -263,8 +263,8 @@ show_field <- function(x, smesh, sf, dims = c(500,500)) {
 #' show_lambda(fit, smesh = smesh, sf = domain)
 #' }
 #' @export
-show_lambda <- function(obj, covariates, smesh, tmesh,
-                        sf, dims = c(500,500),
+show_lambda <- function(obj, smesh, sf, tmesh,
+                        covariates, dims = c(500,500),
                         timestamp = 1) {
     if(!missing(tmesh)) {
         if(!missing(covariates)) {
@@ -283,9 +283,9 @@ show_lambda <- function(obj, covariates, smesh, tmesh,
         plt <- list()
         for(i in seq(tmesh$n)) {
             if (missing(sf)) {
-                plt[[i]] <- show_field(x = x[[i]], smesh = smesh,dims = dims)
+                plt[[i]] <- show_field(x = x[[i]], smesh = smesh, dims = dims)
             } else {
-                plt[[i]] <- show_field(x = x[[i]], smesh, dims, sf)
+                plt[[i]] <- show_field(x = x[[i]], smesh = smesh, sf = sf, dims = dims)
             }
         }
         plt[[timestamp]]
@@ -304,7 +304,7 @@ show_lambda <- function(obj, covariates, smesh, tmesh,
         if (missing(sf)) {
             show_field(x = lambda, smesh = smesh,dims = dims)
         } else {
-            show_field(lambda, smesh, dims, sf)
+            show_field(x = lambda, smesh = smesh, sf = sf, dims = dims)
         }
     }           
 }

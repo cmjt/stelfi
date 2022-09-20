@@ -30,7 +30,9 @@ get_coefs(fit)
 
 
 ```{r}
-show_lambda(fit, smesh = smesh) + theme_void()
+get_fields(fit) |>
+    show_field(smesh = smesh, sf = domain) + ggplot2::theme_void()
+show_lambda(fit, smesh = smesh, sf = domain) + ggplot2::theme_void()
 ```
 
 
@@ -47,7 +49,7 @@ $$G_i(s)=\rho G_{i-1}(s) + \epsilon_i$$
 where $\rho$ is a constant between -1 and +1, and $\epsilon_i$ is normally distributed with mean 0. 
 
 ```{r}
- ndays <- 2
+ndays <- 2
 locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
 bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
 w0 <- 2
@@ -63,9 +65,9 @@ get_coefs(fit)
 
 ```{r}
 
-show_lambda(fit, smesh = smesh, tmesh = tmesh, timestamp = 1) +
+show_lambda(fit, smesh = smesh, sf = domain, tmesh = tmesh, timestamp = 1) +
     ggplot2::theme_void() + ggplot2::ggtitle("t = 2")
-show_lambda(fit, smesh = smesh, tmesh = tmesh, timestamp = 2) +
+show_lambda(fit, smesh = smesh, sf = domain, tmesh = tmesh, timestamp = 2) +
     ggplot2::theme_void() + ggplot2::ggtitle("t = 2")
 
 ```
