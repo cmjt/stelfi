@@ -6,10 +6,10 @@
 \usage{
 show_lambda(
   obj,
-  covariates,
   smesh,
-  tmesh,
   sf,
+  tmesh,
+  covariates,
   dims = c(500, 500),
   timestamp = 1
 )
@@ -17,15 +17,15 @@ show_lambda(
 \arguments{
 \item{obj}{A fitted LGCP model object for, for example, \code{fit_lgcp()}.}
 
-\item{covariates}{Optional, a \code{matrix} of covariates at each
-\code{smesh} and \code{tmesh} node combination.}
-
 \item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
-
-\item{tmesh}{Optional, a temporal mesh of class \code{\link[INLA]{inla.mesh.1d}}.}
 
 \item{sf}{An \code{sf} of type \code{POLYGON} specifying the region
 of the domain.}
+
+\item{tmesh}{Optional, a temporal mesh of class \code{\link[INLA]{inla.mesh.1d}}.}
+
+\item{covariates}{Optional, a \code{matrix} of covariates at each
+\code{smesh} and \code{tmesh} node combination.}
 
 \item{dims}{A numeric vector of length 2 specifying
 the spatial pixel resolution. Default \code{c(500,500)}.}

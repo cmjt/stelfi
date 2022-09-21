@@ -24,18 +24,18 @@ args(fit_mlgcp)
 ```{r, eval = TRUE}
 data(marked, package = "stelfi")
 loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
-domain <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(loc.d)),'0')))
-smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1), 
-                           max.edge = c(0.3, 0.7), cutoff = 0.05)
+domain <-  sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(loc.d))))
+smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1),
+                                max.edge = c(0.3, 0.7), cutoff = 0.05)
 locs <- cbind(x = marked$x, y = marked$y)
 marks <- cbind(m1 = marked$m1) ## Gaussian
-parameters <- list(betamarks = matrix(0, nrow = 1, ncol = ncol(marks)) ,
-              log_tau = log(1), log_kappa = log(1),
-              marks_coefs_pp = rep(0, ncol(marks)), betapp = 0)
+parameters <- list(betamarks = matrix(0, nrow = 1, ncol = ncol(marks)),
+                       log_tau = log(1), log_kappa = log(1),
+                       marks_coefs_pp = rep(0, ncol(marks)), betapp = 0)
 
 fit <- fit_mlgcp(locs = locs, marks = marks,
-                 sp = domain, smesh = smesh,
-                 parameters = parameters, methods = 0,
-                 fields = 0)
+                     sf = domain, smesh = smesh,
+                     parameters = parameters, methods = 0,
+                     fields = 0)
 get_coefs(fit)
 ```

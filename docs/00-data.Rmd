@@ -67,6 +67,8 @@ serial_uk %>%
 
 ## Spatiotemporal point pattern data
 
+
+
 Using `maps` to create `sf` objects of country boundaries:
 
 ```{r}
@@ -88,6 +90,11 @@ The [Bigfoot Field Researchers Organization (BFRO)](https://www.bfro.net/) docum
 ```{r}
 data("bigfoot", package = "stelfi")
 bigfoot
+```
+
+```{r, echo = FALSE}
+## needed for GDAL shipped with older Ubuntu dist
+sf::st_crs(bigfoot) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
 ```
 
 ```{r}
@@ -114,6 +121,11 @@ data("ufo", package = "stelfi")
 ufo
 ```
 
+```{r, echo = FALSE}
+## needed for GDAL shipped with older Ubuntu dist
+sf::st_crs(ufo) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
+```
+
 ```{r}
 ggplot(ufo, aes(x = date_time)) + geom_histogram(bins = 150) +
   ylab("Frequency of UFO sightings") + xlab("") +
@@ -137,6 +149,11 @@ data("earthquakes", package = "stelfi")
 earthquakes
 ```
 
+```{r, echo = FALSE}
+## needed for GDAL shipped with older Ubuntu dist
+sf::st_crs(earthquakes) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
+```
+
 ```{r}
 ggplot(earthquakes, aes(x = origintime)) + geom_histogram(bins = 100) +
   ylab("Frequency of earthquakes") + xlab("") +
@@ -158,6 +175,11 @@ ggplot(earthquakes) +
 ```{r}
 data("murders_nz", package = "stelfi")
 murders_nz
+```
+
+```{r, echo = FALSE}
+## needed for GDAL shipped with older Ubuntu dist
+sf::st_crs(murders_nz) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
 ```
 
 ```{r}
@@ -184,6 +206,10 @@ data("terrorism", package = "stelfi")
 terrorism
 ```
 
+```{r, echo = FALSE}
+## needed for GDAL shipped with older Ubuntu dist
+sf::st_crs(terrorism) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
+```
 
 ```{r}
 terrorism %>%

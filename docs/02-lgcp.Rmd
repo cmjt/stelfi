@@ -79,15 +79,17 @@ show_lambda(fit, smesh = smesh, sf = domain, tmesh = tmesh, timestamp = 2) +
 ```{r}
 parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2)
 simdata <- simulate_lgcp(parameters = parameters, sf = domain, smesh = smesh, tmesh = tmesh)
-show_field(simdata$x[,1], smesh = smesh) +
+simdata$x[,1] |>
+    show_field(smesh = smesh) +
     ggplot2::theme_void()
 ```
 
 **Option 2** directly from the fitted model
 
 ```{r}
-simdata <- fit$simulate(fit$env$last.par, complete = FALSE)
-show_field(simdata$x[,1], smesh = smesh) +
+simdata <- fit$simulate()
+simdata$x[,1] |>
+    show_field(smesh = smesh) +
     ggplot2::theme_void()
 ```
 

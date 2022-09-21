@@ -28,13 +28,13 @@ data(xyt, package = "stelfi")
 N <- 100
 locs <- data.frame(x = xyt$x[1:N], y = xyt$y[1:N])
 times <- xyt$t[1:N]
-domain <- as(xyt$window, "SpatialPolygons")
-domain.sf <- sf::st_as_sf(domain)
-smesh <- INLA::inla.mesh.2d(boundary = INLA::inla.sp2segment(domain), 
+domain <- sf::st_as_sf(xyt$window)
+bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+smesh <- INLA::inla.mesh.2d(boundary = bnd, 
                             max.edge = 0.75, cutoff = 0.3)
 param <- list(mu = 1, alpha = 3, beta = 6, xsigma = 0.2,
              ysigma = 0.2, rho = 0)
-fit <- fit_stelfi(times = times, locs = locs, sf = domain.sf, smesh = smesh, parameters = param)
+fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh, parameters = param)
 get_coefs(fit)
 ```
 
@@ -43,8 +43,8 @@ get_coefs(fit)
 ```{r}
 ## issues with time....
 param <- list(mu = 1, alpha = 3, beta = 6, kappa = 2, tau = 1, xsigma = 0.2, ysigma = 0.2, rho = 0)
-fit <- fit_stelfi(times = times, locs = locs, sf = domain.sf, smesh = smesh, parameters = param, GMRF = TRUE)
+fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh, parameters = param, GMRF = TRUE)
 get_coefs(fit)
-res = TMB::sdreport(fit)
-show_field(res$par.random, smesh = smesh, sf = domain.sf)
+res <- TMB::sdreport(fit)
+show_field(res$par.random, smesh = smesh, sf = domain)
 ```
