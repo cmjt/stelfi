@@ -291,24 +291,23 @@ simulate_lgcp <- function(parameters, sf, smesh, tmesh, covariates,
     if (length(log_kappa) != 1) stop("log_kappa must be a single number")
     ## prepare variables
     if (!missing(tmesh)) {
-        locs <- matrix(0, nrow = 10, ncol = 3)
-        tmp <- prep_data_lgcp(locs = locs, sf = sf, smesh = smesh, tmesh = tmesh)
         atanh_rho <- parameters[["atanh_rho"]]
-        k <- length(tmesh$loc)
-        if (!missing(covariates)) if (nrow(covariates) != nrow(smesh$loc) * k)
-                                      stop("nrow.covariates should be size of spatial mesh by number of time knots")
         if (length(atanh_rho) != 1)
             stop("atanh_rho must be a single number")
+        if (!missing(covariates)) if (nrow(covariates) != nrow(smesh$loc) * k)
+                                      stop("nrow.covariates should be size of spatial mesh by number of time knots")
+        k <- length(tmesh$loc)
+        locs <- matrix(0, nrow = k * 10, ncol = 2)
+        locs <- data.frame(x = locs[, 1], y = locs[, 2], t = rep(0:(k - 1), each = 10))
         tmp <- prep_data_lgcp(locs = locs, sf = sf, smesh = smesh, tmesh = tmesh)
+        
     } else {
-        locs <-  matrix(0, nrow = 10, ncol = 2)
-        locs <- data.frame(x = locs[, 1], y = locs[, 2])
-        tmp <- prep_data_lgcp(locs = locs, sf = sf, smesh = smesh)
-        k <- 1
         if(!missing(covariates)) {
             if(length(beta) != (ncol(covariates) + 1))
                 stop("arg beta should be length ncol.covariates + 1")
         }
+        locs <-  matrix(0, nrow = 10, ncol = 2)
+        locs <- data.frame(x = locs[, 1], y = locs[, 2])
         k <- 1
         atanh_rho <- NULL
         tmp <- prep_data_lgcp(locs = locs, sf = sf, smesh = smesh)
