@@ -3,3 +3,5 @@ doc
 Meta
 model_fits.r
 .Rproj.user
+*.o
+*.so
