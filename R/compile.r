@@ -73,4 +73,12 @@ dll_stelfi <- function(x) {
 #' @importFrom methods is
 #' @importFrom Matrix diag sparseMatrix
 #' @importFrom INLA inla.spde.make.A inla.spde2.matern
+#' @useDynLib custom_hawkes
+#' @useDynLib hawkes
+#' @useDynLib lgcp
+#' @useDynLib marked_lgcp
+#' @useDynLib neg_alpha_custom_hawkes
+#' @useDynLib neg_alpha_hawkes
+#' @useDynLib spatial_hawkes
+#' @useDynLib spde_hawkes
 NULL
