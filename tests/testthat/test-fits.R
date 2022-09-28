@@ -1,5 +1,4 @@
 test_that("Hawkes simulation", {
-    compile_stelfi()
     ## sim_hawkes example
     set.seed(1234)
     times <- sim_hawkes(mu = 0.3, alpha = 4, beta = 5)

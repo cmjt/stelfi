@@ -45,9 +45,6 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
                           betamarks, betapp, marks_coefs_pp, log_kappa, log_tau,
                           cov_overlap, designmatpp, designmatmarks, fields,
                           tmb_silent, nlminb_silent, ...) {
-    if (!"marked_lgcp" %in% getLoadedDLLs()) {
-        stelfi::dll_stelfi("marked_lgcp")
-    }
     data <- list(ymarks = marks, ypp = ypp, lmat = lmat,
                  spde = spde$param.inla[c("M0", "M1", "M2")], w = w,
                  methods = methods, designmatpp = designmatpp,

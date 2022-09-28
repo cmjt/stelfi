@@ -5,3 +5,5 @@ model_fits.r
 .Rproj.user
 *.o
 *.so
+package-build/*
+stelfi.Rcheck/*

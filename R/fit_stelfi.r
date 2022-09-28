@@ -25,9 +25,6 @@ fit_hspde_tmb <- function(times, locs, sf, smesh,
                           reltol = 1e-12, abstol = 1e-12,
                           lmat = lmat, simple = simple,
                           tmb_silent, nlminb_silent, ...) {
-    if (!"spde_hawkes" %in% getLoadedDLLs()) {
-        stelfi::dll_stelfi("spde_hawkes")
-    }
     innerloc <- Reduce(rbind, apply(smesh$graph$tv, 1, function(vt) {
         temp <-  sf::st_polygon(list(smesh$loc[rep(vt, length = length(vt) + 1), 1:2]))
         if (is.null(sf::st_intersection(temp, sf)))
@@ -59,9 +56,6 @@ fit_hspat_tmb <- function(times, locs, sf,
                           tmax = max(times),
                           lmat, simple,
                           tmb_silent, nlminb_silent, ...) {
-    if (!"spatial_hawkes" %in% getLoadedDLLs()) {
-        stelfi::dll_stelfi("spatial_hawkes")
-    }
     innerloc <- Reduce(rbind, apply(smesh$graph$tv, 1, function(vt) {
         temp <-  sf::st_polygon(list(smesh$loc[rep(vt, length = length(vt) + 1), 1:2]))
         if (is.null(sf::st_intersection(temp, sf)))

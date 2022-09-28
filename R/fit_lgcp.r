@@ -52,9 +52,6 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
                           log_tau, log_kappa,
                           atanh_rho, x, tmb_silent,
                           nlminb_silent, simulation, ...) {
-    if (!"lgcp" %in% getLoadedDLLs()) {
-        stelfi::dll_stelfi("lgcp")
-    }
     data <- list(y = y, A = A, designmat = designmat,
                  spde = spde, w = w,
                  idx = idx)

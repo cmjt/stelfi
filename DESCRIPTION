@@ -17,8 +17,8 @@ Authors@R:
            role = "ctb"))
 Depends:
     R (>= 4.1.0),
+    TMB (>= 1.7.20)
 Imports:
-    TMB (>= 1.7.20),
     ggplot2 (>= 3.3.6),
     dplyr (>= 1.0.8),
     gridExtra (>= 2.3),
@@ -27,6 +27,9 @@ Imports:
     INLA,
     Matrix,
     methods
+LinkingTo:
+	TMB,
+     	RcppEigen
 Description: A package for fitting a range of spatiotemporal point processes which include latent fields.
 License: GPL
 URL: https://github.com/cmjt/stelfi

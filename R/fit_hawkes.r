@@ -73,10 +73,6 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
             stop("alpha must be smaller than or equal to beta divided by the mean of the marks")
         if (alpha < 0)
             stop("alpha must be non-negative")
-        ## check for DLL
-        if (!"hawkes" %in% getLoadedDLLs()) {
-            dll_stelfi("hawkes")
-        }
         ## setup
         obj <- TMB::MakeADFun(data = list(times = times, marks = marks),
                               parameters = list(log_mu = log(mu),
@@ -85,10 +81,6 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
                               hessian = TRUE, DLL = "hawkes", silent = tmb_silent)
     }else{
         if (model == 2) {
-            ## check for DLL
-            if (!"neg_alpha_hawkes" %in% getLoadedDLLs()) {
-                dll_stelfi("neg_alpha_hawkes")
-            }
             ## setup
             obj <- TMB::MakeADFun(data = list(times = times, marks = marks),
                                   parameters = list(log_mu = log(mu),
@@ -186,10 +178,6 @@ fit_hawkes_cbf <- function(times, parameters = list(),
             stop("alpha must be smaller than or equal to beta divided by the mean of the marks")
         if (alpha < 0)
             stop("alpha must be non-negative")
-        ## check for DLL
-        if (!"custom_hawkes" %in% getLoadedDLLs()) {
-            dll_stelfi("custom_hawkes")
-        }
         ## Nested function to be passed into optim
         optimize_background_one <- function(background_parameters, times, parameters,
                                        marks, background, background_integral,
@@ -233,11 +221,7 @@ fit_hawkes_cbf <- function(times, parameters = list(),
             if (is.null(a_par)) {
               a_par <- 0
             }
-            ## check for DLL
-            if (!"neg_alpha_custom_hawkes" %in% getLoadedDLLs()) {
-                dll_stelfi("neg_alpha_custom_hawkes")
-            }
-            # Nested function to be passed into optim
+            ## Nested function to be passed into optim
             optimize_background_two <- function(background_parameters, times, parameters,
                                            marks, background, background_integral,
                                            background_min, tmb_silent = TRUE, optim_silent = TRUE) {
