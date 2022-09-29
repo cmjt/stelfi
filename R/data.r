@@ -52,7 +52,7 @@ NULL
 #' @source \url{https://twitter.com/niwa_nz/status/1092610541401587712}
 #' @name retweets_niwa
 NULL
-#' Earthquakes (Canterbury, NZ), 2010 - 2014
+#' Earthquakes in Canterbury, NZ, 2010 - 2014
 #'
 #' Earthquake data from Canterbury,
 #' New Zealand 16-Jan-2010--24-Dec-2014.
@@ -124,12 +124,12 @@ NULL
 #' }
 #' @name xyt
 NULL
-#' UFO sightings in the USA, 1969 - 2021
+#' UFO sightings in the USA, 2006 - 2021
 #'
 #' Subset of data sourced from the UFO Sightings Map
 #' (\url{https://www.arcgis.com/apps/webappviewer/index.html?id=ddda71d5211f47e782b12f3f8d06246e}).
 #' 
-#' @format A simple features dataframe, of type \code{POINT}, with 72703 observations and 3 fields:
+#' @format A simple features dataframe, of type \code{POINT}, with 65603 observations and 3 fields:
 #' \describe{
 #' \item{city}{city where sighting was reported}
 #' \item{state}{state code where sighting was reported}
