@@ -74,19 +74,19 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
         if (alpha < 0)
             stop("alpha must be non-negative")
         ## setup
-        obj <- TMB::MakeADFun(data = list(times = times, marks = marks),
+        obj <- TMB::MakeADFun(data = list(times = times, marks = marks, model_type = "hawkes"),
                               parameters = list(log_mu = log(mu),
                                                 logit_abratio = stats::qlogis(alpha / (beta / mean(marks))),
                                                 log_beta = log(beta)),
-                              hessian = TRUE, DLL = "hawkes", silent = tmb_silent)
+                              hessian = TRUE, DLL = "stelfi", silent = tmb_silent)
     }else{
         if (model == 2) {
             ## setup
-            obj <- TMB::MakeADFun(data = list(times = times, marks = marks),
+            obj <- TMB::MakeADFun(data = list(times = times, marks = marks, model_type = "neg_alpha_hawkes"),
                                   parameters = list(log_mu = log(mu),
                                                     a_par = alpha,
                                                     log_beta = log(beta)),
-                                  hessian = TRUE, DLL = "neg_alpha_hawkes", silent = tmb_silent)
+                                  hessian = TRUE, DLL = "stelfi", silent = tmb_silent)
         }
     }
     trace <- if(optim_silent) 0 else 1
@@ -189,10 +189,11 @@ fit_hawkes_cbf <- function(times, parameters = list(),
             alpha <- parameters[["alpha"]]
             beta <- parameters[["beta"]]
             obj <- TMB::MakeADFun(data = list(times = times, lambda = lambda,
-                                              lambda_integral = lambda_integral, marks = marks),
+                                              lambda_integral = lambda_integral,
+                                              marks = marks, model_type = "custom_hawkes"),
                                   parameters = list(logit_abratio = stats::qlogis(alpha / (beta / mean(marks))),
                                                     log_beta = log(beta)),
-                                  hessian = TRUE, DLL = "custom_hawkes", silent = tmb_silent)
+                                  hessian = TRUE, DLL = "stelfi", silent = tmb_silent)
             trace <- if(optim_silent) 0 else 1
             opt <- stats::optim(obj$par, obj$fn, obj$gr, control = list(trace = 0))
             return(opt$value)
@@ -210,10 +211,10 @@ fit_hawkes_cbf <- function(times, parameters = list(),
         beta <- parameters[["beta"]]
         obj <- TMB::MakeADFun(data = list(times = times, lambda = lambda,
                                           lambda_integral = lambda_integral,
-                                          marks = marks),
+                                          marks = marks, model_type = "custom_hawkes"),
                               parameters = list(logit_abratio = stats::qlogis(alpha / beta),
                                                 log_beta = log(beta)),
-                              hessian = TRUE, DLL = "custom_hawkes", silent = tmb_silent)
+                              hessian = TRUE, DLL = "stelfi", silent = tmb_silent)
     }else{
         if (model == 2){
             ## a_par parameter
@@ -240,10 +241,11 @@ fit_hawkes_cbf <- function(times, parameters = list(),
                 obj <- TMB::MakeADFun(data = list(times = times, lambda = lambda,
                                                   lambda_min = lambda_min,
                                                   lambda_integral = lambda_integral,
-                                                  marks = marks),
+                                                  marks = marks,
+                                                  model_type = "neg_alpha_custom_hawkes"),
                                       parameters = list(a_par = a_par,
                                                         log_beta = log(beta)),
-                                      hessian = TRUE, DLL = "neg_alpha_custom_hawkes", silent = tmb_silent)
+                                      hessian = TRUE, DLL = "stelfi", silent = tmb_silent)
                 trace <- if(optim_silent) 0 else 1
                 opt <- stats::optim(obj$par, obj$fn, obj$gr, control = list(trace = trace))
                 return(opt$value)
@@ -268,10 +270,11 @@ fit_hawkes_cbf <- function(times, parameters = list(),
             obj <- TMB::MakeADFun(data = list(times = times, lambda = lambda,
                                               lambda_min = lambda_min,
                                               lambda_integral = lambda_integral,
-                                              marks = marks),
+                                              marks = marks,
+                                              model_type = "neg_alpha_custom_hawkes"),
                                   parameters = list(a_par = a_par,
                                                     log_beta = log(beta)),
-                                  hessian = TRUE, DLL = "neg_alpha_custom_hawkes", silent = tmb_silent)
+                                  hessian = TRUE, DLL = "stelfi", silent = tmb_silent)
             
         }
     }

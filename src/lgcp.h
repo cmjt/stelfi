@@ -1,15 +1,15 @@
+#ifndef lgcp_hpp
+#define lgcp_hpp
+
+#undef TMB_OBJECTIVE_PTR
+#define TMB_OBJECTIVE_PTR obj
+
 /* written by Xiangjie Xue, updated on 01/05/2021. */
 /* Added simulation code on 20/05/2021. */
 /* Edited by Alec van Helsdingen, last update 22/06/2022 */
-#include <TMB.hpp>
-#include <numeric>
-#include <math.h> // for pi
-
-
 
 template<class Type>
-Type objective_function<Type>::operator() ()
-{
+Type lgcp(objective_function<Type>* obj) {
   using namespace R_inla; // Where Q_spde is defined.
   using namespace density; // this where the structure for GMRF and AR_t is defined
   using namespace Eigen;  // probably for sparseness class
@@ -160,3 +160,7 @@ Type objective_function<Type>::operator() ()
   REPORT(x);
   return nll;
 }
+#undef TMB_OBJECTIVE_PTR
+#define TMB_OBJECTIVE_PTR this
+
+#endif

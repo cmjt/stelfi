@@ -1,12 +1,13 @@
+#ifndef neg_alpha_hawkes_hpp
+#define neg_alpha_hawkes_hpp
+
+#undef TMB_OBJECTIVE_PTR
+#define TMB_OBJECTIVE_PTR obj
 /* Modified version of estimating Hawkes process */
 /* The simulation code is added on 20/05/2021. */
 /* Hawke's Process, either self-exciting or self-inhibiting 02/06/2022 */
-#include <TMB.hpp>
-#include <vector>
-#include <iostream>
 template<class Type>
-Type objective_function<Type>::operator() ()
-{
+Type neg_alpha_hawkes(objective_function<Type>* obj) {
   using namespace Eigen;
   // vector of time
   DATA_VECTOR(times);
@@ -58,10 +59,12 @@ Type objective_function<Type>::operator() ()
     }
     REPORT(times);
   }
-
   ADREPORT(mu);
   ADREPORT(alpha);
   ADREPORT(beta);
-
   return nll;
 }
+#undef TMB_OBJECTIVE_PTR
+#define TMB_OBJECTIVE_PTR this
+
+#endif

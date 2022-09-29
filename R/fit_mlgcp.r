@@ -49,12 +49,13 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
                  spde = spde$param.inla[c("M0", "M1", "M2")], w = w,
                  methods = methods, designmatpp = designmatpp,
                  designmatmarks = designmatmarks, cov_overlap = cov_overlap,
-                 strfixed = strfixed, mark_field = fields)
+                 strfixed = strfixed, mark_field = fields,
+                 model_type = "marked_lgcp" )
     param <- list(betamarks = betamarks, betapp = betapp, log_kappa = log_kappa,
                   log_tau = log_tau, marks_coefs_pp = marks_coefs_pp,
                   x = matrix(0, nrow = dim(lmat)[2], ncol = sum(fields) + 1))
     obj <- TMB::MakeADFun(data, param, hessian = TRUE,
-                           random = c("x"), DLL = "marked_lgcp",
+                           random = c("x"), DLL = "stelfi",
                            silent = tmb_silent)
     trace <- if(nlminb_silent) 0 else 1
     opt <- stats::nlminb(obj$par, obj$fn, obj$gr,

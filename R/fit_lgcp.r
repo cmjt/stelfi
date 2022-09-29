@@ -54,7 +54,8 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
                           nlminb_silent, simulation, ...) {
     data <- list(y = y, A = A, designmat = designmat,
                  spde = spde, w = w,
-                 idx = idx)
+                 idx = idx,
+                 model_type = "lgcp")
     if(is.null(atanh_rho)) {
         param <- list(beta = beta,  log_kappa = log_kappa,
                       log_tau = log_tau,
@@ -65,7 +66,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
                       atanh_rho = atanh_rho, x = x)
     }
     obj <- TMB::MakeADFun(data = data, parameters = param, hessian = TRUE,
-                          random = c("x"), DLL = "lgcp",
+                          random = c("x"), DLL = "stelfi",
                           silent = tmb_silent)
     trace <- if(nlminb_silent) 0 else 1
     if (simulation == FALSE) {

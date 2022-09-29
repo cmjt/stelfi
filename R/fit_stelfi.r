@@ -35,13 +35,14 @@ fit_hspde_tmb <- function(times, locs, sf, smesh,
     data <- list(times = times, locs = locs,
                 xyloc = smesh$loc[, 1:2], reltol = reltol, abstol = abstol,
                 spde = spde$param.inla[c("M0", "M1", "M2")], w = w, tmax = tmax,
-                designmat = designmat, tv = innerloc, simple = simple, lmat = lmat)
+                designmat = designmat, tv = innerloc, simple = simple, lmat = lmat,
+                model_type = "spde_hawkes")
     param <- list(coefs = coefs, logit_abratio = logit_abratio, log_beta = log_beta,
                   log_xsigma =  log_xsigma, log_ysigma =  log_ysigma,
                   atanh_rho = atanh_rho, log_kappa = log_kappa, log_tau = log_tau,
                   x = matrix(0, nrow = dim(lmat)[2], ncol = 1))
     obj <- TMB::MakeADFun(data, param, hessian = TRUE, random = c("x"),
-                           DLL = "spde_hawkes", silent = tmb_silent)
+                           DLL = "stelfi", silent = tmb_silent)
     trace <- if(nlminb_silent) 0 else 1
     opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
     obj$objective <- opt$objective
@@ -66,13 +67,14 @@ fit_hspat_tmb <- function(times, locs, sf,
     data <- list(times = times, locs = locs, 
                  xyloc = smesh$loc[,1:2], reltol = reltol, abstol = abstol,
                   w = w, tmax = tmax, designmat = designmat,
-                 tv = innerloc, simple = simple, lmat = lmat)
+                 tv = innerloc, simple = simple, lmat = lmat,
+                 model_type = "spatial_hawkes")
     param <- list(coefs = coefs, logit_abratio = logit_abratio,
                   log_beta = log_beta,
                   log_xsigma =  log_xsigma,
                   log_ysigma =  log_ysigma, atanh_rho = atanh_rho)
     obj <- TMB::MakeADFun(data, param, hessian = TRUE,
-                           DLL = "spatial_hawkes", silent = tmb_silent)
+                           DLL = "stelfi", silent = tmb_silent)
     trace <- if(nlminb_silent) 0 else 1
     opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
     obj$objective <- opt$objective

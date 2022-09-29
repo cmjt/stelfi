@@ -1,17 +1,15 @@
-#include <TMB.hpp>
-
 template<class Type>
-struct diffusionkernel {
+struct diffusionkernel_sp {
   vector<Type> times;              
   matrix<Type> locs;
   Type beta;
   vector<Type> w;
   matrix<Type> xyloc;
   matrix<Type> Qbase;
-  diffusionkernel(vector<Type> times_, matrix<Type> locs_, Type beta_,
-    vector<Type> w_, matrix<Type> xyloc_, matrix<Type> Qbase_)   // Constructor of integrand
-  : times(times_), locs(locs_), beta(beta_), w(w_), xyloc(xyloc_), Qbase(Qbase_) {}       // Initializer list
-  vector<Type> ratesep(Type t){
+  diffusionkernel_sp(vector<Type> times_, matrix<Type> locs_, Type beta_,
+		     vector<Type> w_, matrix<Type> xyloc_, matrix<Type> Qbase_)   // Constructor of integrand
+    : times(times_), locs(locs_), beta(beta_), w(w_), xyloc(xyloc_), Qbase(Qbase_) {}       // Initializer list
+  vector<Type> ratesep_sp(Type t){
     using namespace density;
     using atomic::tiny_ad::isfinite;
     matrix<Type> ans(times.size(), w.size());
@@ -19,17 +17,17 @@ struct diffusionkernel {
     for (int i = 0; i < times.size(); ++i)
       if (t > times[i]){
         matrix<Type> Q = Qbase * (t - times[i]);
-        MVNORM_t<Type> bivnorm(Q);
+        MVNORM_t<Type> bivnorm_sp(Q);
         for (int j = 0; j < w.size(); ++j){
           vector<Type> loci = xyloc.row(j) - locs.row(i);
-          Type temp = exp(-beta * (t - times[i]) - bivnorm(loci));
+          Type temp = exp(-beta * (t - times[i]) - bivnorm_sp(loci));
           if (isfinite(temp)) ans(i, j) += temp;
         }
       }
     return ans * w;
   }
   Type operator()(Type t){  // Evaluate integrand
-    return sum(this->ratesep(t));
+    return sum(this->ratesep_sp(t));
   }
 };
 
@@ -39,7 +37,7 @@ struct diffusionkernel {
 // linear combination of these three points and the weights sum up to 1.
 // This is a simple way to check, and it is not the same as the one in INLA.
 template<class Type>
-int pointinSPbare(vector<Type> loci, matrix<Type> xyloc, matrix<int> tv){
+int pointinSPbare_sp(vector<Type> loci, matrix<Type> xyloc, matrix<int> tv){
   matrix<Type> A(tv.cols(), tv.cols());
   vector<Type> b(loci.size() + 1);
   int ind = -1;
@@ -59,8 +57,8 @@ int pointinSPbare(vector<Type> loci, matrix<Type> xyloc, matrix<int> tv){
 }
 
 template<class Type>
-bool pointinSP(vector<Type> loci, matrix<Type> xyloc, matrix<int> tv){
-  int ind = pointinSPbare(loci, xyloc, tv);
+bool pointinSP_sp(vector<Type> loci, matrix<Type> xyloc, matrix<int> tv){
+  int ind = pointinSPbare_sp(loci, xyloc, tv);
   if (ind >= 0)
     return true;
   else
@@ -70,7 +68,7 @@ bool pointinSP(vector<Type> loci, matrix<Type> xyloc, matrix<int> tv){
 // generate bivariate normal sample with mean loci and covariance matrix sigma.
 // This function uses cholesky decomposition to decompose the covariance matrix.
 template<class Type>
-vector<Type> rbivnorm(vector<Type> loci, matrix<Type> sigma){
+vector<Type> rbivnorm_sp(vector<Type> loci, matrix<Type> sigma){
   vector<Type> ans(2);
   density::MVNORM_t<Type>(sigma).simulate(ans);
   ans += loci;
@@ -82,7 +80,7 @@ vector<Type> rbivnorm(vector<Type> loci, matrix<Type> sigma){
 template<class Type>
 vector<Type> predproj(vector<Type> loci, matrix<Type> xyloc, matrix<int> tv, int & ind){
   using namespace Eigen;
-  // run this after running pointinSPbare.
+  // run this after running pointinSPbare_sp.
   vector<Type> x1 = xyloc.row(tv(ind, 0) - 1), x2 = xyloc.row(tv(ind, 1) - 1), x3 = xyloc.row(tv(ind, 2) - 1);
   vector<Type> ans(3); // temp = (k, b);
   // first index
@@ -96,7 +94,7 @@ vector<Type> predproj(vector<Type> loci, matrix<Type> xyloc, matrix<int> tv, int
 
 // generate sample from non-homogenous poisson plane
 template<class Type>
-vector<Type> rpoisplane(matrix<Type> xyloc, matrix<int> tv, vector<Type> x, vector<Type> w){
+vector<Type> rpoisplane_sp(matrix<Type> xyloc, matrix<int> tv, vector<Type> x, vector<Type> w){
   vector<Type> ans(2);
   Type xmin = xyloc.col(0).minCoeff(), xmax = xyloc.col(0).maxCoeff();
   Type ymin = xyloc.col(1).minCoeff(), ymax = xyloc.col(1).maxCoeff();
@@ -105,7 +103,7 @@ vector<Type> rpoisplane(matrix<Type> xyloc, matrix<int> tv, vector<Type> x, vect
   Type envlp = exp(x.maxCoeff()), u, temp;
   while (!mflag){
     ans[0] = runif(xmin, xmax); ans[1] = runif(ymin, ymax); // generate uniformly over [min(x coord of mesh nodes), max(x coord of mesh nodes)] * [min(y coord of mesh nodes), max(y coord of mesh nodes)]
-    ind = pointinSPbare(ans, xyloc, tv); // check whether the generated point is in the area of interest.
+    ind = pointinSPbare_sp(ans, xyloc, tv); // check whether the generated point is in the area of interest.
     // rejection sampling:
     // The one point generated above is uniform, but in spde case the rate varies (random effect x)
     // use runif(0, exp(max(x))) to perform rejection sampling.
@@ -121,13 +119,16 @@ vector<Type> rpoisplane(matrix<Type> xyloc, matrix<int> tv, vector<Type> x, vect
   return ans;
 }
 
+#ifndef spde_hawkes_hpp
+#define spde_hawkes_hpp
 
+#undef TMB_OBJECTIVE_PTR
+#define TMB_OBJECTIVE_PTR obj
 
 
 template<class Type>
-Type objective_function<Type>::operator() ()
-{
-   using namespace R_inla; // Where Q_spde is defined.
+Type spde_hawkes(objective_function<Type>* obj) {
+  using namespace R_inla; // Where Q_spde is defined.
   using namespace density; // this where the structure for GMRF and AR_t is defined
   using namespace Eigen;  // probably for sparseness class
   // vector of time
@@ -188,19 +189,19 @@ Type objective_function<Type>::operator() ()
   vector<Type> A(times.size());
   A.setZero();
   if (simple == 0){
-  for (int j = 0; j < times.size(); ++j)
-    for (int i = 0; i < j; ++i)
-      if (times[j] - times[i] > 0){
-        Q2 = Qbase * (times[j] - times[i]);
-        loci = locs.row(j) - locs.row(i);
-        A[j] += exp(-beta * (times[j] - times[i]) - MVNORM(Q2)(loci));
-      }
+    for (int j = 0; j < times.size(); ++j)
+      for (int i = 0; i < j; ++i)
+	if (times[j] - times[i] > 0){
+	  Q2 = Qbase * (times[j] - times[i]);
+	  loci = locs.row(j) - locs.row(i);
+	  A[j] += exp(-beta * (times[j] - times[i]) - MVNORM(Q2)(loci));
+	}
   } else {
-    MVNORM_t<Type> bivnorm(Qbase);
+    MVNORM_t<Type> bivnorm_sp(Qbase);
     for (int j = 1; j < times.size(); ++j)
       for (int i = 0; i < j; ++i){
         loci = locs.row(j) - locs.row(i);
-        A[j] += exp(-beta * (times[j] - times[i]) - bivnorm(loci));
+        A[j] += exp(-beta * (times[j] - times[i]) - bivnorm_sp(loci));
       }
   }
   vector<Type> C = log(lmat * L + alpha * A);
@@ -208,19 +209,19 @@ Type objective_function<Type>::operator() ()
 
   // term 3
   if (simple == 0){
-    diffusionkernel<Type> diffker(times, locs, beta, w, xyloc, Qbase);
+    diffusionkernel_sp<Type> diffker(times, locs, beta, w, xyloc, Qbase);
     nll += alpha * romberg::integrate(diffker, Type(0.), tmax);
   } else {
-    MVNORM_t<Type> bivnorm2(Qbase);
+    MVNORM_t<Type> bivnorm_sp2(Qbase);
     vector<Type> marks(times.size());
     matrix<Type> ans(times.size(), w.size());
     for (int j = 0; j < w.size(); ++j)
       for (int k = 0; k < times.size(); ++k){
         vector<Type> loci = xyloc.row(j) - locs.row(k);
-        ans(k, j) = exp(-bivnorm2(loci));
+        ans(k, j) = exp(-bivnorm_sp2(loci));
       }
-      // For the purposes of integrating lambda, can treat like a marked model. 
-      // The mark is the volume of the Gaussian within the domain (0<=V<=1)
+    // For the purposes of integrating lambda, can treat like a marked model. 
+    // The mark is the volume of the Gaussian within the domain (0<=V<=1)
     marks =  ans * w; 
     vector<Type> B = vector<Type>::Zero(times.size());
     
@@ -235,14 +236,14 @@ Type objective_function<Type>::operator() ()
     // This simulation process follows Algorithm 4 in Section 3.3 of Reinhart (2018).
     DATA_IMATRIX(tv);
     /* 
-      Need the triangulation to check whether points generated are in the area of interest.
+       Need the triangulation to check whether points generated are in the area of interest.
 
-      For the points generated by non-homogeneous Poisson intensity, the area is chosen and then,
-      the point is generated by bivariate normal distribution with mean at corresponding mesh point and 
-      very small covariance matrix, see notes on why a random sample is needed.
+       For the points generated by non-homogeneous Poisson intensity, the area is chosen and then,
+       the point is generated by bivariate normal distribution with mean at corresponding mesh point and 
+       very small covariance matrix, see notes on why a random sample is needed.
 
-      Notes: generated points can not be on the mesh point. This will cause issue with evaluating
-      lambda_X(t) in Section 3.3. Basically we need to avoid the density evaluation at the mean.
+       Notes: generated points can not be on the mesh point. This will cause issue with evaluating
+       lambda_X(t) in Section 3.3. Basically we need to avoid the density evaluation at the mean.
     */
 
     locs.setZero();
@@ -257,7 +258,7 @@ Type objective_function<Type>::operator() ()
     // Step 2.
     times[0] = ua;
     // Step 7 for the first time. 
-    loci = rpoisplane(xyloc, tv, x, w);
+    loci = rpoisplane_sp(xyloc, tv, x, w);
     locs.row(0) = loci;
     // Step 10 for the first time.
     // std::cout<<times[i]<<" "<<locs(i, 0)<<" "<<locs(i, 1)<<" "<<gammac<<std::endl;
@@ -271,8 +272,8 @@ Type objective_function<Type>::operator() ()
       sa += ua;
       Ub = runif(Type(0.), Type(1.));
       // Step 5.
-      diffusionkernel<Type> diffker2(times, locs, beta, w, xyloc, Qbase);
-      lambdaXsasep = diffker2.ratesep(sa) * alpha;
+      diffusionkernel_sp<Type> diffker2(times, locs, beta, w, xyloc, Qbase);
+      lambdaXsasep = diffker2.ratesep_sp(sa) * alpha;
       if (Ub > (sum(lambdaXsasep) + D) / gammac){
         gammac = sum(lambdaXsasep) + D;
         continue;
@@ -288,8 +289,8 @@ Type objective_function<Type>::operator() ()
           if (temp > urate) {
             locibase = locs.row(j);
             Q2 = Qbase * (times[i] - times[j]);
-            loci = rbivnorm(locibase, Q2);
-            if (pointinSP(loci, xyloc, tv)){
+            loci = rbivnorm_sp(locibase, Q2);
+            if (pointinSP_sp(loci, xyloc, tv)){
               // Step 10
               locs.row(i) = loci;
               // std::cout<<times[i]<<" "<<locs(i, 0)<<" "<<locs(i, 1)<<" "<<gammac<<std::endl;
@@ -301,7 +302,7 @@ Type objective_function<Type>::operator() ()
         // else Step 9.
       }else{
         // Step 7
-        loci = rpoisplane(xyloc, tv, x, w);
+        loci = rpoisplane_sp(xyloc, tv, x, w);
         locs.row(i) = loci;
         // Step 10.
         // std::cout<<times[i]<<" "<<locs(i, 0)<<" "<<locs(i, 1)<<" "<<gammac<<std::endl;
@@ -327,3 +328,7 @@ Type objective_function<Type>::operator() ()
   ADREPORT(tau);
   return nll;
 }
+#undef TMB_OBJECTIVE_PTR
+#define TMB_OBJECTIVE_PTR this
+
+#endif

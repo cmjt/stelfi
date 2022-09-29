@@ -1,11 +1,13 @@
+#ifndef hawkes_hpp
+#define hawkes_hpp
+
+#undef TMB_OBJECTIVE_PTR
+#define TMB_OBJECTIVE_PTR obj
+
 /* Modified version of estimating Hawkes process */
 /* The simulation code is added on 20/05/2021. */
-#include <TMB.hpp>
-#include <vector>
-#include <iostream>
 template<class Type>
-Type objective_function<Type>::operator() ()
-{
+Type hawkes(objective_function<Type>* obj) {
   using namespace Eigen;
   // vector of time
   DATA_VECTOR(times);
@@ -38,8 +40,8 @@ Type objective_function<Type>::operator() ()
       M = mu + alpha * (-beta * (t + eps - times.array().head(index))).exp().sum();
       t += rexp(Type(1.) / M); U = runif(Type(0.), M); // There is currently a bug as at TMB-1.7.20, 14/05/2021.
       if (U <= mu + alpha * (-beta * (t - times.array().head(index))).exp().sum()){
-        times[index] = t;
-        index++;
+	times[index] = t;
+	index++;
       }
     }
     REPORT(times);
@@ -51,3 +53,7 @@ Type objective_function<Type>::operator() ()
 
   return nll;
 }
+#undef TMB_OBJECTIVE_PTR
+#define TMB_OBJECTIVE_PTR this
+
+#endif

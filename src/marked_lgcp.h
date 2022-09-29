@@ -1,12 +1,14 @@
+#ifndef marked_lgcp_hpp
+#define marked_lgcp_hpp
+
+#undef TMB_OBJECTIVE_PTR
+#define TMB_OBJECTIVE_PTR obj
+
+
 /* By Xiangjie Xue, updated on 01/05/2021. */
 /* Edited by Alec van Helsdingen, last updated 12/05/2022 */
-#include <TMB.hpp>
-#include <numeric>
-#include <iostream>
-
 template<class Type>
-Type objective_function<Type>::operator() ()
-{
+Type marked_lgcp(objective_function<Type>* obj) {
   using namespace R_inla;
   using namespace density; // this where the structure for GMRF is defined
   using namespace Eigen;  // probably for sparseness clacs
@@ -115,12 +117,12 @@ Type objective_function<Type>::operator() ()
       }
       case 2 : {
         // binomial
-        nll -= sum(dbinom_robust(mark, fixedstr, pred, true)); // this function is linking density of binomial to predictor directly.
+        nll -= sum(dbinom_robust(mark, fixedstr, pred, true));
+	// this function is linking density of binomial to predictor directly.
         break;
       }
       case 3 : {
         // gamma.
-        //vector<Type> scale = fixedstr.isNaN().select(vector<Type>::Constant(fixedstr.size(), strparam[i]), fixedstr); // replace NaN with estimates
         vector<Type> scale = fixedstr;
         scale = exp(scale);
         pred = exp(pred) / scale;
@@ -138,3 +140,7 @@ Type objective_function<Type>::operator() ()
   REPORT(x);
   return nll;
 }
+#undef TMB_OBJECTIVE_PTR
+#define TMB_OBJECTIVE_PTR this
+
+#endif
