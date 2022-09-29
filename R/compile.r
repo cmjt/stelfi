@@ -14,4 +14,5 @@
 #' @importFrom methods is
 #' @importFrom Matrix diag sparseMatrix
 #' @importFrom INLA inla.spde.make.A inla.spde2.matern
+#' @useDynLib stelfi
 NULL
