@@ -21,29 +21,22 @@ Authors@R:
     person(given = "Asian Office of Aerospace Research & Development",
            family = "FA2386-21-1-4028",
            role = "fnd"))
-	   
 Depends:
-    R (>= 4.1.0),
-    
+    R (>= 4.1.0)
 Imports:
     TMB (>= 1.7.20),
     INLA,
     sf (>= 1.0.8),
-    Matrix
+    Matrix,
+    ggplot2 (>= 3.3.6),
+    dplyr (>= 1.0.8),
+    gridExtra (>= 2.3),
+    reshape2 (>= 1.4.4),
+    methods
 LinkingTo:
 	TMB,
      	RcppEigen
-Description: Fit Hawkes and log-Gaussian Cox process (LGCP) models with extensions. Introduced in Hawkes (1971)
-	     <DOI:10.2307/2334319> a Hawkes process is a self-exciting temporal point process where the occurrence
-	     of an event immediately increases the chance of another. We extend this to consider self-inhibiting
-	     process and a non-homogeneous background rate. A LGCP is a Cox <DOI:10.1111/j.2517-6161.1955.tb00188.x>
-	     (Poisson) point process where the log-intensity is given by a Gaussian random field. We extend this
-	     to a joint likelihood formulation fitting a marked LGCP. In addition, the package offers functionality
-	     to fit self-exciting spatiotemporal point processes. Models are fitted via maximum likelihood
-	     using 'TMB' (Template Model Builder). Where included 1) random fields are assumed to be
-	     Gaussian and are integrated over using the Laplace approximation and 2) a stochastic partial
-	     differential equation (SPDE) model, introduced by Lindgren et al. (2011)
-	     <DOI:10.1111/j.1467-9868.2011.00777.x>, is defined for the field(s). 
+Description: Fit Hawkes and log-Gaussian Cox process (LGCP) models with extensions. Introduced in Hawkes (1971) <DOI:10.2307/2334319> a Hawkes process is a self-exciting temporal point process where the occurrence of an event immediately increases the chance of another. We extend this to consider self-inhibiting process and a non-homogeneous background rate. A LGCP is a Cox <DOI:10.1111/j.2517-6161.1955.tb00188.x> (Poisson) point process where the log-intensity is given by a Gaussian random field. We extend this  to a joint likelihood formulation fitting a marked LGCP. In addition, the package offers functionality to fit self-exciting spatiotemporal point processes. Models are fitted via maximum likelihood using 'TMB' (Template Model Builder). Where included 1) random fields are assumed to be Gaussian and are integrated over using the Laplace approximation and 2) a stochastic partial differential equation (SPDE) model, introduced by Lindgren et al. (2011) <DOI:10.1111/j.1467-9868.2011.00777.x>, is defined for the field(s). 
 License: GPL (>= 3)
 URL: https://github.com/cmjt/stelfi
 BugReports: https://github.com/cmjt/stelfi/issues
@@ -52,10 +45,6 @@ LazyDataCompression: xz
 Encoding: UTF-8
 RoxygenNote: 7.2.1
 Suggests:
-    ggplot2 (>= 3.3.6),
-    dplyr (>= 1.0.8),
-    gridExtra (>= 2.3),
-    reshape2 (>= 1.4.4),
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
@@ -63,7 +52,6 @@ Suggests:
     parallel,
     spatstat.utils,
     spatstat.geom,
-    rgdal,
-    methods
+    rgdal
 VignetteBuilder: knitr
 Config/testthat/edition: 3

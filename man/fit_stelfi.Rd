@@ -26,7 +26,7 @@ fit_stelfi(
 \item{sf}{An \code{sf} of type \code{POLYGON} specifying the region
 of the domain.}
 
-\item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
+\item{smesh}{A spatial mesh returned by \code{INLA::inla.mesh.2d()}.}
 
 \item{parameters}{A list of named parameters:
 \itemize{

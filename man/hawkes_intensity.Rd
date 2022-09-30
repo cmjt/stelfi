@@ -33,12 +33,11 @@ for the background function \code{background}.
 This could be a list of multiple values.}
 }
 \description{
-`hawkes_intensity()` calculates the Hawkes intensity given a vector
+Calculate the Hawkes intensity given a vector
 of time points and parameter values
 }
 \examples{
-\dontrun{
 times <- sim_hawkes(10.2, 3.1, 8.9, method = "2")
 hawkes_intensity(times = times, 10.2, 3.1, 8.9)
-}
+
 }

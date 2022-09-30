@@ -1,8 +1,8 @@
-#' Simulate a self-exciting Hawkes process.
+#' Simulate a self-exciting Hawkes process
 #'
-#' `sim_hawkes()` simulates a self-exciting Hawkes process. 
+#' Simulates a self-exciting Hawkes process. 
 #' 
-#' @details Option of two methods to simultae a Hawkes process: 
+#' @details Option of two methods to simulate a Hawkes process: 
 #' if \code{method = "1"} then a univariate Hawkes process as 
 #' \code{hawkes::simulateHawkes()} is simulated,
 #' if \code{method = "2"} then algorithm defined in
@@ -22,10 +22,9 @@
 #' @param seed The seed. Default, \code{123}
 #' @param method A character "1" or "2" specifying the method (see details)
 #' to simulate Hawkes process. Default,\code{"1"}.
-#' @examples \dontrun{
+#' @examples 
 #' sim_hawkes(10.2, 3.1, 8.9)
 #' sim_hawkes(10.2, 3.1, 8.9, method = "2")
-#' }
 #' @export
 sim_hawkes <- function(mu, alpha, beta, n = 100, plot = FALSE, 
                        seed = 123, method = "1") {

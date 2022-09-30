@@ -2,32 +2,31 @@
 % Please edit documentation in R/meshmetrics.r
 \name{mesh_2_sf}
 \alias{mesh_2_sf}
-\title{Transform a \code{\link[INLA]{inla.mesh.2d}} into a \code{\link[sf]{sf}}}
+\title{Transform a \code{\link{INLA::inla.mesh.2d}} into a \code{sf} object}
 \source{
-\url{https://groups.google.com/g/r-inla-discussion-group/c/z1n1exlZrKM}
+Modified from \code{sp} based function suggested by Finn in the
+R-inla discussion Google Group
+\url{https://groups.google.com/g/r-inla-discussion-group/c/z1n1exlZrKM}.
 }
 \usage{
 mesh_2_sf(mesh)
 }
 \arguments{
-\item{mesh}{A \code{\link[INLA]{inla.mesh.2d}} object.}
+\item{mesh}{A \code{\link{INLA::inla.mesh.2d()}} object.}
 }
 \value{
-A \code{\link[sf]{sf}}.
+A simple features, \code{sf}, object.
 }
 \description{
-Transform a \code{\link[INLA]{inla.mesh.2d}} into a \code{\link[sf]{sf}}
-}
-\details{
-Modified from \code{sp} based function suggested by Finn in the
-R-inla discussion Google Group
-\url{https://groups.google.com/g/r-inla-discussion-group/c/z1n1exlZrKM}.
+Transform a \code{\link{INLA::inla.mesh.2d}} into a \code{sf} object
 }
 \examples{
-\dontrun{
 data(horse_mesh, package = "stelfi")
 sf <- mesh_2_sf(horse_mesh)
-require(ggplot2)
+if(require("ggplot2")) {
 ggplot(sf) + geom_sf()
 }
+}
+\seealso{
+\code{\link{meshmetrics}}
 }

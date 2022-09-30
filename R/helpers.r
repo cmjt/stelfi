@@ -1,15 +1,15 @@
 #' Hawkes intensity function
 #' 
-#' `hawkes_intensity()` calculates the Hawkes intensity given a vector
+#' Calculate the Hawkes intensity given a vector
 #' of time points and parameter values
 #' 
 #' @inheritParams sim_hawkes
 #' @param p An optional vector of pseudo times at which to calculate the intensity.
 #' @inheritParams fit_hawkes_cbf
-#' @examples \dontrun{
+#' @examples
 #' times <- sim_hawkes(10.2, 3.1, 8.9, method = "2")
 #' hawkes_intensity(times = times, 10.2, 3.1, 8.9)
-#' }
+#' 
 #' @export
 hawkes_intensity <- function(times, mu, alpha, beta,
                             p, marks = rep(1, length(times)), 
@@ -33,10 +33,10 @@ hawkes_intensity <- function(times, mu, alpha, beta,
 }
 #' Extract reported parameter estimates
 #'
-#' `get_coefs()` returns the parameter estimates for the fitted model.
+#' Return parameter estimates from a fitted model.
 #' 
 #' @param obj A fitted model object.
-#' @examples \dontrun{
+#' @examples \donttest{
 #' ## Hawkes
 #' data(retweets_niwa, package = "stelfi")
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
@@ -68,7 +68,7 @@ get_coefs <- function(obj) {
 
 #' Estimated random field(s)
 #' 
-#' `get_fields()` extracts the estimated mean, or standard deviation, of the 
+#' Extract the estimated mean, or standard deviation, of the 
 #' values of the Gaussian Markov random field for a fitted log-Gaussian
 #' Cox process model at each node of \code{smesh}.
 #'
@@ -79,7 +79,7 @@ get_coefs <- function(obj) {
 #' @param sd Logical, if \code{TRUE} then standard errors returned.
 #' Default \code{FALSE}.
 #' @inheritParams fit_lgcp
-#' @examples \dontrun{
+#' @examples \donttest{
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
 #' locs <- data.frame(x = xyt$x, y = xyt$y)
@@ -109,24 +109,19 @@ get_fields <- function(obj, smesh, tmesh, plot = FALSE, sd = FALSE) {
 }    
 #' Mesh weights
 #' 
-#' `get_weights()` calculates the  areas (weights) around the mesh nodes that 
-#' are within the specified spatial polygon \code{sf}. Calls the internal 
-#' \code{\link{dual_mesh}} function.
+#' Calculate the  areas (weights) around the mesh nodes that 
+#' are within the specified spatial polygon \code{sf}.
 #'
-#' @param mesh A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}} or
-#' \code{\link[INLA]{inla.mesh}}.
+#' @param mesh A spatial mesh of class \code{INLA::inla.mesh.2d()} or
+#' \code{INLA::inla.mesh()}.
 #' @param sf An \code{sf} of type \code{POLYGON} specifying the region
 #' of the domain.
 #' @param plot Logical, whether to plot the calculated \code{mesh} weights. 
 #' Default, \code{FALSE}.
-#' @examples \dontrun{
+#' @examples 
 #' data(horse_mesh, package = "stelfi")
-#' url_start <- "https://gist.githubusercontent.com/cmjt/9a5e43cce69a3babb129b0a448e65752/raw"
-#' url_end <- "/8653d11cb6ace667a3f5683982ae82366a3ac5d2/horse.csv"
-#' horse <- read.csv(paste(url_start, url_end, sep = ""))
-#' sf <- sf::st_sfc(sf::st_polygon(list(as.matrix(rbind(horse, head(horse, 1))))))
-#' get_weights(horse_mesh, sf, plot = TRUE)
-#' }
+#' data(horse_sf, package = "stelfi")
+#' get_weights(horse_mesh, horse_sf, plot = TRUE)
 #' @seealso \url{https://becarioprecario.bitbucket.io/spde-gitbook/}.
 #' @export
 get_weights <- function(mesh, sf, plot = FALSE) {
@@ -164,6 +159,7 @@ get_weights <- function(mesh, sf, plot = FALSE) {
 #' @param xy A data frame of locations.
 #' @param dmesh An object returned by \code{\link{dual_mesh}}.
 #' @param weights A vector of weights/covariates for each point.
+#' @noRd
 points_in_mesh <- function(xy, dmesh, weights) {
   xy <- sf::st_as_sf(xy, coords = c("x", "y"))
   xy <- sf::st_geometry(xy)
@@ -186,13 +182,13 @@ points_in_mesh <- function(xy, dmesh, weights) {
     return(result)
   }
 }
-#' Internal function to construct the `dual` mesh
+#' Internal function to construct the dual mesh
 #'
 #' @param mesh A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.
 #' @return An \code{sf} object of the Voronoi tessellation
 #' centered at each \code{mesh} node.
-#' @seealso \url{http://www.r-inla.org/spde-book} and \url{https://becarioprecario.bitbucket.io/spde-gitbook/}
-#' @source \url{http://www.r-inla.org/spde-book}
+#' @source \url{http://www.r-inla.org/spde-book},  \url{https://becarioprecario.bitbucket.io/spde-gitbook/}
+#' @noRd
 dual_mesh <- function(mesh) {
     if (mesh$manifold == 'R2') {
         ce <- t(sapply(1:nrow(mesh$graph$tv), function(i)

@@ -9,9 +9,9 @@ get_fields(obj, smesh, tmesh, plot = FALSE, sd = FALSE)
 \arguments{
 \item{obj}{A fitted model object returned by \code{\link{fit_lgcp}}.}
 
-\item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
+\item{smesh}{A spatial mesh returned by \code{INLA::inla.mesh.2d()}.}
 
-\item{tmesh}{Optional, a temporal mesh of class \code{\link[INLA]{inla.mesh.1d}}.}
+\item{tmesh}{Optional, a temporal mesh returned by \code{\INLA::inla.mesh.1d()}.}
 
 \item{plot}{Logical, if \code{TRUE} then the returned values are plotted.
 Default \code{FALSE}.}
@@ -20,12 +20,12 @@ Default \code{FALSE}.}
 Default \code{FALSE}.}
 }
 \description{
-`get_fields()` extracts the estimated mean, or standard deviation, of the 
+Extract the estimated mean, or standard deviation, of the 
 values of the Gaussian Markov random field for a fitted log-Gaussian
 Cox process model at each node of \code{smesh}.
 }
 \examples{
-\dontrun{
+\donttest{
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
 locs <- data.frame(x = xyt$x, y = xyt$y)

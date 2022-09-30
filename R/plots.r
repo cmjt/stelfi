@@ -1,6 +1,6 @@
 #' Plot Hawkes intensity
 #'
-#' `show_hawkes()` plots a Hawkes intensity function, options to extend to 
+#' Plots a Hawkes intensity function, options to extend to 
 #' non-homogeneous background intensity.
 #' 
 #' @param obj Either object returned by \code{fit_hawkes()}/\code{fit_hawkes_cbf()} 
@@ -10,8 +10,7 @@
 #' and \code{beta} (exponential intensity decay). In addition, should contain 
 #' either \code{mu} (base rate of the Hawkes process) or \code{background_parameters}
 #' (parameter(s) for the assumed non-homogeneous background function;
-#' could be a list of multiple values). 
-#' May also contain \code{marks} (a vector of numerical marks).
+#' could be a list of multiple values). May also contain \code{marks} (a vector of numerical marks).
 #' 
 #' @seealso [hawkes_intensity()] [fit_hawkes_cbf()]
 #' @examples \dontrun{
@@ -75,16 +74,15 @@ show_hawkes <-  function(obj) {
         ggplot2::xlab("times") +  ggplot2::ylab("Number of events")
     gridExtra::grid.arrange(line, hist, ncol = 1)
 }
-#' Plot the compensator and other goodness-of-fit metrics for a Hawkes process
+#' Compensator and other goodness-of-fit metrics for a Hawkes process
 #'
-#' `show_hawkes_GOF` plots a number of goodness-of-fit plots for a fitted
+#' Plots a number of goodness-of-fit plots for a fitted
 #' Hawkes process. Includes 1) a comparison of the  compensator and observed 
 #' events, 2) a histogram of transformed interarrival times, 3) a Q-Q plot of 
 #' transformed interarrival times, and 4) the CDF of consecutive interarrival 
 #' times, In addition, results of a Kolmogorov-Smirnov and
 #' Ljung-Box hypothesis test for the interarrival times are printed.
 #' 
-#' @inheritParams show_hawkes
 #' @param plot Logical, whether to plot  goodness-of-fit plots. Default \code{TRUE}.
 #' @param return_values Logical, whether to return GOF values. Default \code{FALSE}.
 #' @examples \dontrun{
@@ -97,6 +95,7 @@ show_hawkes <-  function(obj) {
 #' show_hawkes_GOF(fit)
 #' }
 #' @export
+#' @rdname show_hawkes
 show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
     if (!"times" %in% names(obj)) {
         times <- obj$env$data$times
@@ -197,7 +196,7 @@ show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
 }
 #' Plot the estimated random field(s) of a fitted LGCP
 #'
-#' `show_field()` plots the values of \code{x} at each node of \code{smesh}, with
+#' Plots the values of \code{x} at each node of \code{smesh}, with
 #' optional control over resolutions using \code{dims}.
 #' 
 #' @param x A vector of values for each \code{smesh} node.
@@ -241,7 +240,7 @@ show_field <- function(x, smesh, sf, dims = c(500,500)) {
 }
 #' Plot the estimated intensity from a fitted LGCP model
 #'
-#' `show_lambda()` plots the estimated spatial intensity from
+#' Plots the estimated spatial intensity from
 #' a fitted log-Gaussian Cox process model. If \code{obj} is a
 #' spatiotemporal model then \code{timestamp} provides control
 #' over which temporal index to plot the estimated spatial intensity.

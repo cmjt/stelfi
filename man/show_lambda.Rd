@@ -17,15 +17,14 @@ show_lambda(
 \arguments{
 \item{obj}{A fitted LGCP model object for, for example, \code{fit_lgcp()}.}
 
-\item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
+\item{smesh}{A spatial mesh returned by \code{INLA::inla.mesh.2d()}.}
 
 \item{sf}{An \code{sf} of type \code{POLYGON} specifying the region
 of the domain.}
 
-\item{tmesh}{Optional, a temporal mesh of class \code{\link[INLA]{inla.mesh.1d}}.}
+\item{tmesh}{Optional, a temporal mesh returned by \code{\INLA::inla.mesh.1d()}.}
 
-\item{covariates}{Optional, a \code{matrix} of covariates at each
-\code{smesh} and \code{tmesh} node combination.}
+\item{covariates}{Covariate(s) corresponding to each area in the spatial mesh}
 
 \item{dims}{A numeric vector of length 2 specifying
 the spatial pixel resolution. Default \code{c(500,500)}.}
@@ -33,7 +32,7 @@ the spatial pixel resolution. Default \code{c(500,500)}.}
 \item{timestamp}{The index of time stamp to plot. Default \code{1}.}
 }
 \description{
-`show_lambda()` plots the estimated spatial intensity from
+Plots the estimated spatial intensity from
 a fitted log-Gaussian Cox process model. If \code{obj} is a
 spatiotemporal model then \code{timestamp} provides control
 over which temporal index to plot the estimated spatial intensity.

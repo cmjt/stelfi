@@ -1,6 +1,6 @@
 #' Self-exciting Hawkes process
 #'
-#' `fit_hawkes()` fits a self-exciting Hawkes process using \code{TMB}.
+#' \code{fit_hawkes()} fits a self-exciting Hawkes process using \code{TMB}.
 #' 
 #' @param times A vector of numeric observed time points.
 #' @param parameters A named list of named parameters for the chosen model:
@@ -22,23 +22,26 @@
 #' @param optim_silent Logical, default `TRUE`:
 #' print function and parameters every iteration.
 #' @param ... arguments to pass into \code{optim()}
-#' @examples{
-#' \dontrun{
-#' ## simple Hawkes model
+#' @examples
+#' \donttest{
+#' ### ********************** ###
+#' ## A typical Hawkes model
+#' ### ********************** ###
 #' data(retweets_niwa, package = "stelfi")
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa), units = "mins"))))
 #' params <- c(mu = 9, alpha = 3, beta = 10)
 #' fit_hawkes(times = times, parameters = params)
-#' ## A model with marks (ETAS-type)
-#' data("earthquakes", package = "stelfi")
-#' earthquakes <- earthquakes[order(earthquakes$origintime),]
+#' ### ********************** ###
+#' ## A Hawkes model with marks (ETAS-type)
+#' ### ********************** ###
+#' data("nz_earthquakes", package = "stelfi")
+#' earthquakes <- earthquakes[order(nz_earthquakes$origintime),]
 #' earthquakes <- earthquakes[!duplicated(earthquakes$origintime), ]
 #' times <- earthquakes$origintime
 #' times <- as.numeric(difftime(times, min(times), units = "mins"))
 #' marks <- earthquakes$magnitude
 #' params <- c(mu = 3, alpha = 0.05, beta = 1)
 #' fit_hawkes(times = times, parameters = params, marks = marks)
-#' }
 #' }
 #' @export
 fit_hawkes <-  function(times, parameters = list(), model = 1,
@@ -97,13 +100,12 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
 
 #' Self-exciting Hawkes process with a given custom background function
 #'
-#' `fit_hawkes_cbf()` fits a self-exciting Hawkes processes
-#' with a given custom background function using `TMB`.
+#' \code{fit_hawkes_cbf()} fits a self-exciting Hawkes processes
+#' with a given custom background function using \code{TMB}.
 #' The \code{alpha} (\code{model} = 1) or \code{a_par} (\code{model} = 2)
-#' and \code{beta} parameters are estimated using `TMB`;
-#' parameters of the custom background function are optimized in `R`.
+#' and \code{beta} parameters are estimated using \code{TMB};
+#' parameters of the custom background function are optimized in \code{R}.
 #' 
-#' @inheritParams fit_hawkes
 #' @param model A numeric indicator specifying which model to fit:
 #' \itemize{
 #' \item \code{1}, a Hawkes process with exponential decay and 
@@ -119,9 +121,12 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
 #' This could be a list of multiple values.
 #' @param background_min A function taking one parameter and two points,
 #' returns min of \code{background} between those points.
-#' @examples{
-#' \dontrun{
-#' require(hawkesbow)
+#' @examples
+#' \donttest{
+#' ### ********************** ###
+#' ## A Hawkes process with a custom background function
+#' ### ********************** ###
+#' if(require("hawkesbow")) {
 #' times <- hawkes(1000, fun = function(y) {1 + 0.5*sin(y)},
 #' M = 1.5, repr = 0.5, family = "exp", rate = 2)$p
 #' ## The background function must take a single parameter and
@@ -147,6 +152,7 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
 #' }
 #' }
 #' @export
+#' @rdname fit_hawkes
 fit_hawkes_cbf <- function(times, parameters = list(),
                            model = 1,
                            marks = c(rep(1, length(times))),

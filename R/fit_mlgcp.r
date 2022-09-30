@@ -1,25 +1,11 @@
 #' Fit a marked spatial log-Gaussian Cox process m(LGCP)
 #'
-#' \code{fit_mlgcp_tmb} fits a marked LGCP using \code{TMB} and the
+#' Fit a marked LGCP using \code{TMB} and the
 #' \code{R_inla} namespace for the spde construction of the latent field.
-#' For a simpler wrapper use \code{\link{fit_mlgcp}} as this is an internal function.
+#' 
 #' 
 #' @param ypp  The vector of observations.
-#' @param marks  A matrix of marks for each observation of the point pattern
 #' @param lmat A sparse matrix mapping mesh points to the observations
-#' @param strfixed A matrix of fixed structural parameters, defined for each event and mark.
-#' Defaults to 1s.
-#' Normal distribution: this is the log of standard deviation.
-#' Poisson distribution: not used
-#' Binomial distribution, this is the number of trials.
-#' Gamma distribution, this is the log of the scale.
-#' @param methods An integer value:
-#' \itemize{
-#' \item \code{0} (default), Gaussian distribution, parameter estimated is mean;
-#' \item \code{1}, Poisson distribution, parameter estimated is intensity;
-#' \item \code{2}, binomial distribution, parameter estimated is logit/probability;
-#' \item \code{3}, gamma distribution, the implementation in TMB is shape-scale.
-#' }
 #' @param betamarks Numeric starting values of the intercept term and
 #' covariate coefficients of each mark.
 #' @param betapp Numeric starting value of the  intercept of point process.
@@ -38,9 +24,8 @@
 #' @param designmatpp Design matrix for point process. The first column is ones.
 #' If there are covariates, then the covariates are in the subsequent columns.
 #' @param designmatmarks The design matrix for the marks.
-#' @param fields A binary vector indicating whether there is a new random
-#' field for each mark. By default, each mark has its own random field.
 #' @inheritParams fit_lgcp_tmb
+#' @noRd
 fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
                           betamarks, betapp, marks_coefs_pp, log_kappa, log_tau,
                           cov_overlap, designmatpp, designmatmarks, fields,
@@ -64,30 +49,48 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 }
 #' Marked spatial log-Gaussian Cox process m(LGCP)
 #'
-#' `fit_mlgcp_tmb()` fits a marked LGCP using \code{TMB} and the
+#' Fit a marked LGCP using \code{TMB} and the
 #' \code{R_inla} namespace for the spde construction of the latent field.
-#' A simple to use wrapper for \code{\link{fit_mlgcp_tmb}}.
+#' 
 #' 
 #' @param locs A \code{data.frame} of \code{x} and \code{y} locations, 2xn.
 #' @inheritParams fit_lgcp
-#' @inheritParams fit_mlgcp_tmb
+#' @param marks  A matrix of marks for each observation of the point pattern.
 #' @param parameters a list of named parameters:
 #' log_tau, log_kappa, betamarks, betapp, marks_coefs_pp.
-#' See \code{\link{fit_mlgcp_tmb}} for further details.
+#'  @param methods An integer value:
+#' \itemize{
+#' \item \code{0} (default), Gaussian distribution, parameter estimated is mean;
+#' \item \code{1}, Poisson distribution, parameter estimated is intensity;
+#' \item \code{2}, binomial distribution, parameter estimated is logit/probability;
+#' \item \code{3}, gamma distribution, the implementation in TMB is shape-scale.
+#' }
+#' @param strfixed A matrix of fixed structural parameters, defined for each event and mark.
+#' Defaults to \code{1}. If mark distribution
+#' \itemize{
+#' \item Normal, then this is the log of standard deviation;
+#' \item Poisson, then not used;
+#' \item Binomial, then this is the number of trials;
+#' \item Gamma, then this is the log of the scale.
+#' }
+#' @param fields A binary vector indicating whether there is a new random
+#' field for each mark. By default, each mark has its own random field.
 #' @param covariates Covariate(s) corresponding to each area in the spatial mesh
 #' @param pp_covariates Which columns of the covariates apply to the point process
 #' @param marks_covariates Which columns of the covariates apply to the marks.
 #' By default, all covariates apply to the marks only.
-#' @inheritParams fit_lgcp_tmb
-#' @examples{
-#' \dontrun{
+#' @examples
+#' \donttest{
+#' ### ********************** ###
+#' ## A joint likelihood marked LGCP model
+#' ### ********************** ###
 #' data(marked, package = "stelfi")
 #' loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
 #' domain <- sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(loc.d))))
 #' smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1),
 #' max.edge = c(0.3, 0.7), cutoff = 0.05)
 #' locs <- cbind(x = marked$x, y = marked$y)
-#' marks <- cbind(m1 = marked$m1) ## Gaussian
+#' marks <- cbind(m1 = marked$m1) ## Gaussian mark
 #' parameters <- list(betamarks = matrix(0, nrow = 1, ncol = ncol(marks)),
 #' log_tau = rep(log(1), 2), log_kappa = rep(log(1), 2),
 #' marks_coefs_pp = rep(0, ncol(marks)), betapp = 0)
@@ -95,9 +98,9 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' sf = domain, smesh = smesh,
 #' parameters = parameters, methods = 0,fields = 1)
 #' }
-#' }
 #' @export
-fit_mlgcp <-  function(locs, sf, marks, smesh, parameters=list(), methods,
+#' @rdname fit_lgcp
+fit_mlgcp <-  function(locs, sf, marks, smesh, parameters = list(), methods,
                        strfixed = matrix(1, nrow = nrow(locs), ncol = ncol(marks)),
                        fields = rep(1, ncol(marks)),
                        covariates, pp_covariates, marks_covariates,

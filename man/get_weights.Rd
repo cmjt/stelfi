@@ -7,8 +7,8 @@
 get_weights(mesh, sf, plot = FALSE)
 }
 \arguments{
-\item{mesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}} or
-\code{\link[INLA]{inla.mesh}}.}
+\item{mesh}{A spatial mesh of class \code{INLA::inla.mesh.2d()} or
+\code{INLA::inla.mesh()}.}
 
 \item{sf}{An \code{sf} of type \code{POLYGON} specifying the region
 of the domain.}
@@ -17,19 +17,13 @@ of the domain.}
 Default, \code{FALSE}.}
 }
 \description{
-`get_weights()` calculates the  areas (weights) around the mesh nodes that 
-are within the specified spatial polygon \code{sf}. Calls the internal 
-\code{\link{dual_mesh}} function.
+Calculate the  areas (weights) around the mesh nodes that 
+are within the specified spatial polygon \code{sf}.
 }
 \examples{
-\dontrun{
 data(horse_mesh, package = "stelfi")
-url_start <- "https://gist.githubusercontent.com/cmjt/9a5e43cce69a3babb129b0a448e65752/raw"
-url_end <- "/8653d11cb6ace667a3f5683982ae82366a3ac5d2/horse.csv"
-horse <- read.csv(paste(url_start, url_end, sep = ""))
-sf <- sf::st_sfc(sf::st_polygon(list(as.matrix(rbind(horse, head(horse, 1))))))
-get_weights(horse_mesh, sf, plot = TRUE)
-}
+data(horse_sf, package = "stelfi")
+get_weights(horse_mesh, horse_sf, plot = TRUE)
 }
 \seealso{
 \url{https://becarioprecario.bitbucket.io/spde-gitbook/}.

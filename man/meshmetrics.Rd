@@ -2,42 +2,48 @@
 % Please edit documentation in R/meshmetrics.r
 \name{meshmetrics}
 \alias{meshmetrics}
-\title{Calculate a number of different \code{\link[INLA]{inla.mesh.2d}} attributes}
+\title{Calculate a number of different  \code{\link{INLA::inla.mesh.2d()}} geometric attributes}
 \usage{
 meshmetrics(mesh)
 }
 \arguments{
-\item{mesh}{A \code{\link[INLA]{inla.mesh.2d}} object.}
+\item{mesh}{A \code{\link{INLA::inla.mesh.2d()}} object.}
 }
 \value{
-An object of class \code{sf} with the following data:
+An object of class \code{sf} with the following data for each triangle in the
+triangulation
 \itemize{
-\item \code{V1}, \code{V2}, and \code{V3} corresponding vertecies
-of \code{mesh} matches \code{mesh$graph$tv}.
-\item \code{ID} numeric triangle id
-\item \code{angleA}, \code{angleB}, and \code{angleC} the
-interior angles of the triangles
-\item circumcircle radius \code{circumcircle_R},
-\item incircle radius \code{incircle_r}),
-\item the assocoated centroid locations (\code{c_Ox, cOy}
-and \code{i_Ox, iOy}),
-\item the radius-edge ratio \code{radius_edge}, and
-\item the radius ratio \code{radius_ratio}
-\item \code{area} triangle area
-\item \code{quality} a measure of triangle "quality" defined as
+\item \code{V1}, \code{V2}, and \code{V3} corresponding vertices
+of \code{mesh} matches \code{mesh$graph$tv};
+\item \code{ID}, numeric triangle id;
+\item \code{angleA}, \code{angleB}, and \code{angleC}, the
+interior angles;
+\item circumcircle radius, circumradius, \code{circumcircle_R} (\eqn{R});
+\item incircle radius \code{incircle_r} (\eqn{r});
+\item centroid locations of the circumcircle, circumcenter, (\code{c_Ox, cOy});
+\item centroid locations of the incircle, incenter, (\code{i_Ox, iOy});
+\item the radius-edge ratio \code{radius_edge} \eqn{\frac{R}{l_{min}}},
+where \eqn{l_{min}} is the minimum edge length;
+\item the radius ratio \code{radius_ratio} \eqn{\frac{r}{R}};
+\item \code{area}, area (\eqn{A});
+\item \code{quality} a measure of "quality" defined as
 \eqn{\frac{4\sqrt{3}|A|}{\Sigma_{i = 1}^3 L_i^2}},
-where A is the area and L_i is edge length.
+where \eqn{L_i} is the length of edge \eqn{i}.
 }
 }
 \description{
-`meshmetrics()` calculates a number of geometric attributes for a given
-Delaunay triangulation.
+Calculates a number of geometric attributes for a given
+Delaunay triangulation based on the circumscribed and inscribed circle of each triangle.
+}
+\details{
+A triangle's circumcircle (circumscribed circle) is the unique circle that passes
+through each of its three vertices. A triangle's incircle (inscribed circle) is the
+largest circle that can be contained within it (i.e., touches it's three edges).
 }
 \examples{
-\dontrun{
 data(horse_mesh, package = "stelfi")
 metrics <- meshmetrics(horse_mesh)
-require(ggplot2)
+if(require("ggplot2")) {
 ggplot(metrics) + geom_sf(aes(fill = radius_ratio))
 }
 }

@@ -17,6 +17,7 @@
 #' @inheritParams fit_hawkes
 #' @inheritParams fit_lgcp
 #' @inheritParams fit_lgcp_tmb
+#' @noRd
 fit_hspde_tmb <- function(times, locs, sf, smesh,
                           coefs, designmat, logit_abratio = 0, log_beta = 0,
                           log_kappa = 0, log_tau = 0, log_xsigma = 0,
@@ -50,6 +51,7 @@ fit_hspde_tmb <- function(times, locs, sf, smesh,
 }
 #' Function to fit a spatial Hawkes process using \code{TMB}
 #' @inheritParams fit_hspde_tmb
+#' @noRd
 fit_hspat_tmb <- function(times, locs, sf,
                           smesh, coefs, designmat, logit_abratio = 0, log_beta = 0,
                           log_xsigma = 0, log_ysigma = 0, atanh_rho = 0, w,

@@ -2,9 +2,12 @@
 % Please edit documentation in R/plots.r
 \name{show_hawkes}
 \alias{show_hawkes}
+\alias{show_hawkes_GOF}
 \title{Plot Hawkes intensity}
 \usage{
 show_hawkes(obj)
+
+show_hawkes_GOF(obj, plot = TRUE, return_values = FALSE)
 }
 \arguments{
 \item{obj}{Either object returned by \code{fit_hawkes()}/\code{fit_hawkes_cbf()} 
@@ -14,12 +17,22 @@ then \code{times} should be a numeric vector of observed time points, and
 and \code{beta} (exponential intensity decay). In addition, should contain 
 either \code{mu} (base rate of the Hawkes process) or \code{background_parameters}
 (parameter(s) for the assumed non-homogeneous background function;
-could be a list of multiple values). 
-May also contain \code{marks} (a vector of numerical marks).}
+could be a list of multiple values). May also contain \code{marks} (a vector of numerical marks).}
+
+\item{plot}{Logical, whether to plot  goodness-of-fit plots. Default \code{TRUE}.}
+
+\item{return_values}{Logical, whether to return GOF values. Default \code{FALSE}.}
 }
 \description{
-`show_hawkes()` plots a Hawkes intensity function, options to extend to 
+Plots a Hawkes intensity function, options to extend to 
 non-homogeneous background intensity.
+
+Plots a number of goodness-of-fit plots for a fitted
+Hawkes process. Includes 1) a comparison of the  compensator and observed 
+events, 2) a histogram of transformed interarrival times, 3) a Q-Q plot of 
+transformed interarrival times, and 4) the CDF of consecutive interarrival 
+times, In addition, results of a Kolmogorov-Smirnov and
+Ljung-Box hypothesis test for the interarrival times are printed.
 }
 \examples{
 \dontrun{
@@ -30,6 +43,15 @@ show_hawkes(list(times = times, params = params))
 ## must have compiled TMB templates first use compile_stelfi()
 fit <- fit_hawkes(times = times, parameters = params)
 show_hawkes(fit)
+}
+\dontrun{
+data(retweets_niwa, package = "stelfi")
+times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
+params <- c(mu = 9, alpha = 3, beta = 10)
+show_hawkes_GOF(list(times = times, params = params))
+## must have compiled TMB templates first use compile_stelfi()
+fit <- fit_hawkes(times = times, parameters = params)
+show_hawkes_GOF(fit)
 }
 }
 \seealso{

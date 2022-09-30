@@ -2,7 +2,7 @@
 % Please edit documentation in R/sim_hawkes.r
 \name{sim_hawkes}
 \alias{sim_hawkes}
-\title{Simulate a self-exciting Hawkes process.}
+\title{Simulate a self-exciting Hawkes process}
 \usage{
 sim_hawkes(mu, alpha, beta, n = 100, plot = FALSE, seed = 123, method = "1")
 }
@@ -28,10 +28,10 @@ Default, \code{FALSE}.}
 to simulate Hawkes process. Default,\code{"1"}.}
 }
 \description{
-`sim_hawkes()` simulates a self-exciting Hawkes process.
+Simulates a self-exciting Hawkes process.
 }
 \details{
-Option of two methods to simultae a Hawkes process: 
+Option of two methods to simulate a Hawkes process: 
 if \code{method = "1"} then a univariate Hawkes process as 
 \code{hawkes::simulateHawkes()} is simulated,
 if \code{method = "2"} then algorithm defined in
@@ -39,8 +39,6 @@ if \code{method = "2"} then algorithm defined in
 is used.
 }
 \examples{
-\dontrun{
 sim_hawkes(10.2, 3.1, 8.9)
 sim_hawkes(10.2, 3.1, 8.9, method = "2")
-}
 }
