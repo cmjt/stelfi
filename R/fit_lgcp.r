@@ -3,6 +3,7 @@
 #' \code{fit_lgcp_tmb} fits a LGCP using \code{TMB} and the
 #' \code{R_inla} namespace for the spde construction of the latent field. For
 #' a simpler wrapper use \code{\link{fit_lgcp}} as this is an internal function.
+#' 
 #' @param y The vector of observations.
 #' For spatial only, this is the vector of counts.
 #' For spatial + AR1 temporal, this vector needs to be
@@ -19,10 +20,10 @@
 #' y_{n * t_n}  \tab     t_n \cr
 #' }
 #' @param A The predictor matrix A, obtained from
-#' \code{\link[INLA]{inla.spde.make.A}}.
+#' \code{INLA::inla.spde.make.A()}.
 #' @param designmat The design matrix for the fixed effects.
 #' @param spde The structure of SPDE object as defined in
-#' \code{\link[INLA]{inla.spde2.matern}}.
+#' \code{INLA::inla.spde2.matern()}.
 #' The minimal required components are \code{M0}, \code{M1}, \code{M2}.
 #' @param w A vector of model weights; corresponds to the \code{E} term for
 #' poisson models, see \code{INLA::inla.doc("poisson")} for more detail.
@@ -48,6 +49,7 @@
 #' @param atanh_rho optional, \code{arctan(rho)} AR1 parameter.
 #' @param simulation \code{logical}, simulate data, default \code{FALSE}.
 #' @inheritParams fit_lgcp
+#' @noRd
 fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
                           log_tau, log_kappa,
                           atanh_rho, x, tmb_silent,
@@ -78,16 +80,15 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 }
 #' Spatial or spatiotemporal log-Gaussian Cox process (LGCP)
 #'
-#' `fit_lgcp()` fits a LGCP using \code{TMB} and the
-#' \code{R_inla} namespace for the spde construction of the latent field. Ths is
-#' the user friendly wrapper for the internal function \code{\link{fit_lgcp_tmb}}.
+#' Fit a LGCP using \code{TMB} and the
+#' \code{R_inla} namespace for the spde construction of the latent field. 
 #' 
 #' @param sf An \code{sf} of type \code{POLYGON} specifying the region
 #' of the domain.
 #' @param locs A \code{data.frame} of \code{x} and \code{y} locations, 2xn. If locations have
 #' time stamps then this should be the third column of the supplied 3xn matrix.
-#' @param smesh A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.
-#' @param tmesh Optional, a temporal mesh of class \code{\link[INLA]{inla.mesh.1d}}.
+#' @param smesh A spatial mesh returned by \code{INLA::inla.mesh.2d()}.
+#' @param tmesh Optional, a temporal mesh returned by \code{\INLA::inla.mesh.1d()}.
 #' @param parameters A named list of parameters:
 #' \code{beta}, a vector of fixed effects coefficients to be estimated
 #' (same length as \code{ncol(covariates)} + 1 );
@@ -101,10 +102,12 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' TMB inner optimization tracing information will be printed.
 #' @param nlminb_silent Logical, default \code{TRUE}:
 #' print function and parameters every iteration.
-#' @param ... optional extra arguments to pass into \code{\link[stats]{nlminb}}.
+#' @param ... optional extra arguments to pass into \code{stats::nlminb()}.
 #' 
-#' @examples \dontrun{
-#' ## spatial only
+#' @examples \donttest{
+#' ### ********************** ###
+#' ## A spatial only LGCP
+#' ### ********************** ###
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
 #' locs <- data.frame(x = xyt$x, y = xyt$y)
@@ -113,14 +116,15 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' max.edge = 0.75, cutoff = 0.3)
 #' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 #' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
-#' ## spatiotemporal
+#' ### ********************** ###
+#' ## A spatiotemporal LGCP, AR(1)
+#' ### ********************** ###
 #' ndays <- 2
 #' locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
 #' w0 <- 2
 #' tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
 #' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh, tmesh = tmesh,
 #'  parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2))
-#' 
 #' }
 #' @export
 fit_lgcp <-  function(locs, sf, smesh, tmesh, parameters = list(), covariates,
@@ -206,8 +210,9 @@ fit_lgcp <-  function(locs, sf, smesh, tmesh, parameters = list(), covariates,
 
 }
 
-#' Internal function to prep data as per \code{link{INLA}} stack
+#' Internal function to prep data as \code{INLA::stack}
 #' @inheritParams fit_lgcp
+#' @noRd
 prep_data_lgcp <- function(locs, sf, smesh, tmesh) {
     ## E
     w <- get_weights(mesh = smesh, sf = sf, plot = FALSE)
@@ -242,17 +247,17 @@ prep_data_lgcp <- function(locs, sf, smesh, tmesh) {
     return(lst)
 }
 #' Simulate a log-Gaussian Cox process (LGCP)
-                                        #' 
-#' \code{simulate_lgcp} simulates a LGCP using the \code{TMB} \code{C++}
-#' template. If \code{rho} is supplied in \code{parameters}
+#' 
+#' \code{simulate_lgcp} simulates a log-Gaussian Cox process (LGCP) using the
+#' \code{TMB} \code{C++} template. If \code{rho} is supplied in \code{parameters}
 #' as well as \code{tmesh} then times knots will also be returned.
-#' @inheritParams fit_lgcp
+#' 
 #' @param all Logical, if \code{TRUE} then all model components are returned.
 #' @return A named list. If \code{all = FALSE} then only the simulated values of
 #' the GMRF at each mesh node are returned, \code{x}, alongside the number of
 #' events, \code{y}, simulated at each node.
 #'
-#' @examples \dontrun{
+#' @examples \donttest{
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
 #' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
@@ -260,8 +265,7 @@ prep_data_lgcp <- function(locs, sf, smesh, tmesh) {
 #' max.edge = 0.75, cutoff = 0.3)
 #' parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
 #' simulate_lgcp(parameters = parameters, sf = domain, smesh = smesh)
-#' }
-#' \dontrun{
+#' ## spatiotemporal
 #' ndays <- 2
 #' w0 <- 2
 #' tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
@@ -269,6 +273,7 @@ prep_data_lgcp <- function(locs, sf, smesh, tmesh) {
 #' simulate_lgcp(parameters = parameters, sf = domain, smesh = smesh, tmesh = tmesh)
 #' }
 #' @export
+#' @rdname fit_lgcp
 simulate_lgcp <- function(parameters, sf, smesh, tmesh, covariates,
                           all = FALSE) {
     ## svs

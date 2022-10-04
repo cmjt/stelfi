@@ -2,6 +2,7 @@
 % Please edit documentation in R/fit_hawkes.r
 \name{fit_hawkes}
 \alias{fit_hawkes}
+\alias{fit_hawkes_cbf}
 \title{Self-exciting Hawkes process}
 \usage{
 fit_hawkes(
@@ -12,6 +13,19 @@ fit_hawkes(
   tmb_silent = TRUE,
   optim_silent = TRUE,
   ...
+)
+
+fit_hawkes_cbf(
+  times,
+  parameters = list(),
+  model = 1,
+  marks = c(rep(1, length(times))),
+  background,
+  background_integral,
+  background_parameters,
+  background_min,
+  tmb_silent = TRUE,
+  optim_silent = TRUE
 )
 }
 \arguments{
@@ -28,8 +42,10 @@ set so that the intensity never goes negative and so that \code{alpha} <= \code{
 
 \item{model}{A numeric indicator specifying which model to fit:
 \itemize{
-\item \code{1}, Hawkes process with exponential decay (default);
-\item \code{2}, Hawkes process with an \code{alpha} that can be negative.
+\item \code{1}, a Hawkes process with exponential decay and 
+custom background function (default) with positive \code{alpha}.
+\item \code{2}, a Hawkes process with exponential decay and 
+custom background function where \code{alpha} can be negative.
 }}
 
 \item{marks}{Optional, a vector of numeric marks, defaults to 1 (i.e., no marks).}
@@ -41,27 +57,76 @@ TMB inner optimization tracing information will be printed.}
 print function and parameters every iteration.}
 
 \item{...}{arguments to pass into \code{optim()}}
+
+\item{background}{A function taking one parameter and an
+independent variable, returning a scalar.}
+
+\item{background_integral}{The integral of \code{background}.}
+
+\item{background_parameters}{The parameter(s)
+for the background function \code{background}.
+This could be a list of multiple values.}
+
+\item{background_min}{A function taking one parameter and two points,
+returns min of \code{background} between those points.}
 }
 \description{
-`fit_hawkes()` fits a self-exciting Hawkes process using \code{TMB}.
+\code{fit_hawkes()} fits a self-exciting Hawkes process using \code{TMB}.
+
+\code{fit_hawkes_cbf()} fits a self-exciting Hawkes processes
+with a given custom background function using \code{TMB}.
+The \code{alpha} (\code{model} = 1) or \code{a_par} (\code{model} = 2)
+and \code{beta} parameters are estimated using \code{TMB};
+parameters of the custom background function are optimized in \code{R}.
 }
 \examples{
-{
-\dontrun{
-## simple Hawkes model
+\donttest{
+### ********************** ###
+## A typical Hawkes model
+### ********************** ###
 data(retweets_niwa, package = "stelfi")
 times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa), units = "mins"))))
 params <- c(mu = 9, alpha = 3, beta = 10)
 fit_hawkes(times = times, parameters = params)
-## A model with marks (ETAS-type)
-data("earthquakes", package = "stelfi")
-earthquakes <- earthquakes[order(earthquakes$origintime),]
+### ********************** ###
+## A Hawkes model with marks (ETAS-type)
+### ********************** ###
+data("nz_earthquakes", package = "stelfi")
+earthquakes <- earthquakes[order(nz_earthquakes$origintime),]
 earthquakes <- earthquakes[!duplicated(earthquakes$origintime), ]
 times <- earthquakes$origintime
 times <- as.numeric(difftime(times, min(times), units = "mins"))
 marks <- earthquakes$magnitude
 params <- c(mu = 3, alpha = 0.05, beta = 1)
 fit_hawkes(times = times, parameters = params, marks = marks)
+}
+\donttest{
+### ********************** ###
+## A Hawkes process with a custom background function
+### ********************** ###
+if(require("hawkesbow")) {
+times <- hawkes(1000, fun = function(y) {1 + 0.5*sin(y)},
+M = 1.5, repr = 0.5, family = "exp", rate = 2)$p
+## The background function must take a single parameter and
+## the time(s) at which it is evaluated
+background <- function(params,times) {
+A = exp(params[[1]])
+B = stats::plogis(params[[2]]) * A
+return(A + B  *sin(times))
+}
+## The background_integral function must take a
+## single parameter and the time at which it is evaluated
+background_integral <- function(params,x) {
+        A = exp(params[[1]])
+        B = stats::plogis(params[[2]]) * A
+        return((A*x)-B*cos(x))
+}
+param = list(alpha = 0.5, beta = 1.5)
+background_param = list(1,1)
+fit_hawkes_cbf(times = times, parameters = param,
+background = background,
+background_integral = background_integral,
+background_parameters = background_param)
 }
 }
 }

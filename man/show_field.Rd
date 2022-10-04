@@ -9,7 +9,7 @@ show_field(x, smesh, sf, dims = c(500, 500))
 \arguments{
 \item{x}{A vector of values for each \code{smesh} node.}
 
-\item{smesh}{A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.}
+\item{smesh}{A spatial mesh returned by \code{INLA::inla.mesh.2d()}.}
 
 \item{sf}{Optional, \code{sf} of type \code{POLYGON} specifying the region
 of the domain.}
@@ -18,7 +18,7 @@ of the domain.}
 the spatial pixel resolution. Default \code{c(500,500)}.}
 }
 \description{
-`show_field()` plots the values of \code{x} at each node of \code{smesh}, with
+Plots the values of \code{x} at each node of \code{smesh}, with
 optional control over resolutions using \code{dims}.
 }
 \examples{

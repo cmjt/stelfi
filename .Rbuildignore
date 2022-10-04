@@ -4,3 +4,4 @@ render.sh
 ^inst/bin$
 package-build/*
 stelfi.Rcheck/*
+^LICENSE\.md$

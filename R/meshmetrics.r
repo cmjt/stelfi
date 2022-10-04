@@ -1,9 +1,9 @@
 #' Calculate the distance between two points
 #' @param A A numeric vector of length 2 specifying (first) location.
 #' @param B A numeric vector of length 2 specifying (second) location.
-#' @examples \dontrun{
+#' @examples 
 #' dist(c(1, 1), c(2, 1))
-#' }
+#' @noRd
 dist <- function(A, B) {
   sqrt((A[1] - B[1])^2 + (A[2] - B[2])^2)
 }
@@ -13,9 +13,9 @@ dist <- function(A, B) {
 #' @param a A numeric triangle edgelength (opposite angle A).
 #' @param b A numeric triangle edgelength (opposite angle B).
 #' @param c A numeric triangle edgelength (opposite angle C).
-#' @examples \dontrun{
+#' @examples
 #' ang(1, 2, 1.5)
-#' }
+#' @noRd
 ang <- function(a, b, c) {
   cosC <- (a^2 + b^2 - c^2) / (2 * a * b)
   angC <- acos(cosC)
@@ -27,7 +27,7 @@ ang <- function(a, b, c) {
 #' @param a A numeric triangle edgelength (opposite angle A).
 #' @param b A numeric triangle edgelength (opposite angle B).
 #' @param angC angle (in degrees)
-#' @examples \dontrun{
+#' @examples 
 #' A <- c(1, 1)
 #' B <- c(2, 1)
 #' C <- c(2.5, 1.5)
@@ -36,7 +36,7 @@ ang <- function(a, b, c) {
 #' c <- dist(A, B)
 #' angC <- ang( a, b, c)
 #' tri_area(a, b, angC)
-#' }
+#' @noRd
 tri_area <- function(a, b, angC) {
     (1 / 2) * a * b * sin(angC / (180 / pi))
 }
@@ -44,9 +44,9 @@ tri_area <- function(a, b, angC) {
 #' locations of a triangle
 #' 
 #' @inheritParams incircle_r
-#' @examples \dontrun{
+#' @examples
 #' circum_R(c(1, 1), c(2, 1), c(3, 2.5))
-#' }
+#' @noRd
 circum_R <- function(A, B, C) {
   a <- dist(B, C)
   b <- dist(A, C)
@@ -62,9 +62,9 @@ circum_R <- function(A, B, C) {
 #' locations of a triangle
 #' 
 #' @inheritParams incircle_r
-#' @examples \dontrun{
+#' @examples
 #' circum_O(c(1, 1), c(2, 1), c(3, 2.5))
-#' }
+#' @noRd
 circum_O <- function(A, B, C) {
   a <- dist(B, C)
   b <- dist(A, C)
@@ -81,9 +81,9 @@ circum_O <- function(A, B, C) {
 #' locations of a triangle
 #' 
 #' @inheritParams incircle_r
-#' @examples \dontrun{
+#' @examples 
 #' incircle_O(c(1, 1), c(2, 1), c(3, 2.5))
-#' }
+#' @noRd
 incircle_O <- function(A, B, C) {
   a <- dist(B, C)
   b <- dist(A, C)
@@ -99,9 +99,9 @@ incircle_O <- function(A, B, C) {
 #' @param A A numeric vector of length 2 specifying vertex location "A".
 #' @param B A numeric vector of length 2 specifying vertex location "B".
 #' @param C A numeric vector of length 2 specifying vertex location "C".
-#' @examples \dontrun{
+#' @examples 
 #' incircle_r(c(1, 1), c(2, 1), c(3, 2.5))
-#' }
+#' @noRd
 incircle_r <- function(A, B, C) {
   a <- dist(B, C)
   b <- dist(A, C)
@@ -112,10 +112,10 @@ incircle_r <- function(A, B, C) {
 #' Extract a dataframe of mesh triangle segments (start and end locations)
 #' 
 #' @inheritParams meshmetrics
-#' @examples \dontrun{
+#' @examples 
 #' data(horse_mesh, package = "stelfi")
 #' segments(horse_mesh)
-#' }
+#' @noRd
 segments <- function(mesh) {
   df <- rbind(data.frame(a = mesh$loc[mesh$graph$tv[, 1], c(1, 2)],
                          b = mesh$loc[mesh$graph$tv[, 2], c(1, 2)]),
@@ -130,10 +130,10 @@ segments <- function(mesh) {
 #' Calculate all interior Delaunay triangulation triangle angles
 #' 
 #' @inheritParams meshmetrics
-#' @examples \dontrun{
+#' @examples 
 #' data(horse_mesh, package = "stelfi")
 #' mesh_ang(horse_mesh)
-#' }
+#' @noRd
 mesh_ang <- function(mesh) {
   tv <- mesh$graph$tv
   angs <- matrix(numeric(3 * nrow(tv)), ncol = 3)
@@ -156,10 +156,10 @@ mesh_ang <- function(mesh) {
 #' Calculate minimum edge length for each triangle in a given Delaunay triangulation
 #' 
 #' @inheritParams meshmetrics
-#' @examples \dontrun{
+#' @examples
 #' data(horse_mesh, package = "stelfi")
 #' lmin(horse_mesh)
-#' }
+#' @noRd
 lmin <- function(mesh) {
   tv <- mesh$graph$tv
   lmin <- numeric(nrow(tv))
@@ -174,18 +174,18 @@ lmin <- function(mesh) {
   }
   return(lmin)
 }
-#' Transform a \code{\link[INLA]{inla.mesh.2d}} into a \code{\link[sf]{sf}}
+#' Transform a \code{\link{INLA::inla.mesh.2d}} into a \code{sf} object
 #' 
 #' @inheritParams meshmetrics
-#' @source \url{https://groups.google.com/g/r-inla-discussion-group/c/z1n1exlZrKM}
-#' @details Modified from \code{sp} based function suggested by Finn in the
+#' @source Modified from \code{sp} based function suggested by Finn in the
 #' R-inla discussion Google Group
 #' \url{https://groups.google.com/g/r-inla-discussion-group/c/z1n1exlZrKM}.
-#' @returns A \code{\link[sf]{sf}}.
-#' @examples \dontrun{
+#' @return A simple features, \code{sf}, object.
+#' @seealso \code{\link{meshmetrics}}
+#' @examples
 #' data(horse_mesh, package = "stelfi")
 #' sf <- mesh_2_sf(horse_mesh)
-#' require(ggplot2)
+#' if(require("ggplot2")) {
 #' ggplot(sf) + geom_sf()
 #' }
 #' @export
@@ -206,34 +206,39 @@ mesh_2_sf <- function(mesh) {
                      geometry = st)
     return(res)
 }
-#' Calculate a number of different \code{\link[INLA]{inla.mesh.2d}} attributes
+#' Calculate a number of different  \code{\link{INLA::inla.mesh.2d()}} geometric attributes
 #' 
-#' `meshmetrics()` calculates a number of geometric attributes for a given
-#' Delaunay triangulation.
+#' Calculates a number of geometric attributes for a given
+#' Delaunay triangulation based on the circumscribed and inscribed circle of each triangle.
 #' 
-#' @param mesh A \code{\link[INLA]{inla.mesh.2d}} object.
-#' @return An object of class \code{sf} with the following data:
+#' @param mesh A \code{\link{INLA::inla.mesh.2d()}} object.
+#' @return An object of class \code{sf} with the following data for each triangle in the
+#' triangulation
 #' \itemize{
-#' \item \code{V1}, \code{V2}, and \code{V3} corresponding vertecies
-#' of \code{mesh} matches \code{mesh$graph$tv}.
-#' \item \code{ID} numeric triangle id
-#' \item \code{angleA}, \code{angleB}, and \code{angleC} the
-#' interior angles of the triangles
-#' \item circumcircle radius \code{circumcircle_R},
-#' \item incircle radius \code{incircle_r}),
-#' \item the assocoated centroid locations (\code{c_Ox, cOy}
-#' and \code{i_Ox, iOy}),
-#' \item the radius-edge ratio \code{radius_edge}, and
-#' \item the radius ratio \code{radius_ratio}
-#' \item \code{area} triangle area
-#' \item \code{quality} a measure of triangle "quality" defined as
+#' \item \code{V1}, \code{V2}, and \code{V3} corresponding vertices
+#' of \code{mesh} matches \code{mesh$graph$tv};
+#' \item \code{ID}, numeric triangle id;
+#' \item \code{angleA}, \code{angleB}, and \code{angleC}, the
+#' interior angles;
+#' \item circumcircle radius, circumradius, \code{circumcircle_R} (\eqn{R});
+#' \item incircle radius \code{incircle_r} (\eqn{r});
+#' \item centroid locations of the circumcircle, circumcenter, (\code{c_Ox, cOy});
+#' \item centroid locations of the incircle, incenter, (\code{i_Ox, iOy});
+#' \item the radius-edge ratio \code{radius_edge} \eqn{\frac{R}{l_{min}}},
+#' where \eqn{l_{min}} is the minimum edge length;
+#' \item the radius ratio \code{radius_ratio} \eqn{\frac{r}{R}};
+#' \item \code{area}, area (\eqn{A});
+#' \item \code{quality} a measure of "quality" defined as
 #' \eqn{\frac{4\sqrt{3}|A|}{\Sigma_{i = 1}^3 L_i^2}},
-#' where A is the area and L_i is edge length.
+#' where \eqn{L_i} is the length of edge \eqn{i}.
 #' }
-#' @examples \dontrun{
+#' @details A triangle's circumcircle (circumscribed circle) is the unique circle that passes
+#' through each of its three vertices. A triangle's incircle (inscribed circle) is the
+#' largest circle that can be contained within it (i.e., touches it's three edges).
+#' @examples
 #' data(horse_mesh, package = "stelfi")
 #' metrics <- meshmetrics(horse_mesh)
-#' require(ggplot2)
+#' if(require("ggplot2")) {
 #' ggplot(metrics) + geom_sf(aes(fill = radius_ratio))
 #' }
 #' @export

@@ -2,10 +2,10 @@
 % Please edit documentation in R/data.r
 \name{horse_mesh}
 \alias{horse_mesh}
-\title{Example \code{inla.mesh}}
+\title{Example Delaunay triangulation}
 \format{
-A \code{inla.mesh} based on the outline of a horse
+A \code{\link{INLA::inla.mesh.2d()}} based on the outline of a horse
 }
 \description{
-Example \code{inla.mesh}
+Example Delaunay triangulation
 }

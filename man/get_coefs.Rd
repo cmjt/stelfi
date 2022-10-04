@@ -10,10 +10,10 @@ get_coefs(obj)
 \item{obj}{A fitted model object.}
 }
 \description{
-`get_coefs()` returns the parameter estimates for the fitted model.
+Return parameter estimates from a fitted model.
 }
 \examples{
-\dontrun{
+\donttest{
 ## Hawkes
 data(retweets_niwa, package = "stelfi")
 times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
