@@ -82,10 +82,12 @@ fit_hspat_tmb <- function(times, locs, sf,
     obj$objective <- opt$objective
     return(obj)
 }
-#' Spatiotemporal Hawkes model
+#' Modelling spatiotemporal self-excitment
 #' 
-#' `fit_stelfi()` fits spatiotemporal Hawkes models. The self-excitement is 
+#' Fits spatiotemporal Hawkes models. The self-excitement is 
 #' Gaussian in space and exponentially decaying in time.
+#'
+#' @details TODO
 #' 
 #' @param locs A \code{data.frame} of \code{x} and \code{y} locations, 2xn.
 #' @param parameters A list of named parameters:
@@ -98,14 +100,15 @@ fit_hspat_tmb <- function(times, locs, sf,
 #' }
 #' @param covariates Optional, a \code{matrix} of covariates at each
 #' \code{smesh} node.
-#' @param GMRF Logical, default `FALSE`. If `TRUE`, a Gaussian Markov
+#' @param GMRF Logical, default \code{FALSE}. If \code{TRUE}, a Gaussian Markov
 #'  Random Field is included as a latent spatial effect.
-#' @param time_independent Logical, default `TRUE`. If `FALSE`, Gaussian kernels have a
+#' @param time_independent Logical, default \code{TRUE}. If \code{FALSE}, Gaussian kernels have a
 #' covariate matrix that is proportional to time since the event.
 #' Warning, this is very memory intensive.
 #' @inheritParams fit_hawkes
 #' @inheritParams fit_lgcp
 #' @inheritParams fit_hspat_tmb
+#' @seealso \code{\link{fit_hawkes}} and \code{\link{fit_lgcp}}
 #' @examples \dontrun{
 #' ## No GMRF
 #' data(xyt, package = "stelfi")

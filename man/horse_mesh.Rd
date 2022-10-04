@@ -4,7 +4,7 @@
 \alias{horse_mesh}
 \title{Example Delaunay triangulation}
 \format{
-A \code{\link{INLA::inla.mesh.2d()}} based on the outline of a horse
+A \code{INLA::inla.mesh.2d()} based on the outline of a horse
 }
 \description{
 Example Delaunay triangulation

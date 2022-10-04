@@ -1,27 +1,39 @@
 #' Self-exciting Hawkes process
 #'
-#' \code{fit_hawkes()} fits a self-exciting Hawkes process using \code{TMB}.
+#' Fit a Hawkes process using Template Model Builder (TMB). The function \code{fit_hawkes()} fits a
+#' self-exciting Hawkes process with a constant background rate. Whereas, \code{fit_hawkes_cbf()} fits a Hawkes
+#' processes with a user defined custom background function (non-homogeneous background rate).
+#' 
+#' @details A univariate Hawkes (Hawkes, AG. 1971) process is a self-exciting temporal point process
+#' with conditional intensity function
+#' \eqn{\lambda(t) = \mu + \alpha \Sigma_{i:\tau_i<t}e^{(-\beta * (t-\tau_i))}}. Here \eqn{\mu} is the
+#' background rate of the process and the summation describes the historic temporal dependence.  Including mark information
+#' results in the conditional intensity \eqn{\lambda(t; m(t)) = \mu + \alpha \Sigma_{i:\tau_i<t}m(\tau_i)e^{(-\beta * (t-\tau_i))}},
+#' where \eqn{m(t)} is the temporal mark. This model can be fitted with \code{fit_hawkes()}.
+#'
+#' @references Hawkes, AG. (1971) Spectra of some self-exciting and mutually exciting point processes.
+#' \emph{Biometrika}, \strong{58}: 83--90.
 #' 
 #' @param times A vector of numeric observed time points.
-#' @param parameters A named list of named parameters for the chosen model:
+#' @param parameters A named list of parameter starting values:
 #' \itemize{
-#' \item \code{mu}, base rate of the Hawkes process,
-#' \item \code{alpha} (supplied if \code{model = 1}), intensity jump after an event occurrence,
+#' \item \code{mu}, base rate of the Hawkes process (\eqn{\mu}),
+#' \item \code{alpha} (supplied if \code{model = 1}), intensity jump after an event occurrence (\eqn{\alpha}),
 #' \item \code{a_par} (supplied if \code{model} = 2), logit scale for \code{alpha} (must be 
 #' set so that the intensity never goes negative and so that \code{alpha} <= \code{beta}), and
-#' \item \code{beta}, exponential intensity decay.
+#' \item \code{beta}, exponential intensity decay (\eqn{\beta}).
 #' }
 #' @param model A numeric indicator specifying which model to fit:
 #' \itemize{
-#' \item \code{1}, Hawkes process with exponential decay (default);
-#' \item \code{2}, Hawkes process with an \code{alpha} that can be negative.
+#' \item \code{model = 1}, fits a Hawkes process with exponential decay (default);
+#' \item \code{model = 2}, fits a Hawkes process with an \code{alpha} that can be negative.
 #' }
 #' @param marks Optional, a vector of numeric marks, defaults to 1 (i.e., no marks).
-#' @param tmb_silent Logical, default `TRUE`:
-#' TMB inner optimization tracing information will be printed.
-#' @param optim_silent Logical, default `TRUE`:
-#' print function and parameters every iteration.
-#' @param ... arguments to pass into \code{optim()}
+#' @param tmb_silent Logical, if \code{TRUE} (default) then
+#' TMB inner optimisation tracing information will be printed.
+#' @param optim_silent Logical, if \code{TRUE} (default) then for each iteration
+#' \code{optim()} output will be printed.
+#' @param ... Additional arguments to pass to \code{optim()}
 #' @examples
 #' \donttest{
 #' ### ********************** ###
@@ -30,18 +42,20 @@
 #' data(retweets_niwa, package = "stelfi")
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa), units = "mins"))))
 #' params <- c(mu = 9, alpha = 3, beta = 10)
-#' fit_hawkes(times = times, parameters = params)
+#' fit <- fit_hawkes(times = times, parameters = params)
+#' get_coefs(fit)
 #' ### ********************** ###
 #' ## A Hawkes model with marks (ETAS-type)
 #' ### ********************** ###
 #' data("nz_earthquakes", package = "stelfi")
-#' earthquakes <- earthquakes[order(nz_earthquakes$origintime),]
+#' earthquakes <- nz_earthquakes[order(nz_earthquakes$origintime),]
 #' earthquakes <- earthquakes[!duplicated(earthquakes$origintime), ]
 #' times <- earthquakes$origintime
 #' times <- as.numeric(difftime(times, min(times), units = "mins"))
 #' marks <- earthquakes$magnitude
 #' params <- c(mu = 3, alpha = 0.05, beta = 1)
-#' fit_hawkes(times = times, parameters = params, marks = marks)
+#' fit <- fit_hawkes(times = times, parameters = params, marks = marks)
+#' get_coefs(fit)
 #' }
 #' @export
 fit_hawkes <-  function(times, parameters = list(), model = 1,
@@ -98,21 +112,12 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
     return(obj)
 }
 
-#' Self-exciting Hawkes process with a given custom background function
-#'
-#' \code{fit_hawkes_cbf()} fits a self-exciting Hawkes processes
-#' with a given custom background function using \code{TMB}.
-#' The \code{alpha} (\code{model} = 1) or \code{a_par} (\code{model} = 2)
-#' and \code{beta} parameters are estimated using \code{TMB};
-#' parameters of the custom background function are optimized in \code{R}.
+#' @details An in-homogenous marked Hawkes process has conditional intensity function
+#' \eqn{\lambda(t) = \mu(t) + \alpha \Sigma_{i:\tau_i<t}e^{(-\beta * (t-\tau_i))}}. Here, the
+#' background rate, \eqn{\mu(t)}, varies in time. Such a model can be fitted
+#' using \code{fit_hawkes_cbf()} where the parameters of the custom background function are estimated
+#' before being passed to \code{TMB}.
 #' 
-#' @param model A numeric indicator specifying which model to fit:
-#' \itemize{
-#' \item \code{1}, a Hawkes process with exponential decay and 
-#' custom background function (default) with positive \code{alpha}.
-#' \item \code{2}, a Hawkes process with exponential decay and 
-#' custom background function where \code{alpha} can be negative.
-#' }
 #' @param background A function taking one parameter and an
 #' independent variable, returning a scalar.
 #' @param background_integral The integral of \code{background}.
@@ -127,7 +132,7 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
 #' ## A Hawkes process with a custom background function
 #' ### ********************** ###
 #' if(require("hawkesbow")) {
-#' times <- hawkes(1000, fun = function(y) {1 + 0.5*sin(y)},
+#' times <- hawkesbow::hawkes(1000, fun = function(y) {1 + 0.5*sin(y)},
 #' M = 1.5, repr = 0.5, family = "exp", rate = 2)$p
 #' ## The background function must take a single parameter and
 #' ## the time(s) at which it is evaluated
@@ -145,10 +150,11 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
 #' }
 #' param = list(alpha = 0.5, beta = 1.5)
 #' background_param = list(1,1)
-#' fit_hawkes_cbf(times = times, parameters = param,
+#' fit <- fit_hawkes_cbf(times = times, parameters = param,
 #' background = background,
 #' background_integral = background_integral,
 #' background_parameters = background_param)
+#' get_coefs(fit)
 #' }
 #' }
 #' @export

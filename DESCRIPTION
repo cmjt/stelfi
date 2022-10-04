@@ -30,9 +30,7 @@ Imports:
     Matrix,
     ggplot2 (>= 3.3.6),
     dplyr (>= 1.0.8),
-    gridExtra (>= 2.3),
-    reshape2 (>= 1.4.4),
-    methods
+    gridExtra (>= 2.3)
 LinkingTo:
 	TMB,
      	RcppEigen
@@ -52,6 +50,7 @@ Suggests:
     parallel,
     spatstat.utils,
     spatstat.geom,
-    rgdal
+    rgdal,
+    hawkesbow
 VignetteBuilder: knitr
 Config/testthat/edition: 3

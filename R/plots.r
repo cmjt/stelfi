@@ -131,7 +131,7 @@ show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
         A[i] <- exp(-beta * (times[i] - times[i - 1])) * (marks[i-1] + A[i - 1])
     }
     compensator <- numeric(length = length(times))
-    if (!methods::is(mu, "function")) {
+    if (!inherits(mu, "function")) {
         for(i in 1:length(times)) {
             compensator[i] <- (mu * times[i]) - ((alpha/beta)*A[i]) +
                 ((alpha / beta) * (sum(marks[1:i])-marks[i]))
@@ -151,9 +151,12 @@ show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
     if (plot) {
         data <- data.frame(xs = times, observed = 1:length(times), compensator = compensator)
         ## Plot of compensator and actual events
-        data <- reshape2::melt(data, id.vars = "xs",, value.name = "val")
+        data <- reshape(data, direction = "long", idvar = "xs",
+                        varying = c("observed", "compensator"), v.names = "val",
+                        times = c("observed", "compensator"),
+                        new.row.names = 1:(2*length(times)))
         lineplot <- ggplot2::ggplot(data = data,
-                                    ggplot2::aes(x = .data$xs, y = .data$val, colour = .data$variable)) +
+                                    ggplot2::aes(x = .data$xs, y = .data$val, colour = .data$time)) +
             ggplot2::xlab("Time") +
             ggplot2::ylab("Events") +
             ggplot2::geom_line() +

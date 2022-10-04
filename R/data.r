@@ -166,7 +166,7 @@ NULL
 NULL
 #' Example Delaunay triangulation
 #'
-#' @format A \code{\link{INLA::inla.mesh.2d()}} based on the outline of a horse
+#' @format A \code{INLA::inla.mesh.2d()} based on the outline of a horse
 #' @name horse_mesh
 NULL
 #' Example \code{sf} \code{POLYGON}

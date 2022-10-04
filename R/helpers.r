@@ -21,7 +21,7 @@ hawkes_intensity <- function(times, mu, alpha, beta,
       mu + alpha * sum(marks * A)
     }
     lam_p <- rep(0, length(p))
-    if (methods::is(mu, "function")) {
+    if (inherits(mu, "function")) {
         mus <- mu(background_parameters, p)
     } else {
         mus <- rep(mu, length(p))

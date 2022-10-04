@@ -2,12 +2,12 @@
 % Please edit documentation in R/meshmetrics.r
 \name{meshmetrics}
 \alias{meshmetrics}
-\title{Calculate a number of different  \code{\link{INLA::inla.mesh.2d()}} geometric attributes}
+\title{Calculate a number of different geometric attributes of a Delaunay triangulation}
 \usage{
 meshmetrics(mesh)
 }
 \arguments{
-\item{mesh}{A \code{\link{INLA::inla.mesh.2d()}} object.}
+\item{mesh}{A \code{INLA::inla.mesh.2d()} object.}
 }
 \value{
 An object of class \code{sf} with the following data for each triangle in the

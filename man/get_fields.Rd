@@ -9,9 +9,9 @@ get_fields(obj, smesh, tmesh, plot = FALSE, sd = FALSE)
 \arguments{
 \item{obj}{A fitted model object returned by \code{\link{fit_lgcp}}.}
 
-\item{smesh}{A spatial mesh returned by \code{INLA::inla.mesh.2d()}.}
+\item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{INLA::inla.mesh.2d()}.}
 
-\item{tmesh}{Optional, a temporal mesh returned by \code{\INLA::inla.mesh.1d()}.}
+\item{tmesh}{Optional, a temporal mesh returned by \code{INLA::inla.mesh.1d()}.}
 
 \item{plot}{Logical, if \code{TRUE} then the returned values are plotted.
 Default \code{FALSE}.}

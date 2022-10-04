@@ -2,7 +2,8 @@
 #include <vector>
 #include <iostream>
 #include <numeric>
-#include <math.h> 
+#include <math.h>
+#include "init.h"
 #include "hawkes.h"
 #include "lgcp.h"
 #include "marked_lgcp.h"

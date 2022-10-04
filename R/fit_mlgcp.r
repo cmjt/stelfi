@@ -49,16 +49,29 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 }
 #' Marked spatial log-Gaussian Cox process m(LGCP)
 #'
-#' Fit a marked LGCP using \code{TMB} and the
-#' \code{R_inla} namespace for the spde construction of the latent field.
-#' 
+#' Fit a marked LGCP using Template Model Builder (TMB) and the \code{R_inla}
+#' namespace for the SPDE construction of the latent field.
+#'
+#' @details The random intensity surface of the point process is (as \code{\link{fit_lgcp}})
+#' \eqn{\Lambda(\boldsymbol{x}) = \textrm{exp}(\boldsymbol{X}\beta + G(\boldsymbol{x}) + \epsilon)},
+#' for design matrix \eqn{\boldsymbol{X}}, coefficients \eqn{\boldsymbol{\beta}}, and random error \eqn{\epsilon}.
+#'
+#' Each mark, \eqn{m_j}, is jointly modelled and has their own random field
+#' \eqn{M_j(s) = f^{-1}((\boldsymbol{X}\beta)_{m_j} + G_{m_j}(\boldsymbol{x}) + \alpha_{m_j}\; G(\boldsymbol{x}) + \epsilon_{m_j})}
+#' where \eqn{\alpha_{.}} are coefficient(s) linking the point process and the mark(s).
+#'
+#'  \eqn{M_j(s)} depends on the distribution of the marks. If the marks are from a Poisson distribution, it is
+#' the intensity (as with the point process). If the marks are from a Binomial distribution, it is the
+#' success probability, and the user must supply the number of trials for each event (via \code{strfixed}).
+#' If the marks are normally distributed then this models the mean, and the user must supply
+#' the standard deviation (via \code{strfixed}). The user can choose for the point processes and the marks to
+#' share a common GMRF, i.e. \eqn{G_m(s) = G_{pp}(s)}; this is controled via the argument \code{fields}.
 #' 
 #' @param locs A \code{data.frame} of \code{x} and \code{y} locations, 2xn.
-#' @inheritParams fit_lgcp
 #' @param marks  A matrix of marks for each observation of the point pattern.
 #' @param parameters a list of named parameters:
 #' log_tau, log_kappa, betamarks, betapp, marks_coefs_pp.
-#'  @param methods An integer value:
+#' @param methods An integer value:
 #' \itemize{
 #' \item \code{0} (default), Gaussian distribution, parameter estimated is mean;
 #' \item \code{1}, Poisson distribution, parameter estimated is intensity;
@@ -79,6 +92,8 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' @param pp_covariates Which columns of the covariates apply to the point process
 #' @param marks_covariates Which columns of the covariates apply to the marks.
 #' By default, all covariates apply to the marks only.
+#' @inheritParams fit_lgcp
+#' @seealso  \code{\link{fit_lgcp}}
 #' @examples
 #' \donttest{
 #' ### ********************** ###
@@ -99,7 +114,6 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' parameters = parameters, methods = 0,fields = 1)
 #' }
 #' @export
-#' @rdname fit_lgcp
 fit_mlgcp <-  function(locs, sf, marks, smesh, parameters = list(), methods,
                        strfixed = matrix(1, nrow = nrow(locs), ncol = ncol(marks)),
                        fields = rep(1, ncol(marks)),

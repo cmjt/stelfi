@@ -174,7 +174,7 @@ lmin <- function(mesh) {
   }
   return(lmin)
 }
-#' Transform a \code{\link{INLA::inla.mesh.2d}} into a \code{sf} object
+#' Transform a \code{INLA::inla.mesh.2d} into a \code{sf} object
 #' 
 #' @inheritParams meshmetrics
 #' @source Modified from \code{sp} based function suggested by Finn in the
@@ -206,12 +206,12 @@ mesh_2_sf <- function(mesh) {
                      geometry = st)
     return(res)
 }
-#' Calculate a number of different  \code{\link{INLA::inla.mesh.2d()}} geometric attributes
+#' Calculate a number of different geometric attributes of a Delaunay triangulation
 #' 
 #' Calculates a number of geometric attributes for a given
 #' Delaunay triangulation based on the circumscribed and inscribed circle of each triangle.
 #' 
-#' @param mesh A \code{\link{INLA::inla.mesh.2d()}} object.
+#' @param mesh A \code{INLA::inla.mesh.2d()} object.
 #' @return An object of class \code{sf} with the following data for each triangle in the
 #' triangulation
 #' \itemize{

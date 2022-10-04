@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_stelfi.r
 \name{fit_stelfi}
 \alias{fit_stelfi}
-\title{Spatiotemporal Hawkes model}
+\title{Modelling spatiotemporal self-excitment}
 \usage{
 fit_stelfi(
   times,
@@ -23,10 +23,10 @@ fit_stelfi(
 
 \item{locs}{A \code{data.frame} of \code{x} and \code{y} locations, 2xn.}
 
-\item{sf}{An \code{sf} of type \code{POLYGON} specifying the region
+\item{sf}{An \code{sf} of type \code{POLYGON} specifying the spatial region
 of the domain.}
 
-\item{smesh}{A spatial mesh returned by \code{INLA::inla.mesh.2d()}.}
+\item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{INLA::inla.mesh.2d()}.}
 
 \item{parameters}{A list of named parameters:
 \itemize{
@@ -40,24 +40,27 @@ of the domain.}
 \item{covariates}{Optional, a \code{matrix} of covariates at each
 \code{smesh} node.}
 
-\item{GMRF}{Logical, default `FALSE`. If `TRUE`, a Gaussian Markov
+\item{GMRF}{Logical, default \code{FALSE}. If \code{TRUE}, a Gaussian Markov
 Random Field is included as a latent spatial effect.}
 
-\item{time_independent}{Logical, default `TRUE`. If `FALSE`, Gaussian kernels have a
+\item{time_independent}{Logical, default \code{TRUE}. If \code{FALSE}, Gaussian kernels have a
 covariate matrix that is proportional to time since the event.
 Warning, this is very memory intensive.}
 
-\item{tmb_silent}{Logical, default `TRUE`:
-TMB inner optimization tracing information will be printed.}
+\item{tmb_silent}{Logical, if \code{TRUE} (default) then
+TMB inner optimisation tracing information will be printed.}
 
-\item{nlminb_silent}{Logical, default \code{TRUE}:
-print function and parameters every iteration.}
+\item{nlminb_silent}{Logical, if \code{TRUE} (default) then for each iteration
+\code{nlminb()} output will be printed.}
 
-\item{...}{arguments to pass into \code{optim()}}
+\item{...}{Additional arguments to pass to \code{optim()}}
 }
 \description{
-`fit_stelfi()` fits spatiotemporal Hawkes models. The self-excitement is 
+Fits spatiotemporal Hawkes models. The self-excitement is 
 Gaussian in space and exponentially decaying in time.
+}
+\details{
+TODO
 }
 \examples{
 \dontrun{
@@ -79,4 +82,7 @@ fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh,
 parameters = param, GMRF = TRUE)
 get_coefs(fit)
 }
+}
+\seealso{
+\code{\link{fit_hawkes}} and \code{\link{fit_lgcp}}
 }

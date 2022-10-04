@@ -9,7 +9,7 @@ show_field(x, smesh, sf, dims = c(500, 500))
 \arguments{
 \item{x}{A vector of values for each \code{smesh} node.}
 
-\item{smesh}{A spatial mesh returned by \code{INLA::inla.mesh.2d()}.}
+\item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{INLA::inla.mesh.2d()}.}
 
 \item{sf}{Optional, \code{sf} of type \code{POLYGON} specifying the region
 of the domain.}
