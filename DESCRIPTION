@@ -2,19 +2,22 @@ Package: stelfi
 Type: Package
 Title: Hawkes and Log-Gaussian Cox Point Processes Using Template Model Builder
 Version: 0.0.1
-Date: 2021-07-23
+Date: 2021-10-01
 Authors@R: 
   c(person(given = "Charlotte M.",
            family = "Jones-Todd",
-           role = c("aut", "cre"),
+           role = c("aut", "cre", "cph"),
            email = "cmjonestodd@gmail.com",
-           comment = c(ORCID = "0000-0003-1201-2781")),
+           comment = c(ORCID = "0000-0003-1201-2781",
+	   "Charlotte Jones-Todd wrote and continued developmend of the main code.")),
     person(given  = "Alec",
            family = "van Helsdingen",
-           role = "aut"),
+           role = "aut",
+	   comment = "Alec van Helsdingen wrote the Hawkes templates and extended self-exciting TMB templates"),
     person(given = "Xiangjie",
            family = "Xue",
-           role = "ctb"),
+           role = "ctb",
+	   comment = "Xiangjie Xue worked the early spatio-temporal self-exciting TMB templates"),
     person(given = "Marsden Fund",
            family = "3723517",
            role = "fnd"),
@@ -24,8 +27,8 @@ Authors@R:
 Depends:
     R (>= 4.1.0)
 Imports:
-    TMB (>= 1.7.20),
     INLA,
+    TMB (>= 1.7.20),
     sf (>= 1.0.8),
     Matrix,
     ggplot2 (>= 3.3.6),
@@ -34,9 +37,10 @@ Imports:
 LinkingTo:
 	TMB,
      	RcppEigen
-Description: Fit Hawkes and log-Gaussian Cox process (LGCP) models with extensions. Introduced in Hawkes (1971) <DOI:10.2307/2334319> a Hawkes process is a self-exciting temporal point process where the occurrence of an event immediately increases the chance of another. We extend this to consider self-inhibiting process and a non-homogeneous background rate. A LGCP is a Cox <DOI:10.1111/j.2517-6161.1955.tb00188.x> (Poisson) point process where the log-intensity is given by a Gaussian random field. We extend this  to a joint likelihood formulation fitting a marked LGCP. In addition, the package offers functionality to fit self-exciting spatiotemporal point processes. Models are fitted via maximum likelihood using 'TMB' (Template Model Builder). Where included 1) random fields are assumed to be Gaussian and are integrated over using the Laplace approximation and 2) a stochastic partial differential equation (SPDE) model, introduced by Lindgren et al. (2011) <DOI:10.1111/j.1467-9868.2011.00777.x>, is defined for the field(s). 
+Description: Fit Hawkes and log-Gaussian Cox process models with extensions. Introduced in Hawkes (1971) <DOI:10.2307/2334319> a Hawkes process is a self-exciting temporal point process where the occurrence of an event immediately increases the chance of another. We extend this to consider self-inhibiting process and a non-homogeneous background rate. A log-Gaussian Cox process is a Poisson point process where the log-intensity is given by a Gaussian random field. We extend this  to a joint likelihood formulation fitting a marked log-Gaussian Cox model. In addition, the package offers functionality to fit self-exciting spatio-temporal point processes. Models are fitted via maximum likelihood using 'TMB' (Template Model Builder). Where included 1) random fields are assumed to be Gaussian and are integrated over using the Laplace approximation and 2) a stochastic partial differential equation model, introduced by Lindgren, Rue, and Lindström. (2011) <DOI:10.1111/j.1467-9868.2011>, is defined for the field(s). 
 License: GPL (>= 3)
-URL: https://github.com/cmjt/stelfi
+Additional_repositories: https://inla.r-inla-download.org/R/testing
+URL: https://github.com/cmjt/stelfi/
 BugReports: https://github.com/cmjt/stelfi/issues
 LazyData: TRUE
 LazyDataCompression: xz
@@ -44,7 +48,6 @@ Encoding: UTF-8
 RoxygenNote: 7.2.1
 Suggests:
     testthat (>= 3.0.0),
-    knitr,
     rmarkdown,
     maptools,
     parallel,
@@ -52,5 +55,4 @@ Suggests:
     spatstat.geom,
     rgdal,
     hawkesbow
-VignetteBuilder: knitr
 Config/testthat/edition: 3
