@@ -5,3 +5,4 @@ render.sh
 package-build/*
 stelfi.Rcheck/*
 ^LICENSE\.md$
+README.md

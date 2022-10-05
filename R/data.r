@@ -15,7 +15,7 @@
 #' \item{date_of_first_kill}{Date, if known, first murder was committed}
 #' \item{population_million}{Est popn in millions at time of first murder}
 #' }
-#' @source \url{http://www.murderuk.com/}
+#' @source \url{https://www.murderuk.com/}
 #' @seealso \url{https://www.significancemagazine.com/culture/577-a-time-to-kill-great-british-serial-killers}
 #' @name uk_serial
 NULL
@@ -65,7 +65,7 @@ NULL
 #' \item{magnitude}{The magnitude of the earthquake}
 #' \item{depth}{The focal depth of the event (km)}
 #' }
-#' @source \url{http://quakesearch.geonet.org.nz/}
+#' @source \url{https://quakesearch.geonet.org.nz/}
 #' @name nz_earthquakes
 NULL
 #' Terrorism in Iraq, 2013 - 2017
@@ -95,7 +95,7 @@ NULL
 #' \item{luminosity}{scaled: luminosity}
 #' \item{tt}{scaled: time to nearest city in minutes}
 #' }
-#' @source \url{http://www.start.umd.edu/gtd/}
+#' @source \url{https://www.start.umd.edu/gtd/}
 #' @name iraq_terrorism
 NULL
 #' Example marked point pattern data set
