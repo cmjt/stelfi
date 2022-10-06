@@ -34,11 +34,14 @@ Simulates a self-exciting Hawkes process.
 Option of two methods to simulate a Hawkes process: 
 if \code{method = "1"} then a univariate Hawkes process as 
 \code{hawkes::simulateHawkes()} is simulated,
-if \code{method = "2"} then algorithm defined in
-\url{https://radhakrishna.typepad.com/mle-of-hawkes-self-exciting-process.pdf}
-is used.
+if \code{method = "2"} then an accept/reject
+framwork is used.
 }
 \examples{
 sim_hawkes(10.2, 3.1, 8.9)
 sim_hawkes(10.2, 3.1, 8.9, method = "2")
+
+}
+\seealso{
+\code{\link{fit_hawkes}}
 }

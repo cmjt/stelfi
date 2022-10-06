@@ -55,5 +55,5 @@ show_hawkes_GOF(fit)
 }
 }
 \seealso{
-[hawkes_intensity()] [fit_hawkes_cbf()]
+\code{\link{hawkes_intensity}}
 }

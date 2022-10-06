@@ -20,9 +20,11 @@
 #' @param seed The seed. Default, \code{123}
 #' @param method A character "1" or "2" specifying the method (see details)
 #' to simulate Hawkes process. Default,\code{"1"}.
-#' @examples 
+#' @examples
 #' sim_hawkes(10.2, 3.1, 8.9)
 #' sim_hawkes(10.2, 3.1, 8.9, method = "2")
+#' 
+#' @seealso \code{\link{fit_hawkes}}
 #' @export
 sim_hawkes <- function(mu, alpha, beta, n = 100, plot = FALSE, 
                        seed = 123, method = "1") {

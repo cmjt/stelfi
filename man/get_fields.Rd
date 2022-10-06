@@ -29,10 +29,14 @@ Cox process model at each node of \code{smesh}.
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
 locs <- data.frame(x = xyt$x, y = xyt$y)
+stelfi_load_inla()
 bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
 smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
 fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 get_fields(fit, smesh, plot = TRUE)
 }
+}
+\seealso{
+\code{\link{fit_lgcp}}
 }

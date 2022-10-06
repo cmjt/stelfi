@@ -57,6 +57,7 @@
 #' fit <- fit_hawkes(times = times, parameters = params, marks = marks)
 #' get_coefs(fit)
 #' }
+#' @seealso \code{link{show_hawkes}} and \code{\link{hawkes_intensity}}
 #' @export
 fit_hawkes <-  function(times, parameters = list(), model = 1,
                         marks = c(rep(1, length(times))),

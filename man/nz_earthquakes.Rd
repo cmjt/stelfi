@@ -12,7 +12,7 @@ A simple features dataframe, of type \code{POINT}, with 3824 observations and 3 
 }
 }
 \source{
-\url{http://quakesearch.geonet.org.nz/}
+\url{https://quakesearch.geonet.org.nz/}
 }
 \description{
 Earthquake data from Canterbury,

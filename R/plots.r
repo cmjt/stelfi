@@ -12,7 +12,7 @@
 #' (parameter(s) for the assumed non-homogeneous background function;
 #' could be a list of multiple values). May also contain \code{marks} (a vector of numerical marks).
 #' 
-#' @seealso [hawkes_intensity()] [fit_hawkes_cbf()]
+#' @seealso \code{\link{hawkes_intensity}}
 #' @examples \dontrun{
 #' data(retweets_niwa, package = "stelfi")
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
@@ -258,12 +258,14 @@ show_field <- function(x, smesh, sf, dims = c(500,500)) {
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
 #' locs <- data.frame(x = xyt$x, y = xyt$y)
+#' stelfi_load_inla()
 #' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
 #' smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
 #' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 #' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 #' show_lambda(fit, smesh = smesh, sf = domain)
 #' }
+#' @seealso \code{\link{fit_lgcp}}
 #' @export
 show_lambda <- function(obj, smesh, sf, tmesh,
                         covariates, dims = c(500,500),
@@ -308,9 +310,5 @@ show_lambda <- function(obj, smesh, sf, tmesh,
         } else {
             show_field(x = lambda, smesh = smesh, sf = sf, dims = dims)
         }
-    }           
+    }         
 }
-
-
-
-

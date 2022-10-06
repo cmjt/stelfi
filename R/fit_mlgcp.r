@@ -102,6 +102,7 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' data(marked, package = "stelfi")
 #' loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
 #' domain <- sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(loc.d))))
+#' stelfi_load_inla()
 #' smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1),
 #' max.edge = c(0.3, 0.7), cutoff = 0.05)
 #' locs <- cbind(x = marked$x, y = marked$y)

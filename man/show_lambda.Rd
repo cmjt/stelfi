@@ -43,6 +43,7 @@ over which temporal index to plot the estimated spatial intensity.
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
 locs <- data.frame(x = xyt$x, y = xyt$y)
+stelfi_load_inla()
 bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
 smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
 fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
@@ -52,4 +53,6 @@ show_lambda(fit, smesh = smesh, sf = domain)
 }
 \seealso{
 \code{\link{show_field}} and \code{\link{get_fields}}
+
+\code{\link{fit_lgcp}}
 }

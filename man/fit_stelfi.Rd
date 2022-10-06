@@ -60,7 +60,33 @@ Fits spatiotemporal Hawkes models. The self-excitement is
 Gaussian in space and exponentially decaying in time.
 }
 \details{
-TODO
+Temporal self-excitement follows an exponential decay function.
+The self-excitement over space follows a Gaussian distribution centered at the triggering event.
+There are two formulations of this model. The default is that the Gaussian function has a fixed spatial
+covariance matrix, independent of time. Alternatively, covariance can be directly proportional to time,
+meaning that the self-excitement radiates out from the center over time.
+This can be appropriate when the mechanism causing self-excitement travels
+at a finite speed, but is very memory-intensive. The spatiotemporal intensity function
+used by \code{\link{stelfi}} is
+\eqn{\lambda(s,t) = \mu + \alpha \Sigma_{i:\tau_i<t}(\textrm{exp}(-\beta * (t-\tau_i)) G_i(s-x_i, t - \tau_i))}
+where
+\itemize{
+\item \eqn{\mu} is the background rate,
+\item \eqn{\beta} is the rate of temporal decay,
+\item \eqn{\alpha} is the increase in intensity after an event,
+\item \eqn{\tau_i} are the event times,
+\item \eqn{x_i} are the event locations (in 2D Euclidean space), and
+\item \eqn{G_i(s-x_i, t - \tau_i)} is the spatial self-excitement kernel.
+}
+\eqn{G_i(.,.)} can take two forms:
+\itemize{
+\item For time-independent spatial excitement (\code{time_independent = TRUE}),
+\eqn{G_i(s-x_i, t - \tau_i) = f(s - x_i)}
+where \eqn{f} is the density function of \eqn{\textrm{N}(0, \Sigma)}.
+\item For time-dependent spatial excitement (\code{time_independent = FALSE}),
+\eqn{G_i(s-x_i, t - \tau_i) = f(s - x_i)}
+where \eqn{f} is the density function of \eqn{\textrm{N}(0, (t-\tau_i)\Sigma)}.
+}
 }
 \examples{
 \dontrun{
@@ -70,6 +96,7 @@ N <- 50
 locs <- data.frame(x = xyt$x[1:N], y = xyt$y[1:N])
 times <- xyt$t[1:N]
 domain <- sf::st_as_sf(xyt$window)
+stelfi_load_inla()
 bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
 smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3) 
 param <- list( mu = 3, alpha = 1, beta = 3, xsigma = 0.2, ysigma = 0.2, rho = 0.8)

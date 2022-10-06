@@ -42,7 +42,9 @@ as well as \code{tmesh} then spatiotemporal (AR(1)) data will be simulated.
 \examples{
 \donttest{
 data(xyt, package = "stelfi")
+if(require("sf")) {
 domain <- sf::st_as_sf(xyt$window)
+stelfi_load_inla()
 bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
 smesh <- INLA::inla.mesh.2d(boundary = bnd,
 max.edge = 0.75, cutoff = 0.3)
@@ -55,4 +57,8 @@ tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
 parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2)
 sim <- sim_lgcp(parameters = parameters, sf = domain, smesh = smesh, tmesh = tmesh)
 }
+}
+}
+\seealso{
+\code{\link{fit_lgcp}}
 }

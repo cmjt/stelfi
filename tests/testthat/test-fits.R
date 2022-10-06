@@ -1,3 +1,4 @@
+stelfi_load_inla()
 test_that("Hawkes simulation", {
     ## sim_hawkes example
     set.seed(1234)

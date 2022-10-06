@@ -21,6 +21,7 @@ params <- c(mu = 9, alpha = 3, beta = 10)
 fit <- fit_hawkes(times = times, parameters = params)
 get_coefs(fit)
 ## LGCP
+stelfi_load_inla()
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
 locs <- data.frame(x = xyt$x, y = xyt$y)

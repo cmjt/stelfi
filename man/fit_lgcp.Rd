@@ -85,6 +85,7 @@ distance such that the correlation is \eqn{\sim 0.139}.
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
 locs <- data.frame(x = xyt$x, y = xyt$y)
+stelfi_load_inla()
 bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
 smesh <- INLA::inla.mesh.2d(boundary = bnd,
 max.edge = 0.75, cutoff = 0.3)
