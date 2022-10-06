@@ -41,7 +41,7 @@
 #' ### ********************** ###
 #' data(retweets_niwa, package = "stelfi")
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa), units = "mins"))))
-#' params <- c(mu = 9, alpha = 3, beta = 10)
+#' params <- c(mu = 0.05, alpha = 0.05, beta = 0.1)
 #' fit <- fit_hawkes(times = times, parameters = params)
 #' get_coefs(fit)
 #' ### ********************** ###
@@ -51,9 +51,9 @@
 #' earthquakes <- nz_earthquakes[order(nz_earthquakes$origintime),]
 #' earthquakes <- earthquakes[!duplicated(earthquakes$origintime), ]
 #' times <- earthquakes$origintime
-#' times <- as.numeric(difftime(times, min(times), units = "mins"))
+#' times <- as.numeric(difftime(times, min(times), units = "hours"))
 #' marks <- earthquakes$magnitude
-#' params <- c(mu = 3, alpha = 0.05, beta = 1)
+#' params <- c(mu = 0.05, alpha = 0.05, beta = 1)
 #' fit <- fit_hawkes(times = times, parameters = params, marks = marks)
 #' get_coefs(fit)
 #' }
