@@ -6,11 +6,7 @@
 #' @inheritParams sim_hawkes
 #' @param p An optional vector of pseudo times at which to calculate the intensity.
 #' @inheritParams fit_hawkes_cbf
-#' @examples
-#' times <- sim_hawkes(10.2, 3.1, 8.9, method = "2")
-#' hawkes_intensity(times = times, 10.2, 3.1, 8.9)
-#' 
-#' @export
+#' @noRd
 hawkes_intensity <- function(times, mu, alpha, beta,
                             p, marks = rep(1, length(times)), 
                             background_parameters) {

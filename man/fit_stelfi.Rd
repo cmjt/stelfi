@@ -35,6 +35,9 @@ of the domain.}
 \item \code{beta},  rate of exponential decay of intensity after event occurrence
 \item \code{tau},  \eqn{\tau} parameter for the GMRF (supplied only if \code{GMRF = TRUE})
 \item \code{kappa}, \eqn{\kappa} parameter for the GMRF (supplied only if \code{GMRF = TRUE})
+\item \code{xsigma}, standard deviation on x-axis of self-exciting kernel (if \code{time_independent = FALSE}, it is the s.d. after 1 time unit)
+\item \code{ysigma}, standard deviation on y-axis of self-exciting kernel (if \code{time_independent = FALSE}, it is the s.d. after 1 time unit)
+\item \code{rho}, correlation between x and y for the self-exciting kernel (the off-diagonal elements in the kernel's covariate matrix are \code{xsigma * ysigma * rho})
 }}
 
 \item{covariates}{Optional, a \code{matrix} of covariates at each
