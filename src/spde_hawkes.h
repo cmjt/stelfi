@@ -165,7 +165,7 @@ Type spde_hawkes(objective_function<Type>* obj) {
   Type tau = exp(log_tau);
 
 
-  SparseMatrix<Type> Q = Q_spde(spde,kappa) * tau; // create the precision matrix from the spde model for the GMRF
+  SparseMatrix<Type> Q = Q_spde(spde,kappa) * pow(tau, 2); // create the precision matrix from the spde model for the GMRF
   SIMULATE {
     // simulate the random field
     rnorm_fill(x);
