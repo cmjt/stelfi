@@ -27,7 +27,6 @@ Authors@R:
 Depends:
     R (>= 4.1.0)
 Imports:
-    INLA (>= 21.08.31),
     TMB (>= 1.7.20),
     sf (>= 1.0.8),
     Matrix,
@@ -47,6 +46,7 @@ LazyDataCompression: xz
 Encoding: UTF-8
 RoxygenNote: 7.2.1
 Suggests:
+    INLA (>= 21.08.31),
     testthat (>= 3.0.0),
     rmarkdown,
     maptools,

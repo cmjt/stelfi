@@ -11,8 +11,7 @@
 #' either \code{mu} (base rate of the Hawkes process) or \code{background_parameters}
 #' (parameter(s) for the assumed non-homogeneous background function;
 #' could be a list of multiple values). May also contain \code{marks} (a vector of numerical marks).
-#' 
-#' @seealso \code{\link{hawkes_intensity}}
+#'
 #' @examples \dontrun{
 #' data(retweets_niwa, package = "stelfi")
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))

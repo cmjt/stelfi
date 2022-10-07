@@ -54,6 +54,3 @@ fit <- fit_hawkes(times = times, parameters = params)
 show_hawkes_GOF(fit)
 }
 }
-\seealso{
-\code{\link{hawkes_intensity}}
-}

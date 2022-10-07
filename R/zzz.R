@@ -2,7 +2,7 @@
 #'
 #' Loads the INLA package with \code{requireNamespace("INLA", quietly = TRUE)}.
 #' On loading \code{\link{stelfi}} \code{repos['INLA']} set as
-#' \url{"https://inla.r-inla-download.org/R/testing"}.
+#' \code{"https://inla.r-inla-download.org/R/testing/"}.
 #'
 #' @references Lindgren, F. and Rue, H. (2015) Bayesian spatial modelling with R-INLA.
 #' \emph{Journal of Statistical Software}, \strong{63}: 1--25.

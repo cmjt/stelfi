@@ -204,6 +204,7 @@ fit_mlgcp <-  function(locs, sf, marks, smesh, parameters = list(), methods,
     w_areas <- w$weights
     ypp <- points_in_mesh(as.data.frame(locs), w)
     ## SPDE
+    stelfi_load_inla()
     spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
     lmat <- INLA::inla.spde.make.A(smesh, locs)
     if(!missing(covariates)) {

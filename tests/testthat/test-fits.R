@@ -1,4 +1,3 @@
-stelfi_load_inla()
 test_that("Hawkes simulation", {
     ## sim_hawkes example
     set.seed(1234)
@@ -45,6 +44,8 @@ test_that("Non-homogeneous Hawkes model fitting", {
     expect_equal(estB, 0.02600446, tolerance = 0.1)
 })
 test_that("LGCP model fitting (spatial)", {
+    skip_on_cran()
+    stelfi_load_inla()
     data(xyt, package = "stelfi")
     domain <- sf::st_as_sf(xyt$window)
     locs <- data.frame(x = xyt$x, y = xyt$y)
@@ -60,6 +61,8 @@ test_that("LGCP model fitting (spatial)", {
     expect_equal(pars[3], 0.95, tolerance = 0.1)
 })
 test_that("LGCP model fitting (spatiotemporal)", {
+    skip_on_cran()
+    stelfi_load_inla()
     require(maptools)
     data(xyt, package = "stelfi")
     domain <- sf::st_as_sf(xyt$window)
@@ -79,6 +82,8 @@ test_that("LGCP model fitting (spatiotemporal)", {
     expect_equal(pars[3], -1.06, tolerance = 1)
 })
 test_that("LGCP model fitting (marked)", {
+    skip_on_cran()
+    stelfi_load_inla()
     data(marked, package = "stelfi")
     loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
     domain <-  sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(loc.d))))
@@ -100,6 +105,8 @@ test_that("LGCP model fitting (marked)", {
     expect_equal(pars[3], -0.279, tolerance = 0.01)
 })
 test_that("Spatial self-exciting (no GMRF)", {
+    skip_on_cran()
+    stelfi_load_inla()
     data(xyt, package = "stelfi")
     N <- 50
     locs <- data.frame(x = xyt$x[1:N], y = xyt$y[1:N])
@@ -117,6 +124,8 @@ test_that("Spatial self-exciting (no GMRF)", {
     expect_equal(pars[7], -0.17, tolerance = 0.2)
 })
 test_that("Spatial self-exciting (GMRF)", {
+    skip_on_cran()
+    stelfi_load_inla()
     data(xyt, package = "stelfi")
     N <- 50
     locs <- data.frame(x = xyt$x[1:N], y = xyt$y[1:N])

@@ -146,5 +146,5 @@ Hawkes, AG. (1971) Spectra of some self-exciting and mutually exciting point pro
 \emph{Biometrika}, \strong{58}: 83--90.
 }
 \seealso{
-\code{link{show_hawkes}} and \code{\link{hawkes_intensity}}
+\code{link{show_hawkes}}
 }

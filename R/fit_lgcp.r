@@ -255,6 +255,7 @@ prep_data_lgcp <- function(locs, sf, smesh, tmesh) {
     w_areas <- w$weights
     nv <- smesh$n
     ## SPDE
+    stelfi_load_inla()
     spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
     ## spatial or spatiotemporal
     if (!missing(tmesh)) {
