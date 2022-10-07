@@ -143,6 +143,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' ### ********************** ###
 #' ## A spatial only LGCP
 #' ### ********************** ###
+#' if(require("INLA",quietly = TRUE)) {
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
 #' locs <- data.frame(x = xyt$x, y = xyt$y)
@@ -161,6 +162,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
 #' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh, tmesh = tmesh,
 #'  parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2))
+#' }
 #' }
 #' @export
 fit_lgcp <-  function(locs, sf, smesh, tmesh, parameters = list(), covariates,

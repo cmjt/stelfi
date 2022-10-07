@@ -99,6 +99,7 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' ### ********************** ###
 #' ## A joint likelihood marked LGCP model
 #' ### ********************** ###
+#' if(require("INLA", quietly = TRUE)) {
 #' data(marked, package = "stelfi")
 #' loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
 #' domain <- sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(loc.d))))
@@ -113,6 +114,7 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' fit <- fit_mlgcp(locs = locs, marks = marks,
 #' sf = domain, smesh = smesh,
 #' parameters = parameters, methods = 0,fields = 1)
+#' }
 #' }
 #' @export
 fit_mlgcp <-  function(locs, sf, marks, smesh, parameters = list(), methods,

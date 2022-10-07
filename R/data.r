@@ -47,10 +47,8 @@ NULL
 #' A dataset of retweet times of NIWA's viral leopard seal tweet
 #' on the 5th Feb 2019 (\url{https://twitter.com/niwa_nz/status/1092610541401587712}).
 #'
-#' @format A vector of length 4890
-#' \describe{
-#' \item{}{date and time of retweet}
-#' }
+#' @format A vector of length 4890 specifying the date and time of retweet (UTC)
+#' 
 #' @source \url{https://twitter.com/niwa_nz/status/1092610541401587712}
 #' @name retweets_niwa
 NULL

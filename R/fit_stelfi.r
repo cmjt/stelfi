@@ -139,6 +139,7 @@ fit_hspat_tmb <- function(times, locs, sf,
 #' @seealso \code{\link{fit_hawkes}} and \code{\link{fit_lgcp}}
 #' @examples \dontrun{
 #' ## No GMRF
+#' if(require("INLA")){
 #' data(xyt, package = "stelfi")
 #' N <- 50
 #' locs <- data.frame(x = xyt$x[1:N], y = xyt$y[1:N])
@@ -156,6 +157,7 @@ fit_hspat_tmb <- function(times, locs, sf,
 #' fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh,
 #' parameters = param, GMRF = TRUE)
 #' get_coefs(fit)
+#' }
 #' }
 #' @export
 fit_stelfi <-  function(times, locs, sf, smesh,  parameters, covariates,
