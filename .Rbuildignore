@@ -6,3 +6,6 @@ package-build/*
 stelfi.Rcheck/*
 ^LICENSE\.md$
 README.md
+^CRAN-RELEASE$
+cran-comments.md
+^\.github$

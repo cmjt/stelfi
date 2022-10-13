@@ -1,10 +1,19 @@
-Summary
--------
+<!-- badges: start -->
+  [![R-CMD-check](https://github.com/cmjt/stelfi/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/cmjt/stelfi/actions/workflows/R-CMD-check.yaml)
+  <!-- badges: end -->
 
-**R** package for fitting a range of **s**patio**te**mporal models that
-include **l**atent **fi**elds.
+# stelfi: A package to fit Hawkes and Log-Gaussian Cox Point Processes Using Template Model Builder
 
-This package is **under construction**. To install run `devtools::install_github("cmjt/stelfi")`.
+## Installation
 
-#### Examples, see [here](https://cmjt.github.io/stelfi/)
+The development version of this package can be installed using
+
+```
+require(devtools)
+devtools::install_github("cmjt/stelfi")
+```
+
+## Examples
+
+See [here](https://cmjt.github.io/stelfi/) for some examples of `stelfi`'s functionality.
 
