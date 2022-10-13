@@ -48,7 +48,7 @@ jobs:
         env:
           _R_CHECK_FORCE_SUGGESTS: false
         with:
-          extra-packages: any::rcmdcheck
+          extra-packages: any::rcmdcheck, local::.
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2
