@@ -43,7 +43,7 @@ jobs:
         env:
           _R_CHECK_FORCE_SUGGESTS: false
         with:
-          extra-packages: any::rcmdcheck, INLA=?ignore
+          extra-packages: any::rcmdcheck
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2
