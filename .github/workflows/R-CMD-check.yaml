@@ -27,7 +27,6 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
-      _R_CHECK_FORCE_SUGGESTS: false
 
     steps:
       - uses: actions/checkout@v2
@@ -41,10 +40,11 @@ jobs:
           use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
+        env:
+          _R_CHECK_FORCE_SUGGESTS: false
         with:
-          extra-packages: any::rcmdcheck
+          extra-packages: any::rcmdcheck, INLA=?ignore
           needs: check
-	  dependencies: '"hard"'
 
       - uses: r-lib/actions/check-r-package@v2
         with:
