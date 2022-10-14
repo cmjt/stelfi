@@ -94,6 +94,7 @@ share a common GMRF, i.e. \eqn{G_m(s) = G_{pp}(s)}; this is controled via the ar
 ### ********************** ###
 ## A joint likelihood marked LGCP model
 ### ********************** ###
+if(require("INLA", quietly = TRUE)) {
 data(marked, package = "stelfi")
 loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
 domain <- sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(loc.d))))
@@ -108,6 +109,7 @@ marks_coefs_pp = rep(0, ncol(marks)), betapp = 0)
 fit <- fit_mlgcp(locs = locs, marks = marks,
 sf = domain, smesh = smesh,
 parameters = parameters, methods = 0,fields = 1)
+}
 }
 }
 \seealso{

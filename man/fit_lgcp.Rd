@@ -82,6 +82,7 @@ distance such that the correlation is \eqn{\sim 0.139}.
 ### ********************** ###
 ## A spatial only LGCP
 ### ********************** ###
+if(require("INLA",quietly = TRUE)) {
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
 locs <- data.frame(x = xyt$x, y = xyt$y)
@@ -100,6 +101,7 @@ w0 <- 2
 tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
 fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh, tmesh = tmesh,
  parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2))
+}
 }
 }
 \references{

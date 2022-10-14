@@ -94,6 +94,7 @@ where \eqn{f} is the density function of \eqn{\textrm{N}(0, (t-\tau_i)\Sigma)}.
 \examples{
 \dontrun{
 ## No GMRF
+if(require("INLA")){
 data(xyt, package = "stelfi")
 N <- 50
 locs <- data.frame(x = xyt$x[1:N], y = xyt$y[1:N])
@@ -111,6 +112,7 @@ ysigma = 0.2, rho = 0.8)
 fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh,
 parameters = param, GMRF = TRUE)
 get_coefs(fit)
+}
 }
 }
 \seealso{

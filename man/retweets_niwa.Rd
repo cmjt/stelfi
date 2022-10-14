@@ -4,10 +4,7 @@
 \alias{retweets_niwa}
 \title{Retweets of NIWA's viral leopard seal Tweet}
 \format{
-A vector of length 4890
-\describe{
-\item{}{date and time of retweet}
-}
+A vector of length 4890 specifying the date and time of retweet (UTC)
 }
 \source{
 \url{https://twitter.com/niwa_nz/status/1092610541401587712}
