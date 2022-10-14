@@ -101,7 +101,7 @@ test_that("LGCP model fitting (marked)", {
                      fields = 0)
     pars <- as.numeric(get_coefs(fit)[, 1])
     expect_equal(pars[1], 9.90, tolerance = 0.1)
-    expect_equal(pars[3], -0.279, tolerance = 0.01)
+    expect_equal(pars[3], -0.279, tolerance = 0.1)
 })
 test_that("Spatial self-exciting (no GMRF)", {
     skip_on_cran()
