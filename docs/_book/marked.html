@@ -4,27 +4,25 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 4 Marked log-Gaussian Cox Process | Spatiotemporal LGCPs</title>
+  <title>Chapter 4 A marked log-Gaussian Cox Process | Fitting models using stelfi</title>
   <meta name="description" content="Using stelfi" />
-  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 4 Marked log-Gaussian Cox Process | Spatiotemporal LGCPs" />
+  <meta property="og:title" content="Chapter 4 A marked log-Gaussian Cox Process | Fitting models using stelfi" />
   <meta property="og:type" content="book" />
-  
   
   <meta property="og:description" content="Using stelfi" />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 4 Marked log-Gaussian Cox Process | Spatiotemporal LGCPs" />
+  <meta name="twitter:title" content="Chapter 4 A marked log-Gaussian Cox Process | Fitting models using stelfi" />
   
   <meta name="twitter:description" content="Using stelfi" />
   
 
-<meta name="author" content="Charlotte M. Jones-Todd" />
+<meta name="author" content="Charlotte M. Jones-Todd &amp; Alec van Helsdingen" />
 
 
-<meta name="date" content="2021-09-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +31,8 @@
   
 <link rel="prev" href="lgcp.html"/>
 <link rel="next" href="stelfi.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,9 +48,11 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/twitter-widget-0.0.1/widgets.js"></script>
 
 
 <style type="text/css">
@@ -119,28 +119,6 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
-<style type="text/css">
-/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-}
-.hanging div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}
-</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -158,37 +136,56 @@ div.csl-indent {
 <li><a href="./">Spatiotemporal LGCPs</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Installation</a></li>
+<li class="chapter" data-level="1" data-path="data.html"><a href="data.html"><i class="fa fa-check"></i><b>1</b> Datasets in <code>stelfi</code></a>
 <ul>
-<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#installing-stelfi"><i class="fa fa-check"></i><b>1.1</b> Installing <code>stelfi</code></a>
+<li class="chapter" data-level="1.1" data-path="data.html"><a href="data.html#temporal-point-pattern-data"><i class="fa fa-check"></i><b>1.1</b> Temporal point pattern data</a>
 <ul>
-<li class="chapter" data-level="1.1.1" data-path="index.html"><a href="index.html#compiling-templates"><i class="fa fa-check"></i><b>1.1.1</b> Compiling templates</a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#retweets_niwa"><i class="fa fa-check"></i><code>retweets_niwa</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#serial_uk"><i class="fa fa-check"></i><code>serial_uk</code></a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="data.html"><a href="data.html#spatiotemporal-point-pattern-data"><i class="fa fa-check"></i><b>1.2</b> Spatiotemporal point pattern data</a>
+<ul>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#bigfoot"><i class="fa fa-check"></i><code>bigfoot</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#ufo"><i class="fa fa-check"></i><code>ufo</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#earthquakes"><i class="fa fa-check"></i><code>earthquakes</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#murders_nz"><i class="fa fa-check"></i><code>murders_nz</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#terrorism"><i class="fa fa-check"></i><code>terrorism</code></a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="data.html"><a href="data.html#simulated-data"><i class="fa fa-check"></i><b>1.3</b> Simulated data</a>
+<ul>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#xyt"><i class="fa fa-check"></i><code>xyt</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#marked"><i class="fa fa-check"></i><code>marked</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#horse_mesh"><i class="fa fa-check"></i><code>horse_mesh</code></a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="hawkes.html"><a href="hawkes.html"><i class="fa fa-check"></i><b>2</b> Hawkes process</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes-function"><i class="fa fa-check"></i><b>2.1</b> The <code>fit_hawkes()</code> function</a></li>
-<li class="chapter" data-level="2.2" data-path="hawkes.html"><a href="hawkes.html#applied-examples"><i class="fa fa-check"></i><b>2.2</b> Applied examples</a>
+<li class="chapter" data-level="2.1" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes-function"><i class="fa fa-check"></i><b>2.1</b> The <code>fit_hawkes()</code> function</a>
 <ul>
-<li class="chapter" data-level="2.2.1" data-path="hawkes.html"><a href="hawkes.html#retweets"><i class="fa fa-check"></i><b>2.2.1</b> Retweets</a></li>
-<li class="chapter" data-level="2.2.2" data-path="hawkes.html"><a href="hawkes.html#uk-serial-killers"><i class="fa fa-check"></i><b>2.2.2</b> UK serial killers</a></li>
-<li class="chapter" data-level="2.2.3" data-path="hawkes.html"><a href="hawkes.html#malaria-cases"><i class="fa fa-check"></i><b>2.2.3</b> Malaria cases</a></li>
+<li class="chapter" data-level="2.1.1" data-path="hawkes.html"><a href="hawkes.html#fitting-a-hawkes-model"><i class="fa fa-check"></i><b>2.1.1</b> Fitting a Hawkes model</a></li>
+<li class="chapter" data-level="2.1.2" data-path="hawkes.html"><a href="hawkes.html#fitting-an-etas-type-marked-model"><i class="fa fa-check"></i><b>2.1.2</b> Fitting an ETAS-type marked model</a></li>
 </ul></li>
-<li class="chapter" data-level="2.3" data-path="hawkes.html"><a href="hawkes.html#simulation"><i class="fa fa-check"></i><b>2.3</b> Simulation</a></li>
-</ul></li>
-<li class="chapter" data-level="3" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>3</b> log-Gaussian Cox Process</a>
+<li class="chapter" data-level="2.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>2.2</b> The <code>fit_hawkes_cbf()</code> function</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>3.1</b> The <code>fit_lgcp()</code> function</a></li>
-<li class="chapter" data-level="3.2" data-path="lgcp.html"><a href="lgcp.html#fitting-a-lgcp"><i class="fa fa-check"></i><b>3.2</b> Fitting a LGCP</a>
-<ul>
-<li class="chapter" data-level="3.2.1" data-path="lgcp.html"><a href="lgcp.html#spatial-only"><i class="fa fa-check"></i><b>3.2.1</b> Spatial only</a></li>
-<li class="chapter" data-level="3.2.2" data-path="lgcp.html"><a href="lgcp.html#spatiotemporal-lgcp"><i class="fa fa-check"></i><b>3.2.2</b> Spatiotemporal LGCP</a></li>
+<li class="chapter" data-level="2.2.1" data-path="hawkes.html"><a href="hawkes.html#fitting-an-inhomogenous-hawkes-process"><i class="fa fa-check"></i><b>2.2.1</b> Fitting an inhomogenous Hawkes process</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="marked.html"><a href="marked.html"><i class="fa fa-check"></i><b>4</b> Marked log-Gaussian Cox Process</a>
+<li class="chapter" data-level="3" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>3</b> A log-Gaussian Cox Process</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="marked.html"><a href="marked.html#the-fit_mlgcp-function"><i class="fa fa-check"></i><b>4.1</b> The <code>fit_mlgcp()</code> function</a></li>
-<li class="chapter" data-level="4.2" data-path="marked.html"><a href="marked.html#fitting-a-marked-lgcp"><i class="fa fa-check"></i><b>4.2</b> Fitting a marked LGCP</a></li>
+<li class="chapter" data-level="3.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>3.1</b> The <code>fit_lgcp()</code> function</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="lgcp.html"><a href="lgcp.html#fitting-a-spatial-only-lgcp"><i class="fa fa-check"></i><b>3.1.1</b> Fitting a spatial only LGCP</a></li>
+<li class="chapter" data-level="3.1.2" data-path="lgcp.html"><a href="lgcp.html#spatiotemporal-lgcp"><i class="fa fa-check"></i><b>3.1.2</b> Spatiotemporal LGCP</a></li>
+<li class="chapter" data-level="3.1.3" data-path="lgcp.html"><a href="lgcp.html#simulating-a-spatiotemporal-lgcp"><i class="fa fa-check"></i><b>3.1.3</b> Simulating a spatiotemporal LGCP</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="data.html"><a href="data.html#marked"><i class="fa fa-check"></i><b>4</b> A marked log-Gaussian Cox Process</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="marked.html"><a href="marked.html"><i class="fa fa-check"></i><b>4.1</b> The <code>fit_mlgcp()</code> function</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="marked.html"><a href="marked.html#fitting-a-marked-lgcp"><i class="fa fa-check"></i><b>4.1.1</b> Fitting a marked LGCP</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="stelfi.html"><a href="stelfi.html"><i class="fa fa-check"></i><b>5</b> Spatiotemporal self-exciting model</a>
 <ul>
@@ -196,8 +193,6 @@ div.csl-indent {
 <li class="chapter" data-level="5.2" data-path="stelfi.html"><a href="stelfi.html#hawkes-spatial"><i class="fa fa-check"></i><b>5.2</b> Hawkes spatial</a></li>
 <li class="chapter" data-level="5.3" data-path="stelfi.html"><a href="stelfi.html#hawkes-spde"><i class="fa fa-check"></i><b>5.3</b> Hawkes spde</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="comparing-inla-and-stelfi-fitting-lgcps.html"><a href="comparing-inla-and-stelfi-fitting-lgcps.html"><i class="fa fa-check"></i><b>6</b> Comparing <code>INLA</code> and <code>stelfi</code> fitting LGCPs</a></li>
-<li class="chapter" data-level="7" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>7</b> Introduction</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -211,7 +206,7 @@ div.csl-indent {
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Spatiotemporal LGCPs</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Fitting models using <code>stelfi</code></a>
           </h1>
         </div>
 
@@ -219,44 +214,52 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="marked" class="section level1" number="4">
-<h1><span class="header-section-number">Chapter 4</span> Marked log-Gaussian Cox Process</h1>
-<div id="the-fit_mlgcp-function" class="section level2" number="4.1">
-<h2><span class="header-section-number">4.1</span> The <code>fit_mlgcp()</code> function</h2>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="marked.html#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">args</span>(fit_mlgcp)</span></code></pre></div>
-<pre><code>## function (locs, sp, marks, smesh, parameters, methods, strfixed, 
-##     strparam, idx, ...) 
+<div id="marked" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">Chapter 4</span> A marked log-Gaussian Cox Process<a href="data.html#marked" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Each event in a spatial LGCP may have a scalar or vector mark associated with it. In that case, we are interested not only in the spatial intensity of the point process but also the spatial distribution of the marks and the correlation between the marks and the point process.</p>
+<p>The intensity of the LGCP is as in the simple case:
+<span class="math display">\[\Lambda_{pp}(s) = \text{exp}(\beta_{pp} + G_{pp}(s) + \epsilon)\]</span>
+note the subscripts <span class="math inline">\(pp\)</span> indicating the point process.</p>
+<p>The mark(s) have their own field:
+<span class="math display">\[\Lambda_m(s)=\beta_{m}+G_m(s)+\alpha   \text{log}(\Lambda_{pp}(s)) +\epsilon\]</span>
+where <span class="math inline">\(\alpha\)</span> are coefficient(s) linking the point process and the mark(s).
+The meaning of <span class="math inline">\(\Lambda_m(s)\)</span> depends on the distribution of the marks. If the marks are from a Poisson distribution, it is the intensity (as with the point process). If the marks are from a Binomial distribution, it is the success probability, and the user must supply the number of trials for each event. If the marks are normally distributed, <span class="math inline">\(\Lambda_m(s)\)</span> models the mean, and the user must supply the standard deviation.
+The user can choose for the point processes and the marks to share a common GMRF, i.e. <span class="math inline">\(G_m(s) = G_{pp}(s)\)</span></p>
+<div id="the-fit_mlgcp-function" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> The <code>fit_mlgcp()</code> function<a href="marked.html#the-fit_mlgcp-function" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="marked.html#cb82-1"></a><span class="kw">args</span>(fit_mlgcp)</span></code></pre></div>
+<pre><code>## function (locs, sf, marks, smesh, parameters = list(), methods, 
+##     strfixed = matrix(1, nrow = nrow(locs), ncol = ncol(marks)), 
+##     fields = rep(1, ncol(marks)), covariates, pp_covariates, 
+##     marks_covariates, tmb_silent = TRUE, nlminb_silent = TRUE, 
+##     ...) 
 ## NULL</code></pre>
-</div>
-<div id="fitting-a-marked-lgcp" class="section level2" number="4.2">
-<h2><span class="header-section-number">4.2</span> Fitting a marked LGCP</h2>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="marked.html#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(marked)</span>
-<span id="cb50-2"><a href="marked.html#cb50-2" aria-hidden="true" tabindex="-1"></a>loc.d <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="sc">*</span> <span class="fu">cbind</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
-<span id="cb50-3"><a href="marked.html#cb50-3" aria-hidden="true" tabindex="-1"></a>domain <span class="ot">&lt;-</span> sp<span class="sc">::</span><span class="fu">SpatialPolygons</span>(<span class="fu">list</span>(sp<span class="sc">::</span><span class="fu">Polygons</span>(<span class="fu">list</span>(sp<span class="sc">::</span><span class="fu">Polygon</span>(loc.d)),<span class="st">&#39;0&#39;</span>)))</span>
-<span id="cb50-4"><a href="marked.html#cb50-4" aria-hidden="true" tabindex="-1"></a>smesh <span class="ot">&lt;-</span> INLA<span class="sc">::</span><span class="fu">inla.mesh.2d</span>(<span class="at">loc.domain =</span> loc.d, <span class="at">offset =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="dv">1</span>), </span>
-<span id="cb50-5"><a href="marked.html#cb50-5" aria-hidden="true" tabindex="-1"></a>                           <span class="at">max.edge =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.7</span>), <span class="at">cutoff =</span> <span class="fl">0.05</span>)</span>
-<span id="cb50-6"><a href="marked.html#cb50-6" aria-hidden="true" tabindex="-1"></a>locs <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="at">x =</span> marked<span class="sc">$</span>x, <span class="at">y =</span> marked<span class="sc">$</span>y)</span>
-<span id="cb50-7"><a href="marked.html#cb50-7" aria-hidden="true" tabindex="-1"></a>marks <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="at">m1 =</span> marked<span class="sc">$</span>m1, <span class="at">m2 =</span> marked<span class="sc">$</span>m2, <span class="at">m3 =</span> marked<span class="sc">$</span>m3)</span>
-<span id="cb50-8"><a href="marked.html#cb50-8" aria-hidden="true" tabindex="-1"></a>param <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">beta =</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> <span class="fu">ncol</span>(marks), <span class="at">ncol =</span> <span class="fu">ncol</span>(marks) <span class="sc">+</span> <span class="dv">1</span>) ,</span>
-<span id="cb50-9"><a href="marked.html#cb50-9" aria-hidden="true" tabindex="-1"></a>              <span class="at">tau =</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">4</span>), <span class="at">kappa =</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">4</span>),</span>
-<span id="cb50-10"><a href="marked.html#cb50-10" aria-hidden="true" tabindex="-1"></a>              <span class="at">betaresp =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">ncol</span>(marks)), <span class="at">betapp =</span> <span class="dv">0</span>)</span>
-<span id="cb50-11"><a href="marked.html#cb50-11" aria-hidden="true" tabindex="-1"></a><span class="do">## c(1,1,1) share all marks with point process, idx[3, 3] = 1</span></span>
-<span id="cb50-12"><a href="marked.html#cb50-12" aria-hidden="true" tabindex="-1"></a><span class="do">## means that the second mark will be shared with the third mark </span></span>
-<span id="cb50-13"><a href="marked.html#cb50-13" aria-hidden="true" tabindex="-1"></a>idx <span class="ot">&lt;-</span>  <span class="fu">cbind</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>), <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> <span class="fu">ncol</span>(marks), <span class="at">ncol =</span> <span class="fu">ncol</span>(marks)))</span>
-<span id="cb50-14"><a href="marked.html#cb50-14" aria-hidden="true" tabindex="-1"></a>idx[<span class="dv">3</span>, <span class="dv">3</span>] <span class="ot">=</span> <span class="dv">1</span></span>
-<span id="cb50-15"><a href="marked.html#cb50-15" aria-hidden="true" tabindex="-1"></a><span class="do">## number of &quot;structual&quot; parameters to be estimted relateing to marks</span></span>
-<span id="cb50-16"><a href="marked.html#cb50-16" aria-hidden="true" tabindex="-1"></a><span class="do">## only referenced as  log_sigma for Normal and log_scale for gamma</span></span>
-<span id="cb50-17"><a href="marked.html#cb50-17" aria-hidden="true" tabindex="-1"></a>strparam <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb50-18"><a href="marked.html#cb50-18" aria-hidden="true" tabindex="-1"></a><span class="do">## matrix of &quot;structual&quot; fixed parameters relateing to marks</span></span>
-<span id="cb50-19"><a href="marked.html#cb50-19" aria-hidden="true" tabindex="-1"></a><span class="do">## e.g., number of trials for binomial, effort for poisson</span></span>
-<span id="cb50-20"><a href="marked.html#cb50-20" aria-hidden="true" tabindex="-1"></a>strfixed <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">rep</span>(<span class="fu">log</span>(<span class="fl">0.25</span>), <span class="fu">nrow</span>(marks)), <span class="dv">1</span>, <span class="dv">2</span>)</span>
-<span id="cb50-21"><a href="marked.html#cb50-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb50-22"><a href="marked.html#cb50-22" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_mlgcp</span>(<span class="at">locs =</span> locs, <span class="at">marks =</span> marks,</span>
-<span id="cb50-23"><a href="marked.html#cb50-23" aria-hidden="true" tabindex="-1"></a>                 <span class="at">sp =</span> domain, <span class="at">smesh =</span> smesh,</span>
-<span id="cb50-24"><a href="marked.html#cb50-24" aria-hidden="true" tabindex="-1"></a>                 <span class="at">parameters =</span> param, <span class="at">methods =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">3</span>),</span>
-<span id="cb50-25"><a href="marked.html#cb50-25" aria-hidden="true" tabindex="-1"></a>                 <span class="at">strfixed =</span> strfixed, <span class="at">strparam =</span> strparam, <span class="at">idx =</span> idx)</span>
-<span id="cb50-26"><a href="marked.html#cb50-26" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit)</span></code></pre></div>
+<div id="fitting-a-marked-lgcp" class="section level3 hasAnchor" number="4.1.1">
+<h3><span class="header-section-number">4.1.1</span> Fitting a marked LGCP<a href="marked.html#fitting-a-marked-lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="marked.html#cb84-1"></a><span class="kw">data</span>(marked, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
+<span id="cb84-2"><a href="marked.html#cb84-2"></a>loc.d &lt;-<span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span><span class="kw">cbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb84-3"><a href="marked.html#cb84-3"></a>domain &lt;-<span class="st">  </span>sf<span class="op">::</span><span class="kw">st_sf</span>(<span class="dt">geometry =</span> sf<span class="op">::</span><span class="kw">st_sfc</span>(sf<span class="op">::</span><span class="kw">st_polygon</span>(<span class="kw">list</span>(loc.d))))</span>
+<span id="cb84-4"><a href="marked.html#cb84-4"></a>smesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.2d</span>(<span class="dt">loc.domain =</span> loc.d, <span class="dt">offset =</span> <span class="kw">c</span>(<span class="fl">0.3</span>, <span class="dv">1</span>),</span>
+<span id="cb84-5"><a href="marked.html#cb84-5"></a>                                <span class="dt">max.edge =</span> <span class="kw">c</span>(<span class="fl">0.3</span>, <span class="fl">0.7</span>), <span class="dt">cutoff =</span> <span class="fl">0.05</span>)</span>
+<span id="cb84-6"><a href="marked.html#cb84-6"></a>locs &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">x =</span> marked<span class="op">$</span>x, <span class="dt">y =</span> marked<span class="op">$</span>y)</span>
+<span id="cb84-7"><a href="marked.html#cb84-7"></a>marks &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">m1 =</span> marked<span class="op">$</span>m1) <span class="co">## Gaussian</span></span>
+<span id="cb84-8"><a href="marked.html#cb84-8"></a>parameters &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">betamarks =</span> <span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">nrow =</span> <span class="dv">1</span>, <span class="dt">ncol =</span> <span class="kw">ncol</span>(marks)),</span>
+<span id="cb84-9"><a href="marked.html#cb84-9"></a>                       <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>),</span>
+<span id="cb84-10"><a href="marked.html#cb84-10"></a>                       <span class="dt">marks_coefs_pp =</span> <span class="kw">rep</span>(<span class="dv">0</span>, <span class="kw">ncol</span>(marks)), <span class="dt">betapp =</span> <span class="dv">0</span>)</span>
+<span id="cb84-11"><a href="marked.html#cb84-11"></a></span>
+<span id="cb84-12"><a href="marked.html#cb84-12"></a>fit &lt;-<span class="st"> </span><span class="kw">fit_mlgcp</span>(<span class="dt">locs =</span> locs, <span class="dt">marks =</span> marks,</span>
+<span id="cb84-13"><a href="marked.html#cb84-13"></a>                     <span class="dt">sf =</span> domain, <span class="dt">smesh =</span> smesh,</span>
+<span id="cb84-14"><a href="marked.html#cb84-14"></a>                     <span class="dt">parameters =</span> parameters, <span class="dt">methods =</span> <span class="dv">0</span>,</span>
+<span id="cb84-15"><a href="marked.html#cb84-15"></a>                     <span class="dt">fields =</span> <span class="dv">0</span>)</span>
+<span id="cb84-16"><a href="marked.html#cb84-16"></a><span class="kw">get_coefs</span>(fit)</span></code></pre></div>
+<pre><code>##                  Estimate Std. Error
+## betamarks       9.9001310 0.30328413
+## betapp          2.7353452 0.13107553
+## marks_coefs_pp -0.2793246 0.42803457
+## tau             0.1028984 0.05948155
+## kappa           5.8998649 2.69286701</code></pre>
 
+</div>
 </div>
 </div>
             </section>
@@ -269,7 +272,6 @@ div.csl-indent {
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -309,6 +311,10 @@ gitbook.start({
 "text": null
 },
 "download": ["docs.pdf", "docs.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "subsection"
 }

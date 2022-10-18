@@ -1,6 +1,6 @@
 # Datasets in `stelfi` {#data}
 
-Below are the data packaged within `stelfi`; later chapters use the functionality offered by `stelfi` to model these data.
+Below are the data packaged within `stelfi`.
 
 ```{r}
 library(stelfi)
@@ -11,7 +11,6 @@ data(package = "stelfi")$result[, c("Item", "Title")]
 ## Temporal point pattern data
 
 
-
 ```{r, message=FALSE}
 ## load the tidyverse packages
 library(tidyverse)
@@ -19,7 +18,7 @@ library(tidyverse)
 
 ### `retweets_niwa`  {-}
 
-In 2019 a [NIWA](https://niwa.co.nz/) scientist [found a working USB in the scat of a leopard seal](https://www.nzherald.co.nz/nz/news/article.cfm?c_id=1&objectid=12201147), they then [tweeted about it](https://twitter.com/niwa_nz/status/1092610541401587712) in the hopes of finding its owner.
+In 2019 a [NIWA](https://niwa.co.nz/) scientist [found a working USB in the scat of a leopard seal](https://www.nzherald.co.nz/nz/news/article.cfm?c_id=1&objectid=12201147), they then [tweeted about it](https://twitter.com/niwa_nz/status/1092610541401587712) in the hopes of finding its owner. In [this chapter](#hawkes) a Hawkes process is fitted to these data.
 
 ```{r, echo = FALSE}
 ##devtools::install_github("gadenbuie/tweetrmd")
@@ -34,6 +33,7 @@ data(retweets_niwa, package = "stelfi")
 head(retweets_niwa)
 ```
 
+
 ```{r}
 ggplot(data.frame(time = retweets_niwa), aes(x = time)) + 
   geom_histogram() + ylab("Retweet frequency") + xlab("") +
@@ -42,19 +42,19 @@ ggplot(data.frame(time = retweets_niwa), aes(x = time)) +
 ```
 
 
-### `serial_uk`  {-}
+### `uk_serial`  {-}
 
-[Murder UK](http://www.murderuk.com/) documents some of the UKs most infamous multiple murderer cases. The `serial_uk` dataset contains summary information about the documented cases along with approximate timeframes.
+[Murder UK](http://www.murderuk.com/) documents some of the UKs most infamous multiple murderer cases. The `uk_serial` dataset contains summary information about the documented cases along with approximate timeframes.
 
 ```{r}
-data("serial_uk", package = "stelfi")
-head(serial_uk)
+data("uk_serial", package = "stelfi")
+head(uk_serial)
 ```
 
 
 ```{r}
-serial_uk %>%
-  mutate(time =  paste(Date.of.first.kill, "/01", sep='')) %>%
+uk_serial %>%
+  mutate(time =  paste(date_of_first_kill, "/01", sep='')) %>%
   mutate(time = as.Date(time, "%m/%Y/%d")) %>%
   ggplot(aes(x = time)) + 
   geom_histogram() + 
@@ -83,136 +83,104 @@ iraq <- maps::map("world", "Iraq", fill = TRUE, plot = FALSE) %>%
     sf::st_make_valid()
 ```
 
-### `bigfoot`  {-}
+### `sasquatch`  {-}
 
-The [Bigfoot Field Researchers Organization (BFRO)](https://www.bfro.net/) documents Bigfoot (Sasquatch) sightings; some data have been [collated](https://data.world/timothyrenner/bfro-sightings-data) and packaged in `stelfi` as`bigfoot`.
+The [Bigfoot Field Researchers Organization (BFRO)](https://www.bfro.net/) documents Bigfoot (Sasquatch) sightings; some data have been [collated](https://data.world/timothyrenner/bfro-sightings-data) and packaged in `stelfi` as`sasquatch`.
 
 ```{r}
-data("bigfoot", package = "stelfi")
-bigfoot
+data("sasquatch", package = "stelfi")
+sasquatch
 ```
 
 ```{r, echo = FALSE}
 ## needed for GDAL shipped with older Ubuntu dist
-sf::st_crs(bigfoot) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
+sf::st_crs(sasquatch) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
 ```
 
 ```{r}
-ggplot(bigfoot, aes(x = date)) + geom_histogram(bins = 150) +
+ggplot(sasquatch, aes(x = date)) + geom_histogram(bins = 150) +
   ylab("Frequency of Sasquatch sightings") + xlab("") +
   theme_bw()
 ```
 
 ```{r}
-ggplot(bigfoot) +  
+ggplot(sasquatch) +  
   geom_sf(alpha = 0.3) + 
   coord_sf() + 
   geom_sf(data = us, fill = NA) + 
   theme_classic()
 ```
 
-### `ufo`  {-}
 
+### `nz_earthquakes`  {-}
 
-The [UFO Sightings Map](https://www.arcgis.com/apps/webappviewer/index.html?id=ddda71d5211f47e782b12f3f8d06246e) shows reports of UFO sightings in the United States; some data have been [collated](https://data.world/timothyrenner/ufo-sightings#) and packaged in `stelfi` as `ufo`.
+[GeoNet Quake Search](http://quakesearch.geonet.org.nz/) catalogues New Zealand earthquake occurrence; some of these data have been and packaged in `stelfi` as `nz_earthquakes`. In [this chapter](#hawkes) a Hawkes process is fitted to these data.
+
 
 ```{r}
-data("ufo", package = "stelfi")
-ufo
+data("nz_earthquakes", package = "stelfi")
+nz_earthquakes
 ```
 
 ```{r, echo = FALSE}
 ## needed for GDAL shipped with older Ubuntu dist
-sf::st_crs(ufo) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
+sf::st_crs(nz_earthquakes) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
 ```
 
 ```{r}
-ggplot(ufo, aes(x = date_time)) + geom_histogram(bins = 150) +
-  ylab("Frequency of UFO sightings") + xlab("") +
-  theme_bw()
-```
-
-```{r}
-ggplot(ufo) +  
-  geom_sf(alpha = 0.1, size = 1) + 
-  coord_sf() + 
-  geom_sf(data = us, fill = NA) +
-  theme_classic()
-```
-
-### `earthquakes`  {-}
-
-[GeoNet Quake Search](http://quakesearch.geonet.org.nz/) catalogues New Zealand earthquake occurrence; some of these data have been and packaged in `stelfi` as `earthquakes`.
-
-```{r}
-data("earthquakes", package = "stelfi")
-earthquakes
-```
-
-```{r, echo = FALSE}
-## needed for GDAL shipped with older Ubuntu dist
-sf::st_crs(earthquakes) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
-```
-
-```{r}
-ggplot(earthquakes, aes(x = origintime)) + geom_histogram(bins = 100) +
+ggplot(nz_earthquakes, aes(x = origintime)) + geom_histogram(bins = 100) +
   ylab("Frequency of earthquakes") + xlab("") +
   theme_bw()
 ```
 
 ```{r}
-ggplot(earthquakes) +  
+ggplot(nz_earthquakes) +  
   geom_sf(alpha = 0.1) + 
   coord_sf() + 
   geom_sf(data = nz, fill = NA) +
   theme_classic()
 ```
 
-### `murders_nz`  {-}
+### `nz_murders`  {-}
 
-[The Homicide Report](https://interactives.stuff.co.nz/2019/the-homicide-report/) documents homicides in New Zealand. The `murders_nz` dataset contains summary information about the documented cases.
+[The Homicide Report](https://interactives.stuff.co.nz/2019/the-homicide-report/) documents homicides in New Zealand. The `nz_murders` dataset contains summary information about the documented cases.  In [this chapter](#hawkes) a spatiotemporal self-exciting model is fitted to these data.
 
 ```{r}
-data("murders_nz", package = "stelfi")
-murders_nz
+data("nz_murders", package = "stelfi")
+nz_murders
 ```
 
 ```{r, echo = FALSE}
 ## needed for GDAL shipped with older Ubuntu dist
-sf::st_crs(murders_nz) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
+sf::st_crs(nz_murders) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
 ```
 
 ```{r}
-ggplot(murders_nz, aes(x = Full_date)) + geom_histogram(bins = 100) +
+ggplot(nz_murders, aes(x = full_date)) + geom_histogram(bins = 100) +
   ylab("Frequency of murders") + xlab("") +
   theme_bw()
 ```
 
 ```{r}
-ggplot(murders_nz) +  
-  geom_sf(alpha = 0.5) + 
-  coord_sf() + 
-  geom_sf(data = nz, fill = NA) +
-  theme_classic()
+
 ```
 
-### `terrorism`  {-}
+### `iraq_terrorism`  {-}
 
-[The Global Terrorism Database (GTD)](http://www.start.umd.edu/gtd/) documents information on terrorism events worldwide; some of these data have been and packaged in `stelfi` as `terrorism`.
-
+[The Global Terrorism Database (GTD)](http://www.start.umd.edu/gtd/) documents information on terrorism events worldwide; some of these data have been and packaged in `stelfi` as `iraq_terrorism`. 
 
 ```{r}
-data("terrorism", package = "stelfi")
-terrorism
+data("iraq_terrorism", package = "stelfi")
+iraq_terrorism
 ```
 
 ```{r, echo = FALSE}
 ## needed for GDAL shipped with older Ubuntu dist
-sf::st_crs(terrorism) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
+sf::st_crs(iraq_terrorism) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
 ```
 
 ```{r}
-terrorism %>%
+iraq_terrorism %>%
   mutate(date = paste(iday, imonth, iyear, sep = "/")) %>%
   mutate(date = as.Date(date, "%d/%m/%Y")) %>%
   ggplot(., aes(x = date)) + geom_histogram(bins = 150) +
@@ -221,7 +189,7 @@ terrorism %>%
 ```
 
 ```{r}
-ggplot(terrorism) +  
+ggplot(iraq_terrorism) +  
   geom_sf(alpha = 0.3) + 
   coord_sf() + 
   geom_sf(data = iraq, fill = NA) +
@@ -231,6 +199,8 @@ ggplot(terrorism) +
 ## Simulated data
 
 ### `xyt`  {-}
+
+In [this chapter](#lgcp) a log-Gaussian Cox process is fitted to these data and in [this chapter](#stelfi) a spatiotemporal selfexciting model is fitted.
 
 ```{r}
 data("xyt", package = "stelfi")
@@ -245,6 +215,8 @@ ggplot(xyt_sf) + geom_sf(fill = NA) +
 
 
 ### `marked`  {-}
+
+In [this chapter](#fit-marked) a marked log-Gaussian Cox process is fitted to these data.
 
 ```{r}
 data(marked, package = "stelfi")
@@ -266,6 +238,8 @@ ggplot(marked_sf, aes(col = m1)) +
 
 
 ### `horse_mesh` {-}
+
+In [this chapter](#meshmetrics) we illustrate different geometric metrics of this triangulation.
 
 ```{r}
 data("horse_mesh", package = "stelfi")

@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 2 Hawkes process | Fitting models using stelfi</title>
+  <title>Chapter 2 Hawkes process | The R package stelfi</title>
   <meta name="description" content="Using stelfi" />
-  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.29 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 2 Hawkes process | Fitting models using stelfi" />
+  <meta property="og:title" content="Chapter 2 Hawkes process | The R package stelfi" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Using stelfi" />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 2 Hawkes process | Fitting models using stelfi" />
+  <meta name="twitter:title" content="Chapter 2 Hawkes process | The R package stelfi" />
   
   <meta name="twitter:description" content="Using stelfi" />
   
@@ -48,7 +48,6 @@
 
 
 
-<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
@@ -59,6 +58,7 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 pre.sourceCode { margin: 0; }
 @media screen {
@@ -119,6 +119,28 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -133,7 +155,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">Spatiotemporal LGCPs</a></li>
+<li><a href="./">stelfi</a></li>
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Installation</a></li>
@@ -142,15 +164,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.1" data-path="data.html"><a href="data.html#temporal-point-pattern-data"><i class="fa fa-check"></i><b>1.1</b> Temporal point pattern data</a>
 <ul>
 <li class="chapter" data-level="" data-path="data.html"><a href="data.html#retweets_niwa"><i class="fa fa-check"></i><code>retweets_niwa</code></a></li>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#serial_uk"><i class="fa fa-check"></i><code>serial_uk</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#uk_serial"><i class="fa fa-check"></i><code>uk_serial</code></a></li>
 </ul></li>
 <li class="chapter" data-level="1.2" data-path="data.html"><a href="data.html#spatiotemporal-point-pattern-data"><i class="fa fa-check"></i><b>1.2</b> Spatiotemporal point pattern data</a>
 <ul>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#bigfoot"><i class="fa fa-check"></i><code>bigfoot</code></a></li>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#ufo"><i class="fa fa-check"></i><code>ufo</code></a></li>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#earthquakes"><i class="fa fa-check"></i><code>earthquakes</code></a></li>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#murders_nz"><i class="fa fa-check"></i><code>murders_nz</code></a></li>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#terrorism"><i class="fa fa-check"></i><code>terrorism</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#sasquatch"><i class="fa fa-check"></i><code>sasquatch</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#nz_earthquakes"><i class="fa fa-check"></i><code>nz_earthquakes</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#nz_murders"><i class="fa fa-check"></i><code>nz_murders</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#iraq_terrorism"><i class="fa fa-check"></i><code>iraq_terrorism</code></a></li>
 </ul></li>
 <li class="chapter" data-level="1.3" data-path="data.html"><a href="data.html#simulated-data"><i class="fa fa-check"></i><b>1.3</b> Simulated data</a>
 <ul>
@@ -170,29 +191,33 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="2.2.1" data-path="hawkes.html"><a href="hawkes.html#fitting-an-inhomogenous-hawkes-process"><i class="fa fa-check"></i><b>2.2.1</b> Fitting an inhomogenous Hawkes process</a></li>
 </ul></li>
+<li class="chapter" data-level="2.3" data-path="hawkes.html"><a href="hawkes.html#the-sim_hawkes-function"><i class="fa fa-check"></i><b>2.3</b> The <code>sim_hawkes()</code> function</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>3</b> A log-Gaussian Cox Process</a>
+<li class="chapter" data-level="3" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>3</b> Log-Gaussian Cox process</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>3.1</b> The <code>fit_lgcp()</code> function</a>
 <ul>
 <li class="chapter" data-level="3.1.1" data-path="lgcp.html"><a href="lgcp.html#fitting-a-spatial-only-lgcp"><i class="fa fa-check"></i><b>3.1.1</b> Fitting a spatial only LGCP</a></li>
 <li class="chapter" data-level="3.1.2" data-path="lgcp.html"><a href="lgcp.html#spatiotemporal-lgcp"><i class="fa fa-check"></i><b>3.1.2</b> Spatiotemporal LGCP</a></li>
-<li class="chapter" data-level="3.1.3" data-path="lgcp.html"><a href="lgcp.html#simulating-a-spatiotemporal-lgcp"><i class="fa fa-check"></i><b>3.1.3</b> Simulating a spatiotemporal LGCP</a></li>
 </ul></li>
+<li class="chapter" data-level="3.2" data-path="lgcp.html"><a href="lgcp.html#the-sim_lgcp-function"><i class="fa fa-check"></i><b>3.2</b> The <code>sim_lgcp()</code> function</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="data.html"><a href="data.html#marked"><i class="fa fa-check"></i><b>4</b> A marked log-Gaussian Cox Process</a>
+<li class="chapter" data-level="4" data-path="fit-marked.html"><a href="fit-marked.html"><i class="fa fa-check"></i><b>4</b> Marked log-Gaussian Cox process</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="marked.html"><a href="marked.html"><i class="fa fa-check"></i><b>4.1</b> The <code>fit_mlgcp()</code> function</a>
+<li class="chapter" data-level="4.1" data-path="fit-marked.html"><a href="fit-marked.html#the-fit_mlgcp-function"><i class="fa fa-check"></i><b>4.1</b> The <code>fit_mlgcp()</code> function</a>
 <ul>
-<li class="chapter" data-level="4.1.1" data-path="marked.html"><a href="marked.html#fitting-a-marked-lgcp"><i class="fa fa-check"></i><b>4.1.1</b> Fitting a marked LGCP</a></li>
+<li class="chapter" data-level="4.1.1" data-path="fit-marked.html"><a href="fit-marked.html#fitting-a-marked-lgcp"><i class="fa fa-check"></i><b>4.1.1</b> Fitting a marked LGCP</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="stelfi.html"><a href="stelfi.html"><i class="fa fa-check"></i><b>5</b> Spatiotemporal self-exciting model</a>
+<li class="chapter" data-level="5" data-path="stelfi.html"><a href="stelfi.html"><i class="fa fa-check"></i><b>5</b> Spatiotemporal self-exciting models</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="stelfi.html"><a href="stelfi.html#the-fit_stelfi-function"><i class="fa fa-check"></i><b>5.1</b> The <code>fit_stelfi()</code> function</a></li>
-<li class="chapter" data-level="5.2" data-path="stelfi.html"><a href="stelfi.html#hawkes-spatial"><i class="fa fa-check"></i><b>5.2</b> Hawkes spatial</a></li>
-<li class="chapter" data-level="5.3" data-path="stelfi.html"><a href="stelfi.html#hawkes-spde"><i class="fa fa-check"></i><b>5.3</b> Hawkes spde</a></li>
+<li class="chapter" data-level="5.1" data-path="stelfi.html"><a href="stelfi.html#the-fit_stelfi-function"><i class="fa fa-check"></i><b>5.1</b> The <code>fit_stelfi()</code> function</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="stelfi.html"><a href="stelfi.html#spatiotemporal-hawkes-process"><i class="fa fa-check"></i><b>5.1.1</b> Spatiotemporal Hawkes process</a></li>
+<li class="chapter" data-level="5.1.2" data-path="stelfi.html"><a href="stelfi.html#including-a-random-field"><i class="fa fa-check"></i><b>5.1.2</b> Including a random field</a></li>
 </ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="meshmetrics.html"><a href="meshmetrics.html"><i class="fa fa-check"></i><b>6</b> Delaunay triangulation metrics</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -206,7 +231,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Fitting models using <code>stelfi</code></a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">The <code>R</code> package <code>stelfi</code></a>
           </h1>
         </div>
 
@@ -218,11 +243,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 2</span> Hawkes process<a href="hawkes.html#hawkes" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>A univariate Hawkes process is defined to be a self-exciting temporal point process where the conditional intensity function is given by</p>
 <p><span class="math display">\[\lambda(t) = \mu(t) + \Sigma_{i:\tau_i&lt;t}\nu(t-\tau_i)\]</span>
-where where <span class="math inline">\(\mu(t)\)</span> is the background rate of the process and <span class="math inline">\(\Sigma_{i:\tau_i&lt;t}\nu(t-\tau_i)\)</span> is some historic temporal dependence. First introduced by <span class="citation">Hawkes (<a href="#ref-hawkes" role="doc-biblioref">1971</a>)</span>, the classic homogeneous formulation is:</p>
+where where <span class="math inline">\(\mu(t)\)</span> is the background rate of the process and <span class="math inline">\(\Sigma_{i:\tau_i&lt;t}\nu(t-\tau_i)\)</span> is some historic temporal dependence. First introduced by <span class="citation"><a href="#ref-hawkes" role="doc-biblioref">Hawkes</a> (<a href="#ref-hawkes" role="doc-biblioref">1971</a>)</span>, the classic homogeneous formulation is:</p>
 <p><span class="math display">\[\lambda(t) = \mu + \alpha \Sigma_{i:\tau_i&lt;t}\text{exp}(-\beta * (t-\tau_i)) \]</span></p>
 <div id="the-fit_hawkes-function" class="section level2 hasAnchor" number="2.1">
 <h2><span class="header-section-number">2.1</span> The <code>fit_hawkes()</code> function<a href="hawkes.html#the-fit_hawkes-function" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="hawkes.html#cb42-1"></a><span class="kw">args</span>(fit_hawkes)</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="hawkes.html#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stelfi)</span>
+<span id="cb37-2"><a href="hawkes.html#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">args</span>(fit_hawkes)</span></code></pre></div>
 <pre><code>## function (times, parameters = list(), model = 1, marks = c(rep(1, 
 ##     length(times))), tmb_silent = TRUE, optim_silent = TRUE, 
 ##     ...) 
@@ -230,32 +256,32 @@ where where <span class="math inline">\(\mu(t)\)</span> is the background rate o
 <div id="fitting-a-hawkes-model" class="section level3 hasAnchor" number="2.1.1">
 <h3><span class="header-section-number">2.1.1</span> Fitting a Hawkes model<a href="hawkes.html#fitting-a-hawkes-model" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>A <a href="https://niwa.co.nz/">NIWA</a> scientist <a href="https://www.nzherald.co.nz/nz/news/article.cfm?c_id=1&amp;objectid=12201147">found a working USB in the scat of a leopard seal</a>, they then <a href="https://twitter.com/niwa_nz/status/1092610541401587712">tweeted about it</a> in the hopes of finding its owner.</p>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="hawkes.html#cb44-1"></a><span class="kw">data</span>(retweets_niwa)</span>
-<span id="cb44-2"><a href="hawkes.html#cb44-2"></a><span class="kw">head</span>(retweets_niwa)</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="hawkes.html#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(retweets_niwa)</span>
+<span id="cb39-2"><a href="hawkes.html#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(retweets_niwa)</span></code></pre></div>
 <pre><code>## [1] &quot;2019-02-07 06:50:08 UTC&quot; &quot;2019-02-07 06:50:08 UTC&quot;
 ## [3] &quot;2019-02-07 06:49:22 UTC&quot; &quot;2019-02-07 06:48:48 UTC&quot;
 ## [5] &quot;2019-02-07 06:47:52 UTC&quot; &quot;2019-02-07 06:47:42 UTC&quot;</code></pre>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="hawkes.html#cb46-1"></a><span class="co">## numeric time stamps</span></span>
-<span id="cb46-2"><a href="hawkes.html#cb46-2"></a>times &lt;-<span class="st"> </span><span class="kw">unique</span>(<span class="kw">sort</span>(<span class="kw">as.numeric</span>(<span class="kw">difftime</span>(retweets_niwa ,<span class="kw">min</span>(retweets_niwa),<span class="dt">units =</span> <span class="st">&quot;mins&quot;</span>))))</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="hawkes.html#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="do">## numeric time stamps</span></span>
+<span id="cb41-2"><a href="hawkes.html#cb41-2" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">sort</span>(<span class="fu">as.numeric</span>(<span class="fu">difftime</span>(retweets_niwa ,<span class="fu">min</span>(retweets_niwa),<span class="at">units =</span> <span class="st">&quot;mins&quot;</span>))))</span></code></pre></div>
 <div class="figure">
 <img src="docs_files/figure-html/plot%20hist-1.png" alt="Observed counts of retweet times" width="768" />
 <p class="caption">
 (#fig:plot hist)Observed counts of retweet times
 </p>
 </div>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="hawkes.html#cb47-1"></a>params &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dt">mu =</span> <span class="dv">9</span>, <span class="dt">alpha =</span> <span class="dv">3</span>, <span class="dt">beta =</span> <span class="dv">10</span>)</span>
-<span id="cb47-2"><a href="hawkes.html#cb47-2"></a><span class="co">## must have compiled TMB templates first use compile_stelfi()</span></span>
-<span id="cb47-3"><a href="hawkes.html#cb47-3"></a>fit &lt;-<span class="st"> </span><span class="kw">fit_hawkes</span>(<span class="dt">times =</span> times, <span class="dt">parameters =</span> params) </span></code></pre></div>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="hawkes.html#cb48-1"></a><span class="co">## print out estimated parameters</span></span>
-<span id="cb48-2"><a href="hawkes.html#cb48-2"></a>pars &lt;-<span class="st"> </span><span class="kw">get_coefs</span>(fit)</span>
-<span id="cb48-3"><a href="hawkes.html#cb48-3"></a>pars</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="hawkes.html#cb42-1" aria-hidden="true" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">mu =</span> <span class="dv">9</span>, <span class="at">alpha =</span> <span class="dv">3</span>, <span class="at">beta =</span> <span class="dv">10</span>)</span>
+<span id="cb42-2"><a href="hawkes.html#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="do">## must have compiled TMB templates first use compile_stelfi()</span></span>
+<span id="cb42-3"><a href="hawkes.html#cb42-3" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_hawkes</span>(<span class="at">times =</span> times, <span class="at">parameters =</span> params) </span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="hawkes.html#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="do">## print out estimated parameters</span></span>
+<span id="cb43-2"><a href="hawkes.html#cb43-2" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit)</span>
+<span id="cb43-3"><a href="hawkes.html#cb43-3" aria-hidden="true" tabindex="-1"></a>pars</span></code></pre></div>
 <pre><code>##         Estimate  Std. Error
 ## mu    0.06328099 0.017783908
 ## alpha 0.07596531 0.007777899
 ## beta  0.07911346 0.008109789</code></pre>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="hawkes.html#cb50-1"></a><span class="kw">show_hawkes</span>(fit)</span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="hawkes.html#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_hawkes</span>(fit)</span></code></pre></div>
 <p><img src="docs_files/figure-html/plot-1.png" width="864" /></p>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="hawkes.html#cb51-1"></a><span class="kw">show_hawkes_GOF</span>(fit)</span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="hawkes.html#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_hawkes_GOF</span>(fit)</span></code></pre></div>
 <pre><code>## 
 ##  Asymptotic one-sample Kolmogorov-Smirnov test
 ## 
@@ -276,8 +302,8 @@ where where <span class="math inline">\(\mu(t)\)</span> is the background rate o
 <p><span class="math display">\[\lambda(t; m(t)) = \mu + \alpha \Sigma_{i:\tau_i&lt;t}m(\tau_i)\text{exp}(-\beta * (t-\tau_i)) \]</span>
 where <span class="math inline">\(\mu\)</span> is the background rate of the process and <span class="math inline">\(m(t)\)</span> is the temporal mark. Each event <span class="math inline">\(i\)</span> has an associated mark <span class="math inline">\(\tau_i\)</span> that multiples the self-exciting component of <span class="math inline">\(\lambda\)</span>.</p>
 <p>In this example, the events are earthquakes and the marks are the Richter magnitude of each earthquake.</p>
-<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="hawkes.html#cb53-1"></a><span class="kw">data</span>(<span class="st">&quot;earthquakes&quot;</span>)</span>
-<span id="cb53-2"><a href="hawkes.html#cb53-2"></a><span class="kw">head</span>(earthquakes)</span></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="hawkes.html#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;nz_earthquakes&quot;</span>)</span>
+<span id="cb48-2"><a href="hawkes.html#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(nz_earthquakes)</span></code></pre></div>
 <pre><code>## Simple feature collection with 6 features and 3 fields
 ## Geometry type: POINT
 ## Dimension:     XY
@@ -290,24 +316,24 @@ where <span class="math inline">\(\mu\)</span> is the background rate of the pro
 ## 4 2014-12-12 13:37:00  4.459034  9.394531  POINT (172.368 -43.63492)
 ## 5 2014-11-20 08:24:00  3.116447 10.039062 POINT (172.7836 -43.42493)
 ## 6 2014-11-18 14:19:00  3.158710 11.269531  POINT (172.7936 -43.4897)</code></pre>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="hawkes.html#cb55-1"></a>earthquakes &lt;-<span class="st"> </span>earthquakes[<span class="kw">order</span>(earthquakes<span class="op">$</span>origintime),]</span>
-<span id="cb55-2"><a href="hawkes.html#cb55-2"></a>earthquakes &lt;-<span class="st"> </span>earthquakes[<span class="op">!</span><span class="kw">duplicated</span>(earthquakes<span class="op">$</span>origintime),]</span>
-<span id="cb55-3"><a href="hawkes.html#cb55-3"></a>times &lt;-<span class="st"> </span>earthquakes<span class="op">$</span>origintime</span>
-<span id="cb55-4"><a href="hawkes.html#cb55-4"></a>times &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">difftime</span>(times , <span class="kw">min</span>(times), <span class="dt">units =</span> <span class="st">&quot;mins&quot;</span>))</span>
-<span id="cb55-5"><a href="hawkes.html#cb55-5"></a>marks &lt;-<span class="st"> </span>earthquakes<span class="op">$</span>magnitude</span>
-<span id="cb55-6"><a href="hawkes.html#cb55-6"></a>params &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dt">mu =</span> <span class="dv">3</span>, <span class="dt">alpha =</span> <span class="fl">0.05</span>, <span class="dt">beta =</span> <span class="dv">1</span>)</span>
-<span id="cb55-7"><a href="hawkes.html#cb55-7"></a><span class="co">## must have compiled TMB templates first use compile_stelfi()</span></span>
-<span id="cb55-8"><a href="hawkes.html#cb55-8"></a>fit &lt;-<span class="st"> </span><span class="kw">fit_hawkes</span>(<span class="dt">times =</span> times, <span class="dt">parameters =</span> params, <span class="dt">marks =</span> marks) </span>
-<span id="cb55-9"><a href="hawkes.html#cb55-9"></a><span class="co">## print out estimated parameters</span></span>
-<span id="cb55-10"><a href="hawkes.html#cb55-10"></a>pars &lt;-<span class="st"> </span><span class="kw">get_coefs</span>(fit)</span>
-<span id="cb55-11"><a href="hawkes.html#cb55-11"></a>pars</span></code></pre></div>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="hawkes.html#cb50-1" aria-hidden="true" tabindex="-1"></a>nz_earthquakes <span class="ot">&lt;-</span> nz_earthquakes[<span class="fu">order</span>(nz_earthquakes<span class="sc">$</span>origintime),]</span>
+<span id="cb50-2"><a href="hawkes.html#cb50-2" aria-hidden="true" tabindex="-1"></a>nz_earthquakes <span class="ot">&lt;-</span> nz_earthquakes[<span class="sc">!</span><span class="fu">duplicated</span>(nz_earthquakes<span class="sc">$</span>origintime),]</span>
+<span id="cb50-3"><a href="hawkes.html#cb50-3" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> nz_earthquakes<span class="sc">$</span>origintime</span>
+<span id="cb50-4"><a href="hawkes.html#cb50-4" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">difftime</span>(times , <span class="fu">min</span>(times), <span class="at">units =</span> <span class="st">&quot;mins&quot;</span>))</span>
+<span id="cb50-5"><a href="hawkes.html#cb50-5" aria-hidden="true" tabindex="-1"></a>marks <span class="ot">&lt;-</span> nz_earthquakes<span class="sc">$</span>magnitude</span>
+<span id="cb50-6"><a href="hawkes.html#cb50-6" aria-hidden="true" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">mu =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">beta =</span> <span class="dv">1</span>)</span>
+<span id="cb50-7"><a href="hawkes.html#cb50-7" aria-hidden="true" tabindex="-1"></a><span class="do">## must have compiled TMB templates first use compile_stelfi()</span></span>
+<span id="cb50-8"><a href="hawkes.html#cb50-8" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_hawkes</span>(<span class="at">times =</span> times, <span class="at">parameters =</span> params, <span class="at">marks =</span> marks) </span>
+<span id="cb50-9"><a href="hawkes.html#cb50-9" aria-hidden="true" tabindex="-1"></a><span class="do">## print out estimated parameters</span></span>
+<span id="cb50-10"><a href="hawkes.html#cb50-10" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit)</span>
+<span id="cb50-11"><a href="hawkes.html#cb50-11" aria-hidden="true" tabindex="-1"></a>pars</span></code></pre></div>
 <pre><code>##           Estimate   Std. Error
 ## mu    0.0002001766 1.206014e-05
 ## alpha 0.0005125373 2.934243e-05
 ## beta  0.0020558328 1.204552e-04</code></pre>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="hawkes.html#cb57-1"></a><span class="kw">show_hawkes</span>(fit)</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-39-1.png" width="864" /></p>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="hawkes.html#cb58-1"></a><span class="kw">show_hawkes_GOF</span>(fit)</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="hawkes.html#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_hawkes</span>(fit)</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-36-1.png" width="864" /></p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="hawkes.html#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_hawkes_GOF</span>(fit)</span></code></pre></div>
 <pre><code>## 
 ##  Asymptotic one-sample Kolmogorov-Smirnov test
 ## 
@@ -320,12 +346,12 @@ where <span class="math inline">\(\mu\)</span> is the background rate of the pro
 ## 
 ## data:  interarrivals
 ## X-squared = 104.09, df = 1, p-value &lt; 2.2e-16</code></pre>
-<p><img src="docs_files/figure-html/unnamed-chunk-40-1.png" width="864" /></p>
+<p><img src="docs_files/figure-html/unnamed-chunk-37-1.png" width="864" /></p>
 </div>
 </div>
 <div id="the-fit_hawkes_cbf-function" class="section level2 hasAnchor" number="2.2">
 <h2><span class="header-section-number">2.2</span> The <code>fit_hawkes_cbf()</code> function<a href="hawkes.html#the-fit_hawkes_cbf-function" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="hawkes.html#cb60-1"></a><span class="kw">args</span>(fit_hawkes_cbf)</span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="hawkes.html#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">args</span>(fit_hawkes_cbf)</span></code></pre></div>
 <pre><code>## function (times, parameters = list(), model = 1, marks = c(rep(1, 
 ##     length(times))), background, background_integral, background_parameters, 
 ##     background_min, tmb_silent = TRUE, optim_silent = TRUE) 
@@ -336,45 +362,62 @@ where <span class="math inline">\(\mu\)</span> is the background rate of the pro
 <p><span class="math display">\[\lambda(t) = \mu(t) + \alpha \Sigma_{i:\tau_i&lt;t}\text{exp}(-\beta * (t-\tau_i)) \]</span>
 The background <span class="math inline">\(\mu(t)\)</span> is time varying, rather than being constant.</p>
 <p>The following example uses simulated data.</p>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="hawkes.html#cb62-1"></a><span class="kw">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb62-2"><a href="hawkes.html#cb62-2"></a><span class="kw">library</span>(hawkesbow)</span>
-<span id="cb62-3"><a href="hawkes.html#cb62-3"></a><span class="co"># Simulate a Hawkes process with mu = 1+sin(t), alpha=1, beta =2</span></span>
-<span id="cb62-4"><a href="hawkes.html#cb62-4"></a>times &lt;-<span class="st"> </span>hawkesbow<span class="op">::</span><span class="kw">hawkes</span>(<span class="dv">1000</span>, <span class="dt">fun=</span><span class="cf">function</span>(y) {<span class="dv">1</span><span class="fl">+0.5</span><span class="op">*</span><span class="kw">sin</span>(y)}, <span class="dt">M=</span><span class="fl">1.5</span>, <span class="dt">repr=</span><span class="fl">0.5</span>, <span class="dt">family=</span><span class="st">&quot;exp&quot;</span>, <span class="dt">rate=</span><span class="dv">2</span>)<span class="op">$</span>p</span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="hawkes.html#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb57-2"><a href="hawkes.html#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(hawkesbow)</span>
+<span id="cb57-3"><a href="hawkes.html#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate a Hawkes process with mu = 1+sin(t), alpha=1, beta =2</span></span>
+<span id="cb57-4"><a href="hawkes.html#cb57-4" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> hawkesbow<span class="sc">::</span><span class="fu">hawkes</span>(<span class="dv">1000</span>, <span class="at">fun=</span><span class="cf">function</span>(y) {<span class="dv">1</span><span class="fl">+0.5</span><span class="sc">*</span><span class="fu">sin</span>(y)}, <span class="at">M=</span><span class="fl">1.5</span>, <span class="at">repr=</span><span class="fl">0.5</span>, <span class="at">family=</span><span class="st">&quot;exp&quot;</span>, <span class="at">rate=</span><span class="dv">2</span>)<span class="sc">$</span>p</span></code></pre></div>
 <p>We will attempt to recover these parameter values, modelling the background as $ (t) = A + Bsin(t)$. The background will be written as a function of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, where <span class="math inline">\(A = e^x\)</span> and <span class="math inline">\(B= logit(y) e^x\)</span>. This formulation ensures the background is never negative.</p>
-<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="hawkes.html#cb63-1"></a><span class="co">## The background function must take a single parameter and the time(s) at which it is evaluated</span></span>
-<span id="cb63-2"><a href="hawkes.html#cb63-2"></a>background &lt;-<span class="st"> </span><span class="cf">function</span>(params,times){</span>
-<span id="cb63-3"><a href="hawkes.html#cb63-3"></a>        A =<span class="st"> </span><span class="kw">exp</span>(params[[<span class="dv">1</span>]])</span>
-<span id="cb63-4"><a href="hawkes.html#cb63-4"></a>        B =<span class="st"> </span>stats<span class="op">::</span><span class="kw">plogis</span>(params[[<span class="dv">2</span>]]) <span class="op">*</span><span class="st"> </span>A</span>
-<span id="cb63-5"><a href="hawkes.html#cb63-5"></a>        <span class="kw">return</span>(A <span class="op">+</span><span class="st"> </span>B<span class="op">*</span><span class="kw">sin</span>(times))</span>
-<span id="cb63-6"><a href="hawkes.html#cb63-6"></a>}</span>
-<span id="cb63-7"><a href="hawkes.html#cb63-7"></a></span>
-<span id="cb63-8"><a href="hawkes.html#cb63-8"></a><span class="co">## The background_integral function must take a single parameter and the time at which it is evaluated</span></span>
-<span id="cb63-9"><a href="hawkes.html#cb63-9"></a>background_integral &lt;-<span class="st"> </span><span class="cf">function</span>(params,x){</span>
-<span id="cb63-10"><a href="hawkes.html#cb63-10"></a>        A =<span class="st"> </span><span class="kw">exp</span>(params[[<span class="dv">1</span>]])</span>
-<span id="cb63-11"><a href="hawkes.html#cb63-11"></a>        B =<span class="st"> </span>stats<span class="op">::</span><span class="kw">plogis</span>(params[[<span class="dv">2</span>]]) <span class="op">*</span><span class="st"> </span>A</span>
-<span id="cb63-12"><a href="hawkes.html#cb63-12"></a>        <span class="kw">return</span>((A<span class="op">*</span>x)<span class="op">-</span>B<span class="op">*</span><span class="kw">cos</span>(x))</span>
-<span id="cb63-13"><a href="hawkes.html#cb63-13"></a>}</span>
-<span id="cb63-14"><a href="hawkes.html#cb63-14"></a>param =<span class="st"> </span><span class="kw">list</span>(<span class="dt">alpha =</span> <span class="fl">0.5</span>, <span class="dt">beta =</span> <span class="fl">1.5</span>)</span>
-<span id="cb63-15"><a href="hawkes.html#cb63-15"></a>background_param =<span class="st"> </span><span class="kw">list</span>(<span class="dv">1</span>,<span class="dv">1</span>)</span>
-<span id="cb63-16"><a href="hawkes.html#cb63-16"></a>fit &lt;-<span class="st"> </span><span class="kw">fit_hawkes_cbf</span>(<span class="dt">times =</span> times, <span class="dt">parameters =</span> param, <span class="dt">background =</span> background, <span class="dt">background_integral =</span> background_integral, <span class="dt">background_parameters =</span> background_param)</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="hawkes.html#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="do">## The background function must take a single parameter and the time(s) at which it is evaluated</span></span>
+<span id="cb58-2"><a href="hawkes.html#cb58-2" aria-hidden="true" tabindex="-1"></a>background <span class="ot">&lt;-</span> <span class="cf">function</span>(params,times){</span>
+<span id="cb58-3"><a href="hawkes.html#cb58-3" aria-hidden="true" tabindex="-1"></a>        A <span class="ot">=</span> <span class="fu">exp</span>(params[[<span class="dv">1</span>]])</span>
+<span id="cb58-4"><a href="hawkes.html#cb58-4" aria-hidden="true" tabindex="-1"></a>        B <span class="ot">=</span> stats<span class="sc">::</span><span class="fu">plogis</span>(params[[<span class="dv">2</span>]]) <span class="sc">*</span> A</span>
+<span id="cb58-5"><a href="hawkes.html#cb58-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(A <span class="sc">+</span> B<span class="sc">*</span><span class="fu">sin</span>(times))</span>
+<span id="cb58-6"><a href="hawkes.html#cb58-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb58-7"><a href="hawkes.html#cb58-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-8"><a href="hawkes.html#cb58-8" aria-hidden="true" tabindex="-1"></a><span class="do">## The background_integral function must take a single parameter and the time at which it is evaluated</span></span>
+<span id="cb58-9"><a href="hawkes.html#cb58-9" aria-hidden="true" tabindex="-1"></a>background_integral <span class="ot">&lt;-</span> <span class="cf">function</span>(params,x){</span>
+<span id="cb58-10"><a href="hawkes.html#cb58-10" aria-hidden="true" tabindex="-1"></a>        A <span class="ot">=</span> <span class="fu">exp</span>(params[[<span class="dv">1</span>]])</span>
+<span id="cb58-11"><a href="hawkes.html#cb58-11" aria-hidden="true" tabindex="-1"></a>        B <span class="ot">=</span> stats<span class="sc">::</span><span class="fu">plogis</span>(params[[<span class="dv">2</span>]]) <span class="sc">*</span> A</span>
+<span id="cb58-12"><a href="hawkes.html#cb58-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>((A<span class="sc">*</span>x)<span class="sc">-</span>B<span class="sc">*</span><span class="fu">cos</span>(x))</span>
+<span id="cb58-13"><a href="hawkes.html#cb58-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb58-14"><a href="hawkes.html#cb58-14" aria-hidden="true" tabindex="-1"></a>param <span class="ot">=</span> <span class="fu">list</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">beta =</span> <span class="fl">1.5</span>)</span>
+<span id="cb58-15"><a href="hawkes.html#cb58-15" aria-hidden="true" tabindex="-1"></a>background_param <span class="ot">=</span> <span class="fu">list</span>(<span class="dv">1</span>,<span class="dv">1</span>)</span>
+<span id="cb58-16"><a href="hawkes.html#cb58-16" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_hawkes_cbf</span>(<span class="at">times =</span> times, <span class="at">parameters =</span> param, <span class="at">background =</span> background, <span class="at">background_integral =</span> background_integral, <span class="at">background_parameters =</span> background_param)</span></code></pre></div>
 <p>The estimated values of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> respectively are</p>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="hawkes.html#cb64-1"></a><span class="kw">exp</span>(fit<span class="op">$</span>background_parameters[<span class="dv">1</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="hawkes.html#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(fit<span class="sc">$</span>background_parameters[<span class="dv">1</span>])</span></code></pre></div>
 <pre><code>## [1] 1.025526</code></pre>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="hawkes.html#cb66-1"></a><span class="kw">plogis</span>(fit<span class="op">$</span>background_parameters[<span class="dv">2</span>]) <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(fit<span class="op">$</span>background_parameters[<span class="dv">1</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="hawkes.html#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plogis</span>(fit<span class="sc">$</span>background_parameters[<span class="dv">2</span>]) <span class="sc">*</span> <span class="fu">exp</span>(fit<span class="sc">$</span>background_parameters[<span class="dv">1</span>])</span></code></pre></div>
 <pre><code>## [1] 0.5635566</code></pre>
 <p>The estimated values of <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> respectively are:</p>
-<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="hawkes.html#cb68-1"></a>ab =<span class="st"> </span><span class="kw">get_coefs</span>(fit)[<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>,<span class="dv">1</span>]</span>
-<span id="cb68-2"><a href="hawkes.html#cb68-2"></a>ab</span></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="hawkes.html#cb63-1" aria-hidden="true" tabindex="-1"></a>ab <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit)[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,<span class="dv">1</span>]</span>
+<span id="cb63-2"><a href="hawkes.html#cb63-2" aria-hidden="true" tabindex="-1"></a>ab</span></code></pre></div>
 <pre><code>##    alpha     beta 
 ## 1.040863 2.179564</code></pre>
+</div>
+</div>
+<div id="the-sim_hawkes-function" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> The <code>sim_hawkes()</code> function<a href="hawkes.html#the-sim_hawkes-function" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="hawkes.html#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">args</span>(sim_hawkes)</span></code></pre></div>
+<pre><code>## function (mu, alpha, beta, n = 100, plot = FALSE, seed = 123, 
+##     method = &quot;1&quot;) 
+## NULL</code></pre>
+<p><strong><code>method = 1</code></strong></p>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="hawkes.html#cb67-1" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> <span class="fu">sim_hawkes</span>(<span class="at">mu =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">beta =</span> <span class="fl">0.3</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="hawkes.html#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sim)</span></code></pre></div>
+<pre><code>## [1] 0.6231314 0.7420664 0.7986166 2.0856174 2.1293941 2.4093639</code></pre>
+<p><strong><code>method = 2</code></strong></p>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="hawkes.html#cb70-1" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> <span class="fu">sim_hawkes</span>(<span class="at">mu =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">beta =</span> <span class="fl">0.3</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">method =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-45-1.png" width="672" /></p>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="hawkes.html#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sim)</span></code></pre></div>
+<pre><code>## [1] 0.6231314 0.7314123 1.1083232 1.1571593 1.1795519 2.2830958</code></pre>
 
 </div>
 </div>
-</div>
 <h3>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div id="refs" class="references hanging-indent">
-<div id="ref-hawkes">
-<p>Hawkes, AG. 1971. “Spectra of Some Self-Exciting and Mutually Exciting Point Processes.” <em>Biometrika</em>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-hawkes" class="csl-entry">
+Hawkes, AG. 1971. <span>“Spectra of Some Self-Exciting and Mutually Exciting Point Processes.”</span> <em>Biometrika</em>.
 </div>
 </div>
             </section>
@@ -443,7 +486,7 @@ gitbook.start({
     var script = document.createElement("script");
     script.type = "text/javascript";
     var src = "true";
-    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
     if (location.protocol !== "file:")
       if (/^https?:/.test(src))
         src = src.replace(/^https?:/, '');

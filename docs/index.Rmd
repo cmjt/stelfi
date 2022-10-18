@@ -1,5 +1,5 @@
 --- 
-title: "Fitting models using `stelfi`"
+title: "The `R` package `stelfi`"
 author: "Charlotte M. Jones-Todd & Alec van Helsdingen"
 date: ""
 site: bookdown::bookdown_site
@@ -10,29 +10,22 @@ link-citations: yes
 description: "Using `stelfi`"
 ---
 
-##### Charlotte M. Jones-Todd & Alec van Helsdingen
-
 
 # Installation {-}
 
-The `stelfi` package can be installed from Github:
+The development version of `stelfi` package can be installed from GitHub:
 
 ```{r eval=FALSE}
 devtools::install_github("cmjt/stelfi")
 ```
 
-**Compiling templates**
+The `stelfi` package requires installation of the non-CRAN package `INLA`. To install `INLA` use
 
-Before using the  `TMB` templates in `stelfi` you should use `compile_stelfi()` to compile them:
-
-```{r library,results = 'hide',message = FALSE, echo = FALSE}
-library(stelfi)
+```{r, eval = FALSE}
+install.packages("INLA",repos=c(getOption("repos"),INLA="https://inla.r-inla-download.org/R/stable"), dep=TRUE)
 ```
 
-```{r compile, eval = FALSE}
-stelfi::compile_stelfi()
-```
-
+If you have any issues please follow [these instructions](https://www.r-inla.org/download-install).
 
 ```{r include = FALSE}
 # automatically create a bib database for R packages

@@ -1,4 +1,4 @@
-# A marked log-Gaussian Cox Process {#marked}
+# Marked log-Gaussian Cox process {#fit-marked}
 
 Each event in a spatial LGCP may have a scalar or vector mark associated with it. In that case, we are interested not only in the spatial intensity of the point process but also the spatial distribution of the marks and the correlation between the marks and the point process. 
 
@@ -21,6 +21,20 @@ args(fit_mlgcp)
 
 ### Fitting a marked LGCP
 
+```{r, echo = FALSE}
+data(marked, package = "stelfi")
+marked_sf <- sf::st_as_sf(x = marked,
+                        coords = c("x", "y"))
+domain <- list(3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))) %>%
+  sf::st_polygon() %>% sf::st_sfc() %>% sf::st_sf(geometry = .)
+
+ggplot(marked_sf, aes(col = m1)) + 
+  geom_sf() + labs(color = "Gaussian mark") +
+  scale_color_continuous(type = "viridis") +
+  geom_sf(data = domain, fill = NA, inherit.aes = FALSE) +
+  theme_void()
+```
+
 ```{r, eval = TRUE}
 data(marked, package = "stelfi")
 loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
@@ -38,4 +52,14 @@ fit <- fit_mlgcp(locs = locs, marks = marks,
                      parameters = parameters, methods = 0,
                      fields = 0)
 get_coefs(fit)
+```
+
+
+```{r}
+get_fields(fit, smesh) |>
+    show_field(smesh = smesh) +
+	geom_sf(data = mesh_2_sf(smesh), fill = NA) +
+	geom_sf(data = domain, fill = NA, col = "black", lwd = 2)  +
+	geom_point(data = as.data.frame(locs), aes(x = x, y = y, cex = marks), alpha = 0.3, inherit.aes = FALSE) +
+	theme_void()
 ```

@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>References | Fitting models using stelfi</title>
+  <title>References | The R package stelfi</title>
   <meta name="description" content="Using stelfi" />
-  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.29 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="References | Fitting models using stelfi" />
+  <meta property="og:title" content="References | The R package stelfi" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Using stelfi" />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="References | Fitting models using stelfi" />
+  <meta name="twitter:title" content="References | The R package stelfi" />
   
   <meta name="twitter:description" content="Using stelfi" />
   
@@ -29,7 +29,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="stelfi.html"/>
+<link rel="prev" href="meshmetrics.html"/>
 
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -48,7 +48,6 @@
 
 
 
-<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
@@ -59,6 +58,7 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 pre.sourceCode { margin: 0; }
 @media screen {
@@ -119,6 +119,28 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -133,7 +155,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">Spatiotemporal LGCPs</a></li>
+<li><a href="./">stelfi</a></li>
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Installation</a></li>
@@ -142,15 +164,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.1" data-path="data.html"><a href="data.html#temporal-point-pattern-data"><i class="fa fa-check"></i><b>1.1</b> Temporal point pattern data</a>
 <ul>
 <li class="chapter" data-level="" data-path="data.html"><a href="data.html#retweets_niwa"><i class="fa fa-check"></i><code>retweets_niwa</code></a></li>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#serial_uk"><i class="fa fa-check"></i><code>serial_uk</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#uk_serial"><i class="fa fa-check"></i><code>uk_serial</code></a></li>
 </ul></li>
 <li class="chapter" data-level="1.2" data-path="data.html"><a href="data.html#spatiotemporal-point-pattern-data"><i class="fa fa-check"></i><b>1.2</b> Spatiotemporal point pattern data</a>
 <ul>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#bigfoot"><i class="fa fa-check"></i><code>bigfoot</code></a></li>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#ufo"><i class="fa fa-check"></i><code>ufo</code></a></li>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#earthquakes"><i class="fa fa-check"></i><code>earthquakes</code></a></li>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#murders_nz"><i class="fa fa-check"></i><code>murders_nz</code></a></li>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#terrorism"><i class="fa fa-check"></i><code>terrorism</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#sasquatch"><i class="fa fa-check"></i><code>sasquatch</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#nz_earthquakes"><i class="fa fa-check"></i><code>nz_earthquakes</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#nz_murders"><i class="fa fa-check"></i><code>nz_murders</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#iraq_terrorism"><i class="fa fa-check"></i><code>iraq_terrorism</code></a></li>
 </ul></li>
 <li class="chapter" data-level="1.3" data-path="data.html"><a href="data.html#simulated-data"><i class="fa fa-check"></i><b>1.3</b> Simulated data</a>
 <ul>
@@ -170,29 +191,33 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="2.2.1" data-path="hawkes.html"><a href="hawkes.html#fitting-an-inhomogenous-hawkes-process"><i class="fa fa-check"></i><b>2.2.1</b> Fitting an inhomogenous Hawkes process</a></li>
 </ul></li>
+<li class="chapter" data-level="2.3" data-path="hawkes.html"><a href="hawkes.html#the-sim_hawkes-function"><i class="fa fa-check"></i><b>2.3</b> The <code>sim_hawkes()</code> function</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>3</b> A log-Gaussian Cox Process</a>
+<li class="chapter" data-level="3" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>3</b> Log-Gaussian Cox process</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>3.1</b> The <code>fit_lgcp()</code> function</a>
 <ul>
 <li class="chapter" data-level="3.1.1" data-path="lgcp.html"><a href="lgcp.html#fitting-a-spatial-only-lgcp"><i class="fa fa-check"></i><b>3.1.1</b> Fitting a spatial only LGCP</a></li>
 <li class="chapter" data-level="3.1.2" data-path="lgcp.html"><a href="lgcp.html#spatiotemporal-lgcp"><i class="fa fa-check"></i><b>3.1.2</b> Spatiotemporal LGCP</a></li>
-<li class="chapter" data-level="3.1.3" data-path="lgcp.html"><a href="lgcp.html#simulating-a-spatiotemporal-lgcp"><i class="fa fa-check"></i><b>3.1.3</b> Simulating a spatiotemporal LGCP</a></li>
 </ul></li>
+<li class="chapter" data-level="3.2" data-path="lgcp.html"><a href="lgcp.html#the-sim_lgcp-function"><i class="fa fa-check"></i><b>3.2</b> The <code>sim_lgcp()</code> function</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="data.html"><a href="data.html#marked"><i class="fa fa-check"></i><b>4</b> A marked log-Gaussian Cox Process</a>
+<li class="chapter" data-level="4" data-path="fit-marked.html"><a href="fit-marked.html"><i class="fa fa-check"></i><b>4</b> Marked log-Gaussian Cox process</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="marked.html"><a href="marked.html"><i class="fa fa-check"></i><b>4.1</b> The <code>fit_mlgcp()</code> function</a>
+<li class="chapter" data-level="4.1" data-path="fit-marked.html"><a href="fit-marked.html#the-fit_mlgcp-function"><i class="fa fa-check"></i><b>4.1</b> The <code>fit_mlgcp()</code> function</a>
 <ul>
-<li class="chapter" data-level="4.1.1" data-path="marked.html"><a href="marked.html#fitting-a-marked-lgcp"><i class="fa fa-check"></i><b>4.1.1</b> Fitting a marked LGCP</a></li>
+<li class="chapter" data-level="4.1.1" data-path="fit-marked.html"><a href="fit-marked.html#fitting-a-marked-lgcp"><i class="fa fa-check"></i><b>4.1.1</b> Fitting a marked LGCP</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="stelfi.html"><a href="stelfi.html"><i class="fa fa-check"></i><b>5</b> Spatiotemporal self-exciting model</a>
+<li class="chapter" data-level="5" data-path="stelfi.html"><a href="stelfi.html"><i class="fa fa-check"></i><b>5</b> Spatiotemporal self-exciting models</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="stelfi.html"><a href="stelfi.html#the-fit_stelfi-function"><i class="fa fa-check"></i><b>5.1</b> The <code>fit_stelfi()</code> function</a></li>
-<li class="chapter" data-level="5.2" data-path="stelfi.html"><a href="stelfi.html#hawkes-spatial"><i class="fa fa-check"></i><b>5.2</b> Hawkes spatial</a></li>
-<li class="chapter" data-level="5.3" data-path="stelfi.html"><a href="stelfi.html#hawkes-spde"><i class="fa fa-check"></i><b>5.3</b> Hawkes spde</a></li>
+<li class="chapter" data-level="5.1" data-path="stelfi.html"><a href="stelfi.html#the-fit_stelfi-function"><i class="fa fa-check"></i><b>5.1</b> The <code>fit_stelfi()</code> function</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="stelfi.html"><a href="stelfi.html#spatiotemporal-hawkes-process"><i class="fa fa-check"></i><b>5.1.1</b> Spatiotemporal Hawkes process</a></li>
+<li class="chapter" data-level="5.1.2" data-path="stelfi.html"><a href="stelfi.html#including-a-random-field"><i class="fa fa-check"></i><b>5.1.2</b> Including a random field</a></li>
 </ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="meshmetrics.html"><a href="meshmetrics.html"><i class="fa fa-check"></i><b>6</b> Delaunay triangulation metrics</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -206,7 +231,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Fitting models using <code>stelfi</code></a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">The <code>R</code> package <code>stelfi</code></a>
           </h1>
         </div>
 
@@ -214,12 +239,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="references" class="section level1 unnumbered hasAnchor" number="">
+<div id="references" class="section level1 unnumbered hasAnchor">
 <h1>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 
-<div id="refs" class="references hanging-indent">
-<div>
-<p>Hawkes, AG. 1971. “Spectra of Some Self-Exciting and Mutually Exciting Point Processes.” <em>Biometrika</em>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div class="csl-entry">
+Hawkes, AG. 1971. <span>“Spectra of Some Self-Exciting and Mutually Exciting Point Processes.”</span> <em>Biometrika</em>.
 </div>
 </div>
 </div>
@@ -228,7 +253,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div>
         </div>
       </div>
-<a href="stelfi.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="meshmetrics.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 
     </div>
   </div>
@@ -289,7 +314,7 @@ gitbook.start({
     var script = document.createElement("script");
     script.type = "text/javascript";
     var src = "true";
-    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
     if (location.protocol !== "file:")
       if (/^https?:/.test(src))
         src = src.replace(/^https?:/, '');

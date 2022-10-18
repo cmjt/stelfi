@@ -10,6 +10,7 @@ A  univariate Hawkes process is defined to be a self-exciting temporal point pro
 ## The `fit_hawkes()` function
 
 ```{r}
+library(stelfi)
 args(fit_hawkes)
 ```
 
@@ -77,13 +78,13 @@ where $\mu$ is the background rate of the process and $m(t)$ is the temporal mar
 In this example, the events are earthquakes and the marks are the Richter magnitude of each earthquake. 
 
 ```{r}
-data("earthquakes")
-head(earthquakes)
-earthquakes <- earthquakes[order(earthquakes$origintime),]
-earthquakes <- earthquakes[!duplicated(earthquakes$origintime),]
-times <- earthquakes$origintime
+data("nz_earthquakes")
+head(nz_earthquakes)
+nz_earthquakes <- nz_earthquakes[order(nz_earthquakes$origintime),]
+nz_earthquakes <- nz_earthquakes[!duplicated(nz_earthquakes$origintime),]
+times <- nz_earthquakes$origintime
 times <- as.numeric(difftime(times , min(times), units = "mins"))
-marks <- earthquakes$magnitude
+marks <- nz_earthquakes$magnitude
 params <- c(mu = 3, alpha = 0.05, beta = 1)
 ## must have compiled TMB templates first use compile_stelfi()
 fit <- fit_hawkes(times = times, parameters = params, marks = marks) 
@@ -157,6 +158,27 @@ plogis(fit$background_parameters[2]) * exp(fit$background_parameters[1])
 The estimated values of $\alpha$ and $\beta$ respectively are:
 
 ```{r}
-ab = get_coefs(fit)[1:2,1]
+ab <- get_coefs(fit)[1:2,1]
 ab
+```
+
+
+## The `sim_hawkes()` function
+
+```{r}
+args(sim_hawkes)
+```
+
+**`method = 1`**
+
+```{r}
+sim <- sim_hawkes(mu = 2, alpha = 0.2, beta = 0.3, plot = TRUE)
+head(sim)
+```
+
+**`method = 2`**
+
+```{r}
+sim <- sim_hawkes(mu = 2, alpha = 0.2, beta = 0.3, plot = TRUE, method = 2)
+head(sim)
 ```

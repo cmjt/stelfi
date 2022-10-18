@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 1 Datasets in stelfi | Fitting models using stelfi</title>
+  <title>Chapter 1 Datasets in stelfi | The R package stelfi</title>
   <meta name="description" content="Using stelfi" />
-  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.29 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 1 Datasets in stelfi | Fitting models using stelfi" />
+  <meta property="og:title" content="Chapter 1 Datasets in stelfi | The R package stelfi" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Using stelfi" />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 1 Datasets in stelfi | Fitting models using stelfi" />
+  <meta name="twitter:title" content="Chapter 1 Datasets in stelfi | The R package stelfi" />
   
   <meta name="twitter:description" content="Using stelfi" />
   
@@ -48,7 +48,6 @@
 
 
 
-<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
@@ -59,6 +58,7 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 pre.sourceCode { margin: 0; }
 @media screen {
@@ -119,6 +119,28 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -133,7 +155,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">Spatiotemporal LGCPs</a></li>
+<li><a href="./">stelfi</a></li>
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Installation</a></li>
@@ -142,15 +164,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.1" data-path="data.html"><a href="data.html#temporal-point-pattern-data"><i class="fa fa-check"></i><b>1.1</b> Temporal point pattern data</a>
 <ul>
 <li class="chapter" data-level="" data-path="data.html"><a href="data.html#retweets_niwa"><i class="fa fa-check"></i><code>retweets_niwa</code></a></li>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#serial_uk"><i class="fa fa-check"></i><code>serial_uk</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#uk_serial"><i class="fa fa-check"></i><code>uk_serial</code></a></li>
 </ul></li>
 <li class="chapter" data-level="1.2" data-path="data.html"><a href="data.html#spatiotemporal-point-pattern-data"><i class="fa fa-check"></i><b>1.2</b> Spatiotemporal point pattern data</a>
 <ul>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#bigfoot"><i class="fa fa-check"></i><code>bigfoot</code></a></li>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#ufo"><i class="fa fa-check"></i><code>ufo</code></a></li>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#earthquakes"><i class="fa fa-check"></i><code>earthquakes</code></a></li>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#murders_nz"><i class="fa fa-check"></i><code>murders_nz</code></a></li>
-<li class="chapter" data-level="" data-path="data.html"><a href="data.html#terrorism"><i class="fa fa-check"></i><code>terrorism</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#sasquatch"><i class="fa fa-check"></i><code>sasquatch</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#nz_earthquakes"><i class="fa fa-check"></i><code>nz_earthquakes</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#nz_murders"><i class="fa fa-check"></i><code>nz_murders</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#iraq_terrorism"><i class="fa fa-check"></i><code>iraq_terrorism</code></a></li>
 </ul></li>
 <li class="chapter" data-level="1.3" data-path="data.html"><a href="data.html#simulated-data"><i class="fa fa-check"></i><b>1.3</b> Simulated data</a>
 <ul>
@@ -170,29 +191,33 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="2.2.1" data-path="hawkes.html"><a href="hawkes.html#fitting-an-inhomogenous-hawkes-process"><i class="fa fa-check"></i><b>2.2.1</b> Fitting an inhomogenous Hawkes process</a></li>
 </ul></li>
+<li class="chapter" data-level="2.3" data-path="hawkes.html"><a href="hawkes.html#the-sim_hawkes-function"><i class="fa fa-check"></i><b>2.3</b> The <code>sim_hawkes()</code> function</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>3</b> A log-Gaussian Cox Process</a>
+<li class="chapter" data-level="3" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>3</b> Log-Gaussian Cox process</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>3.1</b> The <code>fit_lgcp()</code> function</a>
 <ul>
 <li class="chapter" data-level="3.1.1" data-path="lgcp.html"><a href="lgcp.html#fitting-a-spatial-only-lgcp"><i class="fa fa-check"></i><b>3.1.1</b> Fitting a spatial only LGCP</a></li>
 <li class="chapter" data-level="3.1.2" data-path="lgcp.html"><a href="lgcp.html#spatiotemporal-lgcp"><i class="fa fa-check"></i><b>3.1.2</b> Spatiotemporal LGCP</a></li>
-<li class="chapter" data-level="3.1.3" data-path="lgcp.html"><a href="lgcp.html#simulating-a-spatiotemporal-lgcp"><i class="fa fa-check"></i><b>3.1.3</b> Simulating a spatiotemporal LGCP</a></li>
 </ul></li>
+<li class="chapter" data-level="3.2" data-path="lgcp.html"><a href="lgcp.html#the-sim_lgcp-function"><i class="fa fa-check"></i><b>3.2</b> The <code>sim_lgcp()</code> function</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="data.html"><a href="data.html#marked"><i class="fa fa-check"></i><b>4</b> A marked log-Gaussian Cox Process</a>
+<li class="chapter" data-level="4" data-path="fit-marked.html"><a href="fit-marked.html"><i class="fa fa-check"></i><b>4</b> Marked log-Gaussian Cox process</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="marked.html"><a href="marked.html"><i class="fa fa-check"></i><b>4.1</b> The <code>fit_mlgcp()</code> function</a>
+<li class="chapter" data-level="4.1" data-path="fit-marked.html"><a href="fit-marked.html#the-fit_mlgcp-function"><i class="fa fa-check"></i><b>4.1</b> The <code>fit_mlgcp()</code> function</a>
 <ul>
-<li class="chapter" data-level="4.1.1" data-path="marked.html"><a href="marked.html#fitting-a-marked-lgcp"><i class="fa fa-check"></i><b>4.1.1</b> Fitting a marked LGCP</a></li>
+<li class="chapter" data-level="4.1.1" data-path="fit-marked.html"><a href="fit-marked.html#fitting-a-marked-lgcp"><i class="fa fa-check"></i><b>4.1.1</b> Fitting a marked LGCP</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="stelfi.html"><a href="stelfi.html"><i class="fa fa-check"></i><b>5</b> Spatiotemporal self-exciting model</a>
+<li class="chapter" data-level="5" data-path="stelfi.html"><a href="stelfi.html"><i class="fa fa-check"></i><b>5</b> Spatiotemporal self-exciting models</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="stelfi.html"><a href="stelfi.html#the-fit_stelfi-function"><i class="fa fa-check"></i><b>5.1</b> The <code>fit_stelfi()</code> function</a></li>
-<li class="chapter" data-level="5.2" data-path="stelfi.html"><a href="stelfi.html#hawkes-spatial"><i class="fa fa-check"></i><b>5.2</b> Hawkes spatial</a></li>
-<li class="chapter" data-level="5.3" data-path="stelfi.html"><a href="stelfi.html#hawkes-spde"><i class="fa fa-check"></i><b>5.3</b> Hawkes spde</a></li>
+<li class="chapter" data-level="5.1" data-path="stelfi.html"><a href="stelfi.html#the-fit_stelfi-function"><i class="fa fa-check"></i><b>5.1</b> The <code>fit_stelfi()</code> function</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="stelfi.html"><a href="stelfi.html#spatiotemporal-hawkes-process"><i class="fa fa-check"></i><b>5.1.1</b> Spatiotemporal Hawkes process</a></li>
+<li class="chapter" data-level="5.1.2" data-path="stelfi.html"><a href="stelfi.html#including-a-random-field"><i class="fa fa-check"></i><b>5.1.2</b> Including a random field</a></li>
 </ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="meshmetrics.html"><a href="meshmetrics.html"><i class="fa fa-check"></i><b>6</b> Delaunay triangulation metrics</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -206,7 +231,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Fitting models using <code>stelfi</code></a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">The <code>R</code> package <code>stelfi</code></a>
           </h1>
         </div>
 
@@ -216,86 +241,86 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="data" class="section level1 hasAnchor" number="1">
 <h1><span class="header-section-number">Chapter 1</span> Datasets in <code>stelfi</code><a href="data.html#data" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>Below are the data packaged within <code>stelfi</code>; later chapters use the functionality offered by <code>stelfi</code> to model these data.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="data.html#cb3-1"></a><span class="kw">library</span>(stelfi)</span>
-<span id="cb3-2"><a href="data.html#cb3-2"></a><span class="kw">data</span>(<span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)<span class="op">$</span>result[, <span class="kw">c</span>(<span class="st">&quot;Item&quot;</span>, <span class="st">&quot;Title&quot;</span>)]</span></code></pre></div>
-<pre><code>##       Item            Title                                                  
-##  [1,] &quot;bigfoot&quot;       &quot;Bigfoot (Sasquatch) sightings in the USA, 2000 - 2005&quot;
-##  [2,] &quot;earthquakes&quot;   &quot;Earthquakes (Canterbury, NZ), 2010 - 2014&quot;            
-##  [3,] &quot;horse_mesh&quot;    &quot;Example &#39;inla.mesh&#39;&quot;                                  
-##  [4,] &quot;marked&quot;        &quot;Example marked point pattern data set&quot;                
-##  [5,] &quot;murders_nz&quot;    &quot;Murders of NZ, 2004 - 2019&quot;                           
-##  [6,] &quot;retweets_niwa&quot; &quot;Retweets of NIWA&#39;s viral leopard seal Tweet&quot;          
-##  [7,] &quot;serial_uk&quot;     &quot;Serial killers of the UK, 1828 - 2015&quot;                
-##  [8,] &quot;terrorism&quot;     &quot;Terrorism in Iraq, 2013 - 2017&quot;                       
-##  [9,] &quot;ufo&quot;           &quot;UFO sightings in the USA, 1969 - 2021&quot;                
-## [10,] &quot;xyt&quot;           &quot;Self-exciting point pattern&quot;</code></pre>
+<p>Below are the data packaged within <code>stelfi</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="data.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stelfi)</span>
+<span id="cb3-2"><a href="data.html#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="at">package =</span> <span class="st">&quot;stelfi&quot;</span>)<span class="sc">$</span>result[, <span class="fu">c</span>(<span class="st">&quot;Item&quot;</span>, <span class="st">&quot;Title&quot;</span>)]</span></code></pre></div>
+<pre><code>##       Item             Title                                                  
+##  [1,] &quot;horse_mesh&quot;     &quot;Example Delaunay triangulation&quot;                       
+##  [2,] &quot;horse_sf&quot;       &quot;Example &#39;sf&#39; &#39;POLYGON&#39;&quot;                               
+##  [3,] &quot;iraq_terrorism&quot; &quot;Terrorism in Iraq, 2013 - 2017&quot;                       
+##  [4,] &quot;marked&quot;         &quot;Example marked point pattern data set&quot;                
+##  [5,] &quot;nz_earthquakes&quot; &quot;Earthquakes in Canterbury, NZ, 2010 - 2014&quot;           
+##  [6,] &quot;nz_murders&quot;     &quot;Murders of NZ, 2004 - 2019&quot;                           
+##  [7,] &quot;retweets_niwa&quot;  &quot;Retweets of NIWA&#39;s viral leopard seal Tweet&quot;          
+##  [8,] &quot;sasquatch&quot;      &quot;Sasquatch (bigfoot) sightings in the USA, 2000 - 2005&quot;
+##  [9,] &quot;uk_serial&quot;      &quot;Serial killers of the UK, 1828 - 2015&quot;                
+## [10,] &quot;xyt&quot;            &quot;Self-exciting point pattern&quot;</code></pre>
 <div id="temporal-point-pattern-data" class="section level2 hasAnchor" number="1.1">
 <h2><span class="header-section-number">1.1</span> Temporal point pattern data<a href="data.html#temporal-point-pattern-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="data.html#cb5-1"></a><span class="co">## load the tidyverse packages</span></span>
-<span id="cb5-2"><a href="data.html#cb5-2"></a><span class="kw">library</span>(tidyverse)</span></code></pre></div>
-<div id="retweets_niwa" class="section level3 unnumbered hasAnchor" number="">
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="data.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">## load the tidyverse packages</span></span>
+<span id="cb5-2"><a href="data.html#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
+<div id="retweets_niwa" class="section level3 unnumbered hasAnchor">
 <h3><code>retweets_niwa</code><a href="data.html#retweets_niwa" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>In 2019 a <a href="https://niwa.co.nz/">NIWA</a> scientist <a href="https://www.nzherald.co.nz/nz/news/article.cfm?c_id=1&amp;objectid=12201147">found a working USB in the scat of a leopard seal</a>, they then <a href="https://twitter.com/niwa_nz/status/1092610541401587712">tweeted about it</a> in the hopes of finding its owner.</p>
+<p>In 2019 a <a href="https://niwa.co.nz/">NIWA</a> scientist <a href="https://www.nzherald.co.nz/nz/news/article.cfm?c_id=1&amp;objectid=12201147">found a working USB in the scat of a leopard seal</a>, they then <a href="https://twitter.com/niwa_nz/status/1092610541401587712">tweeted about it</a> in the hopes of finding its owner. In <a href="hawkes.html#hawkes">this chapter</a> a Hawkes process is fitted to these data.</p>
 <blockquote class="twitter-tweet" data-width="550" data-lang="en" data-dnt="true" data-theme="light"><p lang="en" dir="ltr">NIWA is searching for the owner of a USB stick found in the poo of a leopard seal… <br>Recognise this video? Scientists analysing the scat of leopard seals have come across an unexpected discovery – a USB stick full of photos &amp; still in working order!  <a href="https://t.co/2SZVkm5az4">https://t.co/2SZVkm5az4</a> <a href="https://t.co/JLEC8vuHH0">pic.twitter.com/JLEC8vuHH0</a></p>&mdash; NIWA (@niwa_nz) <a href="https://twitter.com/niwa_nz/status/1092610541401587712?ref_src=twsrc%5Etfw">February 5, 2019</a></blockquote>
 
 <p>The <code>retweets_niwa</code> dataset contains the retweet timestamps for this tweet.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="data.html#cb6-1"></a><span class="kw">data</span>(retweets_niwa, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
-<span id="cb6-2"><a href="data.html#cb6-2"></a><span class="kw">head</span>(retweets_niwa)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="data.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(retweets_niwa, <span class="at">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
+<span id="cb6-2"><a href="data.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(retweets_niwa)</span></code></pre></div>
 <pre><code>## [1] &quot;2019-02-07 06:50:08 UTC&quot; &quot;2019-02-07 06:50:08 UTC&quot;
 ## [3] &quot;2019-02-07 06:49:22 UTC&quot; &quot;2019-02-07 06:48:48 UTC&quot;
 ## [5] &quot;2019-02-07 06:47:52 UTC&quot; &quot;2019-02-07 06:47:42 UTC&quot;</code></pre>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="data.html#cb8-1"></a><span class="kw">ggplot</span>(<span class="kw">data.frame</span>(<span class="dt">time =</span> retweets_niwa), <span class="kw">aes</span>(<span class="dt">x =</span> time)) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb8-2"><a href="data.html#cb8-2"></a><span class="st">  </span><span class="kw">geom_histogram</span>() <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;Retweet frequency&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="op">+</span></span>
-<span id="cb8-3"><a href="data.html#cb8-3"></a><span class="st">  </span><span class="kw">theme_bw</span>()</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="data.html#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(<span class="at">time =</span> retweets_niwa), <span class="fu">aes</span>(<span class="at">x =</span> time)) <span class="sc">+</span> </span>
+<span id="cb8-2"><a href="data.html#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;Retweet frequency&quot;</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
+<span id="cb8-3"><a href="data.html#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
-<div id="serial_uk" class="section level3 unnumbered hasAnchor" number="">
-<h3><code>serial_uk</code><a href="data.html#serial_uk" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p><a href="http://www.murderuk.com/">Murder UK</a> documents some of the UKs most infamous multiple murderer cases. The <code>serial_uk</code> dataset contains summary information about the documented cases along with approximate timeframes.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="data.html#cb9-1"></a><span class="kw">data</span>(<span class="st">&quot;serial_uk&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
-<span id="cb9-2"><a href="data.html#cb9-2"></a><span class="kw">head</span>(serial_uk)</span></code></pre></div>
-<pre><code>##   Number.of.kills       Years                         Name                AKA
-## 1             300 1995 - 1998           Dr. Harold Shipman          Dr. Death
-## 2             160 1949 - 1983        Dr. John Bodkin Adams                   
-## 3              26        1978               Peter Dinsdale          Bruce Lee
-## 4              21 1865 - 1872              Mary Ann Cotton                   
-## 5              16        1828 William Burke &amp; William Hare     Body Snatchers
-## 6              15 1944 - 1948            John George Haigh Acid Bath Murderer
-##   Year.Start Year.End Date.of.first.kill population..M.
-## 1       1995     1998            03/1995          58.02
-## 2       1949     1983            08/1949          50.32
-## 3       1973       NA            06/1973          56.19
-## 4       1865     1872            01/1865          24.36
-## 5       1828       NA            02/1828          15.73
-## 6       1944     1948            09/1944          49.02</code></pre>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="data.html#cb11-1"></a>serial_uk <span class="op">%&gt;%</span></span>
-<span id="cb11-2"><a href="data.html#cb11-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">time =</span>  <span class="kw">paste</span>(Date.of.first.kill, <span class="st">&quot;/01&quot;</span>, <span class="dt">sep=</span><span class="st">&#39;&#39;</span>)) <span class="op">%&gt;%</span></span>
-<span id="cb11-3"><a href="data.html#cb11-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">time =</span> <span class="kw">as.Date</span>(time, <span class="st">&quot;%m/%Y/%d&quot;</span>)) <span class="op">%&gt;%</span></span>
-<span id="cb11-4"><a href="data.html#cb11-4"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> time)) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb11-5"><a href="data.html#cb11-5"></a><span class="st">  </span><span class="kw">geom_histogram</span>() <span class="op">+</span><span class="st"> </span></span>
-<span id="cb11-6"><a href="data.html#cb11-6"></a><span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Frequency of known first kill&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb11-7"><a href="data.html#cb11-7"></a><span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme_bw</span>()</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<div id="uk_serial" class="section level3 unnumbered hasAnchor">
+<h3><code>uk_serial</code><a href="data.html#uk_serial" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><a href="http://www.murderuk.com/">Murder UK</a> documents some of the UKs most infamous multiple murderer cases. The <code>uk_serial</code> dataset contains summary information about the documented cases along with approximate timeframes.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="data.html#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;uk_serial&quot;</span>, <span class="at">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
+<span id="cb9-2"><a href="data.html#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(uk_serial)</span></code></pre></div>
+<pre><code>##   number_of_kills       years                           name                aka
+## 1             300 1995 - 1998             Dr. Harold Shipman          Dr. Death
+## 2             160 1949 - 1983          Dr. John Bodkin Adams                   
+## 3              26        1978                 Peter Dinsdale          Bruce Lee
+## 4              21 1865 - 1872                Mary Ann Cotton                   
+## 5              16        1828 William Burke and William Hare     Body Snatchers
+## 6              15 1944 - 1948              John George Haigh Acid Bath Murderer
+##   year_start year_end date_of_first_kill population_million
+## 1       1995     1998            03/1995              58.02
+## 2       1949     1983            08/1949              50.32
+## 3       1973       NA            06/1973              56.19
+## 4       1865     1872            01/1865              24.36
+## 5       1828       NA            02/1828              15.73
+## 6       1944     1948            09/1944              49.02</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="data.html#cb11-1" aria-hidden="true" tabindex="-1"></a>uk_serial <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="data.html#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span>  <span class="fu">paste</span>(date_of_first_kill, <span class="st">&quot;/01&quot;</span>, <span class="at">sep=</span><span class="st">&#39;&#39;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb11-3"><a href="data.html#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.Date</span>(time, <span class="st">&quot;%m/%Y/%d&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb11-4"><a href="data.html#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> time)) <span class="sc">+</span> </span>
+<span id="cb11-5"><a href="data.html#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span> </span>
+<span id="cb11-6"><a href="data.html#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Frequency of known first kill&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb11-7"><a href="data.html#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 </div>
 <div id="spatiotemporal-point-pattern-data" class="section level2 hasAnchor" number="1.2">
 <h2><span class="header-section-number">1.2</span> Spatiotemporal point pattern data<a href="data.html#spatiotemporal-point-pattern-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Using <code>maps</code> to create <code>sf</code> objects of country boundaries:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="data.html#cb12-1"></a>us &lt;-<span class="st"> </span>maps<span class="op">::</span><span class="kw">map</span>(<span class="st">&quot;usa&quot;</span>, <span class="dt">fill =</span> <span class="ot">TRUE</span>, <span class="dt">plot =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span></span>
-<span id="cb12-2"><a href="data.html#cb12-2"></a><span class="st">    </span>sf<span class="op">::</span><span class="kw">st_as_sf</span>() <span class="op">%&gt;%</span></span>
-<span id="cb12-3"><a href="data.html#cb12-3"></a><span class="st">    </span>sf<span class="op">::</span><span class="kw">st_make_valid</span>()</span>
-<span id="cb12-4"><a href="data.html#cb12-4"></a>nz &lt;-<span class="st"> </span>maps<span class="op">::</span><span class="kw">map</span>(<span class="st">&quot;nz&quot;</span>, <span class="dt">fill =</span> <span class="ot">TRUE</span>, <span class="dt">plot =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span></span>
-<span id="cb12-5"><a href="data.html#cb12-5"></a><span class="st">    </span>sf<span class="op">::</span><span class="kw">st_as_sf</span>() <span class="op">%&gt;%</span></span>
-<span id="cb12-6"><a href="data.html#cb12-6"></a><span class="st">    </span>sf<span class="op">::</span><span class="kw">st_make_valid</span>()</span>
-<span id="cb12-7"><a href="data.html#cb12-7"></a>iraq &lt;-<span class="st"> </span>maps<span class="op">::</span><span class="kw">map</span>(<span class="st">&quot;world&quot;</span>, <span class="st">&quot;Iraq&quot;</span>, <span class="dt">fill =</span> <span class="ot">TRUE</span>, <span class="dt">plot =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span></span>
-<span id="cb12-8"><a href="data.html#cb12-8"></a><span class="st">     </span>sf<span class="op">::</span><span class="kw">st_as_sf</span>() <span class="op">%&gt;%</span></span>
-<span id="cb12-9"><a href="data.html#cb12-9"></a><span class="st">    </span>sf<span class="op">::</span><span class="kw">st_make_valid</span>()</span></code></pre></div>
-<div id="bigfoot" class="section level3 unnumbered hasAnchor" number="">
-<h3><code>bigfoot</code><a href="data.html#bigfoot" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>The <a href="https://www.bfro.net/">Bigfoot Field Researchers Organization (BFRO)</a> documents Bigfoot (Sasquatch) sightings; some data have been <a href="https://data.world/timothyrenner/bfro-sightings-data">collated</a> and packaged in <code>stelfi</code> as<code>bigfoot</code>.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="data.html#cb13-1"></a><span class="kw">data</span>(<span class="st">&quot;bigfoot&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
-<span id="cb13-2"><a href="data.html#cb13-2"></a>bigfoot</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="data.html#cb12-1" aria-hidden="true" tabindex="-1"></a>us <span class="ot">&lt;-</span> maps<span class="sc">::</span><span class="fu">map</span>(<span class="st">&quot;usa&quot;</span>, <span class="at">fill =</span> <span class="cn">TRUE</span>, <span class="at">plot =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-2"><a href="data.html#cb12-2" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_as_sf</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="data.html#cb12-3" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_make_valid</span>()</span>
+<span id="cb12-4"><a href="data.html#cb12-4" aria-hidden="true" tabindex="-1"></a>nz <span class="ot">&lt;-</span> maps<span class="sc">::</span><span class="fu">map</span>(<span class="st">&quot;nz&quot;</span>, <span class="at">fill =</span> <span class="cn">TRUE</span>, <span class="at">plot =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-5"><a href="data.html#cb12-5" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_as_sf</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb12-6"><a href="data.html#cb12-6" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_make_valid</span>()</span>
+<span id="cb12-7"><a href="data.html#cb12-7" aria-hidden="true" tabindex="-1"></a>iraq <span class="ot">&lt;-</span> maps<span class="sc">::</span><span class="fu">map</span>(<span class="st">&quot;world&quot;</span>, <span class="st">&quot;Iraq&quot;</span>, <span class="at">fill =</span> <span class="cn">TRUE</span>, <span class="at">plot =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-8"><a href="data.html#cb12-8" aria-hidden="true" tabindex="-1"></a>     sf<span class="sc">::</span><span class="fu">st_as_sf</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb12-9"><a href="data.html#cb12-9" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_make_valid</span>()</span></code></pre></div>
+<div id="sasquatch" class="section level3 unnumbered hasAnchor">
+<h3><code>sasquatch</code><a href="data.html#sasquatch" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The <a href="https://www.bfro.net/">Bigfoot Field Researchers Organization (BFRO)</a> documents Bigfoot (Sasquatch) sightings; some data have been <a href="https://data.world/timothyrenner/bfro-sightings-data">collated</a> and packaged in <code>stelfi</code> as<code>sasquatch</code>.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="data.html#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;sasquatch&quot;</span>, <span class="at">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
+<span id="cb13-2"><a href="data.html#cb13-2" aria-hidden="true" tabindex="-1"></a>sasquatch</span></code></pre></div>
 <pre><code>## Simple feature collection with 972 features and 27 fields
 ## Geometry type: POINT
 ## Dimension:     XY
@@ -321,55 +346,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## #   pressure &lt;dbl&gt;, summary &lt;chr&gt;, uv_index &lt;dbl&gt;, visibility &lt;dbl&gt;,
 ## #   wind_bearing &lt;dbl&gt;, wind_speed &lt;dbl&gt;, year &lt;dbl&gt;, geometry &lt;POINT [m]&gt;, and
 ## #   abbreviated variable names ¹​location_details, ²​classification</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="data.html#cb15-1"></a><span class="kw">ggplot</span>(bigfoot, <span class="kw">aes</span>(<span class="dt">x =</span> date)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_histogram</span>(<span class="dt">bins =</span> <span class="dv">150</span>) <span class="op">+</span></span>
-<span id="cb15-2"><a href="data.html#cb15-2"></a><span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Frequency of Sasquatch sightings&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="op">+</span></span>
-<span id="cb15-3"><a href="data.html#cb15-3"></a><span class="st">  </span><span class="kw">theme_bw</span>()</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="data.html#cb16-1"></a><span class="kw">ggplot</span>(bigfoot) <span class="op">+</span><span class="st">  </span></span>
-<span id="cb16-2"><a href="data.html#cb16-2"></a><span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">alpha =</span> <span class="fl">0.3</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb16-3"><a href="data.html#cb16-3"></a><span class="st">  </span><span class="kw">coord_sf</span>() <span class="op">+</span><span class="st"> </span></span>
-<span id="cb16-4"><a href="data.html#cb16-4"></a><span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> us, <span class="dt">fill =</span> <span class="ot">NA</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb16-5"><a href="data.html#cb16-5"></a><span class="st">  </span><span class="kw">theme_classic</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="data.html#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sasquatch, <span class="fu">aes</span>(<span class="at">x =</span> date)) <span class="sc">+</span> <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">150</span>) <span class="sc">+</span></span>
+<span id="cb15-2"><a href="data.html#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Frequency of Sasquatch sightings&quot;</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
+<span id="cb15-3"><a href="data.html#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
 <p><img src="docs_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="data.html#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sasquatch) <span class="sc">+</span>  </span>
+<span id="cb16-2"><a href="data.html#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span> </span>
+<span id="cb16-3"><a href="data.html#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>() <span class="sc">+</span> </span>
+<span id="cb16-4"><a href="data.html#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> us, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span> </span>
+<span id="cb16-5"><a href="data.html#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
-<div id="ufo" class="section level3 unnumbered hasAnchor" number="">
-<h3><code>ufo</code><a href="data.html#ufo" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>The <a href="https://www.arcgis.com/apps/webappviewer/index.html?id=ddda71d5211f47e782b12f3f8d06246e">UFO Sightings Map</a> shows reports of UFO sightings in the United States; some data have been <a href="https://data.world/timothyrenner/ufo-sightings#">collated</a> and packaged in <code>stelfi</code> as <code>ufo</code>.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="data.html#cb17-1"></a><span class="kw">data</span>(<span class="st">&quot;ufo&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
-<span id="cb17-2"><a href="data.html#cb17-2"></a>ufo</span></code></pre></div>
-<pre><code>## Simple feature collection with 72703 features and 3 fields
-## Geometry type: POINT
-## Dimension:     XY
-## Bounding box:  xmin: -124.625 ymin: 25.49004 xmax: -67.3506 ymax: 48.9566
-## CRS:           +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0
-## First 10 features:
-##              city state           date_time                   geometry
-## 1        San Jose    CA 2021-05-06 21:00:00 POINT (-121.8897 37.33884)
-## 2      Germantown    MD 2005-07-06 12:00:00 POINT (-77.27254 39.15499)
-## 3           Brady    TX 2020-01-29 19:45:00   POINT (-99.3478 31.1451)
-## 4       San Diego    CA 2020-01-29 20:10:00 POINT (-117.1403 32.78723)
-## 5       Las Vegas    NV 2020-01-28 15:30:00 POINT (-115.1866 36.14125)
-## 6            Bear    DE 2020-01-22 09:35:00   POINT (-75.6945 39.6025)
-## 7  Port Charlotte    FL 2020-01-22 10:32:00 POINT (-82.11691 26.98101)
-## 8    Battle Creek    MI 2020-01-22 19:18:00 POINT (-85.18856 42.32789)
-## 9         Detroit    MI 2020-01-20 15:00:00 POINT (-83.11027 42.36885)
-## 11    Idaho Falls    ID 2020-01-06 18:45:00 POINT (-112.0036 43.47351)</code></pre>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="data.html#cb19-1"></a><span class="kw">ggplot</span>(ufo, <span class="kw">aes</span>(<span class="dt">x =</span> date_time)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_histogram</span>(<span class="dt">bins =</span> <span class="dv">150</span>) <span class="op">+</span></span>
-<span id="cb19-2"><a href="data.html#cb19-2"></a><span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Frequency of UFO sightings&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="op">+</span></span>
-<span id="cb19-3"><a href="data.html#cb19-3"></a><span class="st">  </span><span class="kw">theme_bw</span>()</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="data.html#cb20-1"></a><span class="kw">ggplot</span>(ufo) <span class="op">+</span><span class="st">  </span></span>
-<span id="cb20-2"><a href="data.html#cb20-2"></a><span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">alpha =</span> <span class="fl">0.1</span>, <span class="dt">size =</span> <span class="dv">1</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb20-3"><a href="data.html#cb20-3"></a><span class="st">  </span><span class="kw">coord_sf</span>() <span class="op">+</span><span class="st"> </span></span>
-<span id="cb20-4"><a href="data.html#cb20-4"></a><span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> us, <span class="dt">fill =</span> <span class="ot">NA</span>) <span class="op">+</span></span>
-<span id="cb20-5"><a href="data.html#cb20-5"></a><span class="st">  </span><span class="kw">theme_classic</span>()</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
-</div>
-<div id="earthquakes" class="section level3 unnumbered hasAnchor" number="">
-<h3><code>earthquakes</code><a href="data.html#earthquakes" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p><a href="http://quakesearch.geonet.org.nz/">GeoNet Quake Search</a> catalogues New Zealand earthquake occurrence; some of these data have been and packaged in <code>stelfi</code> as <code>earthquakes</code>.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="data.html#cb21-1"></a><span class="kw">data</span>(<span class="st">&quot;earthquakes&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
-<span id="cb21-2"><a href="data.html#cb21-2"></a>earthquakes</span></code></pre></div>
+<div id="nz_earthquakes" class="section level3 unnumbered hasAnchor">
+<h3><code>nz_earthquakes</code><a href="data.html#nz_earthquakes" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><a href="http://quakesearch.geonet.org.nz/">GeoNet Quake Search</a> catalogues New Zealand earthquake occurrence; some of these data have been and packaged in <code>stelfi</code> as <code>nz_earthquakes</code>. In <a href="hawkes.html#hawkes">this chapter</a> a Hawkes process is fitted to these data.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="data.html#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;nz_earthquakes&quot;</span>, <span class="at">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
+<span id="cb17-2"><a href="data.html#cb17-2" aria-hidden="true" tabindex="-1"></a>nz_earthquakes</span></code></pre></div>
 <pre><code>## Simple feature collection with 3824 features and 3 fields
 ## Geometry type: POINT
 ## Dimension:     XY
@@ -387,29 +379,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 8  2014-10-11 22:32:00  3.456145 39.804688 POINT (173.1383 -42.67562)
 ## 9  2014-10-01 20:58:00  3.106894 11.386719 POINT (172.6879 -43.49002)
 ## 10 2014-09-30 15:29:00  3.911931  9.335938 POINT (172.1428 -43.25048)</code></pre>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="data.html#cb23-1"></a><span class="kw">ggplot</span>(earthquakes, <span class="kw">aes</span>(<span class="dt">x =</span> origintime)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_histogram</span>(<span class="dt">bins =</span> <span class="dv">100</span>) <span class="op">+</span></span>
-<span id="cb23-2"><a href="data.html#cb23-2"></a><span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Frequency of earthquakes&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="op">+</span></span>
-<span id="cb23-3"><a href="data.html#cb23-3"></a><span class="st">  </span><span class="kw">theme_bw</span>()</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="data.html#cb24-1"></a><span class="kw">ggplot</span>(earthquakes) <span class="op">+</span><span class="st">  </span></span>
-<span id="cb24-2"><a href="data.html#cb24-2"></a><span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">alpha =</span> <span class="fl">0.1</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb24-3"><a href="data.html#cb24-3"></a><span class="st">  </span><span class="kw">coord_sf</span>() <span class="op">+</span><span class="st"> </span></span>
-<span id="cb24-4"><a href="data.html#cb24-4"></a><span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> nz, <span class="dt">fill =</span> <span class="ot">NA</span>) <span class="op">+</span></span>
-<span id="cb24-5"><a href="data.html#cb24-5"></a><span class="st">  </span><span class="kw">theme_classic</span>()</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="data.html#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(nz_earthquakes, <span class="fu">aes</span>(<span class="at">x =</span> origintime)) <span class="sc">+</span> <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">100</span>) <span class="sc">+</span></span>
+<span id="cb19-2"><a href="data.html#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Frequency of earthquakes&quot;</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
+<span id="cb19-3"><a href="data.html#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="data.html#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(nz_earthquakes) <span class="sc">+</span>  </span>
+<span id="cb20-2"><a href="data.html#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span> </span>
+<span id="cb20-3"><a href="data.html#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>() <span class="sc">+</span> </span>
+<span id="cb20-4"><a href="data.html#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> nz, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb20-5"><a href="data.html#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
-<div id="murders_nz" class="section level3 unnumbered hasAnchor" number="">
-<h3><code>murders_nz</code><a href="data.html#murders_nz" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p><a href="https://interactives.stuff.co.nz/2019/the-homicide-report/">The Homicide Report</a> documents homicides in New Zealand. The <code>murders_nz</code> dataset contains summary information about the documented cases.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="data.html#cb25-1"></a><span class="kw">data</span>(<span class="st">&quot;murders_nz&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
-<span id="cb25-2"><a href="data.html#cb25-2"></a>murders_nz</span></code></pre></div>
+<div id="nz_murders" class="section level3 unnumbered hasAnchor">
+<h3><code>nz_murders</code><a href="data.html#nz_murders" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><a href="https://interactives.stuff.co.nz/2019/the-homicide-report/">The Homicide Report</a> documents homicides in New Zealand. The <code>nz_murders</code> dataset contains summary information about the documented cases. In <a href="hawkes.html#hawkes">this chapter</a> a spatiotemporal self-exciting model is fitted to these data.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="data.html#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;nz_murders&quot;</span>, <span class="at">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
+<span id="cb21-2"><a href="data.html#cb21-2" aria-hidden="true" tabindex="-1"></a>nz_murders</span></code></pre></div>
 <pre><code>## Simple feature collection with 967 features and 11 fields
 ## Geometry type: POINT
 ## Dimension:     XY
 ## Bounding box:  xmin: 167.9161 ymin: -46.96127 xmax: 178.3955 ymax: -34.54022
 ## CRS:           +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0
 ## First 10 features:
-##       Sex Age   Date Year                      Cause              Killer
+##       sex age   date year                      cause              killer
 ## 1    Male  41  Jan 5 2004                   stabbing              friend
 ## 2    Male  46  Jan 8 2004            pick axe wounds              friend
 ## 3    Male   0 Jan 15 2004 asphyxiation (suffocation)              mother
@@ -420,7 +412,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 8    Male  20  Feb 8 2004                  car crash              friend
 ## 9    Male  29  Feb 8 2004         blunt force trauma           strangers
 ## 10 Female  32 Feb 15 2004         blunt force trauma             husband
-##                       Name  Full_date    Month          Cause_cat     Region
+##                       name  full_date    month          cause_cat     region
 ## 1           Donald Linwood 2004-01-05  January     Violent weapon Canterbury
 ## 2              James Weeks 2004-01-08  January     Violent weapon Canterbury
 ## 3  Gabriel Harrison-Taylor 2004-01-15  January           Asphyxia   Auckland
@@ -442,22 +434,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 8  POINT (174.7335 -36.89708)
 ## 9  POINT (172.6429 -43.54363)
 ## 10 POINT (174.6274 -36.90353)</code></pre>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="data.html#cb27-1"></a><span class="kw">ggplot</span>(murders_nz, <span class="kw">aes</span>(<span class="dt">x =</span> Full_date)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_histogram</span>(<span class="dt">bins =</span> <span class="dv">100</span>) <span class="op">+</span></span>
-<span id="cb27-2"><a href="data.html#cb27-2"></a><span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Frequency of murders&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="op">+</span></span>
-<span id="cb27-3"><a href="data.html#cb27-3"></a><span class="st">  </span><span class="kw">theme_bw</span>()</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="data.html#cb28-1"></a><span class="kw">ggplot</span>(murders_nz) <span class="op">+</span><span class="st">  </span></span>
-<span id="cb28-2"><a href="data.html#cb28-2"></a><span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">alpha =</span> <span class="fl">0.5</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb28-3"><a href="data.html#cb28-3"></a><span class="st">  </span><span class="kw">coord_sf</span>() <span class="op">+</span><span class="st"> </span></span>
-<span id="cb28-4"><a href="data.html#cb28-4"></a><span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> nz, <span class="dt">fill =</span> <span class="ot">NA</span>) <span class="op">+</span></span>
-<span id="cb28-5"><a href="data.html#cb28-5"></a><span class="st">  </span><span class="kw">theme_classic</span>()</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="data.html#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(nz_murders, <span class="fu">aes</span>(<span class="at">x =</span> full_date)) <span class="sc">+</span> <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">100</span>) <span class="sc">+</span></span>
+<span id="cb23-2"><a href="data.html#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Frequency of murders&quot;</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
+<span id="cb23-3"><a href="data.html#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 </div>
-<div id="terrorism" class="section level3 unnumbered hasAnchor" number="">
-<h3><code>terrorism</code><a href="data.html#terrorism" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p><a href="http://www.start.umd.edu/gtd/">The Global Terrorism Database (GTD)</a> documents information on terrorism events worldwide; some of these data have been and packaged in <code>stelfi</code> as <code>terrorism</code>.</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="data.html#cb29-1"></a><span class="kw">data</span>(<span class="st">&quot;terrorism&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
-<span id="cb29-2"><a href="data.html#cb29-2"></a>terrorism</span></code></pre></div>
+<div id="iraq_terrorism" class="section level3 unnumbered hasAnchor">
+<h3><code>iraq_terrorism</code><a href="data.html#iraq_terrorism" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><a href="http://www.start.umd.edu/gtd/">The Global Terrorism Database (GTD)</a> documents information on terrorism events worldwide; some of these data have been and packaged in <code>stelfi</code> as <code>iraq_terrorism</code>.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="data.html#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;iraq_terrorism&quot;</span>, <span class="at">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
+<span id="cb24-2"><a href="data.html#cb24-2" aria-hidden="true" tabindex="-1"></a>iraq_terrorism</span></code></pre></div>
 <pre><code>## Simple feature collection with 4208 features and 16 fields
 ## Geometry type: POINT
 ## Dimension:     XY
@@ -475,7 +461,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 18867  2013      5   16    Iraq    TRUE     3           1
 ## 19161  2013      5   27    Iraq    TRUE     6           1
 ## 19166  2013      5   27    Iraq    TRUE     1           1
-##                                             gname   x.coord   y.coord   z.coord
+##                                             gname   x_coord   y_coord   z_coord
 ## 18055 Islamic State of Iraq and the Levant (ISIL) 0.5974251 0.5844656 0.5490748
 ## 18109 Islamic State of Iraq and the Levant (ISIL) 0.5997164 0.5864987 0.5443892
 ## 18110 Islamic State of Iraq and the Levant (ISIL) 0.5992751 0.5859289 0.5454876
@@ -486,7 +472,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 18867 Islamic State of Iraq and the Levant (ISIL) 0.5876310 0.5507342 0.5927745
 ## 19161 Islamic State of Iraq and the Levant (ISIL) 0.5974251 0.5844656 0.5490748
 ## 19166 Islamic State of Iraq and the Levant (ISIL) 0.5974251 0.5844656 0.5490748
-##       popdensity luminosity         tt    utm.x      utm.y
+##       popdensity luminosity         tt    utm_x      utm_y
 ## 18055  0.4065874  1.0924644 -0.3210921 333098.1 4007920.00
 ## 18109 -0.3479151  0.2298066 -0.2726546 407264.8 5332968.87
 ## 18110 -0.3479432  0.9717434 -0.3210921 401682.9 5252649.56
@@ -508,28 +494,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 18867 POINT (43.14357 36.35415)
 ## 19161 POINT (44.37177 33.30357)
 ## 19166 POINT (44.37177 33.30357)</code></pre>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="data.html#cb31-1"></a>terrorism <span class="op">%&gt;%</span></span>
-<span id="cb31-2"><a href="data.html#cb31-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">date =</span> <span class="kw">paste</span>(iday, imonth, iyear, <span class="dt">sep =</span> <span class="st">&quot;/&quot;</span>)) <span class="op">%&gt;%</span></span>
-<span id="cb31-3"><a href="data.html#cb31-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">date =</span> <span class="kw">as.Date</span>(date, <span class="st">&quot;%d/%m/%Y&quot;</span>)) <span class="op">%&gt;%</span></span>
-<span id="cb31-4"><a href="data.html#cb31-4"></a><span class="st">  </span><span class="kw">ggplot</span>(., <span class="kw">aes</span>(<span class="dt">x =</span> date)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_histogram</span>(<span class="dt">bins =</span> <span class="dv">150</span>) <span class="op">+</span></span>
-<span id="cb31-5"><a href="data.html#cb31-5"></a><span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Frequency of attacks&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="op">+</span></span>
-<span id="cb31-6"><a href="data.html#cb31-6"></a><span class="st">  </span><span class="kw">theme_bw</span>()</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="data.html#cb32-1"></a><span class="kw">ggplot</span>(terrorism) <span class="op">+</span><span class="st">  </span></span>
-<span id="cb32-2"><a href="data.html#cb32-2"></a><span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">alpha =</span> <span class="fl">0.3</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb32-3"><a href="data.html#cb32-3"></a><span class="st">  </span><span class="kw">coord_sf</span>() <span class="op">+</span><span class="st"> </span></span>
-<span id="cb32-4"><a href="data.html#cb32-4"></a><span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> iraq, <span class="dt">fill =</span> <span class="ot">NA</span>) <span class="op">+</span></span>
-<span id="cb32-5"><a href="data.html#cb32-5"></a><span class="st">  </span><span class="kw">theme_classic</span>()</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="data.html#cb26-1" aria-hidden="true" tabindex="-1"></a>iraq_terrorism <span class="sc">%&gt;%</span></span>
+<span id="cb26-2"><a href="data.html#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">paste</span>(iday, imonth, iyear, <span class="at">sep =</span> <span class="st">&quot;/&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb26-3"><a href="data.html#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">as.Date</span>(date, <span class="st">&quot;%d/%m/%Y&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb26-4"><a href="data.html#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(., <span class="fu">aes</span>(<span class="at">x =</span> date)) <span class="sc">+</span> <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">150</span>) <span class="sc">+</span></span>
+<span id="cb26-5"><a href="data.html#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Frequency of attacks&quot;</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
+<span id="cb26-6"><a href="data.html#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="data.html#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(iraq_terrorism) <span class="sc">+</span>  </span>
+<span id="cb27-2"><a href="data.html#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span> </span>
+<span id="cb27-3"><a href="data.html#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>() <span class="sc">+</span> </span>
+<span id="cb27-4"><a href="data.html#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> iraq, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb27-5"><a href="data.html#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
 </div>
 </div>
 <div id="simulated-data" class="section level2 hasAnchor" number="1.3">
 <h2><span class="header-section-number">1.3</span> Simulated data<a href="data.html#simulated-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div id="xyt" class="section level3 unnumbered hasAnchor" number="">
+<div id="xyt" class="section level3 unnumbered hasAnchor">
 <h3><code>xyt</code><a href="data.html#xyt" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="data.html#cb33-1"></a><span class="kw">data</span>(<span class="st">&quot;xyt&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
-<span id="cb33-2"><a href="data.html#cb33-2"></a>xyt_sf &lt;-<span class="st"> </span>sf<span class="op">::</span><span class="kw">st_as_sf</span>(xyt)</span>
-<span id="cb33-3"><a href="data.html#cb33-3"></a>xyt_sf</span></code></pre></div>
+<p>In <a href="lgcp.html#lgcp">this chapter</a> a log-Gaussian Cox process is fitted to these data and in <a href="stelfi.html#stelfi">this chapter</a> a spatiotemporal selfexciting model is fitted.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="data.html#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;xyt&quot;</span>, <span class="at">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
+<span id="cb28-2"><a href="data.html#cb28-2" aria-hidden="true" tabindex="-1"></a>xyt_sf <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(xyt)</span>
+<span id="cb28-3"><a href="data.html#cb28-3" aria-hidden="true" tabindex="-1"></a>xyt_sf</span></code></pre></div>
 <pre><code>## Simple feature collection with 654 features and 1 field
 ## Geometry type: GEOMETRY
 ## Dimension:     XY
@@ -547,16 +534,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 8   point     POINT (9.147803 -2.243146)
 ## 9   point     POINT (9.261744 -2.408326)
 ## 10  point      POINT (8.532312 -2.48986)</code></pre>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="data.html#cb35-1"></a><span class="kw">ggplot</span>(xyt_sf) <span class="op">+</span><span class="st"> </span><span class="kw">geom_sf</span>(<span class="dt">fill =</span> <span class="ot">NA</span>) <span class="op">+</span></span>
-<span id="cb35-2"><a href="data.html#cb35-2"></a><span class="st">  </span><span class="kw">theme_void</span>()</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="data.html#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(xyt_sf) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb30-2"><a href="data.html#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
 </div>
-<div id="marked" class="section level3 unnumbered hasAnchor" number="">
+<div id="marked" class="section level3 unnumbered hasAnchor">
 <h3><code>marked</code><a href="data.html#marked" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="data.html#cb36-1"></a><span class="kw">data</span>(marked, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
-<span id="cb36-2"><a href="data.html#cb36-2"></a>marked_sf &lt;-<span class="st"> </span>sf<span class="op">::</span><span class="kw">st_as_sf</span>(<span class="dt">x =</span> marked,</span>
-<span id="cb36-3"><a href="data.html#cb36-3"></a>                        <span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>))</span>
-<span id="cb36-4"><a href="data.html#cb36-4"></a>marked_sf</span></code></pre></div>
+<p>In <a href="fit-marked.html#fit-marked">this chapter</a> a marked log-Gaussian Cox process is fitted to these data.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="data.html#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(marked, <span class="at">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
+<span id="cb31-2"><a href="data.html#cb31-2" aria-hidden="true" tabindex="-1"></a>marked_sf <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(<span class="at">x =</span> marked,</span>
+<span id="cb31-3"><a href="data.html#cb31-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>))</span>
+<span id="cb31-4"><a href="data.html#cb31-4" aria-hidden="true" tabindex="-1"></a>marked_sf</span></code></pre></div>
 <pre><code>## Simple feature collection with 159 features and 3 fields
 ## Geometry type: POINT
 ## Dimension:     XY
@@ -574,21 +562,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 8   9.717775  0 13.306125    POINT (2.615062 1.064561)
 ## 9  10.071326  0 18.300715   POINT (0.3882139 2.146845)
 ## 10 10.147740  0 16.751740     POINT (1.501552 1.64466)</code></pre>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="data.html#cb38-1"></a>domain &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dv">3</span> <span class="op">*</span><span class="st"> </span><span class="kw">cbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))) <span class="op">%&gt;%</span></span>
-<span id="cb38-2"><a href="data.html#cb38-2"></a><span class="st">  </span>sf<span class="op">::</span><span class="kw">st_polygon</span>() <span class="op">%&gt;%</span><span class="st"> </span>sf<span class="op">::</span><span class="kw">st_sfc</span>() <span class="op">%&gt;%</span><span class="st"> </span>sf<span class="op">::</span><span class="kw">st_sf</span>(<span class="dt">geometry =</span> .)</span>
-<span id="cb38-3"><a href="data.html#cb38-3"></a></span>
-<span id="cb38-4"><a href="data.html#cb38-4"></a><span class="kw">ggplot</span>(marked_sf, <span class="kw">aes</span>(<span class="dt">col =</span> m1)) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb38-5"><a href="data.html#cb38-5"></a><span class="st">  </span><span class="kw">geom_sf</span>() <span class="op">+</span><span class="st"> </span><span class="kw">labs</span>(<span class="dt">color =</span> <span class="st">&quot;Mark&quot;</span>) <span class="op">+</span></span>
-<span id="cb38-6"><a href="data.html#cb38-6"></a><span class="st">  </span><span class="kw">scale_color_continuous</span>(<span class="dt">type =</span> <span class="st">&quot;viridis&quot;</span>) <span class="op">+</span></span>
-<span id="cb38-7"><a href="data.html#cb38-7"></a><span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> domain, <span class="dt">fill =</span> <span class="ot">NA</span>, <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span>) <span class="op">+</span></span>
-<span id="cb38-8"><a href="data.html#cb38-8"></a><span class="st">  </span><span class="kw">theme_void</span>()</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="data.html#cb33-1" aria-hidden="true" tabindex="-1"></a>domain <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="dv">3</span> <span class="sc">*</span> <span class="fu">cbind</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb33-2"><a href="data.html#cb33-2" aria-hidden="true" tabindex="-1"></a>  sf<span class="sc">::</span><span class="fu">st_polygon</span>() <span class="sc">%&gt;%</span> sf<span class="sc">::</span><span class="fu">st_sfc</span>() <span class="sc">%&gt;%</span> sf<span class="sc">::</span><span class="fu">st_sf</span>(<span class="at">geometry =</span> .)</span>
+<span id="cb33-3"><a href="data.html#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="data.html#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(marked_sf, <span class="fu">aes</span>(<span class="at">col =</span> m1)) <span class="sc">+</span> </span>
+<span id="cb33-5"><a href="data.html#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">&quot;Mark&quot;</span>) <span class="sc">+</span></span>
+<span id="cb33-6"><a href="data.html#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_continuous</span>(<span class="at">type =</span> <span class="st">&quot;viridis&quot;</span>) <span class="sc">+</span></span>
+<span id="cb33-7"><a href="data.html#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> domain, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb33-8"><a href="data.html#cb33-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
 </div>
-<div id="horse_mesh" class="section level3 unnumbered hasAnchor" number="">
+<div id="horse_mesh" class="section level3 unnumbered hasAnchor">
 <h3><code>horse_mesh</code><a href="data.html#horse_mesh" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="data.html#cb39-1"></a><span class="kw">data</span>(<span class="st">&quot;horse_mesh&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
-<span id="cb39-2"><a href="data.html#cb39-2"></a>horse_mesh_sf &lt;-<span class="st"> </span>stelfi<span class="op">::</span><span class="kw">mesh_2_sf</span>(horse_mesh)</span>
-<span id="cb39-3"><a href="data.html#cb39-3"></a>horse_mesh_sf</span></code></pre></div>
+<p>In <a href="meshmetrics.html#meshmetrics">this chapter</a> we illustrate different geometric metrics of this triangulation.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="data.html#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;horse_mesh&quot;</span>, <span class="at">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
+<span id="cb34-2"><a href="data.html#cb34-2" aria-hidden="true" tabindex="-1"></a>horse_mesh_sf <span class="ot">&lt;-</span> stelfi<span class="sc">::</span><span class="fu">mesh_2_sf</span>(horse_mesh)</span>
+<span id="cb34-3"><a href="data.html#cb34-3" aria-hidden="true" tabindex="-1"></a>horse_mesh_sf</span></code></pre></div>
 <pre><code>## Simple feature collection with 396 features and 4 fields
 ## Geometry type: POLYGON
 ## Dimension:     XY
@@ -606,9 +595,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 8  182 148 111  8 POLYGON ((10.50244 7.199319...
 ## 9  253 169 121  9 POLYGON ((-7.850425 2.87106...
 ## 10  14  15 116 10 POLYGON ((13.3125 11.56522,...</code></pre>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="data.html#cb41-1"></a><span class="kw">ggplot</span>(horse_mesh_sf) <span class="op">+</span><span class="st"> </span><span class="kw">geom_sf</span>(<span class="dt">fill =</span> <span class="ot">NA</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>) <span class="op">+</span></span>
-<span id="cb41-2"><a href="data.html#cb41-2"></a><span class="st">  </span><span class="kw">theme_void</span>()</span></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="data.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(horse_mesh_sf) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
+<span id="cb36-2"><a href="data.html#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
 
 </div>
 </div>
@@ -679,7 +668,7 @@ gitbook.start({
     var script = document.createElement("script");
     script.type = "text/javascript";
     var src = "true";
-    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
     if (location.protocol !== "file:")
       if (/^https?:/.test(src))
         src = src.replace(/^https?:/, '');
