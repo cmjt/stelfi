@@ -55,7 +55,8 @@ sim_hawkes <- function(mu, alpha, beta, n = 100, plot = FALSE,
                 times <- c(times, t)
             }
         }
-        if (plot) show_hawkes(list(times = times, params = c(mu, alpha, beta)))
+        if (plot) show_hawkes(list(times = times,
+                                   params = c(mu = mu, alpha = alpha, beta = beta)))
         return(times)
     }else{
         if (method == "2"){
@@ -89,7 +90,8 @@ sim_hawkes <- function(mu, alpha, beta, n = 100, plot = FALSE,
                 times <- c(times, t_next)
                 k <- length(times)
             }
-            if (plot) show_hawkes(list(times = times, params = c(mu, alpha, beta)))
+            if (plot) show_hawkes(list(times = times,
+                                       params =  c(mu = mu, alpha = alpha, beta = beta)))
             return(times)
         }
     }

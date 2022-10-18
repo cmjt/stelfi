@@ -17,7 +17,6 @@
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
 #' params <- c(mu = 9, alpha = 3, beta = 10)
 #' show_hawkes(list(times = times, params = params))
-#' ## must have compiled TMB templates first use compile_stelfi()
 #' fit <- fit_hawkes(times = times, parameters = params)
 #' show_hawkes(fit)
 #' }
@@ -89,7 +88,6 @@ show_hawkes <-  function(obj) {
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
 #' params <- c(mu = 9, alpha = 3, beta = 10)
 #' show_hawkes_GOF(list(times = times, params = params))
-#' ## must have compiled TMB templates first use compile_stelfi()
 #' fit <- fit_hawkes(times = times, parameters = params)
 #' show_hawkes_GOF(fit)
 #' }

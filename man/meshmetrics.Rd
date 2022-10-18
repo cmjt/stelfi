@@ -20,8 +20,8 @@ of \code{mesh} matches \code{mesh$graph$tv};
 interior angles;
 \item circumcircle radius, circumradius, \code{circumcircle_R} (\eqn{R});
 \item incircle radius \code{incircle_r} (\eqn{r});
-\item centroid locations of the circumcircle, circumcenter, (\code{c_Ox, cOy});
-\item centroid locations of the incircle, incenter, (\code{i_Ox, iOy});
+\item centroid locations of the circumcircle, circumcenter, (\code{c_Ox, c_Oy});
+\item centroid locations of the incircle, incenter, (\code{i_Ox, i_Oy});
 \item the radius-edge ratio \code{radius_edge} \eqn{\frac{R}{l_{min}}},
 where \eqn{l_{min}} is the minimum edge length;
 \item the radius ratio \code{radius_ratio} \eqn{\frac{r}{R}};
