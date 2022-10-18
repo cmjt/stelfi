@@ -46,7 +46,6 @@ mtext(1,line = 1, at = c(start,end),text = c("NIWA \n tweeted","USB owner \n fou
 
 ```{r fit model,results = 'hide',cache = TRUE}
 params <- c(mu = 9, alpha = 3, beta = 10)
-## must have compiled TMB templates first use compile_stelfi()
 fit <- fit_hawkes(times = times, parameters = params) 
 ```
 
@@ -86,7 +85,6 @@ times <- nz_earthquakes$origintime
 times <- as.numeric(difftime(times , min(times), units = "mins"))
 marks <- nz_earthquakes$magnitude
 params <- c(mu = 3, alpha = 0.05, beta = 1)
-## must have compiled TMB templates first use compile_stelfi()
 fit <- fit_hawkes(times = times, parameters = params, marks = marks) 
 ## print out estimated parameters
 pars <- get_coefs(fit)

@@ -270,8 +270,7 @@ where where <span class="math inline">\(\mu(t)\)</span> is the background rate o
 </p>
 </div>
 <div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="hawkes.html#cb42-1" aria-hidden="true" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">mu =</span> <span class="dv">9</span>, <span class="at">alpha =</span> <span class="dv">3</span>, <span class="at">beta =</span> <span class="dv">10</span>)</span>
-<span id="cb42-2"><a href="hawkes.html#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="do">## must have compiled TMB templates first use compile_stelfi()</span></span>
-<span id="cb42-3"><a href="hawkes.html#cb42-3" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_hawkes</span>(<span class="at">times =</span> times, <span class="at">parameters =</span> params) </span></code></pre></div>
+<span id="cb42-2"><a href="hawkes.html#cb42-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_hawkes</span>(<span class="at">times =</span> times, <span class="at">parameters =</span> params) </span></code></pre></div>
 <div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="hawkes.html#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="do">## print out estimated parameters</span></span>
 <span id="cb43-2"><a href="hawkes.html#cb43-2" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit)</span>
 <span id="cb43-3"><a href="hawkes.html#cb43-3" aria-hidden="true" tabindex="-1"></a>pars</span></code></pre></div>
@@ -322,11 +321,10 @@ where <span class="math inline">\(\mu\)</span> is the background rate of the pro
 <span id="cb50-4"><a href="hawkes.html#cb50-4" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">difftime</span>(times , <span class="fu">min</span>(times), <span class="at">units =</span> <span class="st">&quot;mins&quot;</span>))</span>
 <span id="cb50-5"><a href="hawkes.html#cb50-5" aria-hidden="true" tabindex="-1"></a>marks <span class="ot">&lt;-</span> nz_earthquakes<span class="sc">$</span>magnitude</span>
 <span id="cb50-6"><a href="hawkes.html#cb50-6" aria-hidden="true" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">mu =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">beta =</span> <span class="dv">1</span>)</span>
-<span id="cb50-7"><a href="hawkes.html#cb50-7" aria-hidden="true" tabindex="-1"></a><span class="do">## must have compiled TMB templates first use compile_stelfi()</span></span>
-<span id="cb50-8"><a href="hawkes.html#cb50-8" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_hawkes</span>(<span class="at">times =</span> times, <span class="at">parameters =</span> params, <span class="at">marks =</span> marks) </span>
-<span id="cb50-9"><a href="hawkes.html#cb50-9" aria-hidden="true" tabindex="-1"></a><span class="do">## print out estimated parameters</span></span>
-<span id="cb50-10"><a href="hawkes.html#cb50-10" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit)</span>
-<span id="cb50-11"><a href="hawkes.html#cb50-11" aria-hidden="true" tabindex="-1"></a>pars</span></code></pre></div>
+<span id="cb50-7"><a href="hawkes.html#cb50-7" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_hawkes</span>(<span class="at">times =</span> times, <span class="at">parameters =</span> params, <span class="at">marks =</span> marks) </span>
+<span id="cb50-8"><a href="hawkes.html#cb50-8" aria-hidden="true" tabindex="-1"></a><span class="do">## print out estimated parameters</span></span>
+<span id="cb50-9"><a href="hawkes.html#cb50-9" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit)</span>
+<span id="cb50-10"><a href="hawkes.html#cb50-10" aria-hidden="true" tabindex="-1"></a>pars</span></code></pre></div>
 <pre><code>##           Estimate   Std. Error
 ## mu    0.0002001766 1.206014e-05
 ## alpha 0.0005125373 2.934243e-05
