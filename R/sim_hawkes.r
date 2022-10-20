@@ -6,7 +6,7 @@
 #' if \code{method = "1"} then a univariate Hawkes process as 
 #' \code{hawkes::simulateHawkes()} is simulated,
 #' if \code{method = "2"} then an accept/reject
-#' framwork is used.
+#' framework is used.
 #' @param mu A numeric specifying base rate of the Hawkes process.
 #' @param alpha A numeric specifying intensity jump after an event
 #' occurrence.

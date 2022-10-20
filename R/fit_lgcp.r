@@ -109,7 +109,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #'
 #'
 #' @references Lindgren, F., Rue, H., and Lindström, J. (2011)
-#' An explicit link between {G}aussian fields and {G}aussian {M}arkov random fields: the stochastic
+#' An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic
 #' partial differential equation approach. \emph{Journal of the Royal Statistical Society: Series B
 #' (Statistical Methodology)}, \strong{73}: 423--498.
 #'
@@ -119,7 +119,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' @param sf An \code{sf} of type \code{POLYGON} specifying the spatial region
 #' of the domain.
 #' @param locs A \code{data.frame} of \code{x} and \code{y} locations, \eqn{2 \times n}. If a
-#' spatiotemporal model is to be fitted then there should be the third column (\code{t}) of the occurance times.
+#' spatiotemporal model is to be fitted then there should be the third column (\code{t}) of the occurence times.
 #' @param smesh A Delaunay triangulation of the spatial domain returned by \code{INLA::inla.mesh.2d()}.
 #' @param tmesh Optional, a temporal mesh returned by \code{INLA::inla.mesh.1d()}.
 #' @param parameters A named list of parameter starting values:

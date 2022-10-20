@@ -65,7 +65,7 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' success probability, and the user must supply the number of trials for each event (via \code{strfixed}).
 #' If the marks are normally distributed then this models the mean, and the user must supply
 #' the standard deviation (via \code{strfixed}). The user can choose for the point processes and the marks to
-#' share a common GMRF, i.e. \eqn{G_m(s) = G_{pp}(s)}; this is controled via the argument \code{fields}.
+#' share a common GMRF, i.e. \eqn{G_m(s) = G_{pp}(s)}; this is controlled via the argument \code{fields}.
 #' 
 #' @param locs A \code{data.frame} of \code{x} and \code{y} locations, 2xn.
 #' @param marks  A matrix of marks for each observation of the point pattern.

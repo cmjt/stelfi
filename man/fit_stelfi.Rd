@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_stelfi.r
 \name{fit_stelfi}
 \alias{fit_stelfi}
-\title{Modelling spatiotemporal self-excitment}
+\title{Modelling spatiotemporal self-excitement}
 \usage{
 fit_stelfi(
   times,

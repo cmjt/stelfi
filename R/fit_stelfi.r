@@ -82,7 +82,7 @@ fit_hspat_tmb <- function(times, locs, sf,
     obj$objective <- opt$objective
     return(obj)
 }
-#' Modelling spatiotemporal self-excitment
+#' Modelling spatiotemporal self-excitement
 #' 
 #' Fits spatiotemporal Hawkes models. The self-excitement is 
 #' Gaussian in space and exponentially decaying in time.

@@ -18,7 +18,7 @@ fit_lgcp(
 }
 \arguments{
 \item{locs}{A \code{data.frame} of \code{x} and \code{y} locations, \eqn{2 \times n}. If a
-spatiotemporal model is to be fitted then there should be the third column (\code{t}) of the occurance times.}
+spatiotemporal model is to be fitted then there should be the third column (\code{t}) of the occurence times.}
 
 \item{sf}{An \code{sf} of type \code{POLYGON} specifying the spatial region
 of the domain.}
@@ -106,7 +106,7 @@ fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh, tmesh = tmesh,
 }
 \references{
 Lindgren, F., Rue, H., and Lindström, J. (2011)
-An explicit link between {G}aussian fields and {G}aussian {M}arkov random fields: the stochastic
+An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic
 partial differential equation approach. \emph{Journal of the Royal Statistical Society: Series B
 (Statistical Methodology)}, \strong{73}: 423--498.
 

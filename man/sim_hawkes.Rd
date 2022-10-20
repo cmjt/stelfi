@@ -35,7 +35,7 @@ Option of two methods to simulate a Hawkes process:
 if \code{method = "1"} then a univariate Hawkes process as 
 \code{hawkes::simulateHawkes()} is simulated,
 if \code{method = "2"} then an accept/reject
-framwork is used.
+framework is used.
 }
 \examples{
 sim_hawkes(10.2, 3.1, 8.9)

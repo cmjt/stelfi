@@ -87,7 +87,7 @@ the intensity (as with the point process). If the marks are from a Binomial dist
 success probability, and the user must supply the number of trials for each event (via \code{strfixed}).
 If the marks are normally distributed then this models the mean, and the user must supply
 the standard deviation (via \code{strfixed}). The user can choose for the point processes and the marks to
-share a common GMRF, i.e. \eqn{G_m(s) = G_{pp}(s)}; this is controled via the argument \code{fields}.
+share a common GMRF, i.e. \eqn{G_m(s) = G_{pp}(s)}; this is controlled via the argument \code{fields}.
 }
 \examples{
 \donttest{
