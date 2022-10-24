@@ -7,3 +7,4 @@ model_fits.r
 *.so
 package-build/*
 stelfi.Rcheck/*
+CRAN-SUBMISSION
