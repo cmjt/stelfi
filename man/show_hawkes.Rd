@@ -10,7 +10,7 @@ show_hawkes(obj)
 show_hawkes_GOF(obj, plot = TRUE, return_values = FALSE)
 }
 \arguments{
-\item{obj}{Either object returned by \code{fit_hawkes()}/\code{fit_hawkes_cbf()} 
+\item{obj}{Either object returned by \code{\link{fit_hawkes}}/\code{\link{fit_hawkes_cbf}} 
 or a named list with elements \code{times} and \code{params}. If the latter, 
 then \code{times} should be a numeric vector of observed time points, and 
 \code{params} must contain, \code{alpha} (intensity jump after an event occurrence) 
@@ -22,6 +22,13 @@ could be a list of multiple values). May also contain \code{marks} (a vector of 
 \item{plot}{Logical, whether to plot  goodness-of-fit plots. Default \code{TRUE}.}
 
 \item{return_values}{Logical, whether to return GOF values. Default \code{FALSE}.}
+}
+\value{
+\code{\link{show_hawkes}} returns a \code{gtable} object
+with \code{geom_line} and \code{geom_histogram} values.
+
+\code{\link{show_hawkes_GOF}} returns no value unless \code{return_values = TRUE},
+in this case a list of interarrival times is returned.
 }
 \description{
 Plots a Hawkes intensity function, options to extend to 
@@ -35,7 +42,7 @@ times, In addition, results of a Kolmogorov-Smirnov and
 Ljung-Box hypothesis test for the interarrival times are printed.
 }
 \examples{
-\dontrun{
+\donttest{
 data(retweets_niwa, package = "stelfi")
 times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
 params <- c(mu = 9, alpha = 3, beta = 10)
@@ -43,7 +50,7 @@ show_hawkes(list(times = times, params = params))
 fit <- fit_hawkes(times = times, parameters = params)
 show_hawkes(fit)
 }
-\dontrun{
+\donttest{
 data(retweets_niwa, package = "stelfi")
 times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
 params <- c(mu = 9, alpha = 3, beta = 10)

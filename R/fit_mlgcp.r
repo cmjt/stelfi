@@ -47,10 +47,10 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
                          control = list(trace = trace), ...)
     return(obj)
 }
-#' Marked spatial log-Gaussian Cox process m(LGCP)
+#' Marked spatial log-Gaussian Cox process (mLGCP)
 #'
 #' Fit a marked LGCP using Template Model Builder (TMB) and the \code{R_inla}
-#' namespace for the SPDE construction of the latent field.
+#' namespace for the SPDE-based construction of the latent field.
 #'
 #' @details The random intensity surface of the point process is (as \code{\link{fit_lgcp}})
 #' \eqn{\Lambda(\boldsymbol{x}) = \textrm{exp}(\boldsymbol{X}\beta + G(\boldsymbol{x}) + \epsilon)},
@@ -66,6 +66,11 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' If the marks are normally distributed then this models the mean, and the user must supply
 #' the standard deviation (via \code{strfixed}). The user can choose for the point processes and the marks to
 #' share a common GMRF, i.e. \eqn{G_m(s) = G_{pp}(s)}; this is controlled via the argument \code{fields}.
+#'
+#' @references Lindgren, F., Rue, H., and Lindström, J. (2011)
+#' An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic
+#' partial differential equation approach. \emph{Journal of the Royal Statistical Society: Series B
+#' (Statistical Methodology)}, \strong{73}: 423--498.
 #' 
 #' @param locs A \code{data.frame} of \code{x} and \code{y} locations, 2xn.
 #' @param marks  A matrix of marks for each observation of the point pattern.
@@ -93,17 +98,17 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' @param marks_covariates Which columns of the covariates apply to the marks.
 #' By default, all covariates apply to the marks only.
 #' @inheritParams fit_lgcp
+#' @return A list containing components of the fitted model, see \code{TMB::MakeADFun}.
 #' @seealso  \code{\link{fit_lgcp}}
 #' @examples
 #' \donttest{
 #' ### ********************** ###
 #' ## A joint likelihood marked LGCP model
 #' ### ********************** ###
-#' if(require("INLA", quietly = TRUE)) {
+#' if(requireNamespace("INLA")){
 #' data(marked, package = "stelfi")
 #' loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
 #' domain <- sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(loc.d))))
-#' stelfi_load_inla()
 #' smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1),
 #' max.edge = c(0.3, 0.7), cutoff = 0.05)
 #' locs <- cbind(x = marked$x, y = marked$y)

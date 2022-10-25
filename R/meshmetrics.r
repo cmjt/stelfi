@@ -238,7 +238,7 @@ mesh_2_sf <- function(mesh) {
 #' @examples
 #' data(horse_mesh, package = "stelfi")
 #' metrics <- meshmetrics(horse_mesh)
-#' if(require("ggplot2")) {
+#' if(requireNamespace("ggplot2")) {
 #' ggplot(metrics) + geom_sf(aes(fill = radius_ratio))
 #' }
 #' @export

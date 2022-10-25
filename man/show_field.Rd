@@ -17,12 +17,16 @@ of the domain.}
 \item{dims}{A numeric vector of length 2 specifying
 the spatial pixel resolution. Default \code{c(500,500)}.}
 }
+\value{
+A \code{gg} class object, values returned by \code{geom_tile} and \code{geom_sf}.
+}
 \description{
 Plots the values of \code{x} at each node of \code{smesh}, with
 optional control over resolutions using \code{dims}.
 }
 \examples{
-\dontrun{
+\donttest{
+if(requireNamespace("INLA")){
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
 bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
@@ -31,6 +35,7 @@ max.edge = 0.75, cutoff = 0.3)
 parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
 simdata <- simulate_lgcp(parameters = parameters, sf = domain, smesh = smesh)
 show_field(simdata$x, smesh = smesh, sf = domain)
+}
 }
 }
 \seealso{

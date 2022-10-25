@@ -68,6 +68,9 @@ This could be a list of multiple values.}
 \item{background_min}{A function taking one parameter and two points,
 returns min of \code{background} between those points.}
 }
+\value{
+A list containing components of the fitted model, see \code{TMB::MakeADFun}.
+}
 \description{
 Fit a Hawkes process using Template Model Builder (TMB). The function \code{fit_hawkes()} fits a
 self-exciting Hawkes process with a constant background rate. Whereas, \code{fit_hawkes_cbf()} fits a Hawkes
@@ -114,7 +117,7 @@ get_coefs(fit)
 ### ********************** ###
 ## A Hawkes process with a custom background function
 ### ********************** ###
-if(require("hawkesbow")) {
+if(requireNamespace("hawkesbow")) {
 times <- hawkesbow::hawkes(1000, fun = function(y) {1 + 0.5*sin(y)},
 M = 1.5, repr = 0.5, family = "exp", rate = 2)$p
 ## The background function must take a single parameter and
@@ -146,5 +149,5 @@ Hawkes, AG. (1971) Spectra of some self-exciting and mutually exciting point pro
 \emph{Biometrika}, \strong{58}: 83--90.
 }
 \seealso{
-\code{link{show_hawkes}}
+\code{\link{show_hawkes}}
 }

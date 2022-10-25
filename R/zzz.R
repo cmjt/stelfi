@@ -13,16 +13,18 @@ stelfi_load_inla <- function(){
         message("INLA successfully loaded")
     }else{
         stop("INLA not loaded; please install using
-install.packages('INLA', repos=c(getOption('repos'), INLA='https://inla.r-inla-download.org/R/testing'), dep=TRUE)")
+<install.packages('INLA', repos=c(getOption('repos'), INLA='https://inla.r-inla-download.org/R/testing'), dep=TRUE)>")
     }
 }
 .onLoad <- function(libname, pkgname) {
-  repos = getOption("repos")
-  repos["INLA"] = "https://inla.r-inla-download.org/R/testing"
-  options(repos = repos)
-  invisible(repos)
+    old = options() # code line i
+    on.exit(options(old)) # code line i+1
+    repos = getOption("repos")
+    repos["INLA"] = "https://inla.r-inla-download.org/R/testing"
+    options(repos = repos)
+    invisible(repos)
 }
 
 .onUnload <- function(libpath) {
-  library.dynam.unload("stelfi", libpath)
+    library.dynam.unload("stelfi", libpath)
 }

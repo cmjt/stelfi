@@ -7,7 +7,11 @@
 get_coefs(obj)
 }
 \arguments{
-\item{obj}{A fitted model object.}
+\item{obj}{A fitted model as returned by one of  \code{\link{fit_hawkes}}, \code{\link{fit_hawkes_cbf}}, \code{\link{fit_lgcp}},  \code{\link{fit_mlgcp}}, or \code{\link{fit_stelfi}}.}
+}
+\value{
+A matrix of estimated parameters and standard errors returned by
+\code{TMB::sdreport} (\code{"report"}).
 }
 \description{
 Return parameter estimates from a fitted model.
@@ -21,7 +25,7 @@ params <- c(mu = 9, alpha = 3, beta = 10)
 fit <- fit_hawkes(times = times, parameters = params)
 get_coefs(fit)
 ## LGCP
-stelfi_load_inla()
+if(requireNamespace("INLA")) {
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
 locs <- data.frame(x = xyt$x, y = xyt$y)
@@ -31,4 +35,8 @@ fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 get_coefs(fit)
 }
+}
+}
+\seealso{
+\code{\link{fit_hawkes}},  \code{\link{fit_hawkes_cbf}}, \code{\link{fit_lgcp}},  \code{\link{fit_mlgcp}}, and \code{\link{fit_stelfi}}
 }

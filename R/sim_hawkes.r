@@ -20,6 +20,8 @@
 #' @param seed The seed. Default, \code{123}
 #' @param method A character "1" or "2" specifying the method (see details)
 #' to simulate Hawkes process. Default,\code{"1"}.
+#' @return A \code{numeric} vector of simulated event times.
+#' 
 #' @examples
 #' sim_hawkes(10.2, 3.1, 8.9)
 #' sim_hawkes(10.2, 3.1, 8.9, method = "2")

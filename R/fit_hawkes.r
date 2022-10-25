@@ -34,6 +34,7 @@
 #' @param optim_silent Logical, if \code{TRUE} (default) then for each iteration
 #' \code{optim()} output will be printed.
 #' @param ... Additional arguments to pass to \code{optim()}
+#' @return A list containing components of the fitted model, see \code{TMB::MakeADFun}.
 #' @examples
 #' \donttest{
 #' ### ********************** ###
@@ -57,7 +58,7 @@
 #' fit <- fit_hawkes(times = times, parameters = params, marks = marks)
 #' get_coefs(fit)
 #' }
-#' @seealso \code{link{show_hawkes}}
+#' @seealso \code{\link{show_hawkes}}
 #' @export
 fit_hawkes <-  function(times, parameters = list(), model = 1,
                         marks = c(rep(1, length(times))),
@@ -132,7 +133,7 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
 #' ### ********************** ###
 #' ## A Hawkes process with a custom background function
 #' ### ********************** ###
-#' if(require("hawkesbow")) {
+#' if(requireNamespace("hawkesbow")) {
 #' times <- hawkesbow::hawkes(1000, fun = function(y) {1 + 0.5*sin(y)},
 #' M = 1.5, repr = 0.5, family = "exp", rate = 2)$p
 #' ## The background function must take a single parameter and

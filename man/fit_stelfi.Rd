@@ -58,6 +58,9 @@ TMB inner optimisation tracing information will be printed.}
 
 \item{...}{Additional arguments to pass to \code{optim()}}
 }
+\value{
+A list containing components of the fitted model, see \code{TMB::MakeADFun}.
+}
 \description{
 Fits spatiotemporal Hawkes models. The self-excitement is 
 Gaussian in space and exponentially decaying in time.
@@ -92,15 +95,14 @@ where \eqn{f} is the density function of \eqn{\textrm{N}(0, (t-\tau_i)\Sigma)}.
 }
 }
 \examples{
-\dontrun{
+\donttest{
 ## No GMRF
-if(require("INLA")){
+if(requireNamespace("INLA")){
 data(xyt, package = "stelfi")
 N <- 50
 locs <- data.frame(x = xyt$x[1:N], y = xyt$y[1:N])
 times <- xyt$t[1:N]
 domain <- sf::st_as_sf(xyt$window)
-stelfi_load_inla()
 bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
 smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3) 
 param <- list( mu = 3, alpha = 1, beta = 3, xsigma = 0.2, ysigma = 0.2, rho = 0.8)

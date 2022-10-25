@@ -27,6 +27,9 @@ Default, \code{FALSE}.}
 \item{method}{A character "1" or "2" specifying the method (see details)
 to simulate Hawkes process. Default,\code{"1"}.}
 }
+\value{
+A \code{numeric} vector of simulated event times.
+}
 \description{
 Simulates a self-exciting Hawkes process.
 }

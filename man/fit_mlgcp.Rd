@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_mlgcp.r
 \name{fit_mlgcp}
 \alias{fit_mlgcp}
-\title{Marked spatial log-Gaussian Cox process m(LGCP)}
+\title{Marked spatial log-Gaussian Cox process (mLGCP)}
 \usage{
 fit_mlgcp(
   locs,
@@ -69,9 +69,12 @@ TMB inner optimisation tracing information will be printed.}
 
 \item{...}{optional extra arguments to pass into \code{stats::nlminb()}.}
 }
+\value{
+A list containing components of the fitted model, see \code{TMB::MakeADFun}.
+}
 \description{
 Fit a marked LGCP using Template Model Builder (TMB) and the \code{R_inla}
-namespace for the SPDE construction of the latent field.
+namespace for the SPDE-based construction of the latent field.
 }
 \details{
 The random intensity surface of the point process is (as \code{\link{fit_lgcp}})
@@ -94,11 +97,10 @@ share a common GMRF, i.e. \eqn{G_m(s) = G_{pp}(s)}; this is controlled via the a
 ### ********************** ###
 ## A joint likelihood marked LGCP model
 ### ********************** ###
-if(require("INLA", quietly = TRUE)) {
+if(requireNamespace("INLA")){
 data(marked, package = "stelfi")
 loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
 domain <- sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(loc.d))))
-stelfi_load_inla()
 smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1),
 max.edge = c(0.3, 0.7), cutoff = 0.05)
 locs <- cbind(x = marked$x, y = marked$y)
@@ -111,6 +113,12 @@ sf = domain, smesh = smesh,
 parameters = parameters, methods = 0,fields = 1)
 }
 }
+}
+\references{
+Lindgren, F., Rue, H., and Lindström, J. (2011)
+An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic
+partial differential equation approach. \emph{Journal of the Royal Statistical Society: Series B
+(Statistical Methodology)}, \strong{73}: 423--498.
 }
 \seealso{
 \code{\link{fit_lgcp}}

@@ -16,9 +16,12 @@ of the domain.}
 \item{plot}{Logical, whether to plot the calculated \code{mesh} weights. 
 Default, \code{FALSE}.}
 }
+\value{
+Either a simple features, \code{sf}, object or values returned by \code{geom_sf}.
+}
 \description{
 Calculate the  areas (weights) around the mesh nodes that 
-are within the specified spatial polygon \code{sf}.
+are within the specified spatial polygon \code{sf} of the domain.
 }
 \examples{
 data(horse_mesh, package = "stelfi")

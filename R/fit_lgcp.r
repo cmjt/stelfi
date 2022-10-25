@@ -1,7 +1,7 @@
 #' Fit a spatial or spatiotemporal log-Gaussian Cox process (LGCP)
 #'
 #' \code{fit_lgcp_tmb} fits a LGCP using \code{TMB} and the
-#' \code{R_inla} namespace for the spde construction of the latent field. For
+#' \code{R_inla} namespace for the SPDE construction of the latent field. For
 #' a simpler wrapper use \code{\link{fit_lgcp}} as this is an internal function.
 #' 
 #' @param y The vector of observations.
@@ -81,7 +81,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' Spatial or spatiotemporal log-Gaussian Cox process (LGCP)
 #'
 #' Fit a log-Gaussian Cox process (LGCP) using Template Model Builder (TMB) and the
-#' \code{R_inla} namespace for the SPDE construction of the latent field. 
+#' \code{R_inla} namespace for the SPDE-based construction of the latent field. 
 #'
 #' @details A log-Gaussian Cox process (LGCP) where the Gaussian random field, \eqn{Z(\boldsymbol{x})},
 #' has zero mean, variance-covariance matrix \eqn{\boldsymbol{Q}^{-1}}, and covariance function
@@ -119,7 +119,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' @param sf An \code{sf} of type \code{POLYGON} specifying the spatial region
 #' of the domain.
 #' @param locs A \code{data.frame} of \code{x} and \code{y} locations, \eqn{2 \times n}. If a
-#' spatiotemporal model is to be fitted then there should be the third column (\code{t}) of the occurence times.
+#' spatiotemporal model is to be fitted then there should be the third column (\code{t}) of the occurrence times.
 #' @param smesh A Delaunay triangulation of the spatial domain returned by \code{INLA::inla.mesh.2d()}.
 #' @param tmesh Optional, a temporal mesh returned by \code{INLA::inla.mesh.1d()}.
 #' @param parameters A named list of parameter starting values:
@@ -138,16 +138,16 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' @param nlminb_silent Logical, if \code{TRUE} (default) then for each iteration
 #' \code{nlminb()} output will be printed.
 #' @param ... optional extra arguments to pass into \code{stats::nlminb()}.
+#' @return A list containing components of the fitted model, see \code{TMB::MakeADFun}.
 #' @seealso \code{\link{fit_mlgcp}} and \code{\link{sim_lgcp}}
 #' @examples \donttest{
 #' ### ********************** ###
 #' ## A spatial only LGCP
 #' ### ********************** ###
-#' if(require("INLA",quietly = TRUE)) {
+#' if(requireNamespace("INLA")) {
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
 #' locs <- data.frame(x = xyt$x, y = xyt$y)
-#' stelfi_load_inla()
 #' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
 #' smesh <- INLA::inla.mesh.2d(boundary = bnd,
 #' max.edge = 0.75, cutoff = 0.3)
@@ -165,7 +165,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' }
 #' }
 #' @export
-fit_lgcp <-  function(locs, sf, smesh, tmesh, parameters = list(), covariates,
+fit_lgcp <-  function(locs, sf, smesh, tmesh, parameters, covariates,
                       tmb_silent = TRUE,
                       nlminb_silent = TRUE, ...) {
     ## read in parameters

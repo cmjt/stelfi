@@ -19,6 +19,9 @@ Default \code{FALSE}.}
 \item{sd}{Logical, if \code{TRUE} then standard errors returned.
 Default \code{FALSE}.}
 }
+\value{
+A \code{numeric} vector or a \code{list}.
+}
 \description{
 Extract the estimated mean, or standard deviation, of the 
 values of the Gaussian Markov random field for a fitted log-Gaussian
@@ -26,10 +29,10 @@ Cox process model at each node of \code{smesh}.
 }
 \examples{
 \donttest{
+if(requireNamespace("INLA")) {
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
 locs <- data.frame(x = xyt$x, y = xyt$y)
-stelfi_load_inla()
 bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
 smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
 fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
@@ -37,6 +40,7 @@ parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 get_fields(fit, smesh, plot = TRUE)
 }
 }
+}
 \seealso{
-\code{\link{fit_lgcp}}
+\code{\link{fit_lgcp}} and \code{\link{fit_mlgcp}}
 }

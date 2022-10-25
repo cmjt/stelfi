@@ -9,7 +9,7 @@ fit_lgcp(
   sf,
   smesh,
   tmesh,
-  parameters = list(),
+  parameters,
   covariates,
   tmb_silent = TRUE,
   nlminb_silent = TRUE,
@@ -18,7 +18,7 @@ fit_lgcp(
 }
 \arguments{
 \item{locs}{A \code{data.frame} of \code{x} and \code{y} locations, \eqn{2 \times n}. If a
-spatiotemporal model is to be fitted then there should be the third column (\code{t}) of the occurence times.}
+spatiotemporal model is to be fitted then there should be the third column (\code{t}) of the occurrence times.}
 
 \item{sf}{An \code{sf} of type \code{POLYGON} specifying the spatial region
 of the domain.}
@@ -48,9 +48,12 @@ TMB inner optimisation tracing information will be printed.}
 
 \item{...}{optional extra arguments to pass into \code{stats::nlminb()}.}
 }
+\value{
+A list containing components of the fitted model, see \code{TMB::MakeADFun}.
+}
 \description{
 Fit a log-Gaussian Cox process (LGCP) using Template Model Builder (TMB) and the
-\code{R_inla} namespace for the SPDE construction of the latent field.
+\code{R_inla} namespace for the SPDE-based construction of the latent field.
 }
 \details{
 A log-Gaussian Cox process (LGCP) where the Gaussian random field, \eqn{Z(\boldsymbol{x})},
@@ -82,11 +85,10 @@ distance such that the correlation is \eqn{\sim 0.139}.
 ### ********************** ###
 ## A spatial only LGCP
 ### ********************** ###
-if(require("INLA",quietly = TRUE)) {
+if(requireNamespace("INLA")) {
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
 locs <- data.frame(x = xyt$x, y = xyt$y)
-stelfi_load_inla()
 bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
 smesh <- INLA::inla.mesh.2d(boundary = bnd,
 max.edge = 0.75, cutoff = 0.3)

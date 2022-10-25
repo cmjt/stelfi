@@ -1,19 +1,21 @@
 #' Function to fit a spde spatial Hawkes process using \code{TMB} and the
 #' \code{R_inla} namespace for the spde construction of the latent field.
-#' @param coefs TODO
-#' @param designmat TODO
+#' @param coefs the logged base rate of the Hawkes process and coefficients of covariates
+#' @param designmat design matrix
 #' @param logit_abratio logit ration of a, b parameters of the temporal Hawkes process
 #' @param log_beta the \code{log(beta)} base rate of the Hawkes process
 #' @param log_kappa the \code{log(kappa)} parameter for the GMRF
 #' @param log_tau the \code{log(tau)} parameter for the GMRF
-#' @param log_xsigma TODO
-#' @param log_ysigma TODO
-#' @param spde TODO
-#' @param tmax TODO
+#' @param log_xsigma the log standard deviation on x-axis of self-exciting kernel
+#' (if \code{time_independent = FALSE}, it is the s.d. after 1 time unit)
+#' @param log_ysigma the log  standard deviation on y-axis of self-exciting kernel
+#' (if \code{time_independent = FALSE}, it is the s.d. after 1 time unit)
+#' @param tmax maximum time (\code{numeric})
 #' @param reltol \code{numeric}, relative tolerance (default  \code{1e-12})
 #' @param abstol \code{numeric}, absolute tolerance (default  \code{1e-12})
-#' @param lmat TODO
-#' @param simple TODO
+#' @param lmat \code{INLA::inla.spde.make.A(smesh, locs)}
+#' @param simple  binary, should Gaussian kernels have a
+#' covariate matrix that is proportional to time since the event.
 #' @inheritParams fit_hawkes
 #' @inheritParams fit_lgcp
 #' @inheritParams fit_lgcp_tmb
@@ -136,16 +138,16 @@ fit_hspat_tmb <- function(times, locs, sf,
 #' \eqn{G_i(s-x_i, t - \tau_i) = f(s - x_i)}
 #' where \eqn{f} is the density function of \eqn{\textrm{N}(0, (t-\tau_i)\Sigma)}.
 #' }
+#' @return A list containing components of the fitted model, see \code{TMB::MakeADFun}.
 #' @seealso \code{\link{fit_hawkes}} and \code{\link{fit_lgcp}}
-#' @examples \dontrun{
+#' @examples \donttest{
 #' ## No GMRF
-#' if(require("INLA")){
+#' if(requireNamespace("INLA")){
 #' data(xyt, package = "stelfi")
 #' N <- 50
 #' locs <- data.frame(x = xyt$x[1:N], y = xyt$y[1:N])
 #' times <- xyt$t[1:N]
 #' domain <- sf::st_as_sf(xyt$window)
-#' stelfi_load_inla()
 #' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
 #' smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3) 
 #' param <- list( mu = 3, alpha = 1, beta = 3, xsigma = 0.2, ysigma = 0.2, rho = 0.8)

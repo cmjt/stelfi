@@ -3,7 +3,7 @@
 #' Plots a Hawkes intensity function, options to extend to 
 #' non-homogeneous background intensity.
 #' 
-#' @param obj Either object returned by \code{fit_hawkes()}/\code{fit_hawkes_cbf()} 
+#' @param obj Either object returned by \code{\link{fit_hawkes}}/\code{\link{fit_hawkes_cbf}} 
 #' or a named list with elements \code{times} and \code{params}. If the latter, 
 #' then \code{times} should be a numeric vector of observed time points, and 
 #' \code{params} must contain, \code{alpha} (intensity jump after an event occurrence) 
@@ -11,8 +11,9 @@
 #' either \code{mu} (base rate of the Hawkes process) or \code{background_parameters}
 #' (parameter(s) for the assumed non-homogeneous background function;
 #' could be a list of multiple values). May also contain \code{marks} (a vector of numerical marks).
-#'
-#' @examples \dontrun{
+#' @return \code{\link{show_hawkes}} returns a \code{gtable} object
+#' with \code{geom_line} and \code{geom_histogram} values.
+#' @examples \donttest{
 #' data(retweets_niwa, package = "stelfi")
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
 #' params <- c(mu = 9, alpha = 3, beta = 10)
@@ -83,7 +84,9 @@ show_hawkes <-  function(obj) {
 #' 
 #' @param plot Logical, whether to plot  goodness-of-fit plots. Default \code{TRUE}.
 #' @param return_values Logical, whether to return GOF values. Default \code{FALSE}.
-#' @examples \dontrun{
+#' @return \code{\link{show_hawkes_GOF}} returns no value unless \code{return_values = TRUE},
+#' in this case a list of interarrival times is returned.
+#' @examples \donttest{
 #' data(retweets_niwa, package = "stelfi")
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
 #' params <- c(mu = 9, alpha = 3, beta = 10)
@@ -203,8 +206,10 @@ show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
 #' @param sf Optional, \code{sf} of type \code{POLYGON} specifying the region
 #' of the domain.
 #' @inheritParams show_lambda
+#' @return A \code{gg} class object, values returned by \code{geom_tile} and \code{geom_sf}.
 #' @seealso \code{\link{show_lambda}} and \code{\link{get_fields}}
-#' @examples \dontrun{
+#' @examples \donttest{
+#' if(requireNamespace("INLA")){
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
 #' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
@@ -213,6 +218,7 @@ show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
 #' parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
 #' simdata <- simulate_lgcp(parameters = parameters, sf = domain, smesh = smesh)
 #' show_field(simdata$x, smesh = smesh, sf = domain)
+#' }
 #' }
 #' @export
 show_field <- function(x, smesh, sf, dims = c(500,500)) {
@@ -250,19 +256,20 @@ show_field <- function(x, smesh, sf, dims = c(500,500)) {
 #' the spatial pixel resolution. Default \code{c(500,500)}.
 #' @param timestamp The index of time stamp to plot. Default \code{1}.
 #' @inheritParams fit_lgcp
-#' @seealso \code{\link{show_field}} and \code{\link{get_fields}}
-#' @examples \dontrun{
+#' @return A \code{gg} class object, values returned by \code{geom_tile} and \code{geom_sf}.
+#' @examples \donttest{
+#' if(requireNamespace("INLA")) {
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
 #' locs <- data.frame(x = xyt$x, y = xyt$y)
-#' stelfi_load_inla()
 #' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
 #' smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
 #' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 #' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 #' show_lambda(fit, smesh = smesh, sf = domain)
 #' }
-#' @seealso \code{\link{fit_lgcp}}
+#' }
+#' @seealso \code{\link{fit_lgcp}}, \code{\link{show_field}}, and \code{\link{get_fields}}
 #' @export
 show_lambda <- function(obj, smesh, sf, tmesh,
                         covariates, dims = c(500,500),
