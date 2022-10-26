@@ -20,7 +20,7 @@ Default \code{FALSE}.}
 Default \code{FALSE}.}
 }
 \value{
-A \code{numeric} vector or a \code{list}.
+A \code{numeric} vector or a \code{list} of returned values at each \code{smesh} node.
 }
 \description{
 Extract the estimated mean, or standard deviation, of the 

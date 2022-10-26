@@ -59,7 +59,12 @@ TMB inner optimisation tracing information will be printed.}
 \item{...}{Additional arguments to pass to \code{optim()}}
 }
 \value{
-A list containing components of the fitted model, see \code{TMB::MakeADFun}.
+A list containing components of the fitted model, see \code{TMB::MakeADFun}. Includes
+\itemize{
+\item \code{par}, a numeric vector of estimated parameter values;
+\item \code{objective}, the objective function; and
+\item \code{gr}, the TMB calculated gradient function.
+}
 }
 \description{
 Fits spatiotemporal Hawkes models. The self-excitement is 

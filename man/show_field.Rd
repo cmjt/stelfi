@@ -4,10 +4,10 @@
 \alias{show_field}
 \title{Plot the estimated random field(s) of a fitted LGCP}
 \usage{
-show_field(x, smesh, sf, dims = c(500, 500))
+show_field(x, smesh, sf, dims = c(500, 500), clip = FALSE)
 }
 \arguments{
-\item{x}{A vector of values for each \code{smesh} node.}
+\item{x}{A vector of values, one value per each \code{smesh} node.}
 
 \item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{INLA::inla.mesh.2d()}.}
 
@@ -16,6 +16,9 @@ of the domain.}
 
 \item{dims}{A numeric vector of length 2 specifying
 the spatial pixel resolution. Default \code{c(500,500)}.}
+
+\item{clip}{Logical, if \code{TRUE} then plotted values are `clipped` to the domain
+supplied as \code{sf}.}
 }
 \value{
 A \code{gg} class object, values returned by \code{geom_tile} and \code{geom_sf}.
@@ -27,14 +30,16 @@ optional control over resolutions using \code{dims}.
 \examples{
 \donttest{
 if(requireNamespace("INLA")){
+if(require("sf")){
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
 bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-smesh <- INLA::inla.mesh.2d(boundary = bnd, 
-max.edge = 0.75, cutoff = 0.3)
+smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
 parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
-simdata <- simulate_lgcp(parameters = parameters, sf = domain, smesh = smesh)
-show_field(simdata$x, smesh = smesh, sf = domain)
+simdata <- sim_lgcp(parameters = parameters, sf = domain, smesh = smesh)
+show_field(c(simdata$x), smesh = smesh, sf = domain)
+show_field(c(simdata$x), smesh = smesh, sf = domain, clip = TRUE)
+}
 }
 }
 }

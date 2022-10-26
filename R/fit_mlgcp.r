@@ -98,7 +98,12 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' @param marks_covariates Which columns of the covariates apply to the marks.
 #' By default, all covariates apply to the marks only.
 #' @inheritParams fit_lgcp
-#' @return A list containing components of the fitted model, see \code{TMB::MakeADFun}.
+#' @return A list containing components of the fitted model, see \code{TMB::MakeADFun}. Includes
+#' \itemize{
+#' \item \code{par}, a numeric vector of estimated parameter values;
+#' \item \code{objective}, the objective function; and
+#' \item \code{gr}, the TMB calculated gradient function.
+#' }
 #' @seealso  \code{\link{fit_lgcp}}
 #' @examples
 #' \donttest{

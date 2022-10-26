@@ -70,7 +70,12 @@ TMB inner optimisation tracing information will be printed.}
 \item{...}{optional extra arguments to pass into \code{stats::nlminb()}.}
 }
 \value{
-A list containing components of the fitted model, see \code{TMB::MakeADFun}.
+A list containing components of the fitted model, see \code{TMB::MakeADFun}. Includes
+\itemize{
+\item \code{par}, a numeric vector of estimated parameter values;
+\item \code{objective}, the objective function; and
+\item \code{gr}, the TMB calculated gradient function.
+}
 }
 \description{
 Fit a marked LGCP using Template Model Builder (TMB) and the \code{R_inla}

@@ -43,7 +43,7 @@ largest circle that can be contained within it (i.e., touches it's three edges).
 \examples{
 data(horse_mesh, package = "stelfi")
 metrics <- meshmetrics(horse_mesh)
-if(requireNamespace("ggplot2")) {
+if(require("ggplot2")) {
 ggplot(metrics) + geom_sf(aes(fill = radius_ratio))
 }
 }

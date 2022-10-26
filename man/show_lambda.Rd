@@ -10,6 +10,7 @@ show_lambda(
   sf,
   tmesh,
   covariates,
+  clip = FALSE,
   dims = c(500, 500),
   timestamp = 1
 )
@@ -26,6 +27,9 @@ of the domain.}
 
 \item{covariates}{Optional, a \code{matrix} of covariates at each
 \code{smesh} and \code{tmesh} node combination.}
+
+\item{clip}{Logical, if \code{TRUE} then plotted values are `clipped` to the domain
+supplied as \code{sf}.}
 
 \item{dims}{A numeric vector of length 2 specifying
 the spatial pixel resolution. Default \code{c(500,500)}.}

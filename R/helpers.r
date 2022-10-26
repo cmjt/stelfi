@@ -80,7 +80,7 @@ get_coefs <- function(obj) {
 #' @param sd Logical, if \code{TRUE} then standard errors returned.
 #' Default \code{FALSE}.
 #' @inheritParams fit_lgcp
-#' @return A \code{numeric} vector or a \code{list}.
+#' @return A \code{numeric} vector or a \code{list} of returned values at each \code{smesh} node.
 #' @examples \donttest{
 #' if(requireNamespace("INLA")) {
 #' data(xyt, package = "stelfi")

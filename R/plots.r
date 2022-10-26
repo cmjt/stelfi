@@ -202,7 +202,7 @@ show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
 #' Plots the values of \code{x} at each node of \code{smesh}, with
 #' optional control over resolutions using \code{dims}.
 #' 
-#' @param x A vector of values for each \code{smesh} node.
+#' @param x A vector of values, one value per each \code{smesh} node.
 #' @param sf Optional, \code{sf} of type \code{POLYGON} specifying the region
 #' of the domain.
 #' @inheritParams show_lambda
@@ -210,18 +210,20 @@ show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
 #' @seealso \code{\link{show_lambda}} and \code{\link{get_fields}}
 #' @examples \donttest{
 #' if(requireNamespace("INLA")){
+#' if(require("sf")){
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
 #' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-#' smesh <- INLA::inla.mesh.2d(boundary = bnd, 
-#' max.edge = 0.75, cutoff = 0.3)
+#' smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
 #' parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
-#' simdata <- simulate_lgcp(parameters = parameters, sf = domain, smesh = smesh)
-#' show_field(simdata$x, smesh = smesh, sf = domain)
+#' simdata <- sim_lgcp(parameters = parameters, sf = domain, smesh = smesh)
+#' show_field(c(simdata$x), smesh = smesh, sf = domain)
+#' show_field(c(simdata$x), smesh = smesh, sf = domain, clip = TRUE)
+#' }
 #' }
 #' }
 #' @export
-show_field <- function(x, smesh, sf, dims = c(500,500)) {
+show_field <- function(x, smesh, sf, dims = c(500,500), clip = FALSE) {
     nx <- dims[1]
     ny <- dims[2]
     xs <- seq(min(smesh$loc[, 1]), max(smesh$loc[, 1]), length = nx)
@@ -230,6 +232,12 @@ show_field <- function(x, smesh, sf, dims = c(500,500)) {
     pxl <- sf::st_multipoint(as.matrix(data))
     A <- INLA::inla.spde.make.A(smesh, pxl)
     data$colz <-  as.vector(A %*% x)
+    if(clip){
+        xy <- sf::st_as_sf(data, coords = c("xs", "ys"))
+        sf::st_crs(xy) <- sf::st_crs(sf)
+        idx <- lengths(sf::st_intersects(xy, sf)) > 0
+        dat <- data[idx, ]
+        }
     plt <- ggplot2::ggplot() +
         ggplot2::geom_tile(data = data, ggplot2::aes(x = .data$xs, y = .data$ys, 
                                                      fill = .data$colz)) +
@@ -255,6 +263,8 @@ show_field <- function(x, smesh, sf, dims = c(500,500)) {
 #' @param dims A numeric vector of length 2 specifying
 #' the spatial pixel resolution. Default \code{c(500,500)}.
 #' @param timestamp The index of time stamp to plot. Default \code{1}.
+#' @param clip Logical, if \code{TRUE} then plotted values are `clipped` to the domain
+#' supplied as \code{sf}.
 #' @inheritParams fit_lgcp
 #' @return A \code{gg} class object, values returned by \code{geom_tile} and \code{geom_sf}.
 #' @examples \donttest{
@@ -272,7 +282,8 @@ show_field <- function(x, smesh, sf, dims = c(500,500)) {
 #' @seealso \code{\link{fit_lgcp}}, \code{\link{show_field}}, and \code{\link{get_fields}}
 #' @export
 show_lambda <- function(obj, smesh, sf, tmesh,
-                        covariates, dims = c(500,500),
+                        covariates, clip = FALSE,
+                        dims = c(500,500),
                         timestamp = 1) {
     if(!missing(tmesh)) {
         if(!missing(covariates)) {
@@ -291,9 +302,9 @@ show_lambda <- function(obj, smesh, sf, tmesh,
         plt <- list()
         for(i in seq(tmesh$n)) {
             if (missing(sf)) {
-                plt[[i]] <- show_field(x = x[[i]], smesh = smesh, dims = dims)
+                plt[[i]] <- show_field(x = x[[i]], smesh = smesh, dims = dims, clip = clip)
             } else {
-                plt[[i]] <- show_field(x = x[[i]], smesh = smesh, sf = sf, dims = dims)
+                plt[[i]] <- show_field(x = x[[i]], smesh = smesh, sf = sf, dims = dims, clip = clip)
             }
         }
         plt[[timestamp]]
@@ -310,9 +321,9 @@ show_lambda <- function(obj, smesh, sf, tmesh,
         beta <- as.matrix(beta, ncol = 1)
         lambda <- exp(field + designmat%*%beta)
         if (missing(sf)) {
-            show_field(x = lambda, smesh = smesh,dims = dims)
+            show_field(x = lambda, smesh = smesh, dims = dims, clip = clip)
         } else {
-            show_field(x = lambda, smesh = smesh, sf = sf, dims = dims)
+            show_field(x = lambda, smesh = smesh, sf = sf, dims = dims, clip = clip)
         }
     }         
 }

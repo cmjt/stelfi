@@ -138,7 +138,13 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' @param nlminb_silent Logical, if \code{TRUE} (default) then for each iteration
 #' \code{nlminb()} output will be printed.
 #' @param ... optional extra arguments to pass into \code{stats::nlminb()}.
-#' @return A list containing components of the fitted model, see \code{TMB::MakeADFun}.
+#' @return A list containing components of the fitted model, see \code{TMB::MakeADFun}. Includes
+#' \itemize{
+#' \item \code{par}, a numeric vector of estimated parameter values;
+#' \item \code{objective}, the objective function;
+#' \item \code{gr}, the TMB calculated gradient function; and
+#' \item \code{simulate}, a simulation function. 
+#' }
 #' @seealso \code{\link{fit_mlgcp}} and \code{\link{sim_lgcp}}
 #' @examples \donttest{
 #' ### ********************** ###

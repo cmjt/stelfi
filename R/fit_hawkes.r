@@ -34,7 +34,13 @@
 #' @param optim_silent Logical, if \code{TRUE} (default) then for each iteration
 #' \code{optim()} output will be printed.
 #' @param ... Additional arguments to pass to \code{optim()}
-#' @return A list containing components of the fitted model, see \code{TMB::MakeADFun}.
+#' @return A list containing components of the fitted model, see \code{TMB::MakeADFun}. Includes
+#' \itemize{
+#' \item \code{par}, a numeric vector of estimated parameter values;
+#' \item \code{objective}, the objective function;
+#' \item \code{gr}, the TMB calculated gradient function; and
+#' \item \code{simulate}, a simulation function. 
+#' }
 #' @examples
 #' \donttest{
 #' ### ********************** ###
@@ -133,7 +139,7 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
 #' ### ********************** ###
 #' ## A Hawkes process with a custom background function
 #' ### ********************** ###
-#' if(requireNamespace("hawkesbow")) {
+#' if(require("hawkesbow")) {
 #' times <- hawkesbow::hawkes(1000, fun = function(y) {1 + 0.5*sin(y)},
 #' M = 1.5, repr = 0.5, family = "exp", rate = 2)$p
 #' ## The background function must take a single parameter and

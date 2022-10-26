@@ -69,7 +69,13 @@ This could be a list of multiple values.}
 returns min of \code{background} between those points.}
 }
 \value{
-A list containing components of the fitted model, see \code{TMB::MakeADFun}.
+A list containing components of the fitted model, see \code{TMB::MakeADFun}. Includes
+\itemize{
+\item \code{par}, a numeric vector of estimated parameter values;
+\item \code{objective}, the objective function;
+\item \code{gr}, the TMB calculated gradient function; and
+\item \code{simulate}, a simulation function. 
+}
 }
 \description{
 Fit a Hawkes process using Template Model Builder (TMB). The function \code{fit_hawkes()} fits a
@@ -117,7 +123,7 @@ get_coefs(fit)
 ### ********************** ###
 ## A Hawkes process with a custom background function
 ### ********************** ###
-if(requireNamespace("hawkesbow")) {
+if(require("hawkesbow")) {
 times <- hawkesbow::hawkes(1000, fun = function(y) {1 + 0.5*sin(y)},
 M = 1.5, repr = 0.5, family = "exp", rate = 2)$p
 ## The background function must take a single parameter and

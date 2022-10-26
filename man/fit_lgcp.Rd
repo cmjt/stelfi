@@ -49,7 +49,13 @@ TMB inner optimisation tracing information will be printed.}
 \item{...}{optional extra arguments to pass into \code{stats::nlminb()}.}
 }
 \value{
-A list containing components of the fitted model, see \code{TMB::MakeADFun}.
+A list containing components of the fitted model, see \code{TMB::MakeADFun}. Includes
+\itemize{
+\item \code{par}, a numeric vector of estimated parameter values;
+\item \code{objective}, the objective function;
+\item \code{gr}, the TMB calculated gradient function; and
+\item \code{simulate}, a simulation function. 
+}
 }
 \description{
 Fit a log-Gaussian Cox process (LGCP) using Template Model Builder (TMB) and the

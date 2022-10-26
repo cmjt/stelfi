@@ -138,7 +138,12 @@ fit_hspat_tmb <- function(times, locs, sf,
 #' \eqn{G_i(s-x_i, t - \tau_i) = f(s - x_i)}
 #' where \eqn{f} is the density function of \eqn{\textrm{N}(0, (t-\tau_i)\Sigma)}.
 #' }
-#' @return A list containing components of the fitted model, see \code{TMB::MakeADFun}.
+#' @return A list containing components of the fitted model, see \code{TMB::MakeADFun}. Includes
+#' \itemize{
+#' \item \code{par}, a numeric vector of estimated parameter values;
+#' \item \code{objective}, the objective function; and
+#' \item \code{gr}, the TMB calculated gradient function.
+#' }
 #' @seealso \code{\link{fit_hawkes}} and \code{\link{fit_lgcp}}
 #' @examples \donttest{
 #' ## No GMRF
