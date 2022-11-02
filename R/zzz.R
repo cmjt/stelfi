@@ -17,8 +17,8 @@ stelfi_load_inla <- function(){
     }
 }
 .onLoad <- function(libname, pkgname) {
-    old = options() # code line i
-    on.exit(options(old)) # code line i+1
+    old = options() 
+    on.exit(options(old))
     repos = getOption("repos")
     repos["INLA"] = "https://inla.r-inla-download.org/R/testing"
     options(repos = repos)

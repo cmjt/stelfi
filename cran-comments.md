@@ -1,3 +1,15 @@
+## Resubmission
+
+This is a resubmission. In this version I have fixed the following issues as requested
+
+* \value tags added to all required exported functions
+* Examples unwrapped if they execute in < 5s
+* \dontrun replaced with \donttest
+* Examples using Suggests packages wrapped in `requireNamespace`
+* `old = options()` ; `on.exit(options(old))` added to `.onLoad` in `zzz.R` so that user settings are reset
+when function is exited
+* Ensures that no packages are installed within any function. `stelfi_load_inla` in `zzz.R` prompts user to do so by printing the commend required.
+
 ## Test environments
 
 * Local Ubuntu 18.04 & 20.04 install (release)

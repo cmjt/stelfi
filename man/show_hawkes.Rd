@@ -42,20 +42,16 @@ times, In addition, results of a Kolmogorov-Smirnov and
 Ljung-Box hypothesis test for the interarrival times are printed.
 }
 \examples{
-\donttest{
 data(retweets_niwa, package = "stelfi")
 times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
 params <- c(mu = 9, alpha = 3, beta = 10)
 show_hawkes(list(times = times, params = params))
 fit <- fit_hawkes(times = times, parameters = params)
 show_hawkes(fit)
-}
-\donttest{
 data(retweets_niwa, package = "stelfi")
 times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
 params <- c(mu = 9, alpha = 3, beta = 10)
 show_hawkes_GOF(list(times = times, params = params))
 fit <- fit_hawkes(times = times, parameters = params)
 show_hawkes_GOF(fit)
-}
 }

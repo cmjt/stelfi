@@ -40,11 +40,10 @@ Simulate a realisation of a log-Gaussian Cox process (LGCP) using the
 as well as \code{tmesh} then spatiotemporal (AR(1)) data will be simulated.
 }
 \examples{
-\donttest{
-data(xyt, package = "stelfi")
+if(requireNamespace("INLA")){
 if(require("sf")) {
+data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
-stelfi_load_inla()
 bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
 smesh <- INLA::inla.mesh.2d(boundary = bnd,
 max.edge = 0.75, cutoff = 0.3)

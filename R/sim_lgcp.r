@@ -10,11 +10,11 @@
 #' the GMRF at each mesh node are returned, \code{x}, alongside the number of
 #' events, \code{y}, simulated at each node.
 #'
-#' @examples \donttest{
-#' data(xyt, package = "stelfi")
+#' @examples
+#' if(requireNamespace("INLA")){
 #' if(require("sf")) {
+#' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
-#' stelfi_load_inla()
 #' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
 #' smesh <- INLA::inla.mesh.2d(boundary = bnd,
 #' max.edge = 0.75, cutoff = 0.3)

@@ -35,7 +35,7 @@ hawkes_intensity <- function(times, mu, alpha, beta,
 #' @return A matrix of estimated parameters and standard errors returned by
 #' \code{TMB::sdreport} (\code{"report"}).
 #' @seealso  \code{\link{fit_hawkes}},  \code{\link{fit_hawkes_cbf}}, \code{\link{fit_lgcp}},  \code{\link{fit_mlgcp}}, and \code{\link{fit_stelfi}}
-#' @examples \donttest{
+#' @examples
 #' ## Hawkes
 #' data(retweets_niwa, package = "stelfi")
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
@@ -52,7 +52,6 @@ hawkes_intensity <- function(times, mu, alpha, beta,
 #' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 #' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 #' get_coefs(fit)
-#' }
 #' }
 #' @export
 get_coefs <- function(obj) {

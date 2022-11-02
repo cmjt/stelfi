@@ -17,7 +17,6 @@ A matrix of estimated parameters and standard errors returned by
 Return parameter estimates from a fitted model.
 }
 \examples{
-\donttest{
 ## Hawkes
 data(retweets_niwa, package = "stelfi")
 times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
@@ -34,7 +33,6 @@ smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
 fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 get_coefs(fit)
-}
 }
 }
 \seealso{

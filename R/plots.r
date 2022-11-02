@@ -13,14 +13,13 @@
 #' could be a list of multiple values). May also contain \code{marks} (a vector of numerical marks).
 #' @return \code{\link{show_hawkes}} returns a \code{gtable} object
 #' with \code{geom_line} and \code{geom_histogram} values.
-#' @examples \donttest{
+#' @examples 
 #' data(retweets_niwa, package = "stelfi")
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
 #' params <- c(mu = 9, alpha = 3, beta = 10)
 #' show_hawkes(list(times = times, params = params))
 #' fit <- fit_hawkes(times = times, parameters = params)
 #' show_hawkes(fit)
-#' }
 #' @export
 show_hawkes <-  function(obj) {
     if (!"times" %in% names(obj)) {
@@ -86,14 +85,13 @@ show_hawkes <-  function(obj) {
 #' @param return_values Logical, whether to return GOF values. Default \code{FALSE}.
 #' @return \code{\link{show_hawkes_GOF}} returns no value unless \code{return_values = TRUE},
 #' in this case a list of interarrival times is returned.
-#' @examples \donttest{
+#' @examples 
 #' data(retweets_niwa, package = "stelfi")
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
 #' params <- c(mu = 9, alpha = 3, beta = 10)
 #' show_hawkes_GOF(list(times = times, params = params))
 #' fit <- fit_hawkes(times = times, parameters = params)
 #' show_hawkes_GOF(fit)
-#' }
 #' @export
 #' @rdname show_hawkes
 show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
@@ -236,7 +234,7 @@ show_field <- function(x, smesh, sf, dims = c(500,500), clip = FALSE) {
         xy <- sf::st_as_sf(data, coords = c("xs", "ys"))
         sf::st_crs(xy) <- sf::st_crs(sf)
         idx <- lengths(sf::st_intersects(xy, sf)) > 0
-        dat <- data[idx, ]
+        data <- data[idx, ]
         }
     plt <- ggplot2::ggplot() +
         ggplot2::geom_tile(data = data, ggplot2::aes(x = .data$xs, y = .data$ys, 
