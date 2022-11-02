@@ -6,6 +6,10 @@
 \usage{
 stelfi_load_inla()
 }
+\value{
+No return value. A message is printed in the console advising if \code{INLA}
+has been successfully loaded.
+}
 \description{
 Loads the INLA package with \code{requireNamespace("INLA", quietly = TRUE)}.
 On loading \code{\link{stelfi}} \code{repos['INLA']} set as

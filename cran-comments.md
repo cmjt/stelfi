@@ -1,6 +1,11 @@
-## Resubmission
+## Resubmission(s)
 
-This is a resubmission. In this version I have fixed the following issues as requested
+This is a second resubmission. In this version I fixed the following two issues as requested
+
+* Added missing \value tag to `stelfi_load_inla` in `zzz.R`.
+* Updated the Date field in the DESCRIPTION file to be < a month old.
+
+During the first resubmission I fixed the following
 
 * \value tags added to all required exported functions
 * Examples unwrapped if they execute in < 5s
@@ -8,7 +13,7 @@ This is a resubmission. In this version I have fixed the following issues as req
 * Examples using Suggests packages wrapped in `requireNamespace`
 * `old = options()` ; `on.exit(options(old))` added to `.onLoad` in `zzz.R` so that user settings are reset
 when function is exited
-* Ensures that no packages are installed within any function. `stelfi_load_inla` in `zzz.R` prompts user to do so by printing the commend required.
+* Ensured that no packages are installed within any function. `stelfi_load_inla` in `zzz.R` prompts user to do so by printing the commend required.
 
 ## Test environments
 

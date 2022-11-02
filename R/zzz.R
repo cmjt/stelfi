@@ -6,7 +6,8 @@
 #'
 #' @references Lindgren, F. and Rue, H. (2015) Bayesian spatial modelling with R-INLA.
 #' \emph{Journal of Statistical Software}, \strong{63}: 1--25.
-#' 
+#' @return No return value. A message is printed in the console advising if \code{INLA}
+#' has been successfully loaded.
 #' @export
 stelfi_load_inla <- function(){
     if(requireNamespace("INLA", quietly = TRUE)) {
