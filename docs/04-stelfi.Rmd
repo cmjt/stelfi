@@ -11,12 +11,12 @@ $$\lambda(s,t) = \mu + \alpha \Sigma_{i:\tau_i<t}(\text{exp}(-\beta * (t-\tau_i)
 Here $\mu$ is the background rate, $\beta$ is the rate of temporal decay, $\alpha$ is the increase in intensity after an event, $\tau_i$ are the event times, $x_i$ are the event locations (in 2D Euclidean space) and $G_i(s-x_i, t - \tau_i)$ is the spatial self-excitement kernel.
 
 For the version with time-independent spatial excitement:
-$G_i(s-x_i, t - \tau_i) = f(s - x_i)$
-where $f$ is the density function of $\text{N}(0, \Sigma)$
+$G_i(s-x_i, t - \tau_i) = f_X(s - x_i)$
+where $f_X$ is the density function of $X \sim \text{N}(0, \Sigma)$
 
 For the version with time-dependent spatial excitement:
-$G_i(s-x_i, t - \tau_i) = f(s - x_i)$
-where $f$ is the density function of $\text{N}(0, (t-\tau_i)\Sigma)$
+$G_i(s-x_i, t - \tau_i) = f_X(s - x_i)$
+where $f_X$ is the density function of $X \sim \text{N}(0, (t-\tau_i)\Sigma)$
 
 ## The `fit_stelfi()` function
 
