@@ -28,7 +28,7 @@ jobs:
 
       - name: Add inla repo
         run: |
-          writeLines('options(repos = c(INLA = "https://inla.r-inla-download.org/R/stable/", getOption(\"repos\")))', file("~/.Rprofile", "ab"))
+         install.packages('INLA', repos=c(getOption('repos'), INLA='https://inla.r-inla-download.org/R/testing'), dep=TRUE)
         shell: Rscript {0}
 
       - name: Test coverage
