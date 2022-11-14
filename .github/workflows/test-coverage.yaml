@@ -26,6 +26,11 @@ jobs:
           extra-packages: any::covr
           needs: coverage
 
+      - name: Add inla repo
+        run: |
+          writeLines('options(repos = c(INLA = "https://inla.r-inla-download.org/R/stable/", getOption(\"repos\")))', file("~/.Rprofile", "ab"))
+        shell: Rscript {0}
+
       - name: Test coverage
         run: |
           covr::codecov(
