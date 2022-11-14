@@ -54,5 +54,6 @@ Suggests:
     spatstat.utils,
     spatstat.geom,
     rgdal,
-    hawkesbow
+    hawkesbow,
+    covr
 Config/testthat/edition: 3

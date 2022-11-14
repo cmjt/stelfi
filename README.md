@@ -5,6 +5,7 @@
 [![CRAN status](https://www.r-pkg.org/badges/version/stelfi)](https://CRAN.R-project.org/package=stelfi)
 [![downloads](http://cranlogs.r-pkg.org/badges/stelfi)](http://cranlogs.r-pkg.org/badges/stelfi)
 [![total downloads](http://cranlogs.r-pkg.org/badges/grand-total/stelfi)](http://cranlogs.r-pkg.org/badges/grand-total/stelfi)
+[![Codecov test coverage](https://codecov.io/gh/cmjt/stelfi/branch/master/graph/badge.svg)](https://app.codecov.io/gh/cmjt/stelfi?branch=master)
 <!-- badges: end -->
 
 `stelfi` is an `R` package that fit a range of Hawkes and log-Gaussian Cox point process models. Models are fitted via maximum likelihood using [Template Model Builder](https://github.com/kaskr/adcomp).
