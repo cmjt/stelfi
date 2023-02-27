@@ -166,7 +166,8 @@ show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
         hist <-  ggplot2::ggplot(data = data,  ggplot2::aes(x = .data$data)) +
             ggplot2::geom_histogram(stat = "density") +  ggplot2::theme_minimal() +
             ggplot2::xlab("Interarrival times") +  ggplot2::ylab("Density") +
-            ggplot2::stat_function(fun = "dexp", args = (mean = 1), color = "red") +
+            ggplot2::stat_function(fun = dexp, args = (mean = 1), color = "red") +
+            ggplot2::xlim(0, min(4, quantile(interarrivals, probs=0.99))) +
             ggplot2::ggtitle("Transformed Interarrival Times")
         p <- ppoints(100)    ## 100 equally spaced points on (0,1), excluding endpoints
         q <- quantile(interarrivals,p = p) ## percentiles of the sample distribution
