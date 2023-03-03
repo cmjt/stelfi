@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 2 Summary of key stelfi functions | The R package stelfi</title>
+  <meta name="description" content="Using stelfi" />
+  <meta name="generator" content="bookdown 0.27 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 2 Summary of key stelfi functions | The R package stelfi" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Using stelfi" />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 2 Summary of key stelfi functions | The R package stelfi" />
+  
+  <meta name="twitter:description" content="Using stelfi" />
+  
+
+<meta name="author" content="Charlotte M. Jones-Todd &amp; Alec van Helsdingen" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="data.html"/>
+<link rel="next" href="hawkes.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">stelfi</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Installation</a></li>
+<li class="chapter" data-level="1" data-path="data.html"><a href="data.html"><i class="fa fa-check"></i><b>1</b> Datasets in <code>stelfi</code></a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="data.html"><a href="data.html#temporal-point-pattern-data"><i class="fa fa-check"></i><b>1.1</b> Temporal point pattern data</a>
+<ul>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#retweets_niwa"><i class="fa fa-check"></i><code>retweets_niwa</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#uk_serial"><i class="fa fa-check"></i><code>uk_serial</code></a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="data.html"><a href="data.html#spatiotemporal-point-pattern-data"><i class="fa fa-check"></i><b>1.2</b> Spatiotemporal point pattern data</a>
+<ul>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#sasquatch"><i class="fa fa-check"></i><code>sasquatch</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#nz_earthquakes"><i class="fa fa-check"></i><code>nz_earthquakes</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#nz_murders"><i class="fa fa-check"></i><code>nz_murders</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#iraq_terrorism"><i class="fa fa-check"></i><code>iraq_terrorism</code></a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="data.html"><a href="data.html#simulated-data"><i class="fa fa-check"></i><b>1.3</b> Simulated data</a>
+<ul>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#xyt"><i class="fa fa-check"></i><code>xyt</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#marked"><i class="fa fa-check"></i><code>marked</code></a></li>
+<li class="chapter" data-level="" data-path="data.html"><a href="data.html#horse_mesh"><i class="fa fa-check"></i><code>horse_mesh</code></a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="summary-of-key-stelfi-functions.html"><a href="summary-of-key-stelfi-functions.html"><i class="fa fa-check"></i><b>2</b> Summary of key <code>stelfi</code> functions</a></li>
+<li class="chapter" data-level="3" data-path="hawkes.html"><a href="hawkes.html"><i class="fa fa-check"></i><b>3</b> Hawkes process</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes-function"><i class="fa fa-check"></i><b>3.1</b> The <code>fit_hawkes()</code> function</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="hawkes.html"><a href="hawkes.html#fitting-a-hawkes-model"><i class="fa fa-check"></i><b>3.1.1</b> Fitting a Hawkes model</a></li>
+<li class="chapter" data-level="3.1.2" data-path="hawkes.html"><a href="hawkes.html#fitting-an-etas-type-marked-model"><i class="fa fa-check"></i><b>3.1.2</b> Fitting an ETAS-type marked model</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>3.2</b> The <code>fit_hawkes_cbf()</code> function</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="hawkes.html"><a href="hawkes.html#fitting-an-inhomogenous-hawkes-process"><i class="fa fa-check"></i><b>3.2.1</b> Fitting an inhomogenous Hawkes process</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="hawkes.html"><a href="hawkes.html#the-sim_hawkes-function"><i class="fa fa-check"></i><b>3.3</b> The <code>sim_hawkes()</code> function</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>4</b> Log-Gaussian Cox process</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>4.1</b> The <code>fit_lgcp()</code> function</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="lgcp.html"><a href="lgcp.html#fitting-a-spatial-only-lgcp"><i class="fa fa-check"></i><b>4.1.1</b> Fitting a spatial only LGCP</a></li>
+<li class="chapter" data-level="4.1.2" data-path="lgcp.html"><a href="lgcp.html#spatiotemporal-lgcp"><i class="fa fa-check"></i><b>4.1.2</b> Spatiotemporal LGCP</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="lgcp.html"><a href="lgcp.html#the-sim_lgcp-function"><i class="fa fa-check"></i><b>4.2</b> The <code>sim_lgcp()</code> function</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="fit-marked.html"><a href="fit-marked.html"><i class="fa fa-check"></i><b>5</b> Marked log-Gaussian Cox process</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="fit-marked.html"><a href="fit-marked.html#the-fit_mlgcp-function"><i class="fa fa-check"></i><b>5.1</b> The <code>fit_mlgcp()</code> function</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="fit-marked.html"><a href="fit-marked.html#fitting-a-marked-lgcp"><i class="fa fa-check"></i><b>5.1.1</b> Fitting a marked LGCP</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="stelfi.html"><a href="stelfi.html"><i class="fa fa-check"></i><b>6</b> Spatiotemporal self-exciting models</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="stelfi.html"><a href="stelfi.html#the-fit_stelfi-function"><i class="fa fa-check"></i><b>6.1</b> The <code>fit_stelfi()</code> function</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="stelfi.html"><a href="stelfi.html#spatiotemporal-hawkes-process"><i class="fa fa-check"></i><b>6.1.1</b> Spatiotemporal Hawkes process</a></li>
+<li class="chapter" data-level="6.1.2" data-path="stelfi.html"><a href="stelfi.html#including-a-random-field"><i class="fa fa-check"></i><b>6.1.2</b> Including a random field</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="meshmetrics.html"><a href="meshmetrics.html"><i class="fa fa-check"></i><b>7</b> Delaunay triangulation metrics</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">The <code>R</code> package <code>stelfi</code></a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="summary-of-key-stelfi-functions" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">Chapter 2</span> Summary of key <code>stelfi</code> functions<a href="summary-of-key-stelfi-functions.html#summary-of-key-stelfi-functions" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="data.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="hawkes.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["docs.pdf", "docs.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

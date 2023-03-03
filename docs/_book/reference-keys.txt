@@ -44,3 +44,8 @@ fit-marked
 spatiotemporal-hawkes-process
 including-a-random-field
 meshmetrics
+summary-of-key-stelfi-functions
+key-stelfi-functions
+tab:summary
+summary-of-model-fitting-functions-offered-and-lists-the-key-arguments-for-each.
+summary-of-utility-and-simulation-functions-listing-the-key-arguments-for-each.
