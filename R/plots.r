@@ -81,6 +81,7 @@ show_hawkes <-  function(obj) {
 #' times, In addition, results of a Kolmogorov-Smirnov and
 #' Ljung-Box hypothesis test for the interarrival times are printed.
 #' 
+#' @param background_integral Function, as defined in \code{\link{fit_hawkes_cbf}
 #' @param plot Logical, whether to plot  goodness-of-fit plots. Default \code{TRUE}.
 #' @param return_values Logical, whether to return GOF values. Default \code{FALSE}.
 #' @return \code{\link{show_hawkes_GOF}} returns no value unless \code{return_values = TRUE},
@@ -94,7 +95,9 @@ show_hawkes <-  function(obj) {
 #' show_hawkes_GOF(fit)
 #' @export
 #' @rdname show_hawkes
-show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
+show_hawkes_GOF <-  function(obj, background_integral = NULL, plot = TRUE, return_values = FALSE) {
+  
+    ## Retrieve values of mu (or the cbf), alpha and beta
     if (!"times" %in% names(obj)) {
         times <- obj$env$data$times
         marks <- obj$env$data$marks
@@ -103,6 +106,7 @@ show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
             alpha <- pars[1,1]
             beta <- pars[2,1]
             background_parameters = obj$background_parameters
+            mu <- background_integral
         } else {
             mu <- pars[1,1]
             alpha <- pars[2,1]
@@ -120,6 +124,7 @@ show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
         beta <- pars[["beta"]]
         if ("background_parameters" %in% names(pars)) {
             background_parameters <- pars$background_parameters
+            mu <- background_integral
         } else {
             mu <- pars[["mu"]]
         }  
@@ -128,6 +133,8 @@ show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
     for(i in 2:length(times)) {
         A[i] <- exp(-beta * (times[i] - times[i - 1])) * (marks[i-1] + A[i - 1])
     }
+    
+    ## Calculate compensators
     compensator <- numeric(length = length(times))
     if (!inherits(mu, "function")) {
         for(i in 1:length(times)) {
@@ -142,13 +149,15 @@ show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
         compensator <- compensator - mu(background_parameters,0) ## Subtract integral at zero
     }
     interarrivals <- compensator[2:length(compensator)] - compensator[1:(length(compensator)-1)]
+    
     ## Kolmogorov-Smirnov Test
     print(stats::ks.test(interarrivals, "pexp"))
     ## Ljung-Box Test
     print(stats::Box.test(interarrivals, type = "Ljung"))
+    
     if (plot) {
+        ## Plot of compensator versus observed events
         data <- data.frame(xs = times, observed = 1:length(times), compensator = compensator)
-        ## Plot of compensator and actual events
         data <- reshape(data, direction = "long", idvar = "xs",
                         varying = c("observed", "compensator"), v.names = "val",
                         times = c("observed", "compensator"),
@@ -161,6 +170,7 @@ show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
             ggplot2::theme_minimal() +
             ggplot2::theme(legend.position=c(0.8,0.2)) +
             ggplot2::ggtitle("Actual Events and Compensator")
+        
         ## Histogram of transformed interarrival times
         data <- data.frame(data = interarrivals)
         hist <-  ggplot2::ggplot(data = data,  ggplot2::aes(x = .data$data)) +
@@ -169,9 +179,10 @@ show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
             ggplot2::stat_function(fun = dexp, args = (mean = 1), color = "red") +
             ggplot2::xlim(0, min(4, quantile(interarrivals, probs=0.99))) +
             ggplot2::ggtitle("Transformed Interarrival Times")
+        
+        ## Q-Q plot of transformed interarrival times
         p <- ppoints(100)    ## 100 equally spaced points on (0,1), excluding endpoints
         q <- quantile(interarrivals,p = p) ## percentiles of the sample distribution
-        ## Q-Q plot of transformed interarrival times
         data <- data.frame(x = qexp(p), y = q)
         qqplot <- ggplot2::ggplot(data =  data,
                                   ggplot2::aes(x = .data$x, y = .data$y)) +
@@ -180,9 +191,10 @@ show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE) {
             ggplot2::geom_point() +  ggplot2::theme_minimal() + 
             ggplot2::geom_abline(intercept = 0, slope = 1, color = "red") +
             ggplot2::ggtitle("Transformed Interarrival Times")
+        
+        ## Scatterplot of the CDF of consecutive interarrival times
         U <- numeric(length=length(interarrivals))
         U <- 1 - exp(-compensator[2:length(compensator)] + compensator[1:(length(compensator) - 1)])
-        ## Scatterplot of the CDF of consecutive interarrival times
         data <-  data.frame(x = U[1:(length(U)-1)], y = U[2:length(U)])
         scatter <- ggplot2::ggplot(data = data,
                                    ggplot2::aes(x = .data$x, y = .data$y)) +
