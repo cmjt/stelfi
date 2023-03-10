@@ -8,3 +8,4 @@ model_fits.r
 package-build/*
 stelfi.Rcheck/*
 CRAN-SUBMISSION
+inst/doc

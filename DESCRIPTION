@@ -54,5 +54,7 @@ Suggests:
     spatstat.utils,
     spatstat.geom,
     rgdal,
-    hawkesbow
+    hawkesbow,
+    knitr
 Config/testthat/edition: 3
+VignetteBuilder: knitr
