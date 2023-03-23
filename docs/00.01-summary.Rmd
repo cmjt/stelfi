@@ -1,6 +1,6 @@
 # Key `stelfi` functions
 
-#### Summary of model fitting functions offered and lists the key arguments for each. {-}
+#### Summary of model fitting functions offered listing the key arguments for each. {-}
 
 +-----------------------+-------------------------------------------------------+
 | **Function**          | **Key arguments**                                     | 
