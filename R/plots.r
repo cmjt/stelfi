@@ -235,6 +235,8 @@ show_hawkes_GOF <-  function(obj, background_integral = NULL, plot = TRUE, retur
 #' }
 #' @export
 show_field <- function(x, smesh, sf, dims = c(500,500), clip = FALSE) {
+    x <- c(x)
+    if(length(x) != smesh$n) stop("Field should be defined at each mesh node (length(x) != smesh$n)")
     nx <- dims[1]
     ny <- dims[2]
     xs <- seq(min(smesh$loc[, 1]), max(smesh$loc[, 1]), length = nx)
@@ -243,25 +245,24 @@ show_field <- function(x, smesh, sf, dims = c(500,500), clip = FALSE) {
     pxl <- sf::st_multipoint(as.matrix(data))
     A <- INLA::inla.spde.make.A(smesh, pxl)
     data$colz <-  as.vector(A %*% x)
-    if(clip){
+    if(!missing(sf) & clip){
         xy <- sf::st_as_sf(data, coords = c("xs", "ys"))
         sf::st_crs(xy) <- sf::st_crs(sf)
         idx <- lengths(sf::st_intersects(xy, sf)) > 0
         data <- data[idx, ]
-        }
+    }
     plt <- ggplot2::ggplot() +
         ggplot2::geom_tile(data = data, ggplot2::aes(x = .data$xs, y = .data$ys, 
                                                      fill = .data$colz)) +
         ggplot2::labs(fill = "") +
         ggplot2::xlab("") + ggplot2::ylab("") + 
         ggplot2::scale_fill_viridis_c(option = "D") +
-        ggplot2::coord_equal() 
+        ggplot2::coord_equal()
     if (!missing(sf)) {
         plt <- plt +
-            ggplot2::geom_sf(data = sf, fill = NA, size = 2)
+            ggplot2::geom_sf(data = sf, fill = NA, linewidth = 2)
     }
     plt
-
 }
 #' Plot the estimated intensity from a fitted LGCP model
 #'
