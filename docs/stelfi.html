@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 5 Spatiotemporal self-exciting models | The R package stelfi</title>
+  <title>Chapter 6 Spatiotemporal self-exciting models | The R package stelfi</title>
   <meta name="description" content="Using stelfi" />
-  <meta name="generator" content="bookdown 0.29 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.27 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 5 Spatiotemporal self-exciting models | The R package stelfi" />
+  <meta property="og:title" content="Chapter 6 Spatiotemporal self-exciting models | The R package stelfi" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Using stelfi" />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 5 Spatiotemporal self-exciting models | The R package stelfi" />
+  <meta name="twitter:title" content="Chapter 6 Spatiotemporal self-exciting models | The R package stelfi" />
   
   <meta name="twitter:description" content="Using stelfi" />
   
@@ -55,27 +55,25 @@
 
 
 <style type="text/css">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -84,9 +82,9 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  {  }
 @media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+a.sourceLine::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -119,28 +117,6 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
-<style type="text/css">
-/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-}
-.hanging div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}
-</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -159,65 +135,53 @@ div.csl-indent {
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Installation</a></li>
-<li class="chapter" data-level="1" data-path="data.html"><a href="data.html"><i class="fa fa-check"></i><b>1</b> Datasets in <code>stelfi</code></a>
-<ul>
-<li class="chapter" data-level="1.1" data-path="data.html"><a href="data.html#temporal-point-pattern-data"><i class="fa fa-check"></i><b>1.1</b> Temporal point pattern data</a>
-<ul>
+<li class="chapter" data-level="1" data-path="data.html"><a href="data.html"><i class="fa fa-check"></i><b>1</b> Datasets in <code>stelfi</code></a><ul>
+<li class="chapter" data-level="1.1" data-path="data.html"><a href="data.html#temporal-point-pattern-data"><i class="fa fa-check"></i><b>1.1</b> Temporal point pattern data</a><ul>
 <li class="chapter" data-level="" data-path="data.html"><a href="data.html#retweets_niwa"><i class="fa fa-check"></i><code>retweets_niwa</code></a></li>
 <li class="chapter" data-level="" data-path="data.html"><a href="data.html#uk_serial"><i class="fa fa-check"></i><code>uk_serial</code></a></li>
 </ul></li>
-<li class="chapter" data-level="1.2" data-path="data.html"><a href="data.html#spatiotemporal-point-pattern-data"><i class="fa fa-check"></i><b>1.2</b> Spatiotemporal point pattern data</a>
-<ul>
+<li class="chapter" data-level="1.2" data-path="data.html"><a href="data.html#spatiotemporal-point-pattern-data"><i class="fa fa-check"></i><b>1.2</b> Spatiotemporal point pattern data</a><ul>
 <li class="chapter" data-level="" data-path="data.html"><a href="data.html#sasquatch"><i class="fa fa-check"></i><code>sasquatch</code></a></li>
 <li class="chapter" data-level="" data-path="data.html"><a href="data.html#nz_earthquakes"><i class="fa fa-check"></i><code>nz_earthquakes</code></a></li>
 <li class="chapter" data-level="" data-path="data.html"><a href="data.html#nz_murders"><i class="fa fa-check"></i><code>nz_murders</code></a></li>
 <li class="chapter" data-level="" data-path="data.html"><a href="data.html#iraq_terrorism"><i class="fa fa-check"></i><code>iraq_terrorism</code></a></li>
 </ul></li>
-<li class="chapter" data-level="1.3" data-path="data.html"><a href="data.html#simulated-data"><i class="fa fa-check"></i><b>1.3</b> Simulated data</a>
-<ul>
+<li class="chapter" data-level="1.3" data-path="data.html"><a href="data.html#simulated-data"><i class="fa fa-check"></i><b>1.3</b> Simulated data</a><ul>
 <li class="chapter" data-level="" data-path="data.html"><a href="data.html#xyt"><i class="fa fa-check"></i><code>xyt</code></a></li>
 <li class="chapter" data-level="" data-path="data.html"><a href="data.html#marked"><i class="fa fa-check"></i><code>marked</code></a></li>
 <li class="chapter" data-level="" data-path="data.html"><a href="data.html#horse_mesh"><i class="fa fa-check"></i><code>horse_mesh</code></a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="hawkes.html"><a href="hawkes.html"><i class="fa fa-check"></i><b>2</b> Hawkes process</a>
-<ul>
-<li class="chapter" data-level="2.1" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes-function"><i class="fa fa-check"></i><b>2.1</b> The <code>fit_hawkes()</code> function</a>
-<ul>
-<li class="chapter" data-level="2.1.1" data-path="hawkes.html"><a href="hawkes.html#fitting-a-hawkes-model"><i class="fa fa-check"></i><b>2.1.1</b> Fitting a Hawkes model</a></li>
-<li class="chapter" data-level="2.1.2" data-path="hawkes.html"><a href="hawkes.html#fitting-an-etas-type-marked-model"><i class="fa fa-check"></i><b>2.1.2</b> Fitting an ETAS-type marked model</a></li>
+<li class="chapter" data-level="2" data-path="key-stelfi-functions.html"><a href="key-stelfi-functions.html"><i class="fa fa-check"></i><b>2</b> Key <code>stelfi</code> functions</a></li>
+<li class="chapter" data-level="3" data-path="hawkes.html"><a href="hawkes.html"><i class="fa fa-check"></i><b>3</b> Hawkes process</a><ul>
+<li class="chapter" data-level="3.1" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes-function"><i class="fa fa-check"></i><b>3.1</b> The <code>fit_hawkes()</code> function</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="hawkes.html"><a href="hawkes.html#fitting-a-hawkes-model"><i class="fa fa-check"></i><b>3.1.1</b> Fitting a Hawkes model</a></li>
+<li class="chapter" data-level="3.1.2" data-path="hawkes.html"><a href="hawkes.html#fitting-an-etas-type-marked-model"><i class="fa fa-check"></i><b>3.1.2</b> Fitting an ETAS-type marked model</a></li>
 </ul></li>
-<li class="chapter" data-level="2.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>2.2</b> The <code>fit_hawkes_cbf()</code> function</a>
-<ul>
-<li class="chapter" data-level="2.2.1" data-path="hawkes.html"><a href="hawkes.html#fitting-an-inhomogenous-hawkes-process"><i class="fa fa-check"></i><b>2.2.1</b> Fitting an inhomogenous Hawkes process</a></li>
+<li class="chapter" data-level="3.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>3.2</b> The <code>fit_hawkes_cbf()</code> function</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="hawkes.html"><a href="hawkes.html#fitting-an-inhomogenous-hawkes-process"><i class="fa fa-check"></i><b>3.2.1</b> Fitting an inhomogenous Hawkes process</a></li>
 </ul></li>
-<li class="chapter" data-level="2.3" data-path="hawkes.html"><a href="hawkes.html#the-sim_hawkes-function"><i class="fa fa-check"></i><b>2.3</b> The <code>sim_hawkes()</code> function</a></li>
+<li class="chapter" data-level="3.3" data-path="hawkes.html"><a href="hawkes.html#the-sim_hawkes-function"><i class="fa fa-check"></i><b>3.3</b> The <code>sim_hawkes()</code> function</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>3</b> Log-Gaussian Cox process</a>
-<ul>
-<li class="chapter" data-level="3.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>3.1</b> The <code>fit_lgcp()</code> function</a>
-<ul>
-<li class="chapter" data-level="3.1.1" data-path="lgcp.html"><a href="lgcp.html#fitting-a-spatial-only-lgcp"><i class="fa fa-check"></i><b>3.1.1</b> Fitting a spatial only LGCP</a></li>
-<li class="chapter" data-level="3.1.2" data-path="lgcp.html"><a href="lgcp.html#spatiotemporal-lgcp"><i class="fa fa-check"></i><b>3.1.2</b> Spatiotemporal LGCP</a></li>
+<li class="chapter" data-level="4" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>4</b> Log-Gaussian Cox process</a><ul>
+<li class="chapter" data-level="4.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>4.1</b> The <code>fit_lgcp()</code> function</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="lgcp.html"><a href="lgcp.html#fitting-a-spatial-only-lgcp"><i class="fa fa-check"></i><b>4.1.1</b> Fitting a spatial only LGCP</a></li>
+<li class="chapter" data-level="4.1.2" data-path="lgcp.html"><a href="lgcp.html#spatiotemporal-lgcp"><i class="fa fa-check"></i><b>4.1.2</b> Spatiotemporal LGCP</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="lgcp.html"><a href="lgcp.html#the-sim_lgcp-function"><i class="fa fa-check"></i><b>3.2</b> The <code>sim_lgcp()</code> function</a></li>
+<li class="chapter" data-level="4.2" data-path="lgcp.html"><a href="lgcp.html#the-sim_lgcp-function"><i class="fa fa-check"></i><b>4.2</b> The <code>sim_lgcp()</code> function</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="fit-marked.html"><a href="fit-marked.html"><i class="fa fa-check"></i><b>4</b> Marked log-Gaussian Cox process</a>
-<ul>
-<li class="chapter" data-level="4.1" data-path="fit-marked.html"><a href="fit-marked.html#the-fit_mlgcp-function"><i class="fa fa-check"></i><b>4.1</b> The <code>fit_mlgcp()</code> function</a>
-<ul>
-<li class="chapter" data-level="4.1.1" data-path="fit-marked.html"><a href="fit-marked.html#fitting-a-marked-lgcp"><i class="fa fa-check"></i><b>4.1.1</b> Fitting a marked LGCP</a></li>
+<li class="chapter" data-level="5" data-path="fit-marked.html"><a href="fit-marked.html"><i class="fa fa-check"></i><b>5</b> Marked log-Gaussian Cox process</a><ul>
+<li class="chapter" data-level="5.1" data-path="fit-marked.html"><a href="fit-marked.html#the-fit_mlgcp-function"><i class="fa fa-check"></i><b>5.1</b> The <code>fit_mlgcp()</code> function</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="fit-marked.html"><a href="fit-marked.html#fitting-a-marked-lgcp"><i class="fa fa-check"></i><b>5.1.1</b> Fitting a marked LGCP</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="stelfi.html"><a href="stelfi.html"><i class="fa fa-check"></i><b>5</b> Spatiotemporal self-exciting models</a>
-<ul>
-<li class="chapter" data-level="5.1" data-path="stelfi.html"><a href="stelfi.html#the-fit_stelfi-function"><i class="fa fa-check"></i><b>5.1</b> The <code>fit_stelfi()</code> function</a>
-<ul>
-<li class="chapter" data-level="5.1.1" data-path="stelfi.html"><a href="stelfi.html#spatiotemporal-hawkes-process"><i class="fa fa-check"></i><b>5.1.1</b> Spatiotemporal Hawkes process</a></li>
-<li class="chapter" data-level="5.1.2" data-path="stelfi.html"><a href="stelfi.html#including-a-random-field"><i class="fa fa-check"></i><b>5.1.2</b> Including a random field</a></li>
+<li class="chapter" data-level="6" data-path="stelfi.html"><a href="stelfi.html"><i class="fa fa-check"></i><b>6</b> Spatiotemporal self-exciting models</a><ul>
+<li class="chapter" data-level="6.1" data-path="stelfi.html"><a href="stelfi.html#the-fit_stelfi-function"><i class="fa fa-check"></i><b>6.1</b> The <code>fit_stelfi()</code> function</a><ul>
+<li class="chapter" data-level="6.1.1" data-path="stelfi.html"><a href="stelfi.html#spatiotemporal-hawkes-process"><i class="fa fa-check"></i><b>6.1.1</b> Spatiotemporal Hawkes process</a></li>
+<li class="chapter" data-level="6.1.2" data-path="stelfi.html"><a href="stelfi.html#including-a-random-field"><i class="fa fa-check"></i><b>6.1.2</b> Including a random field</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="meshmetrics.html"><a href="meshmetrics.html"><i class="fa fa-check"></i><b>6</b> Delaunay triangulation metrics</a></li>
+<li class="chapter" data-level="7" data-path="meshmetrics.html"><a href="meshmetrics.html"><i class="fa fa-check"></i><b>7</b> Delaunay triangulation metrics</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -239,44 +203,44 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="stelfi" class="section level1 hasAnchor" number="5">
-<h1><span class="header-section-number">Chapter 5</span> Spatiotemporal self-exciting models<a href="stelfi.html#stelfi" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="stelfi" class="section level1 hasAnchor">
+<h1><span class="header-section-number">Chapter 6</span> Spatiotemporal self-exciting models<a href="stelfi.html#stelfi" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>Although the Hawkes process is traditionally formulated as a temporal point process, it is also possible to formulate a spatiotemporal version of the Hawkes process.</p>
 <p>For the spatiotemporal Hawkes processes fitted by this package, temporal self-excitement follows an exponential decay function. The self-excitement over space follows a Gaussian distribution centered at the triggering event. There are two formulations of this model. The default is that the Gaussian function has a fixed covariance matrix, independent of time. Alternatively, covariance can be directly proportional to time, meaning that the self-excitement radiates out from the center over time. This can be appropriate when the mechanism causing self-excitement travels at a finite speed, but is very memory-intensive.</p>
 <p>The intensity function used by stelfi is</p>
 <p><span class="math display">\[\lambda(s,t) = \mu + \alpha \Sigma_{i:\tau_i&lt;t}(\text{exp}(-\beta * (t-\tau_i)) G_i(s-x_i, t - \tau_i)).\]</span></p>
 <p>Here <span class="math inline">\(\mu\)</span> is the background rate, <span class="math inline">\(\beta\)</span> is the rate of temporal decay, <span class="math inline">\(\alpha\)</span> is the increase in intensity after an event, <span class="math inline">\(\tau_i\)</span> are the event times, <span class="math inline">\(x_i\)</span> are the event locations (in 2D Euclidean space) and <span class="math inline">\(G_i(s-x_i, t - \tau_i)\)</span> is the spatial self-excitement kernel.</p>
 <p>For the version with time-independent spatial excitement:
-<span class="math inline">\(G_i(s-x_i, t - \tau_i) = f(s - x_i)\)</span>
-where <span class="math inline">\(f\)</span> is the density function of <span class="math inline">\(\text{N}(0, \Sigma)\)</span></p>
+<span class="math inline">\(G_i(s-x_i, t - \tau_i) = f_X(s - x_i)\)</span>
+where <span class="math inline">\(f_X\)</span> is the density function of <span class="math inline">\(X \sim \text{N}(0, \Sigma)\)</span></p>
 <p>For the version with time-dependent spatial excitement:
-<span class="math inline">\(G_i(s-x_i, t - \tau_i) = f(s - x_i)\)</span>
-where <span class="math inline">\(f\)</span> is the density function of <span class="math inline">\(\text{N}(0, (t-\tau_i)\Sigma)\)</span></p>
-<div id="the-fit_stelfi-function" class="section level2 hasAnchor" number="5.1">
-<h2><span class="header-section-number">5.1</span> The <code>fit_stelfi()</code> function<a href="stelfi.html#the-fit_stelfi-function" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="stelfi.html#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="fu">args</span>(fit_stelfi)</span></code></pre></div>
+<span class="math inline">\(G_i(s-x_i, t - \tau_i) = f_X(s - x_i)\)</span>
+where <span class="math inline">\(f_X\)</span> is the density function of <span class="math inline">\(X \sim \text{N}(0, (t-\tau_i)\Sigma)\)</span></p>
+<div id="the-fit_stelfi-function" class="section level2 hasAnchor">
+<h2><span class="header-section-number">6.1</span> The <code>fit_stelfi()</code> function<a href="stelfi.html#the-fit_stelfi-function" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb90-1" title="1"><span class="kw">args</span>(fit_stelfi)</a></code></pre></div>
 <pre><code>## function (times, locs, sf, smesh, parameters, covariates, GMRF = FALSE, 
 ##     time_independent = TRUE, tmb_silent = TRUE, nlminb_silent = TRUE, 
 ##     ...) 
 ## NULL</code></pre>
-<div id="spatiotemporal-hawkes-process" class="section level3 hasAnchor" number="5.1.1">
-<h3><span class="header-section-number">5.1.1</span> Spatiotemporal Hawkes process<a href="stelfi.html#spatiotemporal-hawkes-process" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="stelfi.html#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(xyt, <span class="at">package =</span> <span class="st">&quot;stelfi&quot;</span>)</span>
-<span id="cb92-2"><a href="stelfi.html#cb92-2" aria-hidden="true" tabindex="-1"></a>locs <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> xyt<span class="sc">$</span>x, <span class="at">y =</span> xyt<span class="sc">$</span>y)</span>
-<span id="cb92-3"><a href="stelfi.html#cb92-3" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> xyt<span class="sc">$</span>t</span>
-<span id="cb92-4"><a href="stelfi.html#cb92-4" aria-hidden="true" tabindex="-1"></a>domain <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(xyt<span class="sc">$</span>window)</span></code></pre></div>
-<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="stelfi.html#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> locs, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">size =</span> times)) <span class="sc">+</span></span>
-<span id="cb93-2"><a href="stelfi.html#cb93-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb93-3"><a href="stelfi.html#cb93-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_sf</span>(<span class="at">data =</span> domain, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb93-4"><a href="stelfi.html#cb93-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_void</span>()</span></code></pre></div>
+<div id="spatiotemporal-hawkes-process" class="section level3 hasAnchor">
+<h3><span class="header-section-number">6.1.1</span> Spatiotemporal Hawkes process<a href="stelfi.html#spatiotemporal-hawkes-process" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb92-1" title="1"><span class="kw">data</span>(xyt, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</a>
+<a class="sourceLine" id="cb92-2" title="2">locs &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> xyt<span class="op">$</span>x, <span class="dt">y =</span> xyt<span class="op">$</span>y)</a>
+<a class="sourceLine" id="cb92-3" title="3">times &lt;-<span class="st"> </span>xyt<span class="op">$</span>t</a>
+<a class="sourceLine" id="cb92-4" title="4">domain &lt;-<span class="st"> </span>sf<span class="op">::</span><span class="kw">st_as_sf</span>(xyt<span class="op">$</span>window)</a></code></pre></div>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb93-1" title="1"><span class="kw">ggplot</span>(<span class="dt">data =</span> locs, <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">size =</span> times)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb93-2" title="2"><span class="st">    </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb93-3" title="3"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> domain, <span class="dt">fill =</span> <span class="ot">NA</span>, <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb93-4" title="4"><span class="st">    </span><span class="kw">theme_void</span>()</a></code></pre></div>
 <p><img src="docs_files/figure-html/unnamed-chunk-59-1.png" width="672" /></p>
-<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="stelfi.html#cb94-1" aria-hidden="true" tabindex="-1"></a>bnd <span class="ot">&lt;-</span> INLA<span class="sc">::</span><span class="fu">inla.mesh.segment</span>(<span class="fu">as.matrix</span>(sf<span class="sc">::</span><span class="fu">st_coordinates</span>(domain)[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]))</span>
-<span id="cb94-2"><a href="stelfi.html#cb94-2" aria-hidden="true" tabindex="-1"></a>smesh <span class="ot">&lt;-</span> INLA<span class="sc">::</span><span class="fu">inla.mesh.2d</span>(<span class="at">boundary =</span> bnd, </span>
-<span id="cb94-3"><a href="stelfi.html#cb94-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">max.edge =</span> <span class="fl">0.75</span>, <span class="at">cutoff =</span> <span class="fl">0.3</span>)</span>
-<span id="cb94-4"><a href="stelfi.html#cb94-4" aria-hidden="true" tabindex="-1"></a>param <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="dv">3</span>, <span class="at">beta =</span> <span class="dv">6</span>, <span class="at">xsigma =</span> <span class="fl">0.2</span>,</span>
-<span id="cb94-5"><a href="stelfi.html#cb94-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">ysigma =</span> <span class="fl">0.2</span>, <span class="at">rho =</span> <span class="dv">0</span>)</span>
-<span id="cb94-6"><a href="stelfi.html#cb94-6" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_stelfi</span>(<span class="at">times =</span> times, <span class="at">locs =</span> locs, <span class="at">sf =</span> domain, <span class="at">smesh =</span> smesh, <span class="at">parameters =</span> param)</span>
-<span id="cb94-7"><a href="stelfi.html#cb94-7" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit)</span></code></pre></div>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb94-1" title="1">bnd &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.segment</span>(<span class="kw">as.matrix</span>(sf<span class="op">::</span><span class="kw">st_coordinates</span>(domain)[, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]))</a>
+<a class="sourceLine" id="cb94-2" title="2">smesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.2d</span>(<span class="dt">boundary =</span> bnd, </a>
+<a class="sourceLine" id="cb94-3" title="3">                            <span class="dt">max.edge =</span> <span class="fl">0.75</span>, <span class="dt">cutoff =</span> <span class="fl">0.3</span>)</a>
+<a class="sourceLine" id="cb94-4" title="4">param &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">mu =</span> <span class="dv">1</span>, <span class="dt">alpha =</span> <span class="dv">3</span>, <span class="dt">beta =</span> <span class="dv">6</span>, <span class="dt">xsigma =</span> <span class="fl">0.2</span>,</a>
+<a class="sourceLine" id="cb94-5" title="5">             <span class="dt">ysigma =</span> <span class="fl">0.2</span>, <span class="dt">rho =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb94-6" title="6">fit &lt;-<span class="st"> </span><span class="kw">fit_stelfi</span>(<span class="dt">times =</span> times, <span class="dt">locs =</span> locs, <span class="dt">sf =</span> domain, <span class="dt">smesh =</span> smesh, <span class="dt">parameters =</span> param)</a>
+<a class="sourceLine" id="cb94-7" title="7"><span class="kw">get_coefs</span>(fit)</a></code></pre></div>
 <pre><code>##            Estimate  Std. Error
 ## mu       0.31682408  0.06432051
 ## coefs   -1.14940861  0.20301649
@@ -285,32 +249,32 @@ where <span class="math inline">\(f\)</span> is the density function of <span cl
 ## xsigma   0.55456406  0.02336852
 ## ysigma   0.28344566  0.01440343
 ## rho      0.02843629  0.05804435</code></pre>
-<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="stelfi.html#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_hawkes</span>(<span class="fu">list</span>(<span class="at">times =</span> times, <span class="at">params =</span> <span class="fu">c</span>(<span class="at">mu =</span> <span class="fl">0.32</span>, <span class="at">alpha =</span> <span class="dv">232</span>, <span class="at">beta =</span> <span class="dv">232</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb96-1" title="1"><span class="kw">show_hawkes</span>(<span class="kw">list</span>(<span class="dt">times =</span> times, <span class="dt">params =</span> <span class="kw">c</span>(<span class="dt">mu =</span> <span class="fl">0.32</span>, <span class="dt">alpha =</span> <span class="dv">232</span>, <span class="dt">beta =</span> <span class="dv">232</span>)))</a></code></pre></div>
 <p><img src="docs_files/figure-html/unnamed-chunk-61-1.png" width="672" /></p>
 </div>
-<div id="including-a-random-field" class="section level3 hasAnchor" number="5.1.2">
-<h3><span class="header-section-number">5.1.2</span> Including a random field<a href="stelfi.html#including-a-random-field" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="stelfi.html#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Note: just because you can, doesn&#39;t mean you should...</span></span>
-<span id="cb97-2"><a href="stelfi.html#cb97-2" aria-hidden="true" tabindex="-1"></a>param <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="dv">20</span>, <span class="at">beta =</span> <span class="dv">200</span>, <span class="at">kappa =</span> <span class="dv">2</span>, <span class="at">tau =</span> <span class="fl">0.1</span>, <span class="at">xsigma =</span> <span class="fl">0.2</span>, <span class="at">ysigma =</span> <span class="fl">0.2</span>, <span class="at">rho =</span> <span class="dv">0</span>)</span>
-<span id="cb97-3"><a href="stelfi.html#cb97-3" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_stelfi</span>(<span class="at">times =</span> times, <span class="at">locs =</span> locs, <span class="at">sf =</span> domain, <span class="at">smesh =</span> smesh, <span class="at">parameters =</span> param, <span class="at">GMRF =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb97-4"><a href="stelfi.html#cb97-4" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit)</span></code></pre></div>
+<div id="including-a-random-field" class="section level3 hasAnchor">
+<h3><span class="header-section-number">6.1.2</span> Including a random field<a href="stelfi.html#including-a-random-field" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb97-1" title="1"><span class="co">## Note: just because you can, doesn&#39;t mean you should...</span></a>
+<a class="sourceLine" id="cb97-2" title="2">param &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">mu =</span> <span class="dv">1</span>, <span class="dt">alpha =</span> <span class="dv">20</span>, <span class="dt">beta =</span> <span class="dv">200</span>, <span class="dt">kappa =</span> <span class="dv">2</span>, <span class="dt">tau =</span> <span class="fl">0.1</span>, <span class="dt">xsigma =</span> <span class="fl">0.2</span>, <span class="dt">ysigma =</span> <span class="fl">0.2</span>, <span class="dt">rho =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb97-3" title="3">fit &lt;-<span class="st"> </span><span class="kw">fit_stelfi</span>(<span class="dt">times =</span> times, <span class="dt">locs =</span> locs, <span class="dt">sf =</span> domain, <span class="dt">smesh =</span> smesh, <span class="dt">parameters =</span> param, <span class="dt">GMRF =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb97-4" title="4"><span class="kw">get_coefs</span>(fit)</a></code></pre></div>
 <pre><code>##             Estimate   Std. Error
 ## mu       0.003432009  0.004005054
-## coefs   -5.674609400  1.166970616
-## alpha  259.064098682 15.626830262
-## beta   259.064100572 15.626830043
+## coefs   -5.674609405  1.166970622
+## alpha  259.064098445 15.626830249
+## beta   259.064100335 15.626830029
 ## xsigma   0.548451292  0.021614775
 ## ysigma   0.296733579  0.014288649
 ## rho      0.024276592  0.056616125
-## kappa    9.040965951 10.519144267
+## kappa    9.040965870 10.519143632
 ## tau      0.004644277  0.009560608</code></pre>
-<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="stelfi.html#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_hawkes</span>(<span class="fu">list</span>(<span class="at">times =</span> times, <span class="at">params =</span> <span class="fu">c</span>(<span class="at">mu =</span> <span class="fl">0.003</span>, <span class="at">alpha =</span> <span class="dv">259</span>, <span class="at">beta =</span> <span class="dv">259</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb99-1" title="1"><span class="kw">show_hawkes</span>(<span class="kw">list</span>(<span class="dt">times =</span> times, <span class="dt">params =</span> <span class="kw">c</span>(<span class="dt">mu =</span> <span class="fl">0.003</span>, <span class="dt">alpha =</span> <span class="dv">259</span>, <span class="dt">beta =</span> <span class="dv">259</span>)))</a></code></pre></div>
 <p><img src="docs_files/figure-html/unnamed-chunk-63-1.png" width="672" /></p>
-<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="stelfi.html#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_fields</span>(fit, smesh) <span class="sc">|&gt;</span></span>
-<span id="cb100-2"><a href="stelfi.html#cb100-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show_field</span>(<span class="at">smesh =</span> smesh) <span class="sc">+</span></span>
-<span id="cb100-3"><a href="stelfi.html#cb100-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_sf</span>(<span class="at">data =</span> <span class="fu">mesh_2_sf</span>(smesh), <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb100-4"><a href="stelfi.html#cb100-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_sf</span>(<span class="at">data =</span> domain, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)  <span class="sc">+</span></span>
-<span id="cb100-5"><a href="stelfi.html#cb100-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_void</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb100-1" title="1"><span class="kw">get_fields</span>(fit, smesh) <span class="op">|</span><span class="er">&gt;</span></a>
+<a class="sourceLine" id="cb100-2" title="2"><span class="st">    </span><span class="kw">show_field</span>(<span class="dt">smesh =</span> smesh) <span class="op">+</span></a>
+<a class="sourceLine" id="cb100-3" title="3"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> <span class="kw">mesh_2_sf</span>(smesh), <span class="dt">fill =</span> <span class="ot">NA</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb100-4" title="4"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> domain, <span class="dt">fill =</span> <span class="ot">NA</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)  <span class="op">+</span></a>
+<a class="sourceLine" id="cb100-5" title="5"><span class="st">    </span><span class="kw">theme_void</span>()</a></code></pre></div>
 <p><img src="docs_files/figure-html/unnamed-chunk-64-1.png" width="672" /></p>
 
 </div>
@@ -382,7 +346,7 @@ gitbook.start({
     var script = document.createElement("script");
     script.type = "text/javascript";
     var src = "true";
-    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
     if (location.protocol !== "file:")
       if (/^https?:/.test(src))
         src = src.replace(/^https?:/, '');

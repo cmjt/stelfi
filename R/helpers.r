@@ -95,22 +95,41 @@ get_coefs <- function(obj) {
 #' @seealso \code{\link{fit_lgcp}} and \code{\link{fit_mlgcp}}
 #' @export
 get_fields <- function(obj, smesh, tmesh, plot = FALSE, sd = FALSE) {
+    if(missing(smesh)) stop("argument smesh missing")
     idx <- ifelse(sd, 2, 1)
-    x <- summary(TMB::sdreport(obj),"random")[,idx]
+    x <- cbind(summary(TMB::sdreport(obj),"random")[,idx])
     if(!missing(tmesh)) {
         ind <- rep(seq(tmesh$n), each = smesh$n)
         x <- split(x, ind)
+        x <- do.call('cbind', x)
+        pre <- ifelse(sd, "gmrf_sd_", "gmrf_mean_")
+        colnames(x) <- paste(pre, "time_index_", seq(tmesh$n), sep = "")
         if(plot) {
             for(i in seq(tmesh$n)) {
                 dev.new()
-                print(show_field(x[[i]], smesh))
+                print(show_field(x[, i], smesh))
             }
         }
     }else{
-        if(plot) print(show_field(x, smesh))
-    }
-    return(as.vector(x))
-}    
+        if("betapp" %in% names(obj$par)){
+            num_f <-  as.numeric(table(names(obj$par))["log_kappa"])
+            ind <- rep(seq(num_f), each = smesh$n)
+            x <- split(x, ind)
+            x <- do.call('cbind', x)
+            pre <- ifelse(sd, "sd_", "mean_")
+            colnames(x) <- paste(pre, "field_", seq(num_f), sep = "")
+            if(plot) {
+                for(i in seq(num_f)) {
+                    dev.new()
+                    print(show_field(x[, i], smesh))
+                }
+            }
+        }else{    
+            colnames(x) <- ifelse(sd, "gmrf_sd", "gmrf_mean")
+            if(plot) print(show_field(x, smesh))
+        }}
+    return(x)
+}
 #' Mesh weights
 #' 
 #' Calculate the  areas (weights) around the mesh nodes that 

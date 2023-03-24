@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 5 Marked log-Gaussian Cox process | The R package stelfi</title>
+  <title>Chapter 2 Key stelfi functions | The R package stelfi</title>
   <meta name="description" content="Using stelfi" />
   <meta name="generator" content="bookdown 0.27 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 5 Marked log-Gaussian Cox process | The R package stelfi" />
+  <meta property="og:title" content="Chapter 2 Key stelfi functions | The R package stelfi" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Using stelfi" />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 5 Marked log-Gaussian Cox process | The R package stelfi" />
+  <meta name="twitter:title" content="Chapter 2 Key stelfi functions | The R package stelfi" />
   
   <meta name="twitter:description" content="Using stelfi" />
   
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="lgcp.html"/>
-<link rel="next" href="stelfi.html"/>
+<link rel="prev" href="data.html"/>
+<link rel="next" href="hawkes.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -203,60 +203,246 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="fit-marked" class="section level1 hasAnchor">
-<h1><span class="header-section-number">Chapter 5</span> Marked log-Gaussian Cox process<a href="fit-marked.html#fit-marked" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>Each event in a spatial LGCP may have a scalar or vector mark associated with it. In that case, we are interested not only in the spatial intensity of the point process but also the spatial distribution of the marks and the correlation between the marks and the point process.</p>
-<p>The intensity of the LGCP is as in the simple case:
-<span class="math display">\[\Lambda_{pp}(s) = \text{exp}(\beta_{pp} + G_{pp}(s) + \epsilon)\]</span>
-note the subscripts <span class="math inline">\(pp\)</span> indicating the point process.</p>
-<p>The mark(s) have their own field:
-<span class="math display">\[\Lambda_m(s)=\beta_{m}+G_m(s)+\alpha   \text{log}(\Lambda_{pp}(s)) +\epsilon\]</span>
-where <span class="math inline">\(\alpha\)</span> are coefficient(s) linking the point process and the mark(s).
-The meaning of <span class="math inline">\(\Lambda_m(s)\)</span> depends on the distribution of the marks. If the marks are from a Poisson distribution, it is the intensity (as with the point process). If the marks are from a Binomial distribution, it is the success probability, and the user must supply the number of trials for each event. If the marks are normally distributed, <span class="math inline">\(\Lambda_m(s)\)</span> models the mean, and the user must supply the standard deviation.
-The user can choose for the point processes and the marks to share a common GMRF, i.e. <span class="math inline">\(G_m(s) = G_{pp}(s)\)</span></p>
-<div id="the-fit_mlgcp-function" class="section level2 hasAnchor">
-<h2><span class="header-section-number">5.1</span> The <code>fit_mlgcp()</code> function<a href="fit-marked.html#the-fit_mlgcp-function" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb85-1" title="1"><span class="kw">args</span>(fit_mlgcp)</a></code></pre></div>
-<pre><code>## function (locs, sf, marks, smesh, parameters = list(), methods, 
-##     strfixed = matrix(1, nrow = nrow(locs), ncol = ncol(marks)), 
-##     fields = rep(1, ncol(marks)), covariates, pp_covariates, 
-##     marks_covariates, tmb_silent = TRUE, nlminb_silent = TRUE, 
-##     ...) 
-## NULL</code></pre>
-<div id="fitting-a-marked-lgcp" class="section level3 hasAnchor">
-<h3><span class="header-section-number">5.1.1</span> Fitting a marked LGCP<a href="fit-marked.html#fitting-a-marked-lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p><img src="docs_files/figure-html/unnamed-chunk-54-1.png" width="672" /></p>
-<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb87-1" title="1"><span class="kw">data</span>(marked, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</a>
-<a class="sourceLine" id="cb87-2" title="2">loc.d &lt;-<span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span><span class="kw">cbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))</a>
-<a class="sourceLine" id="cb87-3" title="3">domain &lt;-<span class="st">  </span>sf<span class="op">::</span><span class="kw">st_sf</span>(<span class="dt">geometry =</span> sf<span class="op">::</span><span class="kw">st_sfc</span>(sf<span class="op">::</span><span class="kw">st_polygon</span>(<span class="kw">list</span>(loc.d))))</a>
-<a class="sourceLine" id="cb87-4" title="4">smesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.2d</span>(<span class="dt">loc.domain =</span> loc.d, <span class="dt">offset =</span> <span class="kw">c</span>(<span class="fl">0.3</span>, <span class="dv">1</span>),</a>
-<a class="sourceLine" id="cb87-5" title="5">                                <span class="dt">max.edge =</span> <span class="kw">c</span>(<span class="fl">0.3</span>, <span class="fl">0.7</span>), <span class="dt">cutoff =</span> <span class="fl">0.05</span>)</a>
-<a class="sourceLine" id="cb87-6" title="6">locs &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">x =</span> marked<span class="op">$</span>x, <span class="dt">y =</span> marked<span class="op">$</span>y)</a>
-<a class="sourceLine" id="cb87-7" title="7">marks &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">m1 =</span> marked<span class="op">$</span>m1) <span class="co">## Gaussian</span></a>
-<a class="sourceLine" id="cb87-8" title="8">parameters &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">betamarks =</span> <span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">nrow =</span> <span class="dv">1</span>, <span class="dt">ncol =</span> <span class="kw">ncol</span>(marks)),</a>
-<a class="sourceLine" id="cb87-9" title="9">                       <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>),</a>
-<a class="sourceLine" id="cb87-10" title="10">                       <span class="dt">marks_coefs_pp =</span> <span class="kw">rep</span>(<span class="dv">0</span>, <span class="kw">ncol</span>(marks)), <span class="dt">betapp =</span> <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb87-11" title="11"></a>
-<a class="sourceLine" id="cb87-12" title="12">fit &lt;-<span class="st"> </span><span class="kw">fit_mlgcp</span>(<span class="dt">locs =</span> locs, <span class="dt">marks =</span> marks,</a>
-<a class="sourceLine" id="cb87-13" title="13">                     <span class="dt">sf =</span> domain, <span class="dt">smesh =</span> smesh,</a>
-<a class="sourceLine" id="cb87-14" title="14">                     <span class="dt">parameters =</span> parameters, <span class="dt">methods =</span> <span class="dv">0</span>,</a>
-<a class="sourceLine" id="cb87-15" title="15">                     <span class="dt">fields =</span> <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb87-16" title="16"><span class="kw">get_coefs</span>(fit)</a></code></pre></div>
-<pre><code>##                  Estimate Std. Error
-## betamarks       9.9001308  0.3032841
-## betapp          2.7353453  0.1310755
-## marks_coefs_pp -0.2793250  0.4280345
-## tau             0.1028983  0.0594815
-## kappa           5.8998690  2.6928689</code></pre>
-<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb89-1" title="1"><span class="kw">get_fields</span>(fit, smesh) <span class="op">|</span><span class="er">&gt;</span></a>
-<a class="sourceLine" id="cb89-2" title="2"><span class="st">    </span><span class="kw">show_field</span>(<span class="dt">smesh =</span> smesh) <span class="op">+</span></a>
-<a class="sourceLine" id="cb89-3" title="3"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> <span class="kw">mesh_2_sf</span>(smesh), <span class="dt">fill =</span> <span class="ot">NA</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb89-4" title="4"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> domain, <span class="dt">fill =</span> <span class="ot">NA</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)  <span class="op">+</span></a>
-<a class="sourceLine" id="cb89-5" title="5"><span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">data =</span> <span class="kw">as.data.frame</span>(locs), <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">cex =</span> marks), <span class="dt">alpha =</span> <span class="fl">0.3</span>, <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb89-6" title="6"><span class="st">    </span><span class="kw">theme_void</span>()</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-56-1.png" width="672" /></p>
-
+<div id="key-stelfi-functions" class="section level1 hasAnchor">
+<h1><span class="header-section-number">Chapter 2</span> Key <code>stelfi</code> functions<a href="key-stelfi-functions.html#key-stelfi-functions" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="summary-of-model-fitting-functions-offered-listing-the-key-arguments-for-each." class="section level4 unnumbered hasAnchor">
+<h4>Summary of model fitting functions offered listing the key arguments for each.<a href="key-stelfi-functions.html#summary-of-model-fitting-functions-offered-listing-the-key-arguments-for-each." class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<table>
+<colgroup>
+<col width="30%" />
+<col width="70%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"><strong>Function</strong></th>
+<th align="left"><strong>Key arguments</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>fit_hawkes()</code></td>
+<td align="left"><ul>
+<li><p><code>times</code> - a vector of <code>numeric</code> occurrence times.</p></li>
+<li><p><code>parameters</code> - a vector of named starting values
+for <span class="math inline">\(\mu\)</span> (<code>mu</code>), <span class="math inline">\(\alpha\)</span> (<code>alpha</code>), and
+<span class="math inline">\(\beta\)</span> (<code>beta</code>).</p></li>
+<li><p><code>marks</code> - optional, a vector of marks (<span class="math inline">\(m(t)\)</span>).</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td align="left"><code>fit_hawkes_cbf()</code></td>
+<td align="left"><p>As <code>fit_hawkes()</code> plus</p>
+<ul>
+<li><p><code>background</code> - some assumed time dependent
+background function <span class="math inline">\(\mu(t)\)</span>.</p></li>
+<li><p><code>background_integral</code> - the integral of
+<code>background</code>.</p></li>
+<li><p><code>background_parameters</code> - parameter
+starting values for <span class="math inline">\(\mu(t)\)</span>.</p></li>
+</ul>
+<p>( <span class="math inline">\(^*\)</span>Note, <span class="math inline">\(\texttt{mu}\)</span> in <code>parameters</code> will be
+ignored)</p></td>
+</tr>
+<tr class="odd">
+<td align="left"><code>fit_lgcp()</code></td>
+<td align="left"><ul>
+<li><p><code>locs</code> - a named data frame of event locations,
+<code>x</code>, <code>y</code>, and <code>t</code> (optional).</p></li>
+<li><p><code>sf</code> - a polygon of the spatial domain.</p></li>
+<li><p><code>smesh</code> - a Delaunay triangulation of the spatial
+domain returned by <code>INLA::inla.mesh.2d()</code>.</p></li>
+<li><p><code>tmesh</code> - optional, a temporal mesh returned by
+<code>INLA::inla.mesh.1d()</code>).</p></li>
+<li><p><code>parameters</code> - a vector of named starting values
+for <span class="math inline">\(\boldsymbol{\beta}\)</span> (<code>beta</code>),
+<span class="math inline">\(\text{log}(\tau)\)</span> (<code>log_tau</code>),
+<span class="math inline">\(\text{log}(\kappa)\)</span> (<code>log_kappa</code>), and
+<span class="math inline">\(\textrm{arctan}(\rho)\)</span> (<code>atanh_rho</code>, optional).</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td align="left"><code>fit_mlgcp()</code></td>
+<td align="left"><ul>
+<li><p><code>locs</code>, <code>sf</code>, and <code>smesh</code> - as <code>fit_lgcp()</code>.</p></li>
+<li><p><code>marks</code> - a matrix of marks for each
+observation of the point pattern.</p></li>
+<li><p><code>parameters</code> - a list of named parameters, as
+<code>fit_lgcp()</code> plus (<code>betamarks</code>), (<code>betapp</code>),
+(<code>marks_coefs_pp</code> ).</p></li>
+<li><p><code>methods</code> - integer(s) specifying mark
+distribution: <code>0</code>, Gaussian; <code>1</code>, Poisson;
+<code>2</code>, binomial; <code>3</code>, gamma.</p></li>
+<li><p><code>strfixed</code> - fixed structural parameters,
+depends on mark distribution.</p></li>
+<li><p><code>fields</code> - a binary vector indicating
+whether there is a new random field for each
+mark.</p></li>
+</ul></td>
+</tr>
+<tr class="odd">
+<td align="left"><code>fit_stelfi()</code></td>
+<td align="left"><ul>
+<li><p><code>times</code> - as <code>fit_hawkes()</code>.</p></li>
+<li><p><code>locs</code>, <code>sf</code>, and <code>smesh</code> - as <code>fit_lgcp()</code>.</p></li>
+<li><p><code>parameters</code> - a list of named parameter
+starting values for <span class="math inline">\(\mu\)</span> (<code>mu</code>), <span class="math inline">\(\alpha\)</span>
+(<code>alpha</code>), <span class="math inline">\(\beta\)</span> (<code>beta</code>), <span class="math inline">\(\sigma_x\)</span> (<code>xsigma</code>)
+<span class="math inline">\(\sigma_y\)</span> (<code>ysigma</code>), and <span class="math inline">\(\rho\)</span> (<code>rho</code>).</p></li>
+<li><p><code>GMRF</code> - logical, should a GMRF be included as a
+latent spatial effect if so <span class="math inline">\(\tau\)</span> (<code>tau</code>)
+and <span class="math inline">\(\kappa\)</span>(<code>kappa</code>) supplied to <code>parameters</code>.</p></li>
+</ul></td>
+</tr>
+</tbody>
+</table>
 </div>
+<div id="summary-of-utility-and-simulation-functions-listing-the-key-arguments-for-each." class="section level4 unnumbered hasAnchor">
+<h4>Summary of utility and simulation functions listing the key arguments for each.<a href="key-stelfi-functions.html#summary-of-utility-and-simulation-functions-listing-the-key-arguments-for-each." class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"><strong>Function</strong></th>
+<th align="left"><strong>Key arguments</strong></th>
+<th align="left"><strong>Purpose</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>get_coefs()</code></td>
+<td align="left"><ul>
+<li><code>obj</code> - a fitted
+model object
+returned by any
+one of the
+functions in the
+Table above</li>
+</ul></td>
+<td align="left">Extract estimated
+parameter values from
+a fitted model.</td>
+</tr>
+<tr class="even">
+<td align="left"><code>get_fields()</code></td>
+<td align="left"><p>As <code>fit_lgcp()</code> and</p>
+<ul>
+<li><code>sd</code> - logical,
+return standard
+deviation.</li>
+</ul></td>
+<td align="left">Extract estimated
+mean, or standard
+deviation, of
+GMRF(s).</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>get_weights()</code></td>
+<td align="left"><ul>
+<li><p><code>mesh</code> - a
+Delaunay
+triangulation of
+the spatial
+domain returned
+by
+<code>INLA::inla.mesh. 2d()</code>.</p></li>
+<li><p><code>sf</code> - a polygon
+of the spatial
+domain.</p></li>
+</ul></td>
+<td align="left">Calculate mesh
+weights.</td>
+</tr>
+<tr class="even">
+<td align="left"><code>mesh_2_sf()</code></td>
+<td align="left"><ul>
+<li><code>mesh</code> - a
+Delaunay
+triangulation of
+the spatial
+domain returned
+by
+<code>INLA::inla.mesh. 2d()</code>.</li>
+</ul></td>
+<td align="left">Transforms <code>mesh</code>
+into a <code>sf</code> object.</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>show_field()</code></td>
+<td align="left"><ul>
+<li><p><code>x</code> - a vector of
+values, one per
+each smesh node.</p></li>
+<li><p><code>smesh</code> - as
+<code>fit_lgcp()</code> .</p></li>
+<li><p><code>sf</code> - as
+<code>fit_lgcp()</code>.</p></li>
+<li><p><code>clip</code> - logical,
+<em>clip</em> to domain</p></li>
+</ul></td>
+<td align="left">Plots spatial random
+field values.</td>
+</tr>
+<tr class="even">
+<td align="left"><code>show_hawkes()</code></td>
+<td align="left"><ul>
+<li><code>obj</code> - a fitted
+model object
+returned by
+<code>fit_hawkes()</code> or
+<code>fit_hawkes_cbf()</code>.</li>
+</ul></td>
+<td align="left">Plot fitted Hawkes
+model.</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>show_hawkes_GOF()</code></td>
+<td align="left"><ul>
+<li><p><code>obj</code> - as
+<code>show_hawkes()</code>.</p></li>
+<li><p><code>plot</code> - logical</p></li>
+<li><p><code>return_values</code> -
+logical, return
+compensator
+values</p></li>
+</ul></td>
+<td align="left">Plot goodness-of-fit
+metrics for a Hawkes
+model.</td>
+</tr>
+<tr class="even">
+<td align="left"><code>show_lambda()</code></td>
+<td align="left"><p>As <code>fit_lgcp()</code> and</p>
+<ul>
+<li><code>clip</code> - logical,
+<em>clip</em> to domain</li>
+</ul></td>
+<td align="left">Plot estimated
+spatial intensity
+from a fitted
+log-Gaussian Cox
+process model.</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>sim_hawkes()</code></td>
+<td align="left">As <code>fit_hawkes()</code></td>
+<td align="left">Simulate a Hawkes
+process.</td>
+</tr>
+<tr class="even">
+<td align="left"><code>sim_lgcp()</code></td>
+<td align="left">As <code>fit_lgcp()</code></td>
+<td align="left">Simulate a
+realisation of a
+log-Gaussian Cox
+process.</td>
+</tr>
+</tbody>
+</table>
+
 </div>
 </div>
             </section>
@@ -264,8 +450,8 @@ The user can choose for the point processes and the marks to share a common GMRF
           </div>
         </div>
       </div>
-<a href="lgcp.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="stelfi.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="data.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="hawkes.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

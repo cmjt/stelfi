@@ -1,0 +1,230 @@
+---
+title: "stelfi"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{stelfi}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+`stelfi` fits Hawkes and Log-Gaussian Cox Point Process models using Template Model Builder. See [the package's website](https://cmjt.github.io/stelfi/) for more details.
+
+Introduced in Hawkes (1971) a Hawkes process is a self-exciting temporal point process where the occurrence of an event immediately increases the chance of another. We extend this to consider self-inhibiting process and a non-homogeneous background rate. A log-Gaussian Cox process is a Poisson point process where the log-intensity is given by a Gaussian random field. We extend this to a joint likelihood formulation fitting a marked log-Gaussian Cox model.
+
+In addition, the package offers functionality to fit self-exciting spatiotemporal point processes. Models are fitted via maximum likelihood using `TMB` (Template Model Builder) (Kristensen, Nielsen, Berg, Skaug, and Bell, 2016). Where included 1) random fields are assumed to be Gaussian and are integrated over using the Laplace approximation and 2) a stochastic partial differential equation model, introduced by Lindgren, Rue, and Lindström. (2011), is defined for the field(s).
+
+## Installation
+
+From CRAN `install.packages("stelfi")` or development version from GitHub:
+
+```{r, eval = FALSE}
+require(devtools)
+devtools::install_github("cmjt/stelfi")
+```
+
+## Model fitting functions and examples
+
+
+ + The functions `fit_hawkes()` and `fit_hawkes_cbf()` fit self-exciting Hawkes (Hawkes AG., 1971) processes to temporal point pattern data.
+ 
+   + [Fitting a Hawkes model](https://cmjt.github.io/stelfi/hawkes.html#fitting-a-hawkes-model)
+   + [Fitting an ETAS-type marked model](https://cmjt.github.io/stelfi/hawkes.html#fitting-a-hawkes-model)
+   + [Fitting an inhomogenous Hawkes process](https://cmjt.github.io/stelfi/hawkes.html#the-fit_hawkes_cbf-function)
+ 
+ + The function `fit_lgcp()` fit a log-Gaussian Cox process to either spatial or spatiotemporal point pattern data. If a spatiotemporal model is fitted a AR1 process is assumed for the temporal progression.
+
+   + [Fitting a spatial LGCP](https://cmjt.github.io/stelfi/lgcp.html#fitting-a-spatial-only-lgcp)
+   + [Fitting a spatiotemporal LGCP](https://cmjt.github.io/stelfi/lgcp.html#spatiotemporal-lgcp)
+ 
+ + The function `fit_mlgcp()` fits a joint likelihood model between the point locations and the mark(s).
+
+   + [Fitting a marked LGCP](https://cmjt.github.io/stelfi/fit-marked.html#the-fit_mlgcp-function)
+ 
+ + The function `fit_stelfi()` fits self-exciting spatiotemporal Hawkes models to point pattern data. The self-excitement is Gaussian in space and exponentially decaying over time. In addition, a GMRF can be included to account for latent spatial dependency.
+
+   + [Spatiotemporal self-exciting models](https://cmjt.github.io/stelfi/stelfi.html#stelfi)
+
+
+### Key arguments for each each model fitting function
+
++-----------------------+-------------------------------------------------------+
+| **Function**          | **Key arguments**                                     | 
++:======================+:======================================================+
+| `fit_hawkes()`        | -   `times` - a vector of `numeric` occurrence times. | 
+|                       |                                                       | 
+|                       | -   `parameters` - a vector of named starting values  |                       
+|                       |     for $\mu$ (`mu`), $\alpha$ (`alpha`), and         |                       
+|                       |     $\beta$ (`beta`).                                 |                       
+|                       |                                                       |                       
+|                       | -   `marks` -  optional, a  vector of marks ($m(t)$). |                       
++-----------------------+-------------------------------------------------------+
+| `fit_hawkes_cbf()`    | As `fit_hawkes()` plus                                | 
+|                       |                                                       | 
+|                       | -   `background` -  some assumed time dependent       | 
+|                       |     background function $\mu(t)$.                     |                       
+|                       |                                                       |                       
+|                       | -   `background_integral` -  the integral of          |                       
+|                       |     `background`.                                     |                       
+|                       |                                                       |                       
+|                       | -   `background_parameters` - parameter               |                       
+|                       |     starting values for $\mu(t)$.                     |                       
+|                       |                                                       |                       
+|                       | ( $^*$Note, $\texttt{mu}$ in  `parameters` will be    |                       
+|                       | ignored)                                              |                       
++-----------------------+-------------------------------------------------------+
+| `fit_lgcp()`          | -   `locs` - a named data frame of  event locations,  | 
+|                       |     `x`, `y`, and `t` (optional).                     | 
+|                       |                                                       | 
+|                       | -   `sf` - a polygon  of the spatial domain.          | 
+|                       |                                                       | 
+|                       | -   `smesh` - a Delaunay triangulation of the spatial |                       
+|                       |     domain returned by  `INLA::inla.mesh.2d()`.       |                       
+|                       |                                                       |                       
+|                       | -   `tmesh` - optional, a temporal mesh returned by   |                       
+|                       |     `INLA::inla.mesh.1d()`).                          |                       
+|                       |                                                       |                       
+|                       | -   `parameters` - a vector of named starting values  |                       
+|                       |     for $\boldsymbol{\beta}$ (`beta`),               |                       
+|                       |     $\text{log}(\tau)$ (`log_tau`),                   |                     
+|                       |     $\text{log}(\kappa)$ (`log_kappa`), and           |                       
+|                       |     $\textrm{arctan}(\rho)$  (`atanh_rho`, optional). |                       
++-----------------------+-------------------------------------------------------+
+| `fit_mlgcp()`         | -   `locs`, `sf`, and `smesh` - as  `fit_lgcp()`.     | 
+|                       |                                                       | 
+|                       | -   `marks` - a  matrix of marks for each             |                       
+|                       |     observation of the point pattern.                 |                       
+|                       |                                                       |                       
+|                       | -   `parameters` - a  list of named parameters, as    |                       
+|                       |     `fit_lgcp()` plus (`betamarks`),  (`betapp`),     |                       
+|                       |     (`marks_coefs_pp` ).                              |                       
+|                       |                                                       |                     
+|                       | -   `methods` -  integer(s)  specifying mark          |                       
+|                       |     distribution: `0`, Gaussian;  `1`, Poisson;       |                       
+|                       |     `2`, binomial; `3`, gamma.                        |                     
+|                       |                                                       |                       
+|                       | -   `strfixed` - fixed structural  parameters,        |                       
+|                       |     depends on mark  distribution.                    |                       
+|                       |                                                       |                       
+|                       | -   `fields` - a  binary vector   indicating          |                       
+|                       |     whether there is  a new random field for each     |                       
+|                       |     mark.                                             |                       
++-----------------------+-------------------------------------------------------+
+| `fit_stelfi()`        | -   `times` - as  `fit_hawkes()`.                     | 
+|                       |                                                       | 
+|                       | -   `locs`, `sf`, and `smesh` - as `fit_lgcp()`.      |           
+|                       |                                                       |                       
+|                       | -   `parameters` - a list of named  parameter         |                       
+|                       |     starting values for $\mu$ (`mu`), $\alpha$        |                       
+|                       |     (`alpha`), $\beta$ (`beta`), $\sigma_x$ (`xsigma`)|                       
+|                       |     $\sigma_y$  (`ysigma`), and  $\rho$ (`rho`).      |                       
+|                       |                                                       |                       
+|                       | -   `GMRF` - logical, should a GMRF be included as a  |                       
+|                       |     latent spatial effect if so $\tau$ (`tau`)        |                       
+|                       |     and $\kappa$(`kappa`) supplied to `parameters`.   |                       
++-----------------------+-------------------------------------------------------+
+
+
+
+## Other useful funcions
+
++-----------------------+-----------------------+-----------------------+
+| **Function**          | **Key arguments**     | **Purpose**           |
++:======================+:======================+:======================+
+| `get_coefs()`         | -   `obj` - a fitted  | Extract estimated     |
+|                       |     model object      | parameter values from |
+|                       |     returned by any   | a fitted model.       |
+|                       |     one of the        |                       |
+|                       |     functions in the  |                       |
+|                       |     Table  above      |                       |
++-----------------------+-----------------------+-----------------------+
+| `get_fields()`        | As `fit_lgcp()` and   | Extract estimated     |
+|                       |                       | mean, or standard     |
+|                       | -   `sd` - logical,   | deviation, of         |
+|                       |     return standard   | GMRF(s).              |
+|                       |     deviation.        |                       |
++-----------------------+-----------------------+-----------------------+
+| `get_weights()`       | -   `mesh` - a        | Calculate mesh        |
+|                       |     Delaunay          | weights.              |
+|                       |     triangulation of  |                       |
+|                       |     the spatial       |                       |
+|                       |     domain returned   |                       |
+|                       |     by                |                       |
+|                       |     `INLA::inla.mesh. |                       |
+|                       | 2d()`.                |                       |
+|                       |                       |                       |
+|                       | -   `sf` - a polygon  |                       |
+|                       |     of the spatial    |                       |
+|                       |     domain.           |                       |
++-----------------------+-----------------------+-----------------------+
+| `mesh_2_sf()`         | -   `mesh` - a        | Transforms `mesh`     |
+|                       |     Delaunay          | into a `sf` object.   |
+|                       |     triangulation of  |                       |
+|                       |     the spatial       |                       |
+|                       |     domain returned   |                       |
+|                       |     by                |                       |
+|                       |     `INLA::inla.mesh. |                       |
+|                       | 2d()`.                |                       |
++-----------------------+-----------------------+-----------------------+
+| `show_field()`        | -   `x` - a vector of | Plots spatial random  |
+|                       |     values, one per   | field values.         |
+|                       |     each smesh node.  |                       |
+|                       |                       |                       |
+|                       | -   `smesh` - as      |                       |
+|                       |     `fit_lgcp()` .    |                       |
+|                       |                       |                       |
+|                       | -   `sf` - as         |                       |
+|                       |     `fit_lgcp()`.     |                       |
+|                       |                       |                       |
+|                       | -   `clip` - logical, |                       |
+|                       |     *clip* to domain  |                       |
++-----------------------+-----------------------+-----------------------+
+| `show_hawkes()`       | -   `obj` - a fitted  | Plot fitted Hawkes    |
+|                       |     model object      | model.                |
+|                       |     returned by       |                       |
+|                       |     `fit_hawkes()` or |                       |
+|                       |     `fit_hawkes_cbf() |                       |
+|                       | `.                    |                       |
++-----------------------+-----------------------+-----------------------+
+| `show_hawkes_GOF()`   | -   `obj` - as        | Plot goodness-of-fit  |
+|                       |     `show_hawkes()`.  | metrics for a Hawkes  |
+|                       |                       | model.                |
+|                       | -   `plot` - logical  |                       |
+|                       |                       |                       |
+|                       | -   `return_values` - |                       |
+|                       |     logical, return   |                       |
+|                       |     compensator       |                       |
+|                       |     values            |                       |
++-----------------------+-----------------------+-----------------------+
+| `show_lambda()`       | As `fit_lgcp()` and   | Plot estimated        |
+|                       |                       | spatial intensity     |
+|                       | -   `clip` - logical, | from a fitted         |
+|                       |     *clip* to domain  | log-Gaussian Cox      |
+|                       |                       | process model.        |
++-----------------------+-----------------------+-----------------------+
+| `sim_hawkes()`        | As `fit_hawkes()`     | Simulate a Hawkes     |
+|                       |                       | process.              |
++-----------------------+-----------------------+-----------------------+
+| `sim_lgcp()`          | As `fit_lgcp()`       | Simulate a            |
+|                       |                       | realisation of a      |
+|                       |                       | log-Gaussian Cox      |
+|                       |                       | process.              |
++-----------------------+-----------------------+-----------------------+
+
+
+### References
+
+Hawkes, AG. (1971) Spectra of some self-exciting and mutually exciting point processes. *Biometrika*, **58**: 83--90.
+
+Lindgren, F., Rue, H., and Lindström, J. (2011) An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic partial differential equation approach. *Journal of the Royal Statistical Society: Series B (Statistical Methodology)*, **73**: 423--498.
+
+Kristensen, K., Nielsen, A., Berg, C. W., Skaug, H., and Bell B. M. (2016). TMB: Automatic Differentiation and Laplace Approximation. *Journal of Statistical Software*, **70**: 1--21.
+
