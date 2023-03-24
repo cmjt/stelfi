@@ -1,8 +1,8 @@
 Package: stelfi
 Type: Package
 Title: Hawkes and Log-Gaussian Cox Point Processes Using Template Model Builder
-Version: 0.0.1
-Date: 2022-11-01
+Version: 0.0.2
+Date: 2022-24-03
 Authors@R: 
   c(person(given = "Charlotte M.",
            family = "Jones-Todd",
