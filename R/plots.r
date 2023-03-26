@@ -81,7 +81,7 @@ show_hawkes <-  function(obj) {
 #' times, In addition, results of a Kolmogorov-Smirnov and
 #' Ljung-Box hypothesis test for the interarrival times are printed.
 #' 
-#' @param background_integral Function, as defined in \code{\link{fit_hawkes_cbf}
+#' @param background_integral Function, as defined in \code{\link{fit_hawkes_cbf}}.
 #' @param plot Logical, whether to plot  goodness-of-fit plots. Default \code{TRUE}.
 #' @param return_values Logical, whether to return GOF values. Default \code{FALSE}.
 #' @return \code{\link{show_hawkes_GOF}} returns no value unless \code{return_values = TRUE},

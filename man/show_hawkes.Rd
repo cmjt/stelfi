@@ -7,7 +7,12 @@
 \usage{
 show_hawkes(obj)
 
-show_hawkes_GOF(obj, plot = TRUE, return_values = FALSE)
+show_hawkes_GOF(
+  obj,
+  background_integral = NULL,
+  plot = TRUE,
+  return_values = FALSE
+)
 }
 \arguments{
 \item{obj}{Either object returned by \code{\link{fit_hawkes}}/\code{\link{fit_hawkes_cbf}} 
@@ -18,6 +23,8 @@ and \code{beta} (exponential intensity decay). In addition, should contain
 either \code{mu} (base rate of the Hawkes process) or \code{background_parameters}
 (parameter(s) for the assumed non-homogeneous background function;
 could be a list of multiple values). May also contain \code{marks} (a vector of numerical marks).}
+
+\item{background_integral}{Function, as defined in \code{\link{fit_hawkes_cbf}}.}
 
 \item{plot}{Logical, whether to plot  goodness-of-fit plots. Default \code{TRUE}.}
 
