@@ -55,10 +55,7 @@ Suggests:
     spatstat.geom,
     rgdal,
     hawkesbow,
-<<<<<<< HEAD
-    covr
-=======
+    covr,
     knitr
->>>>>>> testing
 Config/testthat/edition: 3
 VignetteBuilder: knitr
