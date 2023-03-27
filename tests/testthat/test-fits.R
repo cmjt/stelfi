@@ -1,9 +1,17 @@
-test_that("Hawkes simulation", {
+test_that("Hawkes simulation (1)", {
     ## sim_hawkes example
     set.seed(1234)
     times <- sim_hawkes(mu = 0.3, alpha = 4, beta = 5)
     expect_equal(round(times[1:6], 2),
                  c(4.15,  4.95,  7.80, 14.64, 18.69, 33.61),
+                 tolerance = 0.01)
+})
+test_that("Hawkes simulation (2)", {
+    ## sim_hawkes example
+    set.seed(1234)
+    times <- sim_hawkes(mu = 0.3, alpha = 4, beta = 5, method = "2")
+    expect_equal(round(times[1:6], 2),
+                 c(4.15,  4.22,  4.40, 4.42, 4.43, 5.54),
                  tolerance = 0.01)
 })
 test_that("Simple Hawkes model fitting", {
