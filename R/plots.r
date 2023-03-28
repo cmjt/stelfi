@@ -169,7 +169,7 @@ show_hawkes_GOF <-  function(obj, background_integral = NULL, plot = TRUE, retur
             ggplot2::geom_line() +
             ggplot2::theme_minimal() +
             ggplot2::theme(legend.position=c(0.8,0.2)) +
-            ggplot2::ggtitle("Actual Events and Compensator")
+            ggplot2::ggtitle(expression("Actual Events and Compensator("*Lambda*")"))
         
         ## Histogram of transformed interarrival times
         binwidth <- if (length(interarrivals) > 1500) 0.05 else 0.1
@@ -198,8 +198,8 @@ show_hawkes_GOF <-  function(obj, background_integral = NULL, plot = TRUE, retur
         data <-  data.frame(x = U[1:(length(U)-1)], y = U[2:length(U)])
         scatter <- ggplot2::ggplot(data = data,
                                    ggplot2::aes(x = .data$x, y = .data$y)) +
-            ggplot2::xlab("F(Interarrival time k)") +
-            ggplot2::ylab("F(Interarrival time k+1)") + 
+            ggplot2::xlab(expression("F("*Lambda[k]~-Lambda[k-1]*")")) +
+            ggplot2::ylab(expression("F("*Lambda[k+1]~-Lambda[k]*")")) +
             ggplot2::geom_point() +  ggplot2::theme_minimal() +
             ggplot2::ggtitle("Consecutive Interarrival Times")
         gridExtra::grid.arrange(lineplot, qqplot, hist, scatter, ncol = 2)
