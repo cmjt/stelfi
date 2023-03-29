@@ -79,8 +79,10 @@ test_that("Simulate LGCP (spatial)", {
         parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
         set.seed(91234)
         sim <- sim_lgcp(parameters = parameters, sf = domain, smesh = smesh)
-        expect_equal(round(sim$x[1:3], 3), c(0.172, 0.175, 0.298), tolerance = 0.1)
-        expect_equal(sim$y[1:3], c(0, 0, 1), tolerance = 0.1)
+        expect_equal(round(c(sim$x[1:3]), 3),
+                     c(0.172, 0.175, 0.298),
+                     tolerance = 0.01)
+        expect_equal(c(sim$y[1:3]), c(0, 0, 1), tolerance = 0.1)
     }
 })
 test_that("LGCP model fitting (spatiotemporal)", {
@@ -117,8 +119,8 @@ test_that("Simulate LGCP (spatiotemporal)", {
         tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
         parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2)
         sim <- sim_lgcp(parameters = parameters, sf = domain, smesh = smesh, tmesh = tmesh)
-        expect_equal(round(sim$x[1:3, 2], 3), c(0.252, 0.674, 0.575), tolerance = 0.1)
-        expect_equal(sim$y[1:3], c(0, 0, 1), tolerance = 0.1)
+        expect_equal(round(c(sim$x[1:3, 2], 3)), c(0.252, 0.674, 0.575), tolerance = 0.1)
+        expect_equal(c(sim$y[1:3]), c(0, 0, 1), tolerance = 0.1)
     }
 })
 test_that("LGCP model fitting (marked)", {
