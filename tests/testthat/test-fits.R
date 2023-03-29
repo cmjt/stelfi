@@ -69,6 +69,20 @@ test_that("LGCP model fitting (spatial)", {
         expect_equal(pars[3], 0.95, tolerance = 0.1)
     }
 })
+test_that("Simulate LGCP (spatial)", {
+    skip_on_cran()
+    if(requireNamespace("INLA")){
+        data(xyt, package = "stelfi")
+        domain <- sf::st_as_sf(xyt$window)
+        bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+        smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+        parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
+        set.seed(91234)
+        sim <- sim_lgcp(parameters = parameters, sf = domain, smesh = smesh)
+        expect_equal(round(sim$x[1:3], 3), c(0.172, 0.175, 0.298), tolerance = 0.1)
+        expect_equal(sim$y[1:3], c(0, 0, 1), tolerance = 0.1)
+    }
+})
 test_that("LGCP model fitting (spatiotemporal)", {
     skip_on_cran()
     if(requireNamespace("INLA") & requireNamespace("maptools")){
@@ -88,6 +102,23 @@ test_that("LGCP model fitting (spatiotemporal)", {
         expect_equal(pars[1], 0.31, tolerance = 1)
         expect_equal(pars[2], 1.68, tolerance = 1)
         expect_equal(pars[3], -1.06, tolerance = 1)
+    }
+})
+test_that("Simulate LGCP (spatiotemporal)", {
+    skip_on_cran()
+    if(requireNamespace("INLA")){
+        data(xyt, package = "stelfi")
+        domain <- sf::st_as_sf(xyt$window)
+        bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+        smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+        set.seed(91234)
+        ndays <- 2
+        w0 <- 2
+        tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
+        parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2)
+        sim <- sim_lgcp(parameters = parameters, sf = domain, smesh = smesh, tmesh = tmesh)
+        expect_equal(round(sim$x[1:3, 2], 3), c(0.252, 0.674, 0.575), tolerance = 0.1)
+        expect_equal(sim$y[1:3], c(0, 0, 1), tolerance = 0.1)
     }
 })
 test_that("LGCP model fitting (marked)", {
