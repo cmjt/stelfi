@@ -1,3 +1,20 @@
+# stelfi 0.0.2
+
+## Breaking changes
+
+ + None
+
+## New features
+
+ + None
+
+## Minor improvements and fixes
+
+ + Bug fix for `show_hawkes_GOF()`, compensator plotted on goodness of fit plots
+ + Additional testthat tests for utility functions `meshmetrics()`, `show_hawkes_GOF()`, and `get_fields()`
+ + Additional testthat tests for fitting/simulation functions `sim_hawkes(..., method = "2")` and `sim_lgcp()`
+
+
 # stelfi 0.0.1
 
 ## Initial release
