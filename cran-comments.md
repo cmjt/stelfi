@@ -1,3 +1,12 @@
+## Resubmission
+
+This is a resubmission. In this version I have:
+
+* Corrected the Date field in the DESCRIPTION.
+* Removed use of the previously undefined global functions density & dexp, which
+were called internally within ggplot2 plotting code.
+
+
 ## Test environments
 
 * ubuntu-latest (release & devel & oldrel-1)
