@@ -105,7 +105,7 @@ show_hawkes_GOF <-  function(obj, background_integral = NULL, plot = TRUE, retur
         if ("background_parameters" %in% names(obj)) {
             alpha <- pars[1,1]
             beta <- pars[2,1]
-            background_parameters = obj$background_parameters
+            background_parameters <- obj$background_parameters
             mu <- background_integral
         } else {
             mu <- pars[1,1]
@@ -175,15 +175,15 @@ show_hawkes_GOF <-  function(obj, background_integral = NULL, plot = TRUE, retur
         binwidth <- if (length(interarrivals) > 1500) 0.05 else 0.1
         data <- data.frame(data = interarrivals[interarrivals < 4]) # avoid warning messages and outliers
         hist <-  ggplot2::ggplot(data = data,  ggplot2::aes(x = .data$data)) +
-            ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density)), binwidth = binwidth) + ggplot2::theme_minimal() +
-            ggplot2::xlab("Interarrival times") +  ggplot2::ylab("Density") +
-            ggplot2::stat_function(fun = dexp, args = (mean = 1), color = "red") +
-            ggplot2::ggtitle("Transformed Interarrival Times")
+            ggplot2::geom_histogram(binwidth = binwidth) +
+            ggplot2::theme_minimal() +
+            ggplot2::xlab("Interarrival times") +  ggplot2::ylab("Count") +
+            ggplot2::ggtitle("Interarrival Times")
         
         ## Q-Q plot of transformed interarrival times
         p <- ppoints(100) ## 100 equally spaced points on (0,1), excluding endpoints
         q <- quantile(interarrivals, p = p)
-        data <- data.frame(x = qexp(p), y = q)
+        data <- data.frame(x = stats::qexp(p), y = q)
         qqplot <- ggplot2::ggplot(data =  data,
                                   ggplot2::aes(x = .data$x, y = .data$y)) +
             ggplot2::xlab("Theoretical Quantiles") +
