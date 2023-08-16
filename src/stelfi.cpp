@@ -12,6 +12,7 @@
 #include "neg_alpha_hawkes.h"
 #include "spatial_hawkes.h"
 #include "spde_hawkes.h"
+#include "multi_hawkes.h"
 
 template<class Type>
 Type objective_function<Type>::operator() ()
@@ -40,6 +41,9 @@ Type objective_function<Type>::operator() ()
   } else
   if (model_type == "spatial_hawkes") {
     return spatial_hawkes(this);
+  } else 
+  if (model_type == "multi_hawkes") {
+    return multi_hawkes(this);
   } else {
  	Rf_error("Unknown model.");
    }

@@ -3,7 +3,8 @@
 \name{fit_hawkes}
 \alias{fit_hawkes}
 \alias{fit_hawkes_cbf}
-\title{Self-exciting Hawkes process}
+\alias{fit_mhawkes}
+\title{Self-exciting Hawkes process(es)}
 \usage{
 fit_hawkes(
   times,
@@ -27,17 +28,26 @@ fit_hawkes_cbf(
   tmb_silent = TRUE,
   optim_silent = TRUE
 )
+
+fit_mhawkes(
+  times,
+  stream,
+  parameters = list(),
+  tmb_silent = TRUE,
+  optim_silent = TRUE,
+  ...
+)
 }
 \arguments{
 \item{times}{A vector of numeric observed time points.}
 
 \item{parameters}{A named list of parameter starting values:
 \itemize{
-\item \code{mu}, base rate of the Hawkes process (\eqn{\mu}),
-\item \code{alpha} (supplied if \code{model = 1}), intensity jump after an event occurrence (\eqn{\alpha}),
-\item \code{a_par} (supplied if \code{model} = 2), logit scale for \code{alpha} (must be 
-set so that the intensity never goes negative and so that \code{alpha} <= \code{beta}), and
-\item \code{beta}, exponential intensity decay (\eqn{\beta}).
+\item \code{mu}, a vector of base rates for each stream of the multivariate Hawkes process,
+\item \code{alpha}, a matrix of the between- and within-stream self-excitement: the diagonal
+elements represent the within-stream excitement and the off-diagonals the excitement between streams,
+\item \code{beta}, a vector of the exponential intensity decay for each stream of the multivariate
+Hawkes process,
 }}
 
 \item{model}{A numeric indicator specifying which model to fit:
@@ -67,6 +77,8 @@ This could be a list of multiple values.}
 
 \item{background_min}{A function taking one parameter and two points,
 returns min of \code{background} between those points.}
+
+\item{stream}{An character vector specifying the stream ID of each observation in \code{times}}
 }
 \value{
 A list containing components of the fitted model, see \code{TMB::MakeADFun}. Includes
@@ -74,20 +86,23 @@ A list containing components of the fitted model, see \code{TMB::MakeADFun}. Inc
 \item \code{par}, a numeric vector of estimated parameter values;
 \item \code{objective}, the objective function;
 \item \code{gr}, the TMB calculated gradient function; and
-\item \code{simulate}, a simulation function. 
+\item \code{simulate}, (where applicable) a simulation function. 
 }
 }
 \description{
 Fit a Hawkes process using Template Model Builder (TMB). The function \code{fit_hawkes()} fits a
 self-exciting Hawkes process with a constant background rate. Whereas, \code{fit_hawkes_cbf()} fits a Hawkes
-processes with a user defined custom background function (non-homogeneous background rate).
+processes with a user defined custom background function (non-homogeneous background rate). The function
+\code{fit_mhawkes()} fits a multivariate Hawkes process that allows for between- and within-stream
+self-excitement.
 }
 \details{
 A univariate Hawkes (Hawkes, AG. 1971) process is a self-exciting temporal point process
 with conditional intensity function
 \eqn{\lambda(t) = \mu + \alpha \Sigma_{i:\tau_i<t}e^{(-\beta * (t-\tau_i))}}. Here \eqn{\mu} is the
-background rate of the process and the summation describes the historic temporal dependence.  Including mark information
-results in the conditional intensity \eqn{\lambda(t; m(t)) = \mu + \alpha \Sigma_{i:\tau_i<t}m(\tau_i)e^{(-\beta * (t-\tau_i))}},
+background rate of the process and the summation describes the historic temporal dependence.
+Including mark information results in the conditional intensity
+\eqn{\lambda(t; m(t)) = \mu + \alpha \Sigma_{i:\tau_i<t}m(\tau_i)e^{(-\beta * (t-\tau_i))}},
 where \eqn{m(t)} is the temporal mark. This model can be fitted with \code{fit_hawkes()}.
 
 An in-homogenous marked Hawkes process has conditional intensity function
@@ -95,6 +110,14 @@ An in-homogenous marked Hawkes process has conditional intensity function
 background rate, \eqn{\mu(t)}, varies in time. Such a model can be fitted
 using \code{fit_hawkes_cbf()} where the parameters of the custom background function are estimated
 before being passed to \code{TMB}.
+
+A multivariate Hawkes process that allows for between- and within-stream self-excitement.
+The conditional intensity for the \eqn{j^{th}} stream is given by
+\eqn{\lambda(t)^j = \mu_j + \alpha_{jk} \Sigma_{i:\tau_i<t}e^{(-\beta_j * (t-\tau_i))}}, where
+\eqn{j, k  \in (1, ..., N)}. Here, \eqn{\alpha_{jk}} is the excitement caused by the
+\eqn{k^{th}} stream on the \eqn{j^{th}}. The \eqn{N x N} martix \eqn{\boldsymbol{\alpha}}
+has diagonals that represent within-stream excitement and off-diagonals that represent the
+excitement between streams.
 }
 \examples{
 \donttest{
