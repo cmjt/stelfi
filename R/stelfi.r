@@ -46,5 +46,6 @@
 #'  Bell B. M. (2016). {TMB}: Automatic Differentiation and Laplace
 #' Approximation. \emph{Journal of Statistical Software}, \strong{70}: 1--21.
 #' @docType package
+#' @aliases stelfi-package
 #' @name stelfi
 NULL

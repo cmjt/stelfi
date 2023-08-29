@@ -99,8 +99,13 @@ self-excitement.
 \details{
 A univariate Hawkes (Hawkes, AG. 1971) process is a self-exciting temporal point process
 with conditional intensity function
-\eqn{\lambda(t) = \mu + \alpha \Sigma_{i:\tau_i<t}e^{(-\beta * (t-\tau_i))}}. Here \eqn{\mu} is the
-background rate of the process and the summation describes the historic temporal dependence.
+\eqn{\lambda(t) = \mu + \alpha \Sigma_{i:\tau_i<t}e^{(-\beta * (t-\tau_i))}}.  Here \eqn{\mu} is the constant
+baseline rate, \eqn{\alpha} is the instantaneous increase in intensity after an event, and \egn{\beta} is the
+exponential decay in intensity. The term \eqn{\Sigma_{i:\tau_i<t} \cdots} describes the historic dependence
+and the clustering density of the temporal point process, where the \eqn{\tau_i} are the events in
+time occurring prior to time \eqn{t}. From this we can derive the following quantities 1) \eqn{\frac{\alpha}{\beta}}
+is the branching ratio, it gives the average number of events triggered by an event, and
+2) \eqn{\frac{1}{\beta}} gives the rate of decay of the self-excitement.
 Including mark information results in the conditional intensity
 \eqn{\lambda(t; m(t)) = \mu + \alpha \Sigma_{i:\tau_i<t}m(\tau_i)e^{(-\beta * (t-\tau_i))}},
 where \eqn{m(t)} is the temporal mark. This model can be fitted with \code{fit_hawkes()}.
@@ -112,12 +117,12 @@ using \code{fit_hawkes_cbf()} where the parameters of the custom background func
 before being passed to \code{TMB}.
 
 A multivariate Hawkes process that allows for between- and within-stream self-excitement.
-The conditional intensity for the \eqn{j^{th}} stream is given by
-\eqn{\lambda(t)^j = \mu_j + \alpha_{jk} \Sigma_{i:\tau_i<t}e^{(-\beta_j * (t-\tau_i))}}, where
+The conditional intensity for the \eqn{j^{th}} (\eqn{j = 1, ..., N}) stream is given by
+\eqn{\lambda(t)^{j*} = \mu_j + \Sigma_{k = 1}^N\Sigma_{i:\tau_i<t} \alpha_{jk} e^{(-\beta_j * (t-\tau_i))}}, where
 \eqn{j, k  \in (1, ..., N)}. Here, \eqn{\alpha_{jk}} is the excitement caused by the
-\eqn{k^{th}} stream on the \eqn{j^{th}}. The \eqn{N x N} martix \eqn{\boldsymbol{\alpha}}
-has diagonals that represent within-stream excitement and off-diagonals that represent the
-excitement between streams.
+\eqn{k^{th}} stream on the \eqn{j^{th}}. Therefore, \eqn{\boldsymbol{\alpha}} is an \eqn{N x N}
+matrix where the diagonals represent the within-stream excitement and the off-diagonals
+represent the excitement between streams.
 }
 \examples{
 \donttest{

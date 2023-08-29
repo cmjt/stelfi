@@ -3,6 +3,7 @@
 \docType{package}
 \name{stelfi}
 \alias{stelfi}
+\alias{stelfi-package}
 \title{A package to fit Hawkes and Log-Gaussian Cox Point Process models
 using Template Model Builder}
 \description{
