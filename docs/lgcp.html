@@ -20,7 +20,7 @@
   <meta name="twitter:description" content="Using stelfi" />
   
 
-<meta name="author" content="Charlotte M. Jones-Todd &amp; Alec van Helsdingen" />
+<meta name="author" content="Any questions Charlotte M. Jones-Todd" />
 
 
 
@@ -158,10 +158,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.1.1" data-path="hawkes.html"><a href="hawkes.html#fitting-a-hawkes-model"><i class="fa fa-check"></i><b>3.1.1</b> Fitting a Hawkes model</a></li>
 <li class="chapter" data-level="3.1.2" data-path="hawkes.html"><a href="hawkes.html#fitting-an-etas-type-marked-model"><i class="fa fa-check"></i><b>3.1.2</b> Fitting an ETAS-type marked model</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>3.2</b> The <code>fit_hawkes_cbf()</code> function</a><ul>
-<li class="chapter" data-level="3.2.1" data-path="hawkes.html"><a href="hawkes.html#fitting-an-inhomogenous-hawkes-process"><i class="fa fa-check"></i><b>3.2.1</b> Fitting an inhomogenous Hawkes process</a></li>
+<li class="chapter" data-level="3.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_mhawkes-function"><i class="fa fa-check"></i><b>3.2</b> The <code>fit_mhawkes()</code> function</a></li>
+<li class="chapter" data-level="3.3" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>3.3</b> The <code>fit_hawkes_cbf()</code> function</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="hawkes.html"><a href="hawkes.html#fitting-an-inhomogenous-hawkes-process"><i class="fa fa-check"></i><b>3.3.1</b> Fitting an inhomogenous Hawkes process</a></li>
 </ul></li>
-<li class="chapter" data-level="3.3" data-path="hawkes.html"><a href="hawkes.html#the-sim_hawkes-function"><i class="fa fa-check"></i><b>3.3</b> The <code>sim_hawkes()</code> function</a></li>
+<li class="chapter" data-level="3.4" data-path="hawkes.html"><a href="hawkes.html#the-sim_hawkes-function"><i class="fa fa-check"></i><b>3.4</b> The <code>sim_hawkes()</code> function</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>4</b> Log-Gaussian Cox process</a><ul>
 <li class="chapter" data-level="4.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>4.1</b> The <code>fit_lgcp()</code> function</a><ul>
@@ -211,33 +212,33 @@ where <span class="math inline">\(\beta_0\)</span> is a constant, known as the i
 <p>It is conventional to use Matérn covariance function to define the covariance of the random field. This takes two parameters <span class="math inline">\(\tau\)</span> and <span class="math inline">\(\kappa\)</span>, commonly reported as <span class="math inline">\(r=\frac{\sqrt{8}}{\kappa}\)</span> and <span class="math inline">\(\sigma=\frac{1}{\sqrt{4\pi\kappa^2\tau^2}}\)</span>, where <span class="math inline">\(r\)</span> is the range and <span class="math inline">\(\sigma\)</span> is the standard deviation.</p>
 <div id="the-fit_lgcp-function" class="section level2 hasAnchor">
 <h2><span class="header-section-number">4.1</span> The <code>fit_lgcp()</code> function<a href="lgcp.html#the-fit_lgcp-function" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb73-1" title="1"><span class="kw">args</span>(fit_lgcp)</a></code></pre></div>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb78-1" title="1"><span class="kw">args</span>(fit_lgcp)</a></code></pre></div>
 <pre><code>## function (locs, sf, smesh, tmesh, parameters, covariates, tmb_silent = TRUE, 
 ##     nlminb_silent = TRUE, ...) 
 ## NULL</code></pre>
 <div id="fitting-a-spatial-only-lgcp" class="section level3 hasAnchor">
 <h3><span class="header-section-number">4.1.1</span> Fitting a spatial only LGCP<a href="lgcp.html#fitting-a-spatial-only-lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb75-1" title="1"><span class="kw">data</span>(xyt, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</a>
-<a class="sourceLine" id="cb75-2" title="2">domain &lt;-<span class="st"> </span>sf<span class="op">::</span><span class="kw">st_as_sf</span>(xyt<span class="op">$</span>window)</a>
-<a class="sourceLine" id="cb75-3" title="3">locs &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> xyt<span class="op">$</span>x, <span class="dt">y =</span> xyt<span class="op">$</span>y)</a>
-<a class="sourceLine" id="cb75-4" title="4">bnd &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.segment</span>(<span class="kw">as.matrix</span>(sf<span class="op">::</span><span class="kw">st_coordinates</span>(domain)[, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]))</a>
-<a class="sourceLine" id="cb75-5" title="5">smesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.2d</span>(<span class="dt">boundary =</span> bnd,</a>
-<a class="sourceLine" id="cb75-6" title="6">                                <span class="dt">max.edge =</span> <span class="fl">0.75</span>, <span class="dt">cutoff =</span> <span class="fl">0.3</span>)</a>
-<a class="sourceLine" id="cb75-7" title="7">fit &lt;-<span class="st"> </span><span class="kw">fit_lgcp</span>(<span class="dt">locs =</span> locs, <span class="dt">sf =</span> domain, <span class="dt">smesh =</span> smesh,</a>
-<a class="sourceLine" id="cb75-8" title="8">                                <span class="dt">parameters =</span> <span class="kw">c</span>(<span class="dt">beta =</span> <span class="dv">0</span>, <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>),</a>
-<a class="sourceLine" id="cb75-9" title="9">                                               <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>)))</a>
-<a class="sourceLine" id="cb75-10" title="10"><span class="kw">get_coefs</span>(fit)</a></code></pre></div>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb80-1" title="1"><span class="kw">data</span>(xyt, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</a>
+<a class="sourceLine" id="cb80-2" title="2">domain &lt;-<span class="st"> </span>sf<span class="op">::</span><span class="kw">st_as_sf</span>(xyt<span class="op">$</span>window)</a>
+<a class="sourceLine" id="cb80-3" title="3">locs &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> xyt<span class="op">$</span>x, <span class="dt">y =</span> xyt<span class="op">$</span>y)</a>
+<a class="sourceLine" id="cb80-4" title="4">bnd &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.segment</span>(<span class="kw">as.matrix</span>(sf<span class="op">::</span><span class="kw">st_coordinates</span>(domain)[, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]))</a>
+<a class="sourceLine" id="cb80-5" title="5">smesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.2d</span>(<span class="dt">boundary =</span> bnd,</a>
+<a class="sourceLine" id="cb80-6" title="6">                                <span class="dt">max.edge =</span> <span class="fl">0.75</span>, <span class="dt">cutoff =</span> <span class="fl">0.3</span>)</a>
+<a class="sourceLine" id="cb80-7" title="7">fit &lt;-<span class="st"> </span><span class="kw">fit_lgcp</span>(<span class="dt">locs =</span> locs, <span class="dt">sf =</span> domain, <span class="dt">smesh =</span> smesh,</a>
+<a class="sourceLine" id="cb80-8" title="8">                                <span class="dt">parameters =</span> <span class="kw">c</span>(<span class="dt">beta =</span> <span class="dv">0</span>, <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>),</a>
+<a class="sourceLine" id="cb80-9" title="9">                                               <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>)))</a>
+<a class="sourceLine" id="cb80-10" title="10"><span class="kw">get_coefs</span>(fit)</a></code></pre></div>
 <pre><code>##             Estimate Std. Error
 ## beta       2.4481848 0.09034657
 ## log_tau   -1.3156570 0.33288053
 ## log_kappa  0.9547072 0.29440167
 ## range      1.0887319 0.32052449
 ## stdev      0.4047190 0.05027126</code></pre>
-<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb77-1" title="1"><span class="kw">get_fields</span>(fit) <span class="op">|</span><span class="er">&gt;</span></a>
-<a class="sourceLine" id="cb77-2" title="2"><span class="st">    </span><span class="kw">show_field</span>(<span class="dt">smesh =</span> smesh, <span class="dt">sf =</span> domain) <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-48-1.png" width="672" /></p>
-<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb78-1" title="1"><span class="kw">show_lambda</span>(fit, <span class="dt">smesh =</span> smesh, <span class="dt">sf =</span> domain) <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-48-2.png" width="672" /></p>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb82-1" title="1"><span class="kw">get_fields</span>(fit, smesh) <span class="op">|</span><span class="er">&gt;</span></a>
+<a class="sourceLine" id="cb82-2" title="2"><span class="st">    </span><span class="kw">show_field</span>(<span class="dt">smesh =</span> smesh, <span class="dt">sf =</span> domain) <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</a></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-51-1.png" width="672" /></p>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb83-1" title="1"><span class="kw">show_lambda</span>(fit, <span class="dt">smesh =</span> smesh, <span class="dt">sf =</span> domain) <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</a></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-51-2.png" width="672" /></p>
 </div>
 <div id="spatiotemporal-lgcp" class="section level3 hasAnchor">
 <h3><span class="header-section-number">4.1.2</span> Spatiotemporal LGCP<a href="lgcp.html#spatiotemporal-lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -248,17 +249,17 @@ where <span class="math inline">\(i\)</span> indexes the time knot. <span class=
 <p>Successive random fields are correlated through the formula
 <span class="math display">\[G_i(s)=\rho G_{i-1}(s) + \epsilon_i\]</span>
 where <span class="math inline">\(\rho\)</span> is a constant between -1 and +1, and <span class="math inline">\(\epsilon_i\)</span> is normally distributed with mean 0.</p>
-<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb79-1" title="1">ndays &lt;-<span class="st"> </span><span class="dv">2</span></a>
-<a class="sourceLine" id="cb79-2" title="2">locs &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> xyt<span class="op">$</span>x, <span class="dt">y =</span> xyt<span class="op">$</span>y, <span class="dt">t =</span> xyt<span class="op">$</span>t)</a>
-<a class="sourceLine" id="cb79-3" title="3">bnd &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.segment</span>(<span class="kw">as.matrix</span>(sf<span class="op">::</span><span class="kw">st_coordinates</span>(domain)[, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]))</a>
-<a class="sourceLine" id="cb79-4" title="4">w0 &lt;-<span class="st"> </span><span class="dv">2</span></a>
-<a class="sourceLine" id="cb79-5" title="5">smesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.2d</span>(<span class="dt">boundary =</span> bnd,</a>
-<a class="sourceLine" id="cb79-6" title="6">                                <span class="dt">max.edge =</span> <span class="fl">0.75</span>, <span class="dt">cutoff =</span> <span class="fl">0.3</span>)</a>
-<a class="sourceLine" id="cb79-7" title="7">tmesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.1d</span>(<span class="kw">seq</span>(<span class="dv">0</span>, ndays, <span class="dt">by =</span> w0))</a>
-<a class="sourceLine" id="cb79-8" title="8">fit &lt;-<span class="st"> </span><span class="kw">fit_lgcp</span>(<span class="dt">locs =</span> locs, <span class="dt">sf =</span> domain, <span class="dt">smesh =</span> smesh, <span class="dt">tmesh =</span> tmesh,</a>
-<a class="sourceLine" id="cb79-9" title="9">                    <span class="dt">parameters =</span> <span class="kw">c</span>(<span class="dt">beta =</span> <span class="dv">0</span>, <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>),</a>
-<a class="sourceLine" id="cb79-10" title="10">                                   <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">atanh_rho =</span> <span class="fl">0.2</span>))</a>
-<a class="sourceLine" id="cb79-11" title="11"><span class="kw">get_coefs</span>(fit)</a></code></pre></div>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb84-1" title="1">ndays &lt;-<span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb84-2" title="2">locs &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> xyt<span class="op">$</span>x, <span class="dt">y =</span> xyt<span class="op">$</span>y, <span class="dt">t =</span> xyt<span class="op">$</span>t)</a>
+<a class="sourceLine" id="cb84-3" title="3">bnd &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.segment</span>(<span class="kw">as.matrix</span>(sf<span class="op">::</span><span class="kw">st_coordinates</span>(domain)[, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]))</a>
+<a class="sourceLine" id="cb84-4" title="4">w0 &lt;-<span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb84-5" title="5">smesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.2d</span>(<span class="dt">boundary =</span> bnd,</a>
+<a class="sourceLine" id="cb84-6" title="6">                                <span class="dt">max.edge =</span> <span class="fl">0.75</span>, <span class="dt">cutoff =</span> <span class="fl">0.3</span>)</a>
+<a class="sourceLine" id="cb84-7" title="7">tmesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.1d</span>(<span class="kw">seq</span>(<span class="dv">0</span>, ndays, <span class="dt">by =</span> w0))</a>
+<a class="sourceLine" id="cb84-8" title="8">fit &lt;-<span class="st"> </span><span class="kw">fit_lgcp</span>(<span class="dt">locs =</span> locs, <span class="dt">sf =</span> domain, <span class="dt">smesh =</span> smesh, <span class="dt">tmesh =</span> tmesh,</a>
+<a class="sourceLine" id="cb84-9" title="9">                    <span class="dt">parameters =</span> <span class="kw">c</span>(<span class="dt">beta =</span> <span class="dv">0</span>, <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>),</a>
+<a class="sourceLine" id="cb84-10" title="10">                                   <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">atanh_rho =</span> <span class="fl">0.2</span>))</a>
+<a class="sourceLine" id="cb84-11" title="11"><span class="kw">get_coefs</span>(fit)</a></code></pre></div>
 <pre><code>##             Estimate Std. Error
 ## rho        0.3100841 0.20738457
 ## beta       1.6852264 0.13685037
@@ -266,30 +267,30 @@ where <span class="math inline">\(\rho\)</span> is a constant between -1 and +1,
 ## log_kappa  0.4785904 0.22707189
 ## range      1.7526525 0.39797812
 ## stdev      0.5087488 0.05765947</code></pre>
-<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb81-1" title="1"><span class="kw">show_lambda</span>(fit, <span class="dt">smesh =</span> smesh, <span class="dt">sf =</span> domain, <span class="dt">tmesh =</span> tmesh, <span class="dt">timestamp =</span> <span class="dv">1</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb81-2" title="2"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>() <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="st">&quot;t = 1&quot;</span>)</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-50-1.png" width="672" /></p>
-<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb82-1" title="1"><span class="kw">show_lambda</span>(fit, <span class="dt">smesh =</span> smesh, <span class="dt">sf =</span> domain, <span class="dt">tmesh =</span> tmesh, <span class="dt">timestamp =</span> <span class="dv">2</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb82-2" title="2"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>() <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="st">&quot;t = 2&quot;</span>)</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-50-2.png" width="672" /></p>
+<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb86-1" title="1"><span class="kw">show_lambda</span>(fit, <span class="dt">smesh =</span> smesh, <span class="dt">sf =</span> domain, <span class="dt">tmesh =</span> tmesh, <span class="dt">timestamp =</span> <span class="dv">1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb86-2" title="2"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>() <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="st">&quot;t = 1&quot;</span>)</a></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-53-1.png" width="672" /></p>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb87-1" title="1"><span class="kw">show_lambda</span>(fit, <span class="dt">smesh =</span> smesh, <span class="dt">sf =</span> domain, <span class="dt">tmesh =</span> tmesh, <span class="dt">timestamp =</span> <span class="dv">2</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb87-2" title="2"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>() <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="st">&quot;t = 2&quot;</span>)</a></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-53-2.png" width="672" /></p>
 </div>
 </div>
 <div id="the-sim_lgcp-function" class="section level2 hasAnchor">
 <h2><span class="header-section-number">4.2</span> The <code>sim_lgcp()</code> function<a href="lgcp.html#the-sim_lgcp-function" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><strong>Simulating a spatiotemporal LGCP</strong></p>
 <p><strong>Option 1</strong> using <code>sim_lgcp</code></p>
-<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb83-1" title="1">parameters &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dt">beta =</span> <span class="dv">1</span>, <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">atanh_rho =</span> <span class="fl">0.2</span>)</a>
-<a class="sourceLine" id="cb83-2" title="2">simdata &lt;-<span class="st"> </span><span class="kw">sim_lgcp</span>(<span class="dt">parameters =</span> parameters, <span class="dt">sf =</span> domain, <span class="dt">smesh =</span> smesh, <span class="dt">tmesh =</span> tmesh)</a>
-<a class="sourceLine" id="cb83-3" title="3">simdata<span class="op">$</span>x[,<span class="dv">1</span>] <span class="op">|</span><span class="er">&gt;</span></a>
-<a class="sourceLine" id="cb83-4" title="4"><span class="st">    </span><span class="kw">show_field</span>(<span class="dt">smesh =</span> smesh) <span class="op">+</span></a>
-<a class="sourceLine" id="cb83-5" title="5"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-51-1.png" width="672" /></p>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb88-1" title="1">parameters &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dt">beta =</span> <span class="dv">1</span>, <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">atanh_rho =</span> <span class="fl">0.2</span>)</a>
+<a class="sourceLine" id="cb88-2" title="2">simdata &lt;-<span class="st"> </span><span class="kw">sim_lgcp</span>(<span class="dt">parameters =</span> parameters, <span class="dt">sf =</span> domain, <span class="dt">smesh =</span> smesh, <span class="dt">tmesh =</span> tmesh)</a>
+<a class="sourceLine" id="cb88-3" title="3">simdata<span class="op">$</span>x[,<span class="dv">1</span>] <span class="op">|</span><span class="er">&gt;</span></a>
+<a class="sourceLine" id="cb88-4" title="4"><span class="st">    </span><span class="kw">show_field</span>(<span class="dt">smesh =</span> smesh) <span class="op">+</span></a>
+<a class="sourceLine" id="cb88-5" title="5"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</a></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-54-1.png" width="672" /></p>
 <p><strong>Option 2</strong> directly from the fitted model</p>
-<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb84-1" title="1">simdata &lt;-<span class="st"> </span>fit<span class="op">$</span><span class="kw">simulate</span>()</a>
-<a class="sourceLine" id="cb84-2" title="2">simdata<span class="op">$</span>x[,<span class="dv">1</span>] <span class="op">|</span><span class="er">&gt;</span></a>
-<a class="sourceLine" id="cb84-3" title="3"><span class="st">    </span><span class="kw">show_field</span>(<span class="dt">smesh =</span> smesh) <span class="op">+</span></a>
-<a class="sourceLine" id="cb84-4" title="4"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-52-1.png" width="672" /></p>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb89-1" title="1">simdata &lt;-<span class="st"> </span>fit<span class="op">$</span><span class="kw">simulate</span>()</a>
+<a class="sourceLine" id="cb89-2" title="2">simdata<span class="op">$</span>x[,<span class="dv">1</span>] <span class="op">|</span><span class="er">&gt;</span></a>
+<a class="sourceLine" id="cb89-3" title="3"><span class="st">    </span><span class="kw">show_field</span>(<span class="dt">smesh =</span> smesh) <span class="op">+</span></a>
+<a class="sourceLine" id="cb89-4" title="4"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_void</span>()</a></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-55-1.png" width="672" /></p>
 
 </div>
 </div>

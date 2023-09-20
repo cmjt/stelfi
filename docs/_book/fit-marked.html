@@ -225,7 +225,7 @@ The user can choose for the point processes and the marks to share a common GMRF
 ## NULL</code></pre>
 <div id="fitting-a-marked-lgcp" class="section level3 hasAnchor">
 <h3><span class="header-section-number">5.1.1</span> Fitting a marked LGCP<a href="fit-marked.html#fitting-a-marked-lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p><img src="docs_files/figure-html/unnamed-chunk-56-1.png" width="672" /></p>
+<p><img src="docs_files/figure-html/unnamed-chunk-54-1.png" width="672" /></p>
 <div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb87-1" title="1"><span class="kw">data</span>(marked, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</a>
 <a class="sourceLine" id="cb87-2" title="2">loc.d &lt;-<span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span><span class="kw">cbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))</a>
 <a class="sourceLine" id="cb87-3" title="3">domain &lt;-<span class="st">  </span>sf<span class="op">::</span><span class="kw">st_sf</span>(<span class="dt">geometry =</span> sf<span class="op">::</span><span class="kw">st_sfc</span>(sf<span class="op">::</span><span class="kw">st_polygon</span>(<span class="kw">list</span>(loc.d))))</a>
@@ -254,7 +254,7 @@ The user can choose for the point processes and the marks to share a common GMRF
 <a class="sourceLine" id="cb89-4" title="4"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> domain, <span class="dt">fill =</span> <span class="ot">NA</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)  <span class="op">+</span></a>
 <a class="sourceLine" id="cb89-5" title="5"><span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">data =</span> <span class="kw">as.data.frame</span>(locs), <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">cex =</span> marks), <span class="dt">alpha =</span> <span class="fl">0.3</span>, <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb89-6" title="6"><span class="st">    </span><span class="kw">theme_void</span>()</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-58-1.png" width="672" /></p>
+<p><img src="docs_files/figure-html/unnamed-chunk-56-1.png" width="672" /></p>
 
 </div>
 </div>

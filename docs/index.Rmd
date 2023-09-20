@@ -1,6 +1,6 @@
 --- 
 title: "The `R` package `stelfi`"
-author: "Charlotte M. Jones-Todd & Alec van Helsdingen"
+author: "Any questions [Charlotte M. Jones-Todd](mailto:c.jonestodd@auckland.ac.nz)"
 date: ""
 site: bookdown::bookdown_site
 documentclass: book

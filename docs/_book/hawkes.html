@@ -294,7 +294,7 @@ where <span class="math inline">\(\mu\)</span> is the background rate of the pro
 ## alpha 0.0005125373 2.934243e-05
 ## beta  0.0020558328 1.204552e-04</code></pre>
 <div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb52-1" title="1"><span class="kw">show_hawkes</span>(fit)</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-38-1.png" width="864" /></p>
+<p><img src="docs_files/figure-html/unnamed-chunk-36-1.png" width="864" /></p>
 <div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb53-1" title="1"><span class="kw">show_hawkes_GOF</span>(fit)</a></code></pre></div>
 <pre><code>## 
 ##  Asymptotic one-sample Kolmogorov-Smirnov test
@@ -308,7 +308,7 @@ where <span class="math inline">\(\mu\)</span> is the background rate of the pro
 ## 
 ## data:  interarrivals
 ## X-squared = 104.09, df = 1, p-value &lt; 2.2e-16</code></pre>
-<p><img src="docs_files/figure-html/unnamed-chunk-39-1.png" width="864" /></p>
+<p><img src="docs_files/figure-html/unnamed-chunk-37-1.png" width="864" /></p>
 </div>
 </div>
 <div id="the-fit_hawkes_cbf-function" class="section level2 hasAnchor">
@@ -365,12 +365,12 @@ The background <span class="math inline">\(\mu(t)\)</span> is time varying, rath
 ## NULL</code></pre>
 <p><strong><code>method = 1</code></strong></p>
 <div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb67-1" title="1">sim &lt;-<span class="st"> </span><span class="kw">sim_hawkes</span>(<span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">alpha =</span> <span class="fl">0.2</span>, <span class="dt">beta =</span> <span class="fl">0.3</span>, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-46-1.png" width="672" /></p>
+<p><img src="docs_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
 <div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb68-1" title="1"><span class="kw">head</span>(sim)</a></code></pre></div>
 <pre><code>## [1] 0.6231314 0.7420664 0.7986166 2.0856174 2.1293941 2.4093639</code></pre>
 <p><strong><code>method = 2</code></strong></p>
 <div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb70-1" title="1">sim &lt;-<span class="st"> </span><span class="kw">sim_hawkes</span>(<span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">alpha =</span> <span class="fl">0.2</span>, <span class="dt">beta =</span> <span class="fl">0.3</span>, <span class="dt">plot =</span> <span class="ot">TRUE</span>, <span class="dt">method =</span> <span class="dv">2</span>)</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-47-1.png" width="672" /></p>
+<p><img src="docs_files/figure-html/unnamed-chunk-45-1.png" width="672" /></p>
 <div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb71-1" title="1"><span class="kw">head</span>(sim)</a></code></pre></div>
 <pre><code>## [1] 0.6231314 0.7314123 1.1083232 1.1571593 1.1795519 2.2830958</code></pre>
 

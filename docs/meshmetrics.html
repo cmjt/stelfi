@@ -20,7 +20,7 @@
   <meta name="twitter:description" content="Using stelfi" />
   
 
-<meta name="author" content="Charlotte M. Jones-Todd &amp; Alec van Helsdingen" />
+<meta name="author" content="Any questions Charlotte M. Jones-Todd" />
 
 
 
@@ -158,10 +158,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.1.1" data-path="hawkes.html"><a href="hawkes.html#fitting-a-hawkes-model"><i class="fa fa-check"></i><b>3.1.1</b> Fitting a Hawkes model</a></li>
 <li class="chapter" data-level="3.1.2" data-path="hawkes.html"><a href="hawkes.html#fitting-an-etas-type-marked-model"><i class="fa fa-check"></i><b>3.1.2</b> Fitting an ETAS-type marked model</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>3.2</b> The <code>fit_hawkes_cbf()</code> function</a><ul>
-<li class="chapter" data-level="3.2.1" data-path="hawkes.html"><a href="hawkes.html#fitting-an-inhomogenous-hawkes-process"><i class="fa fa-check"></i><b>3.2.1</b> Fitting an inhomogenous Hawkes process</a></li>
+<li class="chapter" data-level="3.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_mhawkes-function"><i class="fa fa-check"></i><b>3.2</b> The <code>fit_mhawkes()</code> function</a></li>
+<li class="chapter" data-level="3.3" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>3.3</b> The <code>fit_hawkes_cbf()</code> function</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="hawkes.html"><a href="hawkes.html#fitting-an-inhomogenous-hawkes-process"><i class="fa fa-check"></i><b>3.3.1</b> Fitting an inhomogenous Hawkes process</a></li>
 </ul></li>
-<li class="chapter" data-level="3.3" data-path="hawkes.html"><a href="hawkes.html#the-sim_hawkes-function"><i class="fa fa-check"></i><b>3.3</b> The <code>sim_hawkes()</code> function</a></li>
+<li class="chapter" data-level="3.4" data-path="hawkes.html"><a href="hawkes.html#the-sim_hawkes-function"><i class="fa fa-check"></i><b>3.4</b> The <code>sim_hawkes()</code> function</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>4</b> Log-Gaussian Cox process</a><ul>
 <li class="chapter" data-level="4.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>4.1</b> The <code>fit_lgcp()</code> function</a><ul>
@@ -205,9 +206,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="meshmetrics" class="section level1 hasAnchor">
 <h1><span class="header-section-number">Chapter 7</span> Delaunay triangulation metrics<a href="meshmetrics.html#meshmetrics" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb101-1" title="1"><span class="kw">data</span>(<span class="st">&quot;horse_mesh&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</a>
-<a class="sourceLine" id="cb101-2" title="2">metrics &lt;-<span class="st"> </span><span class="kw">meshmetrics</span>(horse_mesh)</a>
-<a class="sourceLine" id="cb101-3" title="3"><span class="kw">str</span>(metrics)</a></code></pre></div>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb106-1" title="1"><span class="kw">data</span>(<span class="st">&quot;horse_mesh&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</a>
+<a class="sourceLine" id="cb106-2" title="2">metrics &lt;-<span class="st"> </span><span class="kw">meshmetrics</span>(horse_mesh)</a>
+<a class="sourceLine" id="cb106-3" title="3"><span class="kw">str</span>(metrics)</a></code></pre></div>
 <pre><code>## Classes &#39;sf&#39; and &#39;data.frame&#39;:   396 obs. of  18 variables:
 ##  $ V1            : int  172 28 168 117 270 92 175 182 253 14 ...
 ##  $ V2            : int  30 188 186 57 253 144 137 148 169 15 ...
@@ -250,15 +251,15 @@ where <span class="math inline">\(L_i\)</span> is the length of edge <span class
 <p><img src="https://github.com/cmjt/meshmetrics/raw/master/README_files/figure-markdown_strict/triang_properties-1.png" /></p>
 <p>A triangle’s circumcircle (circumscribed circle) is the unique circle that passes through each of its three vertices. A triangle’s incircle (inscribed circle) is the largest circle that can be contained within it (i.e., touches it’s three edges).</p>
 <p>To plot each triangle’s metric of choice simply change the <code>fill</code> aesthetic. Simply a tool to identify “bad” triangles in the mesh.</p>
-<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb103-1" title="1"><span class="kw">ggplot</span>(metrics, <span class="kw">aes</span>(<span class="dt">fill =</span> area)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb103-2" title="2"><span class="st">    </span><span class="kw">geom_sf</span>() <span class="op">+</span><span class="st"> </span><span class="kw">theme_void</span>()</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-66-1.png" width="672" /></p>
-<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb104-1" title="1"><span class="kw">ggplot</span>(metrics, <span class="kw">aes</span>(<span class="dt">fill =</span> radius_edge)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb104-2" title="2"><span class="st">    </span><span class="kw">geom_sf</span>() <span class="op">+</span><span class="st"> </span><span class="kw">theme_void</span>()</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-67-1.png" width="672" /></p>
-<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb105-1" title="1"><span class="kw">ggplot</span>(metrics, <span class="kw">aes</span>(<span class="dt">fill =</span> quality)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb105-2" title="2"><span class="st">    </span><span class="kw">geom_sf</span>() <span class="op">+</span><span class="st"> </span><span class="kw">theme_void</span>()</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-68-1.png" width="672" /></p>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb108-1" title="1"><span class="kw">ggplot</span>(metrics, <span class="kw">aes</span>(<span class="dt">fill =</span> area)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb108-2" title="2"><span class="st">    </span><span class="kw">geom_sf</span>() <span class="op">+</span><span class="st"> </span><span class="kw">theme_void</span>()</a></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-69-1.png" width="672" /></p>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb109-1" title="1"><span class="kw">ggplot</span>(metrics, <span class="kw">aes</span>(<span class="dt">fill =</span> radius_edge)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb109-2" title="2"><span class="st">    </span><span class="kw">geom_sf</span>() <span class="op">+</span><span class="st"> </span><span class="kw">theme_void</span>()</a></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-70-1.png" width="672" /></p>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb110-1" title="1"><span class="kw">ggplot</span>(metrics, <span class="kw">aes</span>(<span class="dt">fill =</span> quality)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb110-2" title="2"><span class="st">    </span><span class="kw">geom_sf</span>() <span class="op">+</span><span class="st"> </span><span class="kw">theme_void</span>()</a></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-71-1.png" width="672" /></p>
 
 </div>
             </section>

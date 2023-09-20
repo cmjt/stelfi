@@ -20,7 +20,7 @@
   <meta name="twitter:description" content="Using stelfi" />
   
 
-<meta name="author" content="Charlotte M. Jones-Todd &amp; Alec van Helsdingen" />
+<meta name="author" content="Any questions Charlotte M. Jones-Todd" />
 
 
 
@@ -158,10 +158,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.1.1" data-path="hawkes.html"><a href="hawkes.html#fitting-a-hawkes-model"><i class="fa fa-check"></i><b>3.1.1</b> Fitting a Hawkes model</a></li>
 <li class="chapter" data-level="3.1.2" data-path="hawkes.html"><a href="hawkes.html#fitting-an-etas-type-marked-model"><i class="fa fa-check"></i><b>3.1.2</b> Fitting an ETAS-type marked model</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>3.2</b> The <code>fit_hawkes_cbf()</code> function</a><ul>
-<li class="chapter" data-level="3.2.1" data-path="hawkes.html"><a href="hawkes.html#fitting-an-inhomogenous-hawkes-process"><i class="fa fa-check"></i><b>3.2.1</b> Fitting an inhomogenous Hawkes process</a></li>
+<li class="chapter" data-level="3.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_mhawkes-function"><i class="fa fa-check"></i><b>3.2</b> The <code>fit_mhawkes()</code> function</a></li>
+<li class="chapter" data-level="3.3" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>3.3</b> The <code>fit_hawkes_cbf()</code> function</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="hawkes.html"><a href="hawkes.html#fitting-an-inhomogenous-hawkes-process"><i class="fa fa-check"></i><b>3.3.1</b> Fitting an inhomogenous Hawkes process</a></li>
 </ul></li>
-<li class="chapter" data-level="3.3" data-path="hawkes.html"><a href="hawkes.html#the-sim_hawkes-function"><i class="fa fa-check"></i><b>3.3</b> The <code>sim_hawkes()</code> function</a></li>
+<li class="chapter" data-level="3.4" data-path="hawkes.html"><a href="hawkes.html#the-sim_hawkes-function"><i class="fa fa-check"></i><b>3.4</b> The <code>sim_hawkes()</code> function</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>4</b> Log-Gaussian Cox process</a><ul>
 <li class="chapter" data-level="4.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>4.1</b> The <code>fit_lgcp()</code> function</a><ul>
@@ -218,29 +219,29 @@ where <span class="math inline">\(f_X\)</span> is the density function of <span 
 where <span class="math inline">\(f_X\)</span> is the density function of <span class="math inline">\(X \sim \text{N}(0, (t-\tau_i)\Sigma)\)</span></p>
 <div id="the-fit_stelfi-function" class="section level2 hasAnchor">
 <h2><span class="header-section-number">6.1</span> The <code>fit_stelfi()</code> function<a href="stelfi.html#the-fit_stelfi-function" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb90-1" title="1"><span class="kw">args</span>(fit_stelfi)</a></code></pre></div>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb95-1" title="1"><span class="kw">args</span>(fit_stelfi)</a></code></pre></div>
 <pre><code>## function (times, locs, sf, smesh, parameters, covariates, GMRF = FALSE, 
 ##     time_independent = TRUE, tmb_silent = TRUE, nlminb_silent = TRUE, 
 ##     ...) 
 ## NULL</code></pre>
 <div id="spatiotemporal-hawkes-process" class="section level3 hasAnchor">
 <h3><span class="header-section-number">6.1.1</span> Spatiotemporal Hawkes process<a href="stelfi.html#spatiotemporal-hawkes-process" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb92-1" title="1"><span class="kw">data</span>(xyt, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</a>
-<a class="sourceLine" id="cb92-2" title="2">locs &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> xyt<span class="op">$</span>x, <span class="dt">y =</span> xyt<span class="op">$</span>y)</a>
-<a class="sourceLine" id="cb92-3" title="3">times &lt;-<span class="st"> </span>xyt<span class="op">$</span>t</a>
-<a class="sourceLine" id="cb92-4" title="4">domain &lt;-<span class="st"> </span>sf<span class="op">::</span><span class="kw">st_as_sf</span>(xyt<span class="op">$</span>window)</a></code></pre></div>
-<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb93-1" title="1"><span class="kw">ggplot</span>(<span class="dt">data =</span> locs, <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">size =</span> times)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb93-2" title="2"><span class="st">    </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb93-3" title="3"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> domain, <span class="dt">fill =</span> <span class="ot">NA</span>, <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb93-4" title="4"><span class="st">    </span><span class="kw">theme_void</span>()</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-59-1.png" width="672" /></p>
-<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb94-1" title="1">bnd &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.segment</span>(<span class="kw">as.matrix</span>(sf<span class="op">::</span><span class="kw">st_coordinates</span>(domain)[, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]))</a>
-<a class="sourceLine" id="cb94-2" title="2">smesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.2d</span>(<span class="dt">boundary =</span> bnd, </a>
-<a class="sourceLine" id="cb94-3" title="3">                            <span class="dt">max.edge =</span> <span class="fl">0.75</span>, <span class="dt">cutoff =</span> <span class="fl">0.3</span>)</a>
-<a class="sourceLine" id="cb94-4" title="4">param &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">mu =</span> <span class="dv">1</span>, <span class="dt">alpha =</span> <span class="dv">3</span>, <span class="dt">beta =</span> <span class="dv">6</span>, <span class="dt">xsigma =</span> <span class="fl">0.2</span>,</a>
-<a class="sourceLine" id="cb94-5" title="5">             <span class="dt">ysigma =</span> <span class="fl">0.2</span>, <span class="dt">rho =</span> <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb94-6" title="6">fit &lt;-<span class="st"> </span><span class="kw">fit_stelfi</span>(<span class="dt">times =</span> times, <span class="dt">locs =</span> locs, <span class="dt">sf =</span> domain, <span class="dt">smesh =</span> smesh, <span class="dt">parameters =</span> param)</a>
-<a class="sourceLine" id="cb94-7" title="7"><span class="kw">get_coefs</span>(fit)</a></code></pre></div>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb97-1" title="1"><span class="kw">data</span>(xyt, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</a>
+<a class="sourceLine" id="cb97-2" title="2">locs &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> xyt<span class="op">$</span>x, <span class="dt">y =</span> xyt<span class="op">$</span>y)</a>
+<a class="sourceLine" id="cb97-3" title="3">times &lt;-<span class="st"> </span>xyt<span class="op">$</span>t</a>
+<a class="sourceLine" id="cb97-4" title="4">domain &lt;-<span class="st"> </span>sf<span class="op">::</span><span class="kw">st_as_sf</span>(xyt<span class="op">$</span>window)</a></code></pre></div>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb98-1" title="1"><span class="kw">ggplot</span>(<span class="dt">data =</span> locs, <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">size =</span> times)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb98-2" title="2"><span class="st">    </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb98-3" title="3"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> domain, <span class="dt">fill =</span> <span class="ot">NA</span>, <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb98-4" title="4"><span class="st">    </span><span class="kw">theme_void</span>()</a></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-62-1.png" width="672" /></p>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb99-1" title="1">bnd &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.segment</span>(<span class="kw">as.matrix</span>(sf<span class="op">::</span><span class="kw">st_coordinates</span>(domain)[, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]))</a>
+<a class="sourceLine" id="cb99-2" title="2">smesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.2d</span>(<span class="dt">boundary =</span> bnd, </a>
+<a class="sourceLine" id="cb99-3" title="3">                            <span class="dt">max.edge =</span> <span class="fl">0.75</span>, <span class="dt">cutoff =</span> <span class="fl">0.3</span>)</a>
+<a class="sourceLine" id="cb99-4" title="4">param &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">mu =</span> <span class="dv">1</span>, <span class="dt">alpha =</span> <span class="dv">3</span>, <span class="dt">beta =</span> <span class="dv">6</span>, <span class="dt">xsigma =</span> <span class="fl">0.2</span>,</a>
+<a class="sourceLine" id="cb99-5" title="5">             <span class="dt">ysigma =</span> <span class="fl">0.2</span>, <span class="dt">rho =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb99-6" title="6">fit &lt;-<span class="st"> </span><span class="kw">fit_stelfi</span>(<span class="dt">times =</span> times, <span class="dt">locs =</span> locs, <span class="dt">sf =</span> domain, <span class="dt">smesh =</span> smesh, <span class="dt">parameters =</span> param)</a>
+<a class="sourceLine" id="cb99-7" title="7"><span class="kw">get_coefs</span>(fit)</a></code></pre></div>
 <pre><code>##            Estimate  Std. Error
 ## mu       0.31682408  0.06432051
 ## coefs   -1.14940861  0.20301649
@@ -249,15 +250,15 @@ where <span class="math inline">\(f_X\)</span> is the density function of <span 
 ## xsigma   0.55456406  0.02336852
 ## ysigma   0.28344566  0.01440343
 ## rho      0.02843629  0.05804435</code></pre>
-<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb96-1" title="1"><span class="kw">show_hawkes</span>(<span class="kw">list</span>(<span class="dt">times =</span> times, <span class="dt">params =</span> <span class="kw">c</span>(<span class="dt">mu =</span> <span class="fl">0.32</span>, <span class="dt">alpha =</span> <span class="dv">232</span>, <span class="dt">beta =</span> <span class="dv">232</span>)))</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-61-1.png" width="672" /></p>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb101-1" title="1"><span class="kw">show_hawkes</span>(<span class="kw">list</span>(<span class="dt">times =</span> times, <span class="dt">params =</span> <span class="kw">c</span>(<span class="dt">mu =</span> <span class="fl">0.32</span>, <span class="dt">alpha =</span> <span class="dv">232</span>, <span class="dt">beta =</span> <span class="dv">232</span>)))</a></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-64-1.png" width="672" /></p>
 </div>
 <div id="including-a-random-field" class="section level3 hasAnchor">
 <h3><span class="header-section-number">6.1.2</span> Including a random field<a href="stelfi.html#including-a-random-field" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb97-1" title="1"><span class="co">## Note: just because you can, doesn&#39;t mean you should...</span></a>
-<a class="sourceLine" id="cb97-2" title="2">param &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">mu =</span> <span class="dv">1</span>, <span class="dt">alpha =</span> <span class="dv">20</span>, <span class="dt">beta =</span> <span class="dv">200</span>, <span class="dt">kappa =</span> <span class="dv">2</span>, <span class="dt">tau =</span> <span class="fl">0.1</span>, <span class="dt">xsigma =</span> <span class="fl">0.2</span>, <span class="dt">ysigma =</span> <span class="fl">0.2</span>, <span class="dt">rho =</span> <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb97-3" title="3">fit &lt;-<span class="st"> </span><span class="kw">fit_stelfi</span>(<span class="dt">times =</span> times, <span class="dt">locs =</span> locs, <span class="dt">sf =</span> domain, <span class="dt">smesh =</span> smesh, <span class="dt">parameters =</span> param, <span class="dt">GMRF =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb97-4" title="4"><span class="kw">get_coefs</span>(fit)</a></code></pre></div>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb102-1" title="1"><span class="co">## Note: just because you can, doesn&#39;t mean you should...</span></a>
+<a class="sourceLine" id="cb102-2" title="2">param &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">mu =</span> <span class="dv">1</span>, <span class="dt">alpha =</span> <span class="dv">20</span>, <span class="dt">beta =</span> <span class="dv">200</span>, <span class="dt">kappa =</span> <span class="dv">2</span>, <span class="dt">tau =</span> <span class="fl">0.1</span>, <span class="dt">xsigma =</span> <span class="fl">0.2</span>, <span class="dt">ysigma =</span> <span class="fl">0.2</span>, <span class="dt">rho =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb102-3" title="3">fit &lt;-<span class="st"> </span><span class="kw">fit_stelfi</span>(<span class="dt">times =</span> times, <span class="dt">locs =</span> locs, <span class="dt">sf =</span> domain, <span class="dt">smesh =</span> smesh, <span class="dt">parameters =</span> param, <span class="dt">GMRF =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb102-4" title="4"><span class="kw">get_coefs</span>(fit)</a></code></pre></div>
 <pre><code>##             Estimate   Std. Error
 ## mu       0.003432009  0.004005054
 ## coefs   -5.674609405  1.166970622
@@ -268,14 +269,14 @@ where <span class="math inline">\(f_X\)</span> is the density function of <span 
 ## rho      0.024276592  0.056616125
 ## kappa    9.040965870 10.519143632
 ## tau      0.004644277  0.009560608</code></pre>
-<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb99-1" title="1"><span class="kw">show_hawkes</span>(<span class="kw">list</span>(<span class="dt">times =</span> times, <span class="dt">params =</span> <span class="kw">c</span>(<span class="dt">mu =</span> <span class="fl">0.003</span>, <span class="dt">alpha =</span> <span class="dv">259</span>, <span class="dt">beta =</span> <span class="dv">259</span>)))</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-63-1.png" width="672" /></p>
-<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb100-1" title="1"><span class="kw">get_fields</span>(fit, smesh) <span class="op">|</span><span class="er">&gt;</span></a>
-<a class="sourceLine" id="cb100-2" title="2"><span class="st">    </span><span class="kw">show_field</span>(<span class="dt">smesh =</span> smesh) <span class="op">+</span></a>
-<a class="sourceLine" id="cb100-3" title="3"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> <span class="kw">mesh_2_sf</span>(smesh), <span class="dt">fill =</span> <span class="ot">NA</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb100-4" title="4"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> domain, <span class="dt">fill =</span> <span class="ot">NA</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)  <span class="op">+</span></a>
-<a class="sourceLine" id="cb100-5" title="5"><span class="st">    </span><span class="kw">theme_void</span>()</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-64-1.png" width="672" /></p>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb104-1" title="1"><span class="kw">show_hawkes</span>(<span class="kw">list</span>(<span class="dt">times =</span> times, <span class="dt">params =</span> <span class="kw">c</span>(<span class="dt">mu =</span> <span class="fl">0.003</span>, <span class="dt">alpha =</span> <span class="dv">259</span>, <span class="dt">beta =</span> <span class="dv">259</span>)))</a></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-66-1.png" width="672" /></p>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb105-1" title="1"><span class="kw">get_fields</span>(fit, smesh) <span class="op">|</span><span class="er">&gt;</span></a>
+<a class="sourceLine" id="cb105-2" title="2"><span class="st">    </span><span class="kw">show_field</span>(<span class="dt">smesh =</span> smesh) <span class="op">+</span></a>
+<a class="sourceLine" id="cb105-3" title="3"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> <span class="kw">mesh_2_sf</span>(smesh), <span class="dt">fill =</span> <span class="ot">NA</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb105-4" title="4"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> domain, <span class="dt">fill =</span> <span class="ot">NA</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)  <span class="op">+</span></a>
+<a class="sourceLine" id="cb105-5" title="5"><span class="st">    </span><span class="kw">theme_void</span>()</a></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-67-1.png" width="672" /></p>
 
 </div>
 </div>

@@ -30,7 +30,7 @@ get_coefs(fit)
 
 
 ```{r}
-get_fields(fit) |>
+get_fields(fit, smesh) |>
     show_field(smesh = smesh, sf = domain) + ggplot2::theme_void()
 show_lambda(fit, smesh = smesh, sf = domain) + ggplot2::theme_void()
 ```

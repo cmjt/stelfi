@@ -13,6 +13,15 @@
 |                       |                                                       |                       
 |                       | -   `marks` -  optional, a  vector of marks ($m(t)$). |                       
 +-----------------------+-------------------------------------------------------+
+| `fit_mhawkes()`       | -   `times` - a vector of `numeric` occurrence times. | 
+|                       |                                                       | 
+|                       | -   `stream` - `character` vector specifying the      |                              
+|                       |              stream ID of each observation in `times`.|
+|                       |                                                       |
+|                       | -   `parameters` - a vector of named starting values  |                       
+|                       |     for $\mu$ (`mu`), $\alpha$ (`alpha`), and         |                       
+|                       |     $\beta$ (`beta`).                                 |                       
++-----------------------+-------------------------------------------------------+
 | `fit_hawkes_cbf()`    | As `fit_hawkes()` plus                                | 
 |                       |                                                       | 
 |                       | -   `background` -  some assumed time dependent       | 

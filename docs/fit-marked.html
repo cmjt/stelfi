@@ -20,7 +20,7 @@
   <meta name="twitter:description" content="Using stelfi" />
   
 
-<meta name="author" content="Charlotte M. Jones-Todd &amp; Alec van Helsdingen" />
+<meta name="author" content="Any questions Charlotte M. Jones-Todd" />
 
 
 
@@ -158,10 +158,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.1.1" data-path="hawkes.html"><a href="hawkes.html#fitting-a-hawkes-model"><i class="fa fa-check"></i><b>3.1.1</b> Fitting a Hawkes model</a></li>
 <li class="chapter" data-level="3.1.2" data-path="hawkes.html"><a href="hawkes.html#fitting-an-etas-type-marked-model"><i class="fa fa-check"></i><b>3.1.2</b> Fitting an ETAS-type marked model</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>3.2</b> The <code>fit_hawkes_cbf()</code> function</a><ul>
-<li class="chapter" data-level="3.2.1" data-path="hawkes.html"><a href="hawkes.html#fitting-an-inhomogenous-hawkes-process"><i class="fa fa-check"></i><b>3.2.1</b> Fitting an inhomogenous Hawkes process</a></li>
+<li class="chapter" data-level="3.2" data-path="hawkes.html"><a href="hawkes.html#the-fit_mhawkes-function"><i class="fa fa-check"></i><b>3.2</b> The <code>fit_mhawkes()</code> function</a></li>
+<li class="chapter" data-level="3.3" data-path="hawkes.html"><a href="hawkes.html#the-fit_hawkes_cbf-function"><i class="fa fa-check"></i><b>3.3</b> The <code>fit_hawkes_cbf()</code> function</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="hawkes.html"><a href="hawkes.html#fitting-an-inhomogenous-hawkes-process"><i class="fa fa-check"></i><b>3.3.1</b> Fitting an inhomogenous Hawkes process</a></li>
 </ul></li>
-<li class="chapter" data-level="3.3" data-path="hawkes.html"><a href="hawkes.html#the-sim_hawkes-function"><i class="fa fa-check"></i><b>3.3</b> The <code>sim_hawkes()</code> function</a></li>
+<li class="chapter" data-level="3.4" data-path="hawkes.html"><a href="hawkes.html#the-sim_hawkes-function"><i class="fa fa-check"></i><b>3.4</b> The <code>sim_hawkes()</code> function</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="lgcp.html"><a href="lgcp.html"><i class="fa fa-check"></i><b>4</b> Log-Gaussian Cox process</a><ul>
 <li class="chapter" data-level="4.1" data-path="lgcp.html"><a href="lgcp.html#the-fit_lgcp-function"><i class="fa fa-check"></i><b>4.1</b> The <code>fit_lgcp()</code> function</a><ul>
@@ -216,7 +217,7 @@ The meaning of <span class="math inline">\(\Lambda_m(s)\)</span> depends on the 
 The user can choose for the point processes and the marks to share a common GMRF, i.e. <span class="math inline">\(G_m(s) = G_{pp}(s)\)</span></p>
 <div id="the-fit_mlgcp-function" class="section level2 hasAnchor">
 <h2><span class="header-section-number">5.1</span> The <code>fit_mlgcp()</code> function<a href="fit-marked.html#the-fit_mlgcp-function" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb85-1" title="1"><span class="kw">args</span>(fit_mlgcp)</a></code></pre></div>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb90-1" title="1"><span class="kw">args</span>(fit_mlgcp)</a></code></pre></div>
 <pre><code>## function (locs, sf, marks, smesh, parameters = list(), methods, 
 ##     strfixed = matrix(1, nrow = nrow(locs), ncol = ncol(marks)), 
 ##     fields = rep(1, ncol(marks)), covariates, pp_covariates, 
@@ -225,36 +226,36 @@ The user can choose for the point processes and the marks to share a common GMRF
 ## NULL</code></pre>
 <div id="fitting-a-marked-lgcp" class="section level3 hasAnchor">
 <h3><span class="header-section-number">5.1.1</span> Fitting a marked LGCP<a href="fit-marked.html#fitting-a-marked-lgcp" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p><img src="docs_files/figure-html/unnamed-chunk-54-1.png" width="672" /></p>
-<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb87-1" title="1"><span class="kw">data</span>(marked, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</a>
-<a class="sourceLine" id="cb87-2" title="2">loc.d &lt;-<span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span><span class="kw">cbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))</a>
-<a class="sourceLine" id="cb87-3" title="3">domain &lt;-<span class="st">  </span>sf<span class="op">::</span><span class="kw">st_sf</span>(<span class="dt">geometry =</span> sf<span class="op">::</span><span class="kw">st_sfc</span>(sf<span class="op">::</span><span class="kw">st_polygon</span>(<span class="kw">list</span>(loc.d))))</a>
-<a class="sourceLine" id="cb87-4" title="4">smesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.2d</span>(<span class="dt">loc.domain =</span> loc.d, <span class="dt">offset =</span> <span class="kw">c</span>(<span class="fl">0.3</span>, <span class="dv">1</span>),</a>
-<a class="sourceLine" id="cb87-5" title="5">                                <span class="dt">max.edge =</span> <span class="kw">c</span>(<span class="fl">0.3</span>, <span class="fl">0.7</span>), <span class="dt">cutoff =</span> <span class="fl">0.05</span>)</a>
-<a class="sourceLine" id="cb87-6" title="6">locs &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">x =</span> marked<span class="op">$</span>x, <span class="dt">y =</span> marked<span class="op">$</span>y)</a>
-<a class="sourceLine" id="cb87-7" title="7">marks &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">m1 =</span> marked<span class="op">$</span>m1) <span class="co">## Gaussian</span></a>
-<a class="sourceLine" id="cb87-8" title="8">parameters &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">betamarks =</span> <span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">nrow =</span> <span class="dv">1</span>, <span class="dt">ncol =</span> <span class="kw">ncol</span>(marks)),</a>
-<a class="sourceLine" id="cb87-9" title="9">                       <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>),</a>
-<a class="sourceLine" id="cb87-10" title="10">                       <span class="dt">marks_coefs_pp =</span> <span class="kw">rep</span>(<span class="dv">0</span>, <span class="kw">ncol</span>(marks)), <span class="dt">betapp =</span> <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb87-11" title="11"></a>
-<a class="sourceLine" id="cb87-12" title="12">fit &lt;-<span class="st"> </span><span class="kw">fit_mlgcp</span>(<span class="dt">locs =</span> locs, <span class="dt">marks =</span> marks,</a>
-<a class="sourceLine" id="cb87-13" title="13">                     <span class="dt">sf =</span> domain, <span class="dt">smesh =</span> smesh,</a>
-<a class="sourceLine" id="cb87-14" title="14">                     <span class="dt">parameters =</span> parameters, <span class="dt">methods =</span> <span class="dv">0</span>,</a>
-<a class="sourceLine" id="cb87-15" title="15">                     <span class="dt">fields =</span> <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb87-16" title="16"><span class="kw">get_coefs</span>(fit)</a></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-57-1.png" width="672" /></p>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb92-1" title="1"><span class="kw">data</span>(marked, <span class="dt">package =</span> <span class="st">&quot;stelfi&quot;</span>)</a>
+<a class="sourceLine" id="cb92-2" title="2">loc.d &lt;-<span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span><span class="kw">cbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))</a>
+<a class="sourceLine" id="cb92-3" title="3">domain &lt;-<span class="st">  </span>sf<span class="op">::</span><span class="kw">st_sf</span>(<span class="dt">geometry =</span> sf<span class="op">::</span><span class="kw">st_sfc</span>(sf<span class="op">::</span><span class="kw">st_polygon</span>(<span class="kw">list</span>(loc.d))))</a>
+<a class="sourceLine" id="cb92-4" title="4">smesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.2d</span>(<span class="dt">loc.domain =</span> loc.d, <span class="dt">offset =</span> <span class="kw">c</span>(<span class="fl">0.3</span>, <span class="dv">1</span>),</a>
+<a class="sourceLine" id="cb92-5" title="5">                                <span class="dt">max.edge =</span> <span class="kw">c</span>(<span class="fl">0.3</span>, <span class="fl">0.7</span>), <span class="dt">cutoff =</span> <span class="fl">0.05</span>)</a>
+<a class="sourceLine" id="cb92-6" title="6">locs &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">x =</span> marked<span class="op">$</span>x, <span class="dt">y =</span> marked<span class="op">$</span>y)</a>
+<a class="sourceLine" id="cb92-7" title="7">marks &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">m1 =</span> marked<span class="op">$</span>m1) <span class="co">## Gaussian</span></a>
+<a class="sourceLine" id="cb92-8" title="8">parameters &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">betamarks =</span> <span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">nrow =</span> <span class="dv">1</span>, <span class="dt">ncol =</span> <span class="kw">ncol</span>(marks)),</a>
+<a class="sourceLine" id="cb92-9" title="9">                       <span class="dt">log_tau =</span> <span class="kw">log</span>(<span class="dv">1</span>), <span class="dt">log_kappa =</span> <span class="kw">log</span>(<span class="dv">1</span>),</a>
+<a class="sourceLine" id="cb92-10" title="10">                       <span class="dt">marks_coefs_pp =</span> <span class="kw">rep</span>(<span class="dv">0</span>, <span class="kw">ncol</span>(marks)), <span class="dt">betapp =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb92-11" title="11"></a>
+<a class="sourceLine" id="cb92-12" title="12">fit &lt;-<span class="st"> </span><span class="kw">fit_mlgcp</span>(<span class="dt">locs =</span> locs, <span class="dt">marks =</span> marks,</a>
+<a class="sourceLine" id="cb92-13" title="13">                     <span class="dt">sf =</span> domain, <span class="dt">smesh =</span> smesh,</a>
+<a class="sourceLine" id="cb92-14" title="14">                     <span class="dt">parameters =</span> parameters, <span class="dt">methods =</span> <span class="dv">0</span>,</a>
+<a class="sourceLine" id="cb92-15" title="15">                     <span class="dt">fields =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb92-16" title="16"><span class="kw">get_coefs</span>(fit)</a></code></pre></div>
 <pre><code>##                  Estimate Std. Error
 ## betamarks       9.9001308  0.3032841
 ## betapp          2.7353453  0.1310755
 ## marks_coefs_pp -0.2793250  0.4280345
 ## tau             0.1028983  0.0594815
 ## kappa           5.8998690  2.6928689</code></pre>
-<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb89-1" title="1"><span class="kw">get_fields</span>(fit, smesh) <span class="op">|</span><span class="er">&gt;</span></a>
-<a class="sourceLine" id="cb89-2" title="2"><span class="st">    </span><span class="kw">show_field</span>(<span class="dt">smesh =</span> smesh) <span class="op">+</span></a>
-<a class="sourceLine" id="cb89-3" title="3"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> <span class="kw">mesh_2_sf</span>(smesh), <span class="dt">fill =</span> <span class="ot">NA</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb89-4" title="4"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> domain, <span class="dt">fill =</span> <span class="ot">NA</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)  <span class="op">+</span></a>
-<a class="sourceLine" id="cb89-5" title="5"><span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">data =</span> <span class="kw">as.data.frame</span>(locs), <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">cex =</span> marks), <span class="dt">alpha =</span> <span class="fl">0.3</span>, <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb89-6" title="6"><span class="st">    </span><span class="kw">theme_void</span>()</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-56-1.png" width="672" /></p>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb94-1" title="1"><span class="kw">get_fields</span>(fit, smesh) <span class="op">|</span><span class="er">&gt;</span></a>
+<a class="sourceLine" id="cb94-2" title="2"><span class="st">    </span><span class="kw">show_field</span>(<span class="dt">smesh =</span> smesh) <span class="op">+</span></a>
+<a class="sourceLine" id="cb94-3" title="3"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> <span class="kw">mesh_2_sf</span>(smesh), <span class="dt">fill =</span> <span class="ot">NA</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb94-4" title="4"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> domain, <span class="dt">fill =</span> <span class="ot">NA</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)  <span class="op">+</span></a>
+<a class="sourceLine" id="cb94-5" title="5"><span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">data =</span> <span class="kw">as.data.frame</span>(locs), <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">cex =</span> marks), <span class="dt">alpha =</span> <span class="fl">0.3</span>, <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb94-6" title="6"><span class="st">    </span><span class="kw">theme_void</span>()</a></code></pre></div>
+<p><img src="docs_files/figure-html/unnamed-chunk-59-1.png" width="672" /></p>
 
 </div>
 </div>

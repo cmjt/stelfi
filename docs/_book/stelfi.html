@@ -233,7 +233,7 @@ where <span class="math inline">\(f_X\)</span> is the density function of <span 
 <a class="sourceLine" id="cb93-2" title="2"><span class="st">    </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
 <a class="sourceLine" id="cb93-3" title="3"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> domain, <span class="dt">fill =</span> <span class="ot">NA</span>, <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb93-4" title="4"><span class="st">    </span><span class="kw">theme_void</span>()</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-61-1.png" width="672" /></p>
+<p><img src="docs_files/figure-html/unnamed-chunk-59-1.png" width="672" /></p>
 <div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb94-1" title="1">bnd &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.segment</span>(<span class="kw">as.matrix</span>(sf<span class="op">::</span><span class="kw">st_coordinates</span>(domain)[, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]))</a>
 <a class="sourceLine" id="cb94-2" title="2">smesh &lt;-<span class="st"> </span>INLA<span class="op">::</span><span class="kw">inla.mesh.2d</span>(<span class="dt">boundary =</span> bnd, </a>
 <a class="sourceLine" id="cb94-3" title="3">                            <span class="dt">max.edge =</span> <span class="fl">0.75</span>, <span class="dt">cutoff =</span> <span class="fl">0.3</span>)</a>
@@ -250,7 +250,7 @@ where <span class="math inline">\(f_X\)</span> is the density function of <span 
 ## ysigma   0.28344566  0.01440343
 ## rho      0.02843629  0.05804435</code></pre>
 <div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb96-1" title="1"><span class="kw">show_hawkes</span>(<span class="kw">list</span>(<span class="dt">times =</span> times, <span class="dt">params =</span> <span class="kw">c</span>(<span class="dt">mu =</span> <span class="fl">0.32</span>, <span class="dt">alpha =</span> <span class="dv">232</span>, <span class="dt">beta =</span> <span class="dv">232</span>)))</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-63-1.png" width="672" /></p>
+<p><img src="docs_files/figure-html/unnamed-chunk-61-1.png" width="672" /></p>
 </div>
 <div id="including-a-random-field" class="section level3 hasAnchor">
 <h3><span class="header-section-number">6.1.2</span> Including a random field<a href="stelfi.html#including-a-random-field" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -269,13 +269,13 @@ where <span class="math inline">\(f_X\)</span> is the density function of <span 
 ## kappa    9.040965870 10.519143632
 ## tau      0.004644277  0.009560608</code></pre>
 <div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb99-1" title="1"><span class="kw">show_hawkes</span>(<span class="kw">list</span>(<span class="dt">times =</span> times, <span class="dt">params =</span> <span class="kw">c</span>(<span class="dt">mu =</span> <span class="fl">0.003</span>, <span class="dt">alpha =</span> <span class="dv">259</span>, <span class="dt">beta =</span> <span class="dv">259</span>)))</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-65-1.png" width="672" /></p>
+<p><img src="docs_files/figure-html/unnamed-chunk-63-1.png" width="672" /></p>
 <div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb100-1" title="1"><span class="kw">get_fields</span>(fit, smesh) <span class="op">|</span><span class="er">&gt;</span></a>
 <a class="sourceLine" id="cb100-2" title="2"><span class="st">    </span><span class="kw">show_field</span>(<span class="dt">smesh =</span> smesh) <span class="op">+</span></a>
 <a class="sourceLine" id="cb100-3" title="3"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> <span class="kw">mesh_2_sf</span>(smesh), <span class="dt">fill =</span> <span class="ot">NA</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb100-4" title="4"><span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> domain, <span class="dt">fill =</span> <span class="ot">NA</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)  <span class="op">+</span></a>
 <a class="sourceLine" id="cb100-5" title="5"><span class="st">    </span><span class="kw">theme_void</span>()</a></code></pre></div>
-<p><img src="docs_files/figure-html/unnamed-chunk-66-1.png" width="672" /></p>
+<p><img src="docs_files/figure-html/unnamed-chunk-64-1.png" width="672" /></p>
 
 </div>
 </div>
