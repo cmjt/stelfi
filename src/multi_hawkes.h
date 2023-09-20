@@ -75,4 +75,4 @@ Type multi_hawkes(objective_function<Type>* obj) {
 #undef TMB_OBJECTIVE_PTR
 #define TMB_OBJECTIVE_PTR this
 
-#endif
+#endif 

@@ -78,7 +78,7 @@ This could be a list of multiple values.}
 \item{background_min}{A function taking one parameter and two points,
 returns min of \code{background} between those points.}
 
-\item{stream}{An character vector specifying the stream ID of each observation in \code{times}}
+\item{stream}{A character vector specifying the stream ID of each observation in \code{times}}
 }
 \value{
 A list containing components of the fitted model, see \code{TMB::MakeADFun}. Includes
@@ -86,7 +86,7 @@ A list containing components of the fitted model, see \code{TMB::MakeADFun}. Inc
 \item \code{par}, a numeric vector of estimated parameter values;
 \item \code{objective}, the objective function;
 \item \code{gr}, the TMB calculated gradient function; and
-\item \code{simulate}, (where applicable) a simulation function. 
+\item \code{simulate}, (where available) a simulation function. 
 }
 }
 \description{
@@ -100,7 +100,7 @@ self-excitement.
 A univariate Hawkes (Hawkes, AG. 1971) process is a self-exciting temporal point process
 with conditional intensity function
 \eqn{\lambda(t) = \mu + \alpha \Sigma_{i:\tau_i<t}e^{(-\beta * (t-\tau_i))}}.  Here \eqn{\mu} is the constant
-baseline rate, \eqn{\alpha} is the instantaneous increase in intensity after an event, and \egn{\beta} is the
+baseline rate, \eqn{\alpha} is the instantaneous increase in intensity after an event, and \eqn{\beta} is the
 exponential decay in intensity. The term \eqn{\Sigma_{i:\tau_i<t} \cdots} describes the historic dependence
 and the clustering density of the temporal point process, where the \eqn{\tau_i} are the events in
 time occurring prior to time \eqn{t}. From this we can derive the following quantities 1) \eqn{\frac{\alpha}{\beta}}
@@ -127,7 +127,7 @@ represent the excitement between streams.
 \examples{
 \donttest{
 ### ********************** ###
-## A typical Hawkes model
+## A Hawkes model
 ### ********************** ###
 data(retweets_niwa, package = "stelfi")
 times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa), units = "mins"))))
@@ -174,6 +174,23 @@ fit <- fit_hawkes_cbf(times = times, parameters = param,
 background = background,
 background_integral = background_integral,
 background_parameters = background_param)
+get_coefs(fit)
+}
+}
+\donttest{
+### ********************** ###
+## A multivariate Hawkes model
+### ********************** ###
+if(require("hawkes")) {
+lambda0 <- c(0.2,0.2)
+alpha <- matrix(c(0.5,0.1,0.1,0.5),byrow = TRUE,nrow = 2)
+beta <- c(0.7,0.7)
+history <- simulateHawkes(lambda0, alpha, beta, 100)
+data <- data.frame(times = c(history[[1]], history[[2]]),
+stream = rep(c("Stream 1", "Stream2"), times = sapply(history, length)))
+data <- data[order(data$times), ]
+fit <- fit_mhawkes(times = data$times, stream = data$stream,
+parameters = list(mu = lambda0, alpha = alpha, beta = beta))
 get_coefs(fit)
 }
 }

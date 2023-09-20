@@ -38,6 +38,7 @@ devtools::install_github("cmjt/stelfi")
  
    + [Fitting a Hawkes model](https://cmjt.github.io/stelfi/hawkes.html#fitting-a-hawkes-model)
    + [Fitting an ETAS-type marked model](https://cmjt.github.io/stelfi/hawkes.html#fitting-a-hawkes-model)
+   + [Fitting a multivariate Hawkes model](https://cmjt.github.io/stelfi/hawkes.html#the-fit_mhawkes-function)
    + [Fitting an inhomogenous Hawkes process](https://cmjt.github.io/stelfi/hawkes.html#the-fit_hawkes_cbf-function)
  
  + The function `fit_lgcp()` fit a log-Gaussian Cox process to either spatial or spatiotemporal point pattern data. If a spatiotemporal model is fitted a AR1 process is assumed for the temporal progression.
@@ -66,6 +67,15 @@ devtools::install_github("cmjt/stelfi")
 |                       |     $\beta$ (`beta`).                                 |                       
 |                       |                                                       |                       
 |                       | -   `marks` -  optional, a  vector of marks ($m(t)$). |                       
++-----------------------+-------------------------------------------------------+
+| `fit_mhawkes()`       | -   `times` - a vector of `numeric` occurrence times. | 
+|                       |                                                       | 
+|                       | -   `stream` - `character` vector specifying the      |                              
+|                       |              stream ID of each observation in `times`.|
+|                       |                                                       |
+|                       | -   `parameters` - a vector of named starting values  |                       
+|                       |     for $\mu$ (`mu`), $\alpha$ (`alpha`), and         |                       
+|                       |     $\beta$ (`beta`).                                 |                       
 +-----------------------+-------------------------------------------------------+
 | `fit_hawkes_cbf()`    | As `fit_hawkes()` plus                                | 
 |                       |                                                       | 

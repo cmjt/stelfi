@@ -51,3 +51,10 @@ test_that("Get LGCP fields (spatiotemporal)", {
         expect_equal(f[1], 0.4561646, tolerance = 0.5)
     }
 })
+test_that("stelfi:::segments()", {
+    data(horse_mesh, package = "stelfi")
+    seg <- segments(horse_mesh)
+    expect_equal(seg[1, 5],
+                 1.684799,
+                 tolerance = 0.01)
+})

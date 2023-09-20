@@ -51,6 +51,15 @@ test_that("Non-homogeneous Hawkes model fitting", {
     expect_equal(estA, 0.2387370, tolerance = 0.1)
     expect_equal(estB, 0.02600446, tolerance = 0.1)
 })
+test_that("Multivariate Hawkes model fitting", {
+    data(multi_hawkes)
+    fit <- stelfi::fit_mhawkes(times = multi_hawkes$times, stream = multi_hawkes$stream,
+                           parameters = list(mu =  c(0.2,0.2),
+                                        alpha =  matrix(c(0.5,0.1,0.1,0.5),byrow = TRUE,nrow = 2),
+                                        beta = c(0.7,0.7)))
+    ll <- fit$fn()
+    expect_equal(ll,  132, tolerance = 2)
+})
 test_that("LGCP model fitting (spatial)", {
     skip_on_cran()
     if(requireNamespace("INLA")){
@@ -144,6 +153,32 @@ test_that("LGCP model fitting (marked)", {
         pars <- as.numeric(get_coefs(fit)[, 1])
         expect_equal(pars[1], 9.90, tolerance = 0.1)
         expect_equal(pars[3], -0.279, tolerance = 0.1)
+    }
+})
+test_that("LGCP model fitting (marked) with covariate overlap", {
+    skip_on_cran()
+    if(requireNamespace("INLA")){
+        data(marked, package = "stelfi")
+        loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
+        domain <-  sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(loc.d))))
+        smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1),
+                                    max.edge = c(0.3, 0.7), cutoff = 0.05)
+        locs <- cbind(x = marked$x, y = marked$y)
+        marks <- cbind(m1 = marked$m1) ## Gaussian
+        set.seed(132) 
+        covs <- cbind(cov = rnorm(smesh$n))
+        parameters <- list(betamarks = matrix(0, nrow = 2, ncol = ncol(marks)),
+                   log_tau = log(1), log_kappa = log(1),
+                   marks_coefs_pp = rep(0, ncol(marks)), betapp = c(0, 1))
+        fit <- fit_mlgcp(locs = locs, marks = marks,
+                 sf = domain, smesh = smesh,
+                 parameters = parameters, methods = 0,
+                 fields = 0, covariates = covs,
+                 pp_covariates = 1,
+                 marks_covariates = 1)
+        pars <- as.numeric(get_coefs(fit)[, 1])
+        expect_equal(pars[2], 0.06362269, tolerance = 0.01)
+        expect_equal(pars[4], 0.08150350, tolerance = 0.01)
     }
 })
 test_that("Spatial self-exciting (no GMRF)", {

@@ -9,7 +9,7 @@
 #' @details A univariate Hawkes (Hawkes, AG. 1971) process is a self-exciting temporal point process
 #' with conditional intensity function
 #' \eqn{\lambda(t) = \mu + \alpha \Sigma_{i:\tau_i<t}e^{(-\beta * (t-\tau_i))}}.  Here \eqn{\mu} is the constant
-#' baseline rate, \eqn{\alpha} is the instantaneous increase in intensity after an event, and \egn{\beta} is the
+#' baseline rate, \eqn{\alpha} is the instantaneous increase in intensity after an event, and \eqn{\beta} is the
 #' exponential decay in intensity. The term \eqn{\Sigma_{i:\tau_i<t} \cdots} describes the historic dependence
 #' and the clustering density of the temporal point process, where the \eqn{\tau_i} are the events in
 #' time occurring prior to time \eqn{t}. From this we can derive the following quantities 1) \eqn{\frac{\alpha}{\beta}}
@@ -47,12 +47,12 @@
 #' \item \code{par}, a numeric vector of estimated parameter values;
 #' \item \code{objective}, the objective function;
 #' \item \code{gr}, the TMB calculated gradient function; and
-#' \item \code{simulate}, (where applicable) a simulation function. 
+#' \item \code{simulate}, (where available) a simulation function. 
 #' }
 #' @examples
 #' \donttest{
 #' ### ********************** ###
-#' ## A typical Hawkes model
+#' ## A Hawkes model
 #' ### ********************** ###
 #' data(retweets_niwa, package = "stelfi")
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa), units = "mins"))))
@@ -320,7 +320,7 @@ fit_hawkes_cbf <- function(times, parameters = list(),
 #' matrix where the diagonals represent the within-stream excitement and the off-diagonals
 #' represent the excitement between streams.
 #'
-#' @param stream An character vector specifying the stream ID of each observation in \code{times}
+#' @param stream A character vector specifying the stream ID of each observation in \code{times}
 #' @param parameters A named list of parameter starting values:
 #' \itemize{
 #' \item \code{mu}, a vector of base rates for each stream of the multivariate Hawkes process,
@@ -329,13 +329,35 @@ fit_hawkes_cbf <- function(times, parameters = list(),
 #' \item \code{beta}, a vector of the exponential intensity decay for each stream of the multivariate
 #' Hawkes process,
 #' }
-#'
+#' @examples
+#' \donttest{
+#' ### ********************** ###
+#' ## A multivariate Hawkes model
+#' ### ********************** ###
+#' if(require("hawkes")) {
+#' lambda0 <- c(0.2,0.2)
+#' alpha <- matrix(c(0.5,0.1,0.1,0.5),byrow = TRUE,nrow = 2)
+#' beta <- c(0.7,0.7)
+#' history <- simulateHawkes(lambda0, alpha, beta, 100)
+#' data <- data.frame(times = c(history[[1]], history[[2]]),
+#' stream = rep(c("Stream 1", "Stream2"), times = sapply(history, length)))
+#' data <- data[order(data$times), ]
+#' fit <- fit_mhawkes(times = data$times, stream = data$stream,
+#' parameters = list(mu = lambda0, alpha = alpha, beta = beta))
+#' get_coefs(fit)
+#' }
+#' }
 #' @export
 #' @rdname fit_hawkes
 fit_mhawkes <- function(times, stream,
                         parameters = list(),
                         tmb_silent = TRUE,
                         optim_silent = TRUE, ...){
+    ## general error checks
+    for (i in 2:length(times)) {
+        if ((times[i] - times[i - 1]) < 1.e-10)
+            stop("times must be in ascending order with no simultaneous events")
+    }
     n_streams <- length(table(stream))
     ## parameters
     alpha <- parameters[["alpha"]]

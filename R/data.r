@@ -172,3 +172,17 @@ NULL
 #' @format A \code{sf} \code{POLYGON} of a horse outline
 #' @name horse_sf
 NULL
+#' Example multivariate Hawkes dataset
+#'
+#' Two-stream multivariate Hawkes data with \eqn{mu_1 = \mu_2 = 0.2},
+#' \eqn{beta_1 = \beta_2 = 0.7}, and \eqn{\boldsymbol{\alpha}} =
+#' \code{matrix(c(0.5,0.1,0.1,0.5),byrow = TRUE,nrow = 2)}.
+#'
+#' @format A data frame with 213 observations and 2 variables:
+#' \describe{
+#' \item{times}{ordered time stamp of observation}
+#' \item{stream}{character giving stream ID (i.e., Stream 1 or
+#' Stream 2) of observation}
+#' }
+#' @name multi_hawkes
+NULL
