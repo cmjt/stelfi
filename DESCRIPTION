@@ -46,7 +46,7 @@ LazyDataCompression: xz
 Encoding: UTF-8
 RoxygenNote: 7.2.1
 Suggests:
-    INLA (>= 22.5.7),
+    INLA (>= 21.08.31),
     testthat (>= 3.1.10),
     rmarkdown,
     maptools,
