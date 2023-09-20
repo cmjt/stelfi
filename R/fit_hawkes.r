@@ -334,18 +334,12 @@ fit_hawkes_cbf <- function(times, parameters = list(),
 #' ### ********************** ###
 #' ## A multivariate Hawkes model
 #' ### ********************** ###
-#' if(require("hawkes")) {
-#' lambda0 <- c(0.2,0.2)
-#' alpha <- matrix(c(0.5,0.1,0.1,0.5),byrow = TRUE,nrow = 2)
-#' beta <- c(0.7,0.7)
-#' history <- hawkes::simulateHawkes(lambda0, alpha, beta, 100)
-#' data <- data.frame(times = c(history[[1]], history[[2]]),
-#' stream = rep(c("Stream 1", "Stream2"), times = sapply(history, length)))
-#' data <- data[order(data$times), ]
-#' fit <- fit_mhawkes(times = data$times, stream = data$stream,
-#' parameters = list(mu = lambda0, alpha = alpha, beta = beta))
+#' data(multi_hawkes, package = "stelfi")
+#' fit <- fit_mhawkes(times = multi_hawkes$times, stream = multi_hawkes$stream,
+#' parameters = list(mu =  c(0.2,0.2),
+#' alpha =  matrix(c(0.5,0.1,0.1,0.5),byrow = TRUE,nrow = 2),
+#' beta = c(0.7,0.7)))
 #' get_coefs(fit)
-#' }
 #' }
 #' @export
 #' @rdname fit_hawkes

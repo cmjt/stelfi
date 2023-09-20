@@ -1,5 +1,20 @@
 # stelfi (development version)
 
+
+# stelfi 0.0.3
+
+## Breaking changes
+
+ + None
+
+## New features
+
+ + Fitting of multivariate Hawkes processes `fit_mhawkes()`
+
+## Minor improvements and fixes
+
+ + Additional testthat tests for fitting functions `fit_mhawkes()` and  `fit_mlgcp()`
+
 # stelfi 0.0.2
 
 ## Breaking changes
