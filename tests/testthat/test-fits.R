@@ -53,7 +53,7 @@ test_that("Non-homogeneous Hawkes model fitting", {
 })
 test_that("Multivariate Hawkes model fitting", {
     data(multi_hawkes)
-    fit <- stelfi::fit_mhawkes(times = multi_hawkes$times, stream = multi_hawkes$stream,
+    fit <- fit_mhawkes(times = multi_hawkes$times, stream = multi_hawkes$stream,
                            parameters = list(mu =  c(0.2,0.2),
                                         alpha =  matrix(c(0.5,0.1,0.1,0.5),byrow = TRUE,nrow = 2),
                                         beta = c(0.7,0.7)))

@@ -25,7 +25,7 @@ Authors@R:
            family = "FA2386-21-1-4028",
            role = "fnd"))
 Depends:
-    R (>= 4.2.1)
+    R (>= 4.1.0)
 Imports:
     TMB (>= 1.9.6),
     sf (>= 1.0.14),

@@ -338,7 +338,7 @@ fit_hawkes_cbf <- function(times, parameters = list(),
 #' lambda0 <- c(0.2,0.2)
 #' alpha <- matrix(c(0.5,0.1,0.1,0.5),byrow = TRUE,nrow = 2)
 #' beta <- c(0.7,0.7)
-#' history <- simulateHawkes(lambda0, alpha, beta, 100)
+#' history <- hawkes::simulateHawkes(lambda0, alpha, beta, 100)
 #' data <- data.frame(times = c(history[[1]], history[[2]]),
 #' stream = rep(c("Stream 1", "Stream2"), times = sapply(history, length)))
 #' data <- data[order(data$times), ]
