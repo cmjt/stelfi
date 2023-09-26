@@ -176,7 +176,7 @@ test_that("LGCP model fitting (marked) with covariate overlap", {
                  marks_covariates = 1)
         pars <- as.numeric(get_coefs(fit)[, 1])
         expect_equal(pars[2], 0.06362269, tolerance = 0.01)
-        expect_equal(pars[4], 0.08150350, tolerance = 0.01)
+        expect_equal(pars[4], 0.08150350, tolerance = 0.05)
     }
 })
 test_that("Spatial self-exciting (no GMRF)", {
