@@ -29,6 +29,7 @@ Depends:
 Imports:
     TMB (>= 1.9.6),
     sf (>= 1.0.14),
+    fmesher,
     Matrix,
     ggplot2 (>= 3.4.3),
     dplyr (>= 1.1.3),
