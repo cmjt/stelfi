@@ -9,9 +9,9 @@ get_fields(obj, smesh, tmesh, plot = FALSE, sd = FALSE)
 \arguments{
 \item{obj}{A fitted model object returned by \code{\link{fit_lgcp}}.}
 
-\item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{INLA::inla.mesh.2d()}.}
+\item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{fmesher::fm_mesh_2d()}.}
 
-\item{tmesh}{Optional, a temporal mesh returned by \code{INLA::inla.mesh.1d()}.}
+\item{tmesh}{Optional, a temporal mesh returned by \code{fmesher::fm_mesh_1d()}.}
 
 \item{plot}{Logical, if \code{TRUE} then the returned values are plotted.
 Default \code{FALSE}.}
@@ -29,12 +29,12 @@ Cox process model at each node of \code{smesh}.
 }
 \examples{
 \donttest{
-if(requireNamespace("INLA")) {
+if(requireNamespace("fmesher")) {
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
 locs <- data.frame(x = xyt$x, y = xyt$y)
-bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+smesh <- fmesher::fm_mesh_2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
 fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 get_fields(fit, smesh, plot = TRUE)

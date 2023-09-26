@@ -16,7 +16,7 @@ test_that("Hawkes simulation (2)", {
 })
 test_that("Simple Hawkes model fitting", {
     ## NIWA retweets
-    data(retweets_niwa)
+    data(retweets_niwa, package = "stelfi")
     times <- unique(sort(as.numeric(difftime(retweets_niwa,
                                              min(retweets_niwa),
                                              units = "mins"))))
@@ -52,8 +52,8 @@ test_that("Non-homogeneous Hawkes model fitting", {
     expect_equal(estB, 0.02600446, tolerance = 0.1)
 })
 test_that("Multivariate Hawkes model fitting", {
-    data(multi_hawkes)
-    fit <- fit_mhawkes(times = multi_hawkes$times, stream = multi_hawkes$stream,
+    data(multi_hawkes, package = "stelfi")
+    fit <- stelfi::fit_mhawkes(times = multi_hawkes$times, stream = multi_hawkes$stream,
                            parameters = list(mu =  c(0.2,0.2),
                                         alpha =  matrix(c(0.5,0.1,0.1,0.5),byrow = TRUE,nrow = 2),
                                         beta = c(0.7,0.7)))
@@ -61,13 +61,12 @@ test_that("Multivariate Hawkes model fitting", {
     expect_equal(ll,  132, tolerance = 2)
 })
 test_that("LGCP model fitting (spatial)", {
-    skip_on_cran()
-    if(requireNamespace("INLA")){
+    if(requireNamespace("fmesher")){
         data(xyt, package = "stelfi")
         domain <- sf::st_as_sf(xyt$window)
         locs <- data.frame(x = xyt$x, y = xyt$y)
-        bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-        smesh <- INLA::inla.mesh.2d(boundary = bnd,
+        bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+        smesh <- fmesher::fm_mesh_2d(boundary = bnd,
                                     max.edge = 0.75, cutoff = 0.3)
         fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
                         parameters = c(beta = 0, log_tau = log(1),
@@ -79,12 +78,11 @@ test_that("LGCP model fitting (spatial)", {
     }
 })
 test_that("Simulate LGCP (spatial)", {
-    skip_on_cran()
-    if(requireNamespace("INLA")){
+    if(requireNamespace("fmesher")){
         data(xyt, package = "stelfi")
         domain <- sf::st_as_sf(xyt$window)
-        bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-        smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+        bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+        smesh <- fmesher::fm_mesh_2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
         parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
         set.seed(91234)
         sim <- sim_lgcp(parameters = parameters, sf = domain, smesh = smesh)
@@ -96,16 +94,16 @@ test_that("Simulate LGCP (spatial)", {
 })
 test_that("LGCP model fitting (spatiotemporal)", {
     skip_on_cran()
-    if(requireNamespace("INLA") & requireNamespace("maptools")){
+    if(requireNamespace("fmesher")){
         data(xyt, package = "stelfi")
         domain <- sf::st_as_sf(xyt$window)
         ndays <- 2
         locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
-        bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+        bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
         w0 <- 2
-        smesh <- INLA::inla.mesh.2d(boundary = bnd,
+        smesh <- fmesher::fm_mesh_2d(boundary = bnd,
                                     max.edge = 0.75, cutoff = 0.3)
-        tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
+        tmesh <- fmesher::fm_mesh_1d(seq(0, ndays, by = w0))
         fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh, tmesh = tmesh,
                         parameters = c(beta = 0, log_tau = log(1),
                                        log_kappa = log(1), atanh_rho = 0.2))
@@ -117,15 +115,15 @@ test_that("LGCP model fitting (spatiotemporal)", {
 })
 test_that("Simulate LGCP (spatiotemporal)", {
     skip_on_cran()
-    if(requireNamespace("INLA")){
+    if(requireNamespace("fmesher")){
         data(xyt, package = "stelfi")
         domain <- sf::st_as_sf(xyt$window)
-        bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-        smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+        bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+        smesh <- fmesher::fm_mesh_2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
         set.seed(91234)
         ndays <- 2
         w0 <- 2
-        tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
+        tmesh <-  fmesher::fm_mesh_1d(seq(0, ndays, by = w0))
         parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2)
         sim <- sim_lgcp(parameters = parameters, sf = domain, smesh = smesh, tmesh = tmesh)
         expect_equal(round(c(sim$x[1:3, 2]), 3), c(0.252, 0.674, 0.575), tolerance = 0.1)
@@ -134,11 +132,11 @@ test_that("Simulate LGCP (spatiotemporal)", {
 })
 test_that("LGCP model fitting (marked)", {
     skip_on_cran()
-    if(requireNamespace("INLA")){
+    if(requireNamespace("fmesher")){
         data(marked, package = "stelfi")
         loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
         domain <-  sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(loc.d))))
-        smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1),
+        smesh <- fmesher::fm_mesh_2d(loc.domain = loc.d, offset = c(0.3, 1),
                                     max.edge = c(0.3, 0.7), cutoff = 0.05)
         locs <- cbind(x = marked$x, y = marked$y)
         marks <- cbind(m1 = marked$m1) ## Gaussian
@@ -157,11 +155,11 @@ test_that("LGCP model fitting (marked)", {
 })
 test_that("LGCP model fitting (marked) with covariate overlap", {
     skip_on_cran()
-    if(requireNamespace("INLA")){
+    if(requireNamespace("fmesher")){
         data(marked, package = "stelfi")
         loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
         domain <-  sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(loc.d))))
-        smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1),
+        smesh <- fmesher::fm_mesh_2d(loc.domain = loc.d, offset = c(0.3, 1),
                                     max.edge = c(0.3, 0.7), cutoff = 0.05)
         locs <- cbind(x = marked$x, y = marked$y)
         marks <- cbind(m1 = marked$m1) ## Gaussian
@@ -183,14 +181,14 @@ test_that("LGCP model fitting (marked) with covariate overlap", {
 })
 test_that("Spatial self-exciting (no GMRF)", {
     skip_on_cran()
-    if(requireNamespace("INLA")){
+    if(requireNamespace("fmesher")){
         data(xyt, package = "stelfi")
         N <- 50
         locs <- data.frame(x = xyt$x[1:N], y = xyt$y[1:N])
         times <- xyt$t[1:N]
         domain <- sf::st_as_sf(xyt$window)
-        bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-        smesh <- INLA::inla.mesh.2d(boundary = bnd,
+        bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+        smesh <- fmesher::fm_mesh_2d(boundary = bnd,
                                     max.edge = 0.75, cutoff = 0.3)
         param <- list(mu = 3, alpha = 1, beta = 3, xsigma = 0.2,
                       ysigma = 0.2, rho = 0.8)
@@ -203,14 +201,14 @@ test_that("Spatial self-exciting (no GMRF)", {
 })
 test_that("Spatial self-exciting (GMRF)", {
     skip_on_cran()
-    if(requireNamespace("INLA")){
+    if(requireNamespace("fmesher")){
         data(xyt, package = "stelfi")
         N <- 50
         locs <- data.frame(x = xyt$x[1:N], y = xyt$y[1:N])
         times <- xyt$t[1:N]
         domain <- sf::st_as_sf(xyt$window)
-        bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-        smesh <- INLA::inla.mesh.2d(boundary = bnd,
+        bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+        smesh <- fmesher::fm_mesh_2d(boundary = bnd,
                                     max.edge = 0.75, cutoff = 0.3)
         param <- list( mu = 5, alpha = 1, beta = 3, kappa = 0.9, tau = 1, xsigma = 0.2, ysigma = 0.2, rho = 0.8)
         fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh, parameters = param, GMRF = TRUE)

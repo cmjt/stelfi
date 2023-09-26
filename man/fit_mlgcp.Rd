@@ -29,7 +29,7 @@ of the domain.}
 
 \item{marks}{A matrix of marks for each observation of the point pattern.}
 
-\item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{INLA::inla.mesh.2d()}.}
+\item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{fmesher::fm_mesh_2d()}.}
 
 \item{parameters}{a list of named parameters:
 log_tau, log_kappa, betamarks, betapp, marks_coefs_pp.}
@@ -102,11 +102,11 @@ share a common GMRF, i.e. \eqn{G_m(s) = G_{pp}(s)}; this is controlled via the a
 ### ********************** ###
 ## A joint likelihood marked LGCP model
 ### ********************** ###
-if(requireNamespace("INLA")){
+if(requireNamespace("fmesher")){
 data(marked, package = "stelfi")
 loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
 domain <- sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(loc.d))))
-smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1),
+smesh <- fmesher::fm_mesh_2d(loc.domain = loc.d, offset = c(0.3, 1),
 max.edge = c(0.3, 0.7), cutoff = 0.05)
 locs <- cbind(x = marked$x, y = marked$y)
 marks <- cbind(m1 = marked$m1) ## Gaussian mark

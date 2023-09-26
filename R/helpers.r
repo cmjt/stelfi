@@ -43,12 +43,12 @@ hawkes_intensity <- function(times, mu, alpha, beta,
 #' fit <- fit_hawkes(times = times, parameters = params)
 #' get_coefs(fit)
 #' ## LGCP
-#' if(requireNamespace("INLA")) {
+#' if(requireNamespace("fmesher")) {
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
 #' locs <- data.frame(x = xyt$x, y = xyt$y)
-#' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-#' smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+#' bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+#' smesh <- fmesher::fm_mesh_2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
 #' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 #' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 #' get_coefs(fit)
@@ -81,12 +81,12 @@ get_coefs <- function(obj) {
 #' @inheritParams fit_lgcp
 #' @return A \code{numeric} vector or a \code{list} of returned values at each \code{smesh} node.
 #' @examples \donttest{
-#' if(requireNamespace("INLA")) {
+#' if(requireNamespace("fmesher")) {
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
 #' locs <- data.frame(x = xyt$x, y = xyt$y)
-#' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-#' smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+#' bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+#' smesh <- fmesher::fm_mesh_2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
 #' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 #' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 #' get_fields(fit, smesh, plot = TRUE)
@@ -135,8 +135,7 @@ get_fields <- function(obj, smesh, tmesh, plot = FALSE, sd = FALSE) {
 #' Calculate the  areas (weights) around the mesh nodes that 
 #' are within the specified spatial polygon \code{sf} of the domain.
 #'
-#' @param mesh A spatial mesh of class \code{INLA::inla.mesh.2d()} or
-#' \code{INLA::inla.mesh()}.
+#' @param mesh A spatial mesh of class \code{fmesher::fm_mesh_2d()} 
 #' @param sf An \code{sf} of type \code{POLYGON} specifying the region
 #' of the domain.
 #' @param plot Logical, whether to plot the calculated \code{mesh} weights. 
@@ -208,7 +207,7 @@ points_in_mesh <- function(xy, dmesh, weights) {
 }
 #' Internal function to construct the dual mesh
 #'
-#' @param mesh A spatial mesh of class \code{\link[INLA]{inla.mesh.2d}}.
+#' @param mesh A spatial mesh of class \code{fmesher::fm_mesh_2d()}.
 #' @return An\ simple features, code{sf}, object of the Voronoi tessellation
 #' centered at each \code{mesh} node.
 #' @source \url{http://www.r-inla.org/spde-book},  \url{https://becarioprecario.bitbucket.io/spde-gitbook/}

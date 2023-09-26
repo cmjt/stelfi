@@ -7,7 +7,7 @@ test_that("meshmetrics()", {
 })
 test_that("Simple Hawkes model diagnostics", {
     ## NIWA retweets
-    data(retweets_niwa)
+    data(retweets_niwa, package = "stelfi")
     times <- unique(sort(as.numeric(difftime(retweets_niwa,
                                              min(retweets_niwa),
                                              units = "mins"))))
@@ -18,12 +18,12 @@ test_that("Simple Hawkes model diagnostics", {
 })
 test_that("Get LGCP fields (spatial)", {
     skip_on_cran()
-    if(requireNamespace("INLA")){
+    if(requireNamespace("fmesher")){
         data(xyt, package = "stelfi")
         domain <- sf::st_as_sf(xyt$window)
         locs <- data.frame(x = xyt$x, y = xyt$y)
-        bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-        smesh <- INLA::inla.mesh.2d(boundary = bnd,
+        bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+        smesh <-  fmesher::fm_mesh_2d(boundary = bnd,
                                     max.edge = 0.75, cutoff = 0.3)
         fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
                         parameters = c(beta = 0, log_tau = log(1),
@@ -34,16 +34,16 @@ test_that("Get LGCP fields (spatial)", {
 })
 test_that("Get LGCP fields (spatiotemporal)", {
     skip_on_cran()
-    if(requireNamespace("INLA") & requireNamespace("maptools")){
+    if(requireNamespace("fmesher")){
         data(xyt, package = "stelfi")
         domain <- sf::st_as_sf(xyt$window)
         ndays <- 2
         locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
-        bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+        bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
         w0 <- 2
-        smesh <- INLA::inla.mesh.2d(boundary = bnd,
+        smesh <- fmesher::fm_mesh_2d(boundary = bnd,
                                     max.edge = 0.75, cutoff = 0.3)
-        tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
+        tmesh <- fmesher::fm_mesh_1d(seq(0, ndays, by = w0))
         fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh, tmesh = tmesh,
                         parameters = c(beta = 0, log_tau = log(1),
                                        log_kappa = log(1), atanh_rho = 0.2))

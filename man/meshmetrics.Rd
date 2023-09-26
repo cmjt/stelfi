@@ -7,7 +7,7 @@
 meshmetrics(mesh)
 }
 \arguments{
-\item{mesh}{A \code{INLA::inla.mesh.2d()} object.}
+\item{mesh}{A \code{fmesher::fm_mesh_2d} object.}
 }
 \value{
 An object of class \code{sf} with the following data for each triangle in the

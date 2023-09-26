@@ -18,12 +18,12 @@ show_lambda(
 \arguments{
 \item{obj}{A fitted LGCP model object for, for example, \code{fit_lgcp()}.}
 
-\item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{INLA::inla.mesh.2d()}.}
+\item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{fmesher::fm_mesh_2d()}.}
 
 \item{sf}{An \code{sf} of type \code{POLYGON} specifying the spatial region
 of the domain.}
 
-\item{tmesh}{Optional, a temporal mesh returned by \code{INLA::inla.mesh.1d()}.}
+\item{tmesh}{Optional, a temporal mesh returned by \code{fmesher::fm_mesh_1d()}.}
 
 \item{covariates}{Optional, a \code{matrix} of covariates at each
 \code{smesh} and \code{tmesh} node combination.}
@@ -47,12 +47,12 @@ over which temporal index to plot the estimated spatial intensity.
 }
 \examples{
 \donttest{
-if(requireNamespace("INLA")) {
+if(requireNamespace("fmesher")) {
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
 locs <- data.frame(x = xyt$x, y = xyt$y)
-bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+smesh <- fmesher::fm_mesh_2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
 fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 show_lambda(fit, smesh = smesh, sf = domain)

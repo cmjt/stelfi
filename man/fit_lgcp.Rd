@@ -23,9 +23,9 @@ spatiotemporal model is to be fitted then there should be the third column (\cod
 \item{sf}{An \code{sf} of type \code{POLYGON} specifying the spatial region
 of the domain.}
 
-\item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{INLA::inla.mesh.2d()}.}
+\item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{fmesher::fm_mesh_2d()}.}
 
-\item{tmesh}{Optional, a temporal mesh returned by \code{INLA::inla.mesh.1d()}.}
+\item{tmesh}{Optional, a temporal mesh returned by \code{fmesher::fm_mesh_1d()}.}
 
 \item{parameters}{A named list of parameter starting values:
 \itemize{
@@ -91,12 +91,12 @@ distance such that the correlation is \eqn{\sim 0.139}.
 ### ********************** ###
 ## A spatial only LGCP
 ### ********************** ###
-if(requireNamespace("INLA")) {
+if(requireNamespace("fmesher")) {
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
 locs <- data.frame(x = xyt$x, y = xyt$y)
-bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-smesh <- INLA::inla.mesh.2d(boundary = bnd,
+bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+smesh <- fmesher::fm_mesh_2d(boundary = bnd,
 max.edge = 0.75, cutoff = 0.3)
 fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
@@ -106,7 +106,7 @@ parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 ndays <- 2
 locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
 w0 <- 2
-tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
+tmesh <- fmesher::fm_mesh_1d(seq(0, ndays, by = w0))
 fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh, tmesh = tmesh,
  parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2))
 }
