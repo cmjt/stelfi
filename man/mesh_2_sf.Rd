@@ -2,7 +2,7 @@
 % Please edit documentation in R/meshmetrics.r
 \name{mesh_2_sf}
 \alias{mesh_2_sf}
-\title{Transform a \code{INLA::inla.mesh.2d} into a \code{sf} object}
+\title{Transform a \code{fmesher::fm_mesh_2d} into a \code{sf} object}
 \source{
 Modified from \code{sp} based function suggested by Finn in the
 R-inla discussion Google Group
@@ -12,13 +12,13 @@ R-inla discussion Google Group
 mesh_2_sf(mesh)
 }
 \arguments{
-\item{mesh}{A \code{INLA::inla.mesh.2d()} object.}
+\item{mesh}{A \code{fmesher::fm_mesh_2d} object.}
 }
 \value{
 A simple features, \code{sf}, object.
 }
 \description{
-Transform a \code{INLA::inla.mesh.2d} into a \code{sf} object
+Transform a \code{fmesher::fm_mesh_2d} into a \code{sf} object
 }
 \examples{
 data(horse_mesh, package = "stelfi")

@@ -29,7 +29,7 @@ Cox process model at each node of \code{smesh}.
 }
 \examples{
 \donttest{
-if(requireNamespace("INLA")) {
+if(requireNamespace("fmesher")) {
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
 locs <- data.frame(x = xyt$x, y = xyt$y)

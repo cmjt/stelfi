@@ -7,8 +7,7 @@
 get_weights(mesh, sf, plot = FALSE)
 }
 \arguments{
-\item{mesh}{A spatial mesh of class \code{fmesher::fm_mesh_2d()} or
-\code{INLA::inla.mesh()}.}
+\item{mesh}{A spatial mesh of class \code{fmesher::fm_mesh_2d()}}
 
 \item{sf}{An \code{sf} of type \code{POLYGON} specifying the region
 of the domain.}

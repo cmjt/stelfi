@@ -29,12 +29,12 @@ optional control over resolutions using \code{dims}.
 }
 \examples{
 \donttest{
-if(requireNamespace("INLA")){
+if(requireNamespace("fmesher")){
 if(require("sf")){
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
-bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+smesh <- fmesher::fm_mesh_2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
 parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
 simdata <- sim_lgcp(parameters = parameters, sf = domain, smesh = smesh)
 show_field(c(simdata$x), smesh = smesh, sf = domain)

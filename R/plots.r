@@ -220,12 +220,12 @@ show_hawkes_GOF <-  function(obj, background_integral = NULL, plot = TRUE, retur
 #' @return A \code{gg} class object, values returned by \code{geom_tile} and \code{geom_sf}.
 #' @seealso \code{\link{show_lambda}} and \code{\link{get_fields}}
 #' @examples \donttest{
-#' if(requireNamespace("INLA")){
+#' if(requireNamespace("fmesher")){
 #' if(require("sf")){
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
-#' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-#' smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+#' bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+#' smesh <- fmesher::fm_mesh_2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
 #' parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
 #' simdata <- sim_lgcp(parameters = parameters, sf = domain, smesh = smesh)
 #' show_field(c(simdata$x), smesh = smesh, sf = domain)
@@ -243,7 +243,7 @@ show_field <- function(x, smesh, sf, dims = c(500,500), clip = FALSE) {
     ys <- seq(min(smesh$loc[, 2]), max(smesh$loc[, 2]), length = ny)
     data <- expand.grid(xs = xs, ys = ys)
     pxl <- sf::st_multipoint(as.matrix(data))
-    A <- INLA::inla.spde.make.A(smesh, pxl)
+    A <- fmesher::fm_basis(smesh, pxl)
     data$colz <-  as.vector(A %*% x)
     if(!missing(sf) & clip){
         xy <- sf::st_as_sf(data, coords = c("xs", "ys"))
@@ -280,12 +280,12 @@ show_field <- function(x, smesh, sf, dims = c(500,500), clip = FALSE) {
 #' @inheritParams fit_lgcp
 #' @return A \code{gg} class object, values returned by \code{geom_tile} and \code{geom_sf}.
 #' @examples \donttest{
-#' if(requireNamespace("INLA")) {
+#' if(requireNamespace("fmesher")) {
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
 #' locs <- data.frame(x = xyt$x, y = xyt$y)
-#' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-#' smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+#' bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+#' smesh <- fmesher::fm_mesh_2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
 #' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 #' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 #' show_lambda(fit, smesh = smesh, sf = domain)
