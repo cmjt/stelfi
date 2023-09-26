@@ -47,8 +47,8 @@ hawkes_intensity <- function(times, mu, alpha, beta,
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
 #' locs <- data.frame(x = xyt$x, y = xyt$y)
-#' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-#' smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+#' bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+#' smesh <- fmesher::fm_mesh_2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
 #' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 #' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 #' get_coefs(fit)
@@ -85,8 +85,8 @@ get_coefs <- function(obj) {
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
 #' locs <- data.frame(x = xyt$x, y = xyt$y)
-#' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-#' smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+#' bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+#' smesh <- fmesher::fm_mesh_2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
 #' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 #' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
 #' get_fields(fit, smesh, plot = TRUE)
@@ -135,7 +135,7 @@ get_fields <- function(obj, smesh, tmesh, plot = FALSE, sd = FALSE) {
 #' Calculate the  areas (weights) around the mesh nodes that 
 #' are within the specified spatial polygon \code{sf} of the domain.
 #'
-#' @param mesh A spatial mesh of class \code{INLA::inla.mesh.2d()} or
+#' @param mesh A spatial mesh of class \code{fmesher::fm_mesh_2d()} or
 #' \code{INLA::inla.mesh()}.
 #' @param sf An \code{sf} of type \code{POLYGON} specifying the region
 #' of the domain.

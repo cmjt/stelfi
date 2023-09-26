@@ -31,7 +31,7 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
                           cov_overlap, designmatpp, designmatmarks, fields,
                           tmb_silent, nlminb_silent, ...) {
     data <- list(ymarks = marks, ypp = ypp, lmat = lmat,
-                 spde = spde$param.inla[c("M0", "M1", "M2")], w = w,
+                 spde = spde, w = w,
                  methods = methods, designmatpp = designmatpp,
                  designmatmarks = designmatmarks, cov_overlap = cov_overlap,
                  strfixed = strfixed, mark_field = fields,
@@ -110,11 +110,11 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' ### ********************** ###
 #' ## A joint likelihood marked LGCP model
 #' ### ********************** ###
-#' if(requireNamespace("INLA")){
+#' if(requireNamespace("fmesher")){
 #' data(marked, package = "stelfi")
 #' loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
 #' domain <- sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(loc.d))))
-#' smesh <- INLA::inla.mesh.2d(loc.domain = loc.d, offset = c(0.3, 1),
+#' smesh <- fmesher::fm_mesh_2d(loc.domain = loc.d, offset = c(0.3, 1),
 #' max.edge = c(0.3, 0.7), cutoff = 0.05)
 #' locs <- cbind(x = marked$x, y = marked$y)
 #' marks <- cbind(m1 = marked$m1) ## Gaussian mark
@@ -216,9 +216,9 @@ fit_mlgcp <-  function(locs, sf, marks, smesh, parameters = list(), methods,
     w_areas <- w$weights
     ypp <- points_in_mesh(as.data.frame(locs), w)
     ## SPDE
-    stelfi_load_inla()
-    spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
-    lmat <- INLA::inla.spde.make.A(smesh, locs)
+    spde <- fmesher::fm_fem(smesh, alpha = 2)[c("c0", "g1", "g2")]
+    names(spde) <-  c("M0", "M1", "M2") ## to satisfy TMB
+    lmat <-  fmesher::fm_basis(smesh, locs)
     if(!missing(covariates)) {
         ## overlap of covariates
         if (length(Reduce(intersect, list(marks_covariates, pp_covariates))) > 0) {

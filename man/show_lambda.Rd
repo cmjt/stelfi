@@ -18,12 +18,12 @@ show_lambda(
 \arguments{
 \item{obj}{A fitted LGCP model object for, for example, \code{fit_lgcp()}.}
 
-\item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{INLA::inla.mesh.2d()}.}
+\item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{fmesher::fm_mesh_2d()}.}
 
 \item{sf}{An \code{sf} of type \code{POLYGON} specifying the spatial region
 of the domain.}
 
-\item{tmesh}{Optional, a temporal mesh returned by \code{INLA::inla.mesh.1d()}.}
+\item{tmesh}{Optional, a temporal mesh returned by \code{fmesher::fm_mesh_1d()}.}
 
 \item{covariates}{Optional, a \code{matrix} of covariates at each
 \code{smesh} and \code{tmesh} node combination.}

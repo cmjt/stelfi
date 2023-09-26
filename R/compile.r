@@ -1,4 +1,5 @@
 #' @importFrom TMB compile MakeADFun sdreport
+#' @importFrom fmesher fm_fem fm_basis
 #' @importFrom ggplot2 ggplot aes xlab ylab geom_line theme_minimal geom_histogram .data
 #' geom_sf theme ggtitle geom_abline theme_void after_stat
 #' @importFrom gridExtra grid.arrange

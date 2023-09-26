@@ -1,8 +1,9 @@
 #' Fit a spatial or spatiotemporal log-Gaussian Cox process (LGCP)
 #'
 #' \code{fit_lgcp_tmb} fits a LGCP using \code{TMB} and the
-#' \code{R_inla} namespace for the SPDE construction of the latent field. For
-#' a simpler wrapper use \code{\link{fit_lgcp}} as this is an internal function.
+#' \code{R_inla} namespace for the SPDE construction of the latent field
+#' (migrated to \code{fmesher}). For  a simpler wrapper use
+#' \code{\link{fit_lgcp}} as this is an internal function.
 #' 
 #' @param y The vector of observations.
 #' For spatial only, this is the vector of counts.
@@ -20,11 +21,11 @@
 #' y_{n * t_n}  \tab     t_n \cr
 #' }
 #' @param A The predictor matrix A, obtained from
-#' \code{INLA::inla.spde.make.A()}.
+#' \code{ fmesher::fm_basis()}.
 #' @param designmat The design matrix for the fixed effects.
 #' @param spde The structure of SPDE object as defined in
-#' \code{INLA::inla.spde2.matern()}.
-#' The minimal required components are \code{M0}, \code{M1}, \code{M2}.
+#' \code{fmesher::fm_fem()}.
+#' The minimal required components are \code{c0}, \code{g1}, \code{g2}.
 #' @param w A vector of model weights; corresponds to the \code{E} term for
 #' poisson models, see \code{INLA::inla.doc("poisson")} for more detail.
 #' @param idx A binary vector of the same size as the observation
@@ -120,8 +121,8 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' of the domain.
 #' @param locs A \code{data.frame} of \code{x} and \code{y} locations, \eqn{2 \times n}. If a
 #' spatiotemporal model is to be fitted then there should be the third column (\code{t}) of the occurrence times.
-#' @param smesh A Delaunay triangulation of the spatial domain returned by \code{INLA::inla.mesh.2d()}.
-#' @param tmesh Optional, a temporal mesh returned by \code{INLA::inla.mesh.1d()}.
+#' @param smesh A Delaunay triangulation of the spatial domain returned by \code{fmesher::fm_mesh_2d()}.
+#' @param tmesh Optional, a temporal mesh returned by \code{fmesher::fm_mesh_1d()}.
 #' @param parameters A named list of parameter starting values:
 #' \itemize{
 #' \item \code{beta}, a vector of fixed effects coefficients to be estimated, \eqn{\beta}
@@ -150,12 +151,12 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' ### ********************** ###
 #' ## A spatial only LGCP
 #' ### ********************** ###
-#' if(requireNamespace("INLA")) {
+#' if(requireNamespace("fmesher")) {
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
 #' locs <- data.frame(x = xyt$x, y = xyt$y)
-#' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-#' smesh <- INLA::inla.mesh.2d(boundary = bnd,
+#' bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+#' smesh <- fmesher::fm_mesh_2d(boundary = bnd,
 #' max.edge = 0.75, cutoff = 0.3)
 #' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
 #' parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1)))
@@ -165,7 +166,7 @@ fit_lgcp_tmb <-  function(y, A, designmat, spde, w, idx, beta,
 #' ndays <- 2
 #' locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
 #' w0 <- 2
-#' tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
+#' tmesh <- fmesher::fm_mesh_1d(seq(0, ndays, by = w0))
 #' fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh, tmesh = tmesh,
 #'  parameters = c(beta = 0, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2))
 #' }
@@ -241,10 +242,10 @@ fit_lgcp <-  function(locs, sf, smesh, tmesh, parameters, covariates,
     ## Model fitting
     res <- fit_lgcp_tmb(y = tmp$ypp, A = tmp$A,
                         designmat = designmat,
-                        spde = tmp$spde$param.inla[c("M0", "M1", "M2")],
+                        spde = tmp$spde,
                         w = tmp$w,
                         idx = tmp$idx, beta = beta,
-                        x = matrix(0, nrow = tmp$spde$n.spde, ncol = k),
+                        x = matrix(0, nrow = smesh$n, ncol = k),
                         log_tau = log_tau, log_kappa = log_kappa,
                         atanh_rho = atanh_rho, tmb_silent = tmb_silent,
                         nlminb_silent = nlminb_silent,
@@ -254,7 +255,7 @@ fit_lgcp <-  function(locs, sf, smesh, tmesh, parameters, covariates,
 
 }
 
-#' Internal function to prep data as \code{INLA::stack}
+#' Internal function to prep data as \code{INLA::stack()} does
 #' @inheritParams fit_lgcp
 #' @noRd
 prep_data_lgcp <- function(locs, sf, smesh, tmesh) {
@@ -263,8 +264,8 @@ prep_data_lgcp <- function(locs, sf, smesh, tmesh) {
     w_areas <- w$weights
     nv <- smesh$n
     ## SPDE
-    stelfi_load_inla()
-    spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
+    spde <- fmesher::fm_fem(smesh, alpha = 2)[c("c0", "g1", "g2")]
+    names(spde) <-  c("M0", "M1", "M2") ## to satisfy TMB
     ## spatial or spatiotemporal
     if (!missing(tmesh)) {
         k <- length(tmesh$loc)
@@ -277,10 +278,9 @@ prep_data_lgcp <- function(locs, sf, smesh, tmesh) {
             y.pp[[i]] <-  points_in_mesh(locs[time == i, ], w)
         }
         ypp <- as.numeric(unlist(y.pp))
-        w.t <- Matrix::diag(INLA::inla.mesh.fem(tmesh)$c0)
+        w.t <- Matrix::diag(fmesher::fm_fem(tmesh)$c0)
         expected <- w_areas[rep(1:nv, k)] * (w.t[rep(1:k, each = nv)])
-        A <- INLA::inla.spde.make.A(smesh, smesh$loc[rep(1:nv, k), ],
-                              group = rep(1:k, each = nv), mesh.group = tmesh)
+        A <-  Matrix::sparseMatrix(i = 1:(k*nv), j = 1:(k*nv), x = 1) ## (testing) fmesher::fm_basis(smesh, smesh$loc[rep(1:nv, k), ])
         idx <- rep(1, length(ypp))
     }else{
         ypp <- points_in_mesh(locs, w)

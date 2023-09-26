@@ -13,7 +13,7 @@
 #' @param tmax maximum time (\code{numeric})
 #' @param reltol \code{numeric}, relative tolerance (default  \code{1e-12})
 #' @param abstol \code{numeric}, absolute tolerance (default  \code{1e-12})
-#' @param lmat \code{INLA::inla.spde.make.A(smesh, locs)}
+#' @param lmat \code{ fmesher::fm_basis(smesh, locs)}
 #' @param simple  binary, should Gaussian kernels have a
 #' covariate matrix that is proportional to time since the event.
 #' @inheritParams fit_hawkes
@@ -37,7 +37,7 @@ fit_hspde_tmb <- function(times, locs, sf, smesh,
     }))
     data <- list(times = times, locs = locs,
                 xyloc = smesh$loc[, 1:2], reltol = reltol, abstol = abstol,
-                spde = spde$param.inla[c("M0", "M1", "M2")], w = w, tmax = tmax,
+                spde = spde, w = w, tmax = tmax,
                 designmat = designmat, tv = innerloc, simple = simple, lmat = lmat,
                 model_type = "spde_hawkes")
     param <- list(coefs = coefs, logit_abratio = logit_abratio, log_beta = log_beta,
@@ -147,14 +147,14 @@ fit_hspat_tmb <- function(times, locs, sf,
 #' @seealso \code{\link{fit_hawkes}} and \code{\link{fit_lgcp}}
 #' @examples \donttest{
 #' ## No GMRF
-#' if(requireNamespace("INLA")){
+#' if(requireNamespace("fmesher")){
 #' data(xyt, package = "stelfi")
 #' N <- 50
 #' locs <- data.frame(x = xyt$x[1:N], y = xyt$y[1:N])
 #' times <- xyt$t[1:N]
 #' domain <- sf::st_as_sf(xyt$window)
-#' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-#' smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3) 
+#' bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+#' smesh <- fmesher::fm_mesh_2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3) 
 #' param <- list( mu = 3, alpha = 1, beta = 3, xsigma = 0.2, ysigma = 0.2, rho = 0.8)
 #' fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh, parameters = param) 
 #' get_coefs(fit)
@@ -234,7 +234,7 @@ fit_stelfi <-  function(times, locs, sf, smesh,  parameters, covariates,
     ## weights
     w <- get_weights(mesh = smesh, sf = sf, plot = FALSE)$weights
     locs <- as.matrix(locs)
-    lmat <- INLA::inla.spde.make.A(smesh, locs)
+    lmat <-  fmesher::fm_basis(smesh, locs)
     if(!GMRF) { ## No GMRF
       res <- fit_hspat_tmb(times = times, locs = locs, sf = sf, w  = w,
                             smesh = smesh, coefs = coefs, designmat = designmat,
@@ -246,7 +246,8 @@ fit_stelfi <-  function(times, locs, sf, smesh,  parameters, covariates,
                             tmb_silent = tmb_silent,
                             nlminb_silent = nlminb_silent, ...)
     }else{ ## SPDE
-        spde <- INLA::inla.spde2.matern(smesh, alpha = 2)
+        spde <- fmesher::fm_fem(smesh, alpha = 2)[c("c0", "g1", "g2")]
+        names(spde) <-  c("M0", "M1", "M2") ## to satisfy TMB
         log_tau <- log(parameters[["tau"]])
         log_kappa <- log(parameters[["kappa"]])
         res <- fit_hspde_tmb(times = times, locs = locs, sf = sf,

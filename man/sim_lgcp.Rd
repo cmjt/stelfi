@@ -20,9 +20,9 @@ Default values are used if none are provided. NOTE: these may not always be appr
 \item{sf}{An \code{sf} of type \code{POLYGON} specifying the spatial region
 of the domain.}
 
-\item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{INLA::inla.mesh.2d()}.}
+\item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{fmesher::fm_mesh_2d()}.}
 
-\item{tmesh}{Optional, a temporal mesh returned by \code{INLA::inla.mesh.1d()}.}
+\item{tmesh}{Optional, a temporal mesh returned by \code{fmesher::fm_mesh_1d()}.}
 
 \item{covariates}{Optional, a \code{matrix} of covariates at each
 \code{smesh} and \code{tmesh} node combination.}
@@ -40,19 +40,19 @@ Simulate a realisation of a log-Gaussian Cox process (LGCP) using the
 as well as \code{tmesh} then spatiotemporal (AR(1)) data will be simulated.
 }
 \examples{
-if(requireNamespace("INLA")){
+if(requireNamespace("fmesher")){
 if(require("sf")) {
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
-bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-smesh <- INLA::inla.mesh.2d(boundary = bnd,
+bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+smesh <- fmesher::fm_mesh_2d(boundary = bnd,
 max.edge = 0.75, cutoff = 0.3)
 parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
 sim <- sim_lgcp(parameters = parameters, sf = domain, smesh = smesh)
 ## spatiotemporal
 ndays <- 2
 w0 <- 2
-tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
+tmesh <- fmesher::fm_mesh_1d(seq(0, ndays, by = w0))
 parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2)
 sim <- sim_lgcp(parameters = parameters, sf = domain, smesh = smesh, tmesh = tmesh)
 }

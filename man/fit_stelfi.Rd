@@ -26,7 +26,7 @@ fit_stelfi(
 \item{sf}{An \code{sf} of type \code{POLYGON} specifying the spatial region
 of the domain.}
 
-\item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{INLA::inla.mesh.2d()}.}
+\item{smesh}{A Delaunay triangulation of the spatial domain returned by \code{fmesher::fm_mesh_2d()}.}
 
 \item{parameters}{A list of named parameters:
 \itemize{
@@ -102,14 +102,14 @@ where \eqn{f} is the density function of \eqn{\textrm{N}(0, (t-\tau_i)\Sigma)}.
 \examples{
 \donttest{
 ## No GMRF
-if(requireNamespace("INLA")){
+if(requireNamespace("fmesher")){
 data(xyt, package = "stelfi")
 N <- 50
 locs <- data.frame(x = xyt$x[1:N], y = xyt$y[1:N])
 times <- xyt$t[1:N]
 domain <- sf::st_as_sf(xyt$window)
-bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-smesh <- INLA::inla.mesh.2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3) 
+bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+smesh <- fmesher::fm_mesh_2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3) 
 param <- list( mu = 3, alpha = 1, beta = 3, xsigma = 0.2, ysigma = 0.2, rho = 0.8)
 fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh, parameters = param) 
 get_coefs(fit)

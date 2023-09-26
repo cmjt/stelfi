@@ -11,19 +11,19 @@
 #' events, \code{y}, simulated at each node.
 #'
 #' @examples
-#' if(requireNamespace("INLA")){
+#' if(requireNamespace("fmesher")){
 #' if(require("sf")) {
 #' data(xyt, package = "stelfi")
 #' domain <- sf::st_as_sf(xyt$window)
-#' bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-#' smesh <- INLA::inla.mesh.2d(boundary = bnd,
+#' bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+#' smesh <- fmesher::fm_mesh_2d(boundary = bnd,
 #' max.edge = 0.75, cutoff = 0.3)
 #' parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1))
 #' sim <- sim_lgcp(parameters = parameters, sf = domain, smesh = smesh)
 #' ## spatiotemporal
 #' ndays <- 2
 #' w0 <- 2
-#' tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
+#' tmesh <- fmesher::fm_mesh_1d(seq(0, ndays, by = w0))
 #' parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2)
 #' sim <- sim_lgcp(parameters = parameters, sf = domain, smesh = smesh, tmesh = tmesh)
 #' }
@@ -80,12 +80,15 @@ sim_lgcp <- function(parameters, sf,
         designmat <- matrix(rep(1, length(tmp$ypp)), ncol = 1)
     }
     ## Model fitting
+    ## SPDE
+    spde <- fmesher::fm_fem(smesh, alpha = 2)[c("c0", "g1", "g2")]
+    names(spde) <-  c("M0", "M1", "M2") ## to satisfy TMB
     res <- fit_lgcp_tmb(y = tmp$ypp, A = tmp$A,
                         designmat = designmat,
-                        spde = tmp$spde$param.inla[c("M0", "M1", "M2")],
+                        spde = spde,
                         w = tmp$w,
                         idx = tmp$idx, beta = beta,
-                        x = matrix(0, nrow = tmp$spde$n.spde, ncol = k),
+                        x = matrix(0, nrow = smesh$n, ncol = k),
                         log_tau = log_tau, log_kappa = log_kappa,
                         atanh_rho = atanh_rho, tmb_silent = TRUE,
                         nlminb_silent = TRUE,

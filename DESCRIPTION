@@ -44,7 +44,7 @@ BugReports: https://github.com/cmjt/stelfi/issues
 LazyData: TRUE
 LazyDataCompression: xz
 Encoding: UTF-8
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Suggests:
     INLA (>= 22.5.7),
     testthat (>= 3.1.10),

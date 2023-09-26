@@ -7,6 +7,7 @@
 /* written by Xiangjie Xue, updated on 01/05/2021. */
 /* Added simulation code on 20/05/2021. */
 /* Edited by Alec van Helsdingen, last update 22/06/2022 */
+/* notes CMJT, last update 26/09/2023 */
 
 template<class Type>
 Type lgcp(objective_function<Type>* obj) {
@@ -46,7 +47,8 @@ Type lgcp(objective_function<Type>* obj) {
   DATA_STRUCT(spde,spde_t); // this as structure of spde object.
   /*
    This is defined in r-inla. By inspection of the template, the minimal
-   required components are M0, M1, M2.
+   required components are M0 ( G0 eqn (10) in Lindgren ) , M1 ( G1 eqn (10) in Lindgren ),
+   M2 (G2 eqn (10) in Lindgren).
   */
   DATA_VECTOR(w); 
   /*
