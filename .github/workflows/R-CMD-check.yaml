@@ -39,18 +39,6 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-      - name: Add inla repo
-        run: |
-          writeLines('options(repos = c(INLA = "https://inla.r-inla-download.org/R/stable/", getOption(\"repos\")))', file("~/.Rprofile", "ab"))
-        shell: Rscript {0}
-
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        env:
-          _R_CHECK_FORCE_SUGGESTS: false
-        with:
-          extra-packages: any::rcmdcheck, local::.
-          needs: check
-
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
