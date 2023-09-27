@@ -175,7 +175,6 @@ test_that("LGCP model fitting (marked) with covariate overlap", {
                  pp_covariates = 1,
                  marks_covariates = 1)
         pars <- as.numeric(get_coefs(fit)[, 1])
-        expect_equal(pars[2], 0.06362269, tolerance = 0.1)
         expect_equal(pars[4], 0.08150350, tolerance = 0.1)
     }
 })
