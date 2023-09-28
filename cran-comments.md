@@ -1,5 +1,6 @@
 ## Re(re)submission
 
+* I have formatted the date to yyyy-mm-dd
 * I have removed the line `Additional_repositories: https://inla.r-inla-download.org/R/testing` accidentally left in the DESCRIPTION file. The package no longer relies in the non-CRAN package INLA.
 
 This is a resubmission. In this version I have:
