@@ -1,14 +1,8 @@
-## Re(re)submission
-
-* I have formatted the date to yyyy-mm-dd
-* I have removed the line `Additional_repositories: https://inla.r-inla-download.org/R/testing` accidentally left in the DESCRIPTION file. The package no longer relies in the non-CRAN package INLA.
+## Resubmission
 
 This is a resubmission. In this version I have:
 
-* Added a stelfi-package \alias, as requested by email from Kurt Hornik.
-* Removed all dependency in the non-CRAN package INLA; instead functions from the new CRAN package fmesher are called.
-* Added an additional model fitting function for a multivariate Hawkes process, as well as associated testthat tests.
-* Started following semantic versioning rules, releasing version 1.0.0
+* Fixed the M1mac issue as requested by Prof Brian Ripley
 
 
 ## Test environments
