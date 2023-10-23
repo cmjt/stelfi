@@ -2,6 +2,7 @@
 
 This is a resubmission. In this version I have:
 
+* Removed, now, broken link from `man/uk_serial.Rd`
 * Fixed the M1mac issue as requested by Prof Brian Ripley
 
 

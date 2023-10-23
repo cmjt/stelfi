@@ -16,7 +16,6 @@
 #' \item{population_million}{Est popn in millions at time of first murder}
 #' }
 #' @source \url{https://www.murderuk.com/}
-#' @seealso \url{https://www.significancemagazine.com/culture/577-a-time-to-kill-great-british-serial-killers}
 #' @name uk_serial
 NULL
 #' Murders of NZ, 2004 - 2019

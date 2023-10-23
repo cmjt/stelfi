@@ -24,6 +24,3 @@ A dataset containing the names and number of recorded
 murders committed by some of the infamous UK serial killers
 from 1828 to 2015.
 }
-\seealso{
-\url{https://www.significancemagazine.com/culture/577-a-time-to-kill-great-british-serial-killers}
-}
