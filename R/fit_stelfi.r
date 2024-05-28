@@ -28,12 +28,19 @@ fit_hspde_tmb <- function(times, locs, sf, smesh,
                           reltol = 1e-12, abstol = 1e-12,
                           lmat = lmat, simple = simple,
                           tmb_silent, nlminb_silent, ...) {
-    innerloc <- Reduce(rbind, apply(smesh$graph$tv, 1, function(vt) {
-        temp <-  sf::st_polygon(list(smesh$loc[rep(vt, length = length(vt) + 1), 1:2]))
-        if (is.null(sf::st_intersection(temp, sf)))
-          rep(NULL, 3)
-        else
-            vt
+    # innerloc <- Reduce(rbind, apply(smesh$graph$tv, 1, function(vt) {
+    #     temp <-  sf::st_polygon(list(smesh$loc[rep(vt, length = length(vt) + 1), 1:2]))
+    #     if (is.null(sf::st_intersection(temp, sf)))
+    #       rep(NULL, 3)
+    #     else
+    #         vt
+    # }))
+    innerloc <- t(apply(smesh$graph$tv, 1, function(vt) {
+      temp <-  sf::st_polygon(list(smesh$loc[rep(vt, length = length(vt) + 1), 1:2]))
+      if (is.null(sf::st_intersection(temp, sf)))
+        rep(NULL, 3)
+      else
+        vt
     }))
     data <- list(times = times, locs = locs,
                 xyloc = smesh$loc[, 1:2], reltol = reltol, abstol = abstol,
@@ -61,12 +68,19 @@ fit_hspat_tmb <- function(times, locs, sf,
                           tmax = max(times),
                           lmat, simple,
                           tmb_silent, nlminb_silent, ...) {
-    innerloc <- Reduce(rbind, apply(smesh$graph$tv, 1, function(vt) {
-        temp <-  sf::st_polygon(list(smesh$loc[rep(vt, length = length(vt) + 1), 1:2]))
-        if (is.null(sf::st_intersection(temp, sf)))
-          rep(NULL, 3)
-        else
-            vt
+    # innerloc <- Reduce(rbind, apply(smesh$graph$tv, 1, function(vt) {
+    #     temp <-  sf::st_polygon(list(smesh$loc[rep(vt, length = length(vt) + 1), 1:2]))
+    #     if (is.null(sf::st_intersection(temp, sf)))
+    #       rep(NULL, 3)
+    #     else
+    #         vt
+    # }))
+    innerloc <- t(apply(smesh$graph$tv, 1, function(vt) {
+      temp <-  sf::st_polygon(list(smesh$loc[rep(vt, length = length(vt) + 1), 1:2]))
+      if (is.null(sf::st_intersection(temp, sf)))
+        rep(NULL, 3)
+      else
+        vt
     }))
     data <- list(times = times, locs = locs, 
                  xyloc = smesh$loc[,1:2], reltol = reltol, abstol = abstol,
@@ -244,7 +258,7 @@ fit_stelfi <-  function(times, locs, sf, smesh,  parameters, covariates,
                             atanh_rho = atanh_rho,
                             lmat = lmat, simple = as.numeric(time_independent),
                             tmb_silent = tmb_silent,
-                            nlminb_silent = nlminb_silent, ...)
+                            nlminb_silent = nlminb_silent,...)
     }else{ ## SPDE
         spde <- fmesher::fm_fem(smesh, alpha = 2)[c("c0", "g1", "g2")]
         names(spde) <-  c("M0", "M1", "M2") ## to satisfy TMB

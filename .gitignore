@@ -9,3 +9,5 @@ package-build/*
 stelfi.Rcheck/*
 CRAN-SUBMISSION
 inst/doc
+.Rdata
+.Rhistory

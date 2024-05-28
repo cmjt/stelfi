@@ -38,7 +38,8 @@ Type hawkes(objective_function<Type>* obj) {
     int index = 0;
     while (index < times.size()){
       M = mu + alpha * (-beta * (t + eps - times.array().head(index))).exp().sum();
-      t += rexp(Type(1.) / M); U = runif(Type(0.), M); // There is currently a bug as at TMB-1.7.20, 14/05/2021.
+      t += rexp(Type(1.) / M); 
+      U = runif(Type(0.), M); // There is currently a bug as at TMB-1.7.20, 14/05/2021.
       if (U <= mu + alpha * (-beta * (t - times.array().head(index))).exp().sum()){
 	times[index] = t;
 	index++;
