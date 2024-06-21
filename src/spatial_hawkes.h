@@ -17,9 +17,6 @@ struct diffusionkernel {
   : times(times_), locs(locs_), beta(beta_), w(w_), xyloc(xyloc_), Qbase(Qbase_) {}       // Initializer list
   vector<Type> ratesep(Type t){
     using namespace density;
-    std::ofstream outfile2("ratesep_vector_output.txt", std::ios_base::app);
-    outfile2 << "TIME: " << t << std::endl;
-    
     matrix<Type> ans(times.size(), w.size());
     ans.setZero();
     
@@ -41,32 +38,14 @@ struct diffusionkernel {
           // Calculate the intensity contributed from the spatial aspect
           Type bvn_value = bivnorm(loci);
           
-          if (i == 0) {
-            outfile2 << "loci: " << loci << std::endl;
-            outfile2 << "\n bvn_value: " << bvn_value << std::endl;
-            outfile2 << "transformed bvn_value: " << exp(-bvn_value) << std::endl;
-            outfile2 << "====" << std::endl;
-          }
-          
           // Calculate intensity contributed from the temporal aspect
           Type value = exp(-beta * (t - times[i]) - bvn_value);
           ans(i, j) = value;
-          
-          // if (value > 1) {
-          //   outfile2 << "Value: " << value << std::endl;
-          //   outfile2 << "bvn_value: " << bvn_value << std::endl;
-          //   outfile2 << "loci: " << loci << std::endl;
-          //   outfile2 << "\n Delta t: " << t - times[i] << std::endl;
-          //   outfile2 << "Q matrix: " << Q << "\n" << std::endl;
-          // }
         }
       }
     }
     
     vector<Type> returning_vec = ans * w;
-
-    outfile2 << "RETURN VECTOR: " << returning_vec.transpose() << std::endl;
-    outfile2 << "-------------------------------------------" << std::endl;
     
     return returning_vec;
   }
@@ -242,7 +221,6 @@ Type spatial_hawkes(objective_function<Type>* obj) {
   SIMULATE { 
     // Only for constant background without covariates
     // This simulation process follows Algorithm 4 in Section 3.3 of Reinhart (2018).
-    std::ofstream outfile("output.txt");
     DATA_IMATRIX(tv);
     std::cout << "[SIMULATE] tv dimensions: " << tv.rows() << " x " << tv.cols() << std::endl;
     /*
@@ -291,22 +269,13 @@ Type spatial_hawkes(objective_function<Type>* obj) {
       sa += ua;
       Ub = runif(Type(0.), Type(1.));
 
-      outfile << "times: " << times.transpose() << std::endl;
-      outfile << "sa: " << sa << std::endl;
+
       // Step 5.
       diffusionkernel<Type> diffker2(times, locs, beta, w, xyloc, Qbase);
       lambdaXsasep = diffker2.ratesep(sa) * alpha;
       
       // If we accept time
       Type gamma_ratio = (sum(lambdaXsasep) + D) / gammac;
-      outfile << "lambda - gamma RATIO: " << gamma_ratio << std::endl;
-      
-      if (gamma_ratio > 1) {
-        outfile << "iteration: " << i << std::endl;
-        outfile << "gammac: " << gammac << std::endl;
-        outfile << "sum(lambdaXasep): " << sum(lambdaXsasep) << std::endl;
-        outfile << "lambdaXasep: " << (lambdaXsasep / alpha).transpose() << std::endl;
-      }
       
       if (Ub <= (sum(lambdaXsasep) + D) / gammac){
         // Step 6.
@@ -332,17 +301,7 @@ Type spatial_hawkes(objective_function<Type>* obj) {
             Type value = alpha*exp(-bvn_value)*w[j];
             gammac += value;
           }
-          
-          outfile << "gamma_c difference (rpois): " << gammac - before << std::endl;
-          if (i < 50) {
-            outfile << "time: " << times[i] << std::endl;
-          }
-          
           i++;
-          outfile << "sa: " << sa << std::endl;
-          
-          outfile << "D: " << D << std::endl;
-          outfile << "-------------------------------------------" << std::endl;
           continue;
         } else {
           temp = D;
@@ -373,41 +332,19 @@ Type spatial_hawkes(objective_function<Type>* obj) {
                   gammac += value;
                 }
                 
-                outfile << "gamma_c difference: " << gammac - before << std::endl;
-                if (i < 50) {
-                  outfile << "time: " << times[i] << std::endl;
-                }
-                
                 i++;
-                outfile << "sa: " << sa << std::endl;
-                
-                outfile << "D: " << D << std::endl;
-                outfile << "-------------------------------------------" << std::endl;
                 break;
               } else {
-                outfile << "sa: " << sa << std::endl;
-                if (i < 50) {
-                  outfile << "time: " << times[i] << std::endl;
-                }
-                outfile << "D: " << D << std::endl;
-                outfile << "-------------------------------------------" << std::endl;
                 break;
               }
             }
           }
         }
       } else {
-        outfile << "REJECTED TIME DIFFERENCE: " << ua << std::endl;
         // If we rejected the time
         gammac = D + sum(lambdaXsasep);
         
       }
-      outfile << "sa: " << sa << std::endl;
-      if (i < 50) {
-        outfile << "time: " << times[i] << std::endl;
-      }
-      outfile << "D: " << D << std::endl;
-      outfile << "-------------------------------------------" << std::endl;
     }
 
     tmax = max(times);
@@ -429,14 +366,3 @@ Type spatial_hawkes(objective_function<Type>* obj) {
 #define TMB_OBJECTIVE_PTR this
 
 #endif
-
-
-// outfile << "Confirmed time: " << sa << std::endl;
-// outfile << "lambdaXsasep: ";
-// for (int j = 0; j < lambdaXsasep.size(); ++j) {
-//   outfile << std::setprecision(10) << lambdaXsasep[j];
-//   if (j < lambdaXsasep.size() - 1) {
-//     outfile << ", "; // Separate values by comma
-//   }
-// }
-// outfile << std::endl;
