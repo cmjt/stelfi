@@ -33,7 +33,10 @@ Imports:
     Matrix,
     ggplot2 (>= 3.4.3),
     dplyr (>= 1.1.3),
-    gridExtra (>= 2.3)
+    gridExtra (>= 2.3),
+    parallel,
+    doParallel,
+    foreach
 LinkingTo:
 	TMB,
      	RcppEigen
@@ -44,11 +47,10 @@ BugReports: https://github.com/cmjt/stelfi/issues
 LazyData: TRUE
 LazyDataCompression: xz
 Encoding: UTF-8
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Suggests:
     testthat (>= 3.1.10),
     rmarkdown,
-    parallel,
     spatstat.utils,
     spatstat.geom,
     hawkesbow,

@@ -26,7 +26,7 @@ struct diffusionkernel {
       if (t > times[i]){
         
         // Get the spatial diffusion kernel
-        matrix<Type> Q = Qbase * (t - times[i] + 1);
+        matrix<Type> Q = Qbase * (t - times[i]);
         MVNORM_t<Type> bivnorm(Q);
         
         // For each 'tile' of the mesh
@@ -310,7 +310,7 @@ Type spatial_hawkes(objective_function<Type>* obj) {
             
             if (temp > urate*(sum(lambdaXsasep) + D)) {
               locibase = locs.row(j);
-              Q2 = Qbase * (times[i] - times[j] + 1);
+              Q2 = Qbase * (times[i] - times[j]);
               loci = rbivnorm(locibase, Q2);
               // loci = rbivnorm(locibase, Qbase);
               

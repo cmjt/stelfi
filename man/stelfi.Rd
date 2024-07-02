@@ -55,3 +55,27 @@ Kristensen, K., Nielsen, A., Berg, C. W., Skaug, H., and
  Bell B. M. (2016). {TMB}: Automatic Differentiation and Laplace
 Approximation. \emph{Journal of Statistical Software}, \strong{70}: 1--21.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/cmjt/stelfi/}
+  \item Report bugs at \url{https://github.com/cmjt/stelfi/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Charlotte M. Jones-Todd \email{cmjonestodd@gmail.com} (\href{https://orcid.org/0000-0003-1201-2781}{ORCID}) (Charlotte Jones-Todd wrote and continued developmend of the main code.) [copyright holder]
+
+Authors:
+\itemize{
+  \item Alec van Helsdingen (Alec van Helsdingen wrote the Hawkes templates and extended self-exciting TMB templates)
+}
+
+Other contributors:
+\itemize{
+  \item Xiangjie Xue (Xiangjie Xue worked the early spatio-temporal self-exciting TMB templates) [contributor]
+  \item Marsden Fund 3723517 [funder]
+  \item Asian Office of Aerospace Research & Development FA2386-21-1-4028 [funder]
+}
+
+}

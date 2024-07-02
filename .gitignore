@@ -11,3 +11,5 @@ CRAN-SUBMISSION
 inst/doc
 .Rdata
 .Rhistory
+src/stelfi.dll
+stelfi/*
