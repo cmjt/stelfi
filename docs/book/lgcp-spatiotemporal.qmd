@@ -1,0 +1,35 @@
+### Spatiotemporal LGCP
+
+The LGCP model can also be used for spatiotemporal modelling where there is autoregressive temporal dependence. 
+
+To achieve this, we choose an arbitrary number of time knots. The equation for an AR(1) process is as follows:
+$$\Lambda_i(s) = \text{exp}(\beta_0 + G_i(s) + \epsilon)$$
+where $i$ indexes the time knot. $\Lambda_i(s)$ is the field intensity at time knot $i$, and $G_i(s)$ the GMRF at the same time knot. Each $G_i(s)$ shares common values for $\tau$ and $\kappa$. 
+
+Successive random fields are correlated through the formula
+$$G_i(s)=\rho G_{i-1}(s) + \epsilon_i$$
+where $\rho$ is a constant between -1 and +1, and $\epsilon_i$ is normally distributed with mean 0. 
+
+```{r}
+ndays <- 2
+locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
+bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+w0 <- 2
+smesh <- INLA::inla.mesh.2d(boundary = bnd,
+                                max.edge = 0.75, cutoff = 0.3)
+tmesh <- INLA::inla.mesh.1d(seq(0, ndays, by = w0))
+fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh, tmesh = tmesh,
+                    parameters = c(beta = 0, log_tau = log(1),
+                                   log_kappa = log(1), atanh_rho = 0.2))
+get_coefs(fit)
+```
+
+
+```{r}
+
+show_lambda(fit, smesh = smesh, sf = domain, tmesh = tmesh, timestamp = 1) +
+    ggplot2::theme_void() + ggplot2::ggtitle("t = 1")
+show_lambda(fit, smesh = smesh, sf = domain, tmesh = tmesh, timestamp = 2) +
+    ggplot2::theme_void() + ggplot2::ggtitle("t = 2")
+
+```

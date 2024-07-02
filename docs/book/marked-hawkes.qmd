@@ -1,0 +1,32 @@
+### Fitting an ETAS-type marked model
+
+Here we fit a univariate marked Hawkes process  where the conditional intensity function is given by
+
+ $$\lambda(t; m(t)) = \mu + \alpha \Sigma_{i:\tau_i<t}m(\tau_i)\text{exp}(-\beta * (t-\tau_i)) $$ 
+where $\mu$ is the background rate of the process and $m(t)$ is the temporal mark. Each event $i$ has an associated mark $\tau_i$ that multiples the self-exciting component of $\lambda$. 
+
+In this example, the events are earthquakes and the marks are the Richter magnitude of each earthquake. 
+
+```{r}
+data("nz_earthquakes")
+head(nz_earthquakes)
+nz_earthquakes <- nz_earthquakes[order(nz_earthquakes$origintime),]
+nz_earthquakes <- nz_earthquakes[!duplicated(nz_earthquakes$origintime),]
+times <- nz_earthquakes$origintime
+times <- as.numeric(difftime(times , min(times), units = "mins"))
+marks <- nz_earthquakes$magnitude
+params <- c(mu = 3, alpha = 0.05, beta = 1)
+fit <- fit_hawkes(times = times, parameters = params, marks = marks) 
+## print out estimated parameters
+pars <- get_coefs(fit)
+pars
+```
+
+```{r, echo = TRUE,fig.height = 7,fig.width = 9}
+show_hawkes(fit)
+```
+
+
+```{r, echo = TRUE,fig.height = 7,fig.width = 9}
+show_hawkes_GOF(fit)
+```

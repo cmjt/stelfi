@@ -1,0 +1,11 @@
+## R package reference generated from DESCRIPTION metadata
+citation(auto = meta)
+
+## Ecology & Evolution article
+bibentry(bibtype = "Article",
+         title = "stelfi: An R package for fitting Hawkes and log-Gaussian Cox point process models",
+         author = c(person(c("Charlotte", "M."), "Jones-Todd"),
+                    person(c("Alec", "B.", "M."), "van Helsdingen")),
+         year = "2024", journal = "Ecology and Evolution",
+         volume = "14", pages = "e11005",
+         doi = "10.1002/ece3.11005")

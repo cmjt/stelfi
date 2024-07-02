@@ -4,7 +4,7 @@ author: "Any questions [Charlotte M. Jones-Todd](mailto:c.jonestodd@auckland.ac.
 date: ""
 site: bookdown::bookdown_site
 documentclass: book
-bibliography: [book.bib, packages.bib]
+bibliography: [references.bib]
 biblio-style: apalike
 link-citations: yes
 description: "Using `stelfi`"

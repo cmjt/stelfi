@@ -1,0 +1,41 @@
+project:
+  type: book
+
+book:
+  title: "The `R` package `stelfi`"
+  navbar:
+    background: "#800000"
+    collapse: true
+  sidebar:
+    tools:
+      - icon: github
+        href: https://github.com/cmjt/stelfi
+      - icon: envelope
+        href: mailto:c.jonestodd@auckland.ac.nz
+  author: "Charlotte M. Jones-Todd"
+  date: ""
+  description: "Using `stelfi`"
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - univariate-hawkes.qmd
+    - marked-hawkes.qmd
+    - multi-hawkes.qmd
+    - lgcp.qmd
+    - lgcp-spatiotemporal.qmd
+    - lgcp-marked.qmd
+    - stelfi.qmd
+    - stelfi-gmrf.qmd
+    - meshmetrics.qmd
+    - summary.qmd
+    - data.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme: cosmo
+
+
+

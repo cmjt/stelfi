@@ -1,0 +1,34 @@
+# Preface {.unnumbered}
+
+## Installation {.unnumbered}
+
+```{r}
+#| echo: false
+library(stelfi)
+```
+
+
+`stelfi` is on CRAN
+
+```{r}
+#| eval: false
+install.packages("stelfi")
+```
+
+otherwise the development version of `stelfi` package can be installed from GitHub
+
+```{r}
+#| eval: false
+devtools::install_github("cmjt/stelfi")
+```
+
+
+
+::: {.callout-note}
+
+To cite `stelfi` use
+
+```{r}
+citation("stelfi")
+```
+:::

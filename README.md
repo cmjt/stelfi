@@ -10,6 +10,11 @@
 
 `stelfi` is an `R` package that fit a range of Hawkes and log-Gaussian Cox point process models. Models are fitted via maximum likelihood using [Template Model Builder](https://github.com/kaskr/adcomp).
 
+**Citation**
+
+Jones-Todd, C. M., & van Helsdingen, A. B. M. (2024). stelfi: An R package for fitting Hawkes and log-Gaussian Cox point process models. *Ecology and Evolution*, 14, e11005. [https://doi.org/10.1002/ece3.11005](https://doi.org/10.1002/ece3.11005)
+
+
 ## Installation
 
 From CRAN `install.packages("stelfi")` or development version from GitHub:

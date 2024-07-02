@@ -1,0 +1,277 @@
+# Univariate Hawkes {#hawkes}
+
+A  univariate Hawkes process (@hawkes) is defined to be a self-exciting temporal point process where the conditional intensity function is given by
+
+ $$\lambda(t) = \mu(t) + \Sigma_{i:\tau_i<t}\nu(t-\tau_i).$$ 
+
+Here $\mu(t)$ is the background rate of the process and $\Sigma_{i:\tau_i<t}\nu(t-\tau_i)$ is some historic temporal dependence (i.e., for times $\tau_i < t$, $ i = 1, ..., T$). The classic homogeneous formulation uses an exponential decay kernal:
+ 
+ $$\lambda(t) = \mu + \alpha \Sigma_{i:\tau_i<t}\text{exp}(-\beta * (t-\tau_i)).$$
+
+
+Here the parameter $\alpha$ is the increase in intensity immediately after the occurrence of an event, and $\beta > 0$ controls the exponential decay of the intensity if no event has occurred. To avoid the conditional intensity heading off to infinity $\beta > \alpha$.
+
+Plotted below is the conditional intensity ($\lambda(t), t \in [0,T]$) of a Hawkes process with $\mu = 0.1$, $\alpha = 1$, and $\beta = 1.5$. Observed events (n = 13) are shown by the vertical dashes along the x-axis. The insensity increases immediately after an event occurs and decays exponentially over time if no event is observed for some period.
+
+
+```{r, fig.height = 5,fig.width = 8}
+#| echo: false
+library(stelfi)
+library(ggplot2)
+mu <- 0.5
+alpha <- 1
+beta <- 1.5
+tim <- stelfi::sim_hawkes(mu = mu, alpha = alpha, beta = beta, n = 15)
+n <- 1000
+p <- seq(min(tim), max(tim), length.out = n)
+lamda <- stelfi:::hawkes_intensity(mu = mu, alpha = alpha, beta = beta, times = tim, p = p)
+data <-  data.frame(x = p, y = lamda)
+ggplot(data = data,aes(x = x, y = y)) +
+       xlab("") + ylab(expression(lambda(t))) + 
+       geom_line() +  theme_minimal() + 
+  geom_point(data = data.frame(x = tim, y = 0.2), pch = "|", size = 5) +
+    scale_x_continuous(labels = c("t = 0","t = T"),
+                       breaks = seq(min(p), max(p), length.out = 2)) 
+```
+
+
+## Fitting a univariate Hawkes model
+
+```{r}
+require(stelfi)
+```
+
+To fit a univariate Hawkes model in `stelfi` use the function `fit_hawkes()` with the following required arguments
+
+   - `times` - a vector of numeric occurrence times, and 
+   - `parameters` - a vector of named starting values  for $\mu$ (`mu`), $\alpha$ (`alpha`), and  $\beta$ (`beta`).
+
+The function `get_coefs()` can then be called on the fitted model object to return the estimated parameter values.
+
+
+### A simulated example
+
+Simulating a realisation of a univariate Hawkes process (see @sec-simulate-hawkes for more details) with  $\mu = 1.3$, $\alpha = 0.4$, and $\beta = 1.5$ (over $t \in [0, 500]$).
+
+```{r}
+times <- sim_hawkes(mu = 1.3, alpha = 0.4, beta = 1.5, n = 500)
+```
+
+
+```{r}
+#| warning: false
+#| message: false
+## starting values
+sv <- c(mu = 1.3, alpha = 0.4, beta = 1.5)
+## using stelfi
+fit <- fit_hawkes(times = times, parameters = sv)
+stelfi <- get_coefs(fit)
+stelfi
+```
+
+As a comparison, below `emhawkes` (@emhawkes), and `hawkesbow` (@hawkesbow) are used to fit a univariate Hawkes process to the same simulated data.
+
+```{r}
+#| warning: false
+#| message: false
+## benchmark using emhawkes
+require(emhawkes)
+h <- new("hspec", mu = sv[1], alpha = sv[2], beta = sv[3])
+## emhawkes requires the interarrival times to fit the model
+inter <- diff(times)
+fit_em <- hfit(object = h, inter_arrival = inter)
+em <- summary(fit_em)$estimate
+em
+## bench mark using hawkesbow
+require(hawkesbow)
+fit_bow <- mle(events = times, kern = "Exponential", end = max(times))
+## use the Hessian to obtain the standard errors from hawkesbow
+bow <- cbind(Estimate = fit_bow$par,
+         "Std. error" = -fit_bow$model$ddloglik(times, max(times)) |> solve() |> diag() |> sqrt())
+bow
+```
+
+The table below gives the estimated parameter values from each of `stelfi`, `emhawkes`, and `hawkesbow` along with the standard errors in brackets. Note that `hawkesbow` estimates $\frac{\alpha}{\beta}$ rather that $\beta$ directly, and that the standard errors are computed here using the returned Hessian matrix $H$ (i.e., $\sqrt{\text{diag}{-(H^{-1})}}$).
+
+```{r}
+#| echo: false
+params <- data.frame(TRUTH = c(1.3, 0.4, 1.5, 0.267),
+                     stelfi = c(paste(round(stelfi[,1], 3), "(", round(stelfi[,2], 3), ")"), "-"),
+                     emhawkes = c(paste(round(em[,1], 3), "(", round(em[,2], 3), ")"), "-"),
+                     hawkesbow = c(paste(round(bow[1,1], 3), "(", round(bow[1,2], 3), ")"), "-",
+                                   paste(round(bow[3:2,1], 3), "(", round(bow[3:2,2], 3), ")")))
+params <- t(params)
+knitr::kable(params, col.names = c("$\\mu$", "$\\alpha$", "$\\beta$", "$\\frac{\\alpha}{\\beta}$"), escape = FALSE)
+```
+
+
+### An applied example
+
+A [NIWA](https://niwa.co.nz/) scientist [found a working USB in the scat of a leopard seal](https://www.nzherald.co.nz/nz/news/article.cfm?c_id=1&objectid=12201147), they then [tweeted about it](https://twitter.com/niwa_nz/status/1092610541401587712) in the hopes of finding its owner^[This was at the time it was calles Twitter (not X) so 'tweet' is the correct term!]. The dates and times of these tweets and retweets are available in `stelfi` as `retweets_niwa`.
+
+```{r data,message=FALSE}
+data(retweets_niwa)
+```
+
+The dates/times need to be numeric and sorted in ascending order (starting a time $t = 0$). Note too that there can be no simultaneous events.
+
+```{r sort data}
+## numeric time stamps
+times <- unique(sort(as.numeric(difftime(retweets_niwa ,min(retweets_niwa),units = "mins"))))
+```
+
+The histogram below shows the observed counts (`r length(times)`) of unique retweet times from the original tweet ($t=0$) to the time (just over two days later) that the owner of the USB came forward, t = `r round(max(times),1)` mins.
+
+```{r plot hist, echo = FALSE, fig.height = 5,fig.width = 8}
+# NIWA seal first tweet according to Twitter
+start <- lubridate::ymd_hms("2019-02-05 02:27:07")
+## NIWA seal found owner tweet according to Twitter
+end <- lubridate::ymd_hms("2019-02-07 06:50:08")
+## hist
+hist(retweets_niwa, breaks = "hours", axes = FALSE, 
+     xlab = "", ylab = "",main = "", col = "grey",border = "grey",freq = TRUE)
+axis(2,at = c(0,250))
+mtext(2, line = 0, text = "Number of retweets per hour",cex = 0.8)
+mtext(1,line = 1, at = c(start,end),text = c("NIWA \n tweeted","USB owner \n found"),cex = 0.9)
+```
+
+To fit the model chose some starting values for the parameters and supply these alonng with the numeric times to the function `fit_hawkes()`.
+
+```{r fit model,results = 'hide',cache = TRUE}
+sv <- c(mu = 9, alpha = 3, beta = 10)
+fit <- fit_hawkes(times = times, parameters = sv) 
+```
+
+
+```{r params}
+## print out estimated parameters
+pars <- get_coefs(fit)
+pars
+```
+From the estimated coefficients above
+
+ - the expected (estimated) background rate of sightings (i.e., independent sightings) is $\hat{\mu}T =$ `r round(pars[1,1],3)` $\times$ `r round(max(times),2)` $=$ `r round(pars[1,1] * max(times),2)`, which indicates that ~`r round(pars[1,1] * max(times),0)` retweets (from the `r length(times)`) were principal retweets and that the remaining were due to self-excitement;
+ - the expected number of retweets “triggered” by any one retweet is estimated as $\frac{\hat{\alpha}}{\hat{\beta}}$ = `r round(pars[2,1]/pars[3,1],2)` (note the maximum this can possibly be is 1);
+ - the expected number of descendants per retweet is estimated as $\frac{\hat{\beta}}{\hat{\beta} - \hat{\alpha}}$ = `r round(pars[3,1]/(pars[3,1] - pars[2,1]),2)`;
+ - the rate of decay for the self-excitement is estimated as $\frac{1}{\hat{\beta}}$ = `r round(1/pars[3,1],2)`, indicating that after ~`r round(1/pars[3,1],0)` minutes a retweet is likely unrelated^[Note that unrelated is not quite the correct term here, rather that the event is likely a baseline event rather than due to self-excitment] to the previous retweet.
+
+
+The `show_hawkes()` function can be called on the fitted model object to plot the estimated conditional intensity and the data, top and bottom panels below respectively.
+
+
+```{r plot, echo = TRUE,fig.height = 7,fig.width = 9}
+#| warning: false
+#| message: fasle
+show_hawkes(fit)
+```
+
+
+## Goodness-of-fit for a univariate Hawkes process
+
+The compensator, $\Lambda(\tilde{t})$, of any inhomogeneous Poisson process gives the expected number of events in some defined interval $[0, \tilde{t}]$ is given by
+
+$$\Lambda(\tilde{t}) = \int_0^{\tilde{t}} \lambda(t) dt.$$
+
+The random change theorem (@daley) states that if a set of events $[\tau_1, ..., \tau_n]$ is a realisation from a inhomogeneous Poisson process then $[\Lambda(\tau_1), ..., \Lambda(\tau_n)]$ is a realisation of a homogeneous Poisson process with unit rate. Letting $\delta \Lambda_{i} = \Lambda(\tau_i) - \Lambda(\tau_{i-1})$ for $i = 2, ..., N$ and $\delta \Lambda_{1} = \Lambda(\tau_1)$, under the theorem above $\delta \Lambda_{i} \sim \text{Exp}(1)$. Using this resulta typical goodness-of-fit test is a Kolmogorov-Smirnov (KS) test (see @daley for more details) where the KS statistic is a measure of the distance between the empirical distribution of all $\delta \Lambda_{i}$ and the CDF of a $\text{Exp}(1)$ distribution.
+
+The compensator value can be extracted from a fitted model using the `show_hawkes_GOF()` function, and a KS test can be carried out manually:
+
+```{r}
+times <- sim_hawkes(mu = 1.3, alpha = 0.4, beta = 1.5, n = 500)
+fit <- fit_hawkes(times = times, parameters = sv)
+compensator <- show_hawkes_GOF(fit, plot = FALSE, return_values = TRUE)$interarrivals
+stats::ks.test(compensator, "pexp")
+```
+
+This gives no evidence against the compensator vaules coming from a $\text{Exp}(1)$ distribution.
+
+Another goodness-of-fit test is the Box-Ljung (or Ljung–Box) test, which tests for autocorrelation between the consecutive compensator values (i.e., independence/stationarity).
+
+
+```{r}
+stats::Box.test(compensator, type = "Ljung")
+```
+
+This gives no evidence against the consecutive compensator values being independently distributed.
+
+
+
+
+
+```{r gof, echo = TRUE,fig.height = 7,fig.width = 9}
+show_hawkes_GOF(fit)
+```
+
+
+## Fitting an inhomogenous Hawkes process
+
+Here we fit a univariate *inhomogenous* marked Hawkes process where the conditional intensity function is given by
+
+ $$\lambda(t) = \mu(t) + \alpha \Sigma_{i:\tau_i<t}\text{exp}(-\beta * (t-\tau_i)) $$ 
+The background $\mu(t)$ is time varying, rather than being constant. 
+
+The following example uses simulated data. 
+
+```{r}
+set.seed(1)
+library(hawkesbow)
+# Simulate a Hawkes process with mu = 1+sin(t), alpha=1, beta =2
+times <- hawkesbow::hawkes(1000, fun=function(y) {1+0.5*sin(y)}, M=1.5, repr=0.5, family="exp", rate=2)$p
+```
+
+We will attempt to recover these parameter values, modelling the background as $ \mu(t) = A + Bsin(t)$. The background will be written as a function of $x$ and $y$, where $A = e^x$ and $B= logit(y) e^x$. This formulation ensures the background is never negative. 
+
+```{r}
+## The background function must take a single parameter and the time(s) at which it is evaluated
+background <- function(params,times){
+        A = exp(params[[1]])
+        B = stats::plogis(params[[2]]) * A
+        return(A + B*sin(times))
+}
+
+## The background_integral function must take a single parameter and the time at which it is evaluated
+background_integral <- function(params,x){
+        A = exp(params[[1]])
+        B = stats::plogis(params[[2]]) * A
+        return((A*x)-B*cos(x))
+}
+param = list(alpha = 0.5, beta = 1.5)
+background_param = list(1,1)
+fit <- fit_hawkes_cbf(times = times, parameters = param, background = background, background_integral = background_integral, background_parameters = background_param)
+```
+
+The estimated values of $A$ and $B$ respectively are 
+
+```{r}
+exp(fit$background_parameters[1])
+plogis(fit$background_parameters[2]) * exp(fit$background_parameters[1])
+```
+
+The estimated values of $\alpha$ and $\beta$ respectively are:
+
+```{r}
+ab <- get_coefs(fit)[1:2,1]
+ab
+```
+
+
+## Simulating from a Hawkes model {#sec-simulate-hawkes}
+
+
+```{r}
+args(sim_hawkes)
+```
+
+**`method = 1`**
+
+```{r}
+sim <- sim_hawkes(mu = 2, alpha = 0.2, beta = 0.3, plot = TRUE)
+head(sim)
+```
+
+**`method = 2`**
+
+```{r}
+sim <- sim_hawkes(mu = 2, alpha = 0.2, beta = 0.3, plot = TRUE, method = 2)
+head(sim)
+```
