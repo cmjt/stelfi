@@ -8,7 +8,7 @@
 
 <meta name="description" content="Using stelfi">
 
-<title>The R package stelfi - 4&nbsp; Datasets in stelfi</title>
+<title>The R package stelfi - 6&nbsp; Datasets in stelfi</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -145,7 +145,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -160,6 +160,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
         </div>
+        <div class="sidebar-tools-collapse">
+    <a href="https://github.com/cmjt/stelfi" title="" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+    <a href="mailto:c.jonestodd@auckland.ac.nz" title="" class="sidebar-tool px-1"><i class="bi bi-envelope"></i></a>
+</div>
       </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
@@ -175,17 +179,27 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./meshmetrics.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Delaunay triangulation metrics</span></a>
+  <a href="./univariate-hawkes.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./summary.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></a>
+  <a href="./marked-hawkes.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./data.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></a>
+  <a href="./multi-hawkes.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">The <code>fit_mhawkes()</code> function</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -202,19 +216,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#temporal-point-pattern-data" id="toc-temporal-point-pattern-data" class="nav-link active" data-scroll-target="#temporal-point-pattern-data"><span class="toc-section-number">4.1</span>  Temporal point pattern data</a>
+  <li><a href="#temporal-point-pattern-data" id="toc-temporal-point-pattern-data" class="nav-link active" data-scroll-target="#temporal-point-pattern-data"><span class="toc-section-number">6.1</span>  Temporal point pattern data</a>
   <ul class="collapse">
   <li><a href="#retweets_niwa" id="toc-retweets_niwa" class="nav-link" data-scroll-target="#retweets_niwa"><code>retweets_niwa</code></a></li>
   <li><a href="#uk_serial" id="toc-uk_serial" class="nav-link" data-scroll-target="#uk_serial"><code>uk_serial</code></a></li>
   </ul></li>
-  <li><a href="#spatiotemporal-point-pattern-data" id="toc-spatiotemporal-point-pattern-data" class="nav-link" data-scroll-target="#spatiotemporal-point-pattern-data"><span class="toc-section-number">4.2</span>  Spatiotemporal point pattern data</a>
+  <li><a href="#spatiotemporal-point-pattern-data" id="toc-spatiotemporal-point-pattern-data" class="nav-link" data-scroll-target="#spatiotemporal-point-pattern-data"><span class="toc-section-number">6.2</span>  Spatiotemporal point pattern data</a>
   <ul class="collapse">
   <li><a href="#sasquatch" id="toc-sasquatch" class="nav-link" data-scroll-target="#sasquatch"><code>sasquatch</code></a></li>
   <li><a href="#nz_earthquakes" id="toc-nz_earthquakes" class="nav-link" data-scroll-target="#nz_earthquakes"><code>nz_earthquakes</code></a></li>
   <li><a href="#nz_murders" id="toc-nz_murders" class="nav-link" data-scroll-target="#nz_murders"><code>nz_murders</code></a></li>
   <li><a href="#iraq_terrorism" id="toc-iraq_terrorism" class="nav-link" data-scroll-target="#iraq_terrorism"><code>iraq_terrorism</code></a></li>
   </ul></li>
-  <li><a href="#simulated-data" id="toc-simulated-data" class="nav-link" data-scroll-target="#simulated-data"><span class="toc-section-number">4.3</span>  Simulated data</a>
+  <li><a href="#simulated-data" id="toc-simulated-data" class="nav-link" data-scroll-target="#simulated-data"><span class="toc-section-number">6.3</span>  Simulated data</a>
   <ul class="collapse">
   <li><a href="#xyt" id="toc-xyt" class="nav-link" data-scroll-target="#xyt"><code>xyt</code></a></li>
   <li><a href="#marked" id="toc-marked" class="nav-link" data-scroll-target="#marked"><code>marked</code></a></li>
@@ -228,7 +242,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="data" class="quarto-section-identifier d-none d-lg-block"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></span></h1>
+<h1 class="title"><span id="data" class="quarto-section-identifier d-none d-lg-block"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></span></h1>
 </div>
 
 
@@ -265,15 +279,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 [11,] "xyt"            ""   </code></pre>
 </div>
 </div>
-<section id="temporal-point-pattern-data" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="temporal-point-pattern-data"><span class="header-section-number">4.1</span> Temporal point pattern data</h2>
+<section id="temporal-point-pattern-data" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="temporal-point-pattern-data"><span class="header-section-number">6.1</span> Temporal point pattern data</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">## load the tidyverse packages</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="retweets_niwa" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="retweets_niwa"><code>retweets_niwa</code></h3>
-<p>In 2019 a <a href="https://niwa.co.nz/">NIWA</a> scientist <a href="https://www.nzherald.co.nz/nz/news/article.cfm?c_id=1&amp;objectid=12201147">found a working USB in the scat of a leopard seal</a>, they then <a href="https://twitter.com/niwa_nz/status/1092610541401587712">tweeted about it</a> in the hopes of finding its owner. In <a href="#hawkes">this chapter</a> a Hawkes process is fitted to these data.</p>
+<p>In 2019 a <a href="https://niwa.co.nz/">NIWA</a> scientist <a href="https://www.nzherald.co.nz/nz/news/article.cfm?c_id=1&amp;objectid=12201147">found a working USB in the scat of a leopard seal</a>, they then <a href="https://twitter.com/niwa_nz/status/1092610541401587712">tweeted about it</a> in the hopes of finding its owner. In <a href="univariate-hawkes.html">this chapter</a> a Hawkes process is fitted to these data.</p>
 <div class="cell">
 <div class="cell-output-display">
 <blockquote class="twitter-tweet blockquote" data-width="550" data-lang="en" data-dnt="true" data-theme="light"><p lang="en" dir="ltr">NIWA is searching for the owner of a USB stick found in the poo of a leopard seal… <br>Recognise this video? Scientists analysing the scat of leopard seals have come across an unexpected discovery – a USB stick full of photos &amp; still in working order!  <a href="https://t.co/2SZVkm5az4">https://t.co/2SZVkm5az4</a> <a href="https://t.co/JLEC8vuHH0">pic.twitter.com/JLEC8vuHH0</a></p>— NIWA (@niwa_nz) <a href="https://twitter.com/niwa_nz/status/1092610541401587712?ref_src=twsrc%5Etfw">February 5, 2019</a></blockquote>
@@ -342,8 +356,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </section>
 </section>
-<section id="spatiotemporal-point-pattern-data" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="spatiotemporal-point-pattern-data"><span class="header-section-number">4.2</span> Spatiotemporal point pattern data</h2>
+<section id="spatiotemporal-point-pattern-data" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="spatiotemporal-point-pattern-data"><span class="header-section-number">6.2</span> Spatiotemporal point pattern data</h2>
 <p>Using <code>maps</code> to create <code>sf</code> objects of country boundaries:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>us <span class="ot">&lt;-</span> maps<span class="sc">::</span><span class="fu">map</span>(<span class="st">"usa"</span>, <span class="at">fill =</span> <span class="cn">TRUE</span>, <span class="at">plot =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
@@ -418,7 +432,7 @@ replace the existing one.</code></pre>
 </section>
 <section id="nz_earthquakes" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="nz_earthquakes"><code>nz_earthquakes</code></h3>
-<p><a href="http://quakesearch.geonet.org.nz/">GeoNet Quake Search</a> catalogues New Zealand earthquake occurrence; some of these data have been and packaged in <code>stelfi</code> as <code>nz_earthquakes</code>. In <a href="#hawkes">this chapter</a> a Hawkes process is fitted to these data.</p>
+<p><a href="http://quakesearch.geonet.org.nz/">GeoNet Quake Search</a> catalogues New Zealand earthquake occurrence; some of these data have been and packaged in <code>stelfi</code> as <code>nz_earthquakes</code>. In <a href="univariate-hawkes.html">this chapter</a> a Hawkes process is fitted to these data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"nz_earthquakes"</span>, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>nz_earthquakes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -470,7 +484,7 @@ replace the existing one.</code></pre>
 </section>
 <section id="nz_murders" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="nz_murders"><code>nz_murders</code></h3>
-<p><a href="https://interactives.stuff.co.nz/2019/the-homicide-report/">The Homicide Report</a> documents homicides in New Zealand. The <code>nz_murders</code> dataset contains summary information about the documented cases. In <a href="#hawkes">this chapter</a> a spatiotemporal self-exciting model is fitted to these data.</p>
+<p><a href="https://interactives.stuff.co.nz/2019/the-homicide-report/">The Homicide Report</a> documents homicides in New Zealand. The <code>nz_murders</code> dataset contains summary information about the documented cases. In <a href="univariate-hawkes.html">this chapter</a> a spatiotemporal self-exciting model is fitted to these data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"nz_murders"</span>, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>nz_murders</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -624,8 +638,8 @@ replace the existing one.</code></pre>
 </div>
 </section>
 </section>
-<section id="simulated-data" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="simulated-data"><span class="header-section-number">4.3</span> Simulated data</h2>
+<section id="simulated-data" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="simulated-data"><span class="header-section-number">6.3</span> Simulated data</h2>
 <section id="xyt" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="xyt"><code>xyt</code></h3>
 <p>In <a href="#lgcp">this chapter</a> a log-Gaussian Cox process is fitted to these data and in <a href="#stelfi">this chapter</a> a spatiotemporal selfexciting model is fitted.</p>
@@ -705,7 +719,7 @@ First 10 features:
 </section>
 <section id="horse_mesh" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="horse_mesh"><code>horse_mesh</code></h3>
-<p>In <a href="meshmetrics.html">this chapter</a> we illustrate different geometric metrics of this triangulation.</p>
+<p>In <a href="#meshmetrics">this chapter</a> we illustrate different geometric metrics of this triangulation.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"horse_mesh"</span>, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>horse_mesh_sf <span class="ot">&lt;-</span> stelfi<span class="sc">::</span><span class="fu">mesh_2_sf</span>(horse_mesh)</span>
@@ -879,7 +893,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./summary.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

@@ -6,12 +6,12 @@ A  univariate Hawkes process (@hawkes) is defined to be a self-exciting temporal
 
 Here $\mu(t)$ is the background rate of the process and $\Sigma_{i:\tau_i<t}\nu(t-\tau_i)$ is some historic temporal dependence (i.e., for times $\tau_i < t$, $ i = 1, ..., T$). The classic homogeneous formulation uses an exponential decay kernal:
  
- $$\lambda(t) = \mu + \alpha \Sigma_{i:\tau_i<t}\text{exp}(-\beta * (t-\tau_i)).$$
+ $$\lambda(t) = \mu + \alpha \Sigma_{i:\tau_i<t}\text{exp}(-\beta * (t-\tau_i)).$${#eq-hawkes}
 
 
 Here the parameter $\alpha$ is the increase in intensity immediately after the occurrence of an event, and $\beta > 0$ controls the exponential decay of the intensity if no event has occurred. To avoid the conditional intensity heading off to infinity $\beta > \alpha$.
 
-Plotted below is the conditional intensity ($\lambda(t), t \in [0,T]$) of a Hawkes process with $\mu = 0.1$, $\alpha = 1$, and $\beta = 1.5$. Observed events (n = 13) are shown by the vertical dashes along the x-axis. The insensity increases immediately after an event occurs and decays exponentially over time if no event is observed for some period.
+Plotted below is the conditional intensity ($\lambda(t), t \in [0,T]$) of a Hawkes process with $\mu = 0.1$, $\alpha = 1$, and $\beta = 1.5$. Observed events (n = 13) are shown by the vertical dashes along the x-axis. The intensity increases immediately after an event occurs and decays exponentially over time if no event is observed for some period.
 
 
 ```{r, fig.height = 5,fig.width = 8}
@@ -34,11 +34,28 @@ ggplot(data = data,aes(x = x, y = y)) +
                        breaks = seq(min(p), max(p), length.out = 2)) 
 ```
 
+## Simulating from a univariate Hawkes model {#sec-simulate-hawkes}
+
+The function `sim_hawkes()` offers two simulation methods for simulating a realisation of a univariate Hawkes process. The default, with `method = 1`, uses the same method as algorithm 2 in @simhawkes, simulating until a given time horizon (set by argument `n`).
+
+```{r}
+#| warning: false
+sim <- sim_hawkes(mu = 0.5, alpha = 1, beta = 1.5, n = 40, plot = TRUE)
+```
+
+The second option, setting `method = 2`, uses an accept/reject framework and the argument `n` specifies the number of points to simulate (default `n = 100`). 
+
+```{r}
+#| warning: false
+sim <- sim_hawkes(mu = 0.5, alpha = 1, beta = 1.5, plot = TRUE, method = 2)
+```
+
 
 ## Fitting a univariate Hawkes model
 
 ```{r}
-require(stelfi)
+devtools::load_all("~/Git/stelfi")
+## require(stelfi)
 ```
 
 To fit a univariate Hawkes model in `stelfi` use the function `fit_hawkes()` with the following required arguments
@@ -77,7 +94,7 @@ As a comparison, below `emhawkes` (@emhawkes), and `hawkesbow` (@hawkesbow) are 
 ## benchmark using emhawkes
 require(emhawkes)
 h <- new("hspec", mu = sv[1], alpha = sv[2], beta = sv[3])
-## emhawkes requires the interarrival times to fit the model
+## emhawkes requires the inter arrival times to fit the model
 inter <- diff(times)
 fit_em <- hfit(object = h, inter_arrival = inter)
 em <- summary(fit_em)$estimate
@@ -107,7 +124,7 @@ knitr::kable(params, col.names = c("$\\mu$", "$\\alpha$", "$\\beta$", "$\\frac{\
 
 ### An applied example
 
-A [NIWA](https://niwa.co.nz/) scientist [found a working USB in the scat of a leopard seal](https://www.nzherald.co.nz/nz/news/article.cfm?c_id=1&objectid=12201147), they then [tweeted about it](https://twitter.com/niwa_nz/status/1092610541401587712) in the hopes of finding its owner^[This was at the time it was calles Twitter (not X) so 'tweet' is the correct term!]. The dates and times of these tweets and retweets are available in `stelfi` as `retweets_niwa`.
+A [NIWA](https://niwa.co.nz/) scientist [found a working USB in the scat of a leopard seal](https://www.nzherald.co.nz/nz/news/article.cfm?c_id=1&objectid=12201147), they then [tweeted about it](https://twitter.com/niwa_nz/status/1092610541401587712) in the hopes of finding its owner^[This was at the time it was called Twitter (not X) so 'tweet' is the correct term!]. The dates and times of these tweets and retweets are available in `stelfi` as `retweets_niwa`.
 
 ```{r data,message=FALSE}
 data(retweets_niwa)
@@ -135,7 +152,7 @@ mtext(2, line = 0, text = "Number of retweets per hour",cex = 0.8)
 mtext(1,line = 1, at = c(start,end),text = c("NIWA \n tweeted","USB owner \n found"),cex = 0.9)
 ```
 
-To fit the model chose some starting values for the parameters and supply these alonng with the numeric times to the function `fit_hawkes()`.
+To fit the model chose some starting values for the parameters and supply these along with the numeric times to the function `fit_hawkes()`.
 
 ```{r fit model,results = 'hide',cache = TRUE}
 sv <- c(mu = 9, alpha = 3, beta = 10)
@@ -153,37 +170,39 @@ From the estimated coefficients above
  - the expected (estimated) background rate of sightings (i.e., independent sightings) is $\hat{\mu}T =$ `r round(pars[1,1],3)` $\times$ `r round(max(times),2)` $=$ `r round(pars[1,1] * max(times),2)`, which indicates that ~`r round(pars[1,1] * max(times),0)` retweets (from the `r length(times)`) were principal retweets and that the remaining were due to self-excitement;
  - the expected number of retweets “triggered” by any one retweet is estimated as $\frac{\hat{\alpha}}{\hat{\beta}}$ = `r round(pars[2,1]/pars[3,1],2)` (note the maximum this can possibly be is 1);
  - the expected number of descendants per retweet is estimated as $\frac{\hat{\beta}}{\hat{\beta} - \hat{\alpha}}$ = `r round(pars[3,1]/(pars[3,1] - pars[2,1]),2)`;
- - the rate of decay for the self-excitement is estimated as $\frac{1}{\hat{\beta}}$ = `r round(1/pars[3,1],2)`, indicating that after ~`r round(1/pars[3,1],0)` minutes a retweet is likely unrelated^[Note that unrelated is not quite the correct term here, rather that the event is likely a baseline event rather than due to self-excitment] to the previous retweet.
+ - the rate of decay for the self-excitement is estimated as $\frac{1}{\hat{\beta}}$ = `r round(1/pars[3,1],2)`, indicating that after ~`r round(1/pars[3,1],0)` minutes a retweet is likely unrelated^[Note that unrelated is not quite the correct term here, rather that the event is likely a baseline event rather than due to self-excitement] to the previous retweet.
 
 
 The `show_hawkes()` function can be called on the fitted model object to plot the estimated conditional intensity and the data, top and bottom panels below respectively.
 
 
+
 ```{r plot, echo = TRUE,fig.height = 7,fig.width = 9}
 #| warning: false
-#| message: fasle
+#| message: false
 show_hawkes(fit)
 ```
 
 
-## Goodness-of-fit for a univariate Hawkes process
+## Goodness-of-fit for a univariate Hawkes process {#sec-gof-hawkes}
 
 The compensator, $\Lambda(\tilde{t})$, of any inhomogeneous Poisson process gives the expected number of events in some defined interval $[0, \tilde{t}]$ is given by
 
 $$\Lambda(\tilde{t}) = \int_0^{\tilde{t}} \lambda(t) dt.$$
 
-The random change theorem (@daley) states that if a set of events $[\tau_1, ..., \tau_n]$ is a realisation from a inhomogeneous Poisson process then $[\Lambda(\tau_1), ..., \Lambda(\tau_n)]$ is a realisation of a homogeneous Poisson process with unit rate. Letting $\delta \Lambda_{i} = \Lambda(\tau_i) - \Lambda(\tau_{i-1})$ for $i = 2, ..., N$ and $\delta \Lambda_{1} = \Lambda(\tau_1)$, under the theorem above $\delta \Lambda_{i} \sim \text{Exp}(1)$. Using this resulta typical goodness-of-fit test is a Kolmogorov-Smirnov (KS) test (see @daley for more details) where the KS statistic is a measure of the distance between the empirical distribution of all $\delta \Lambda_{i}$ and the CDF of a $\text{Exp}(1)$ distribution.
+The random change theorem (@daley) states that if a set of events $[\tau_1, ..., \tau_n]$ is a realisation from a inhomogeneous Poisson process then $[\Lambda(\tau_1), ..., \Lambda(\tau_n)]$ is a realisation of a homogeneous Poisson process with unit rate. Letting $\delta \Lambda_{i} = \Lambda(\tau_i) - \Lambda(\tau_{i-1})$ for $i = 2, ..., N$ and $\delta \Lambda_{1} = \Lambda(\tau_1)$, under the theorem above $\delta \Lambda_{i} \sim \text{Exp}(1)$. Using this result a typical goodness-of-fit test is a Kolmogorov-Smirnov (KS) test (see @daley for more details) where the KS statistic is a measure of the distance between the empirical distribution of all $\delta \Lambda_{i}$ and the CDF of a $\text{Exp}(1)$ distribution.
 
-The compensator value can be extracted from a fitted model using the `show_hawkes_GOF()` function, and a KS test can be carried out manually:
+The compensator differences can be extracted from a fitted model using the `compensator_differences()` function, and a KS test can be carried out manually:
 
 ```{r}
 times <- sim_hawkes(mu = 1.3, alpha = 0.4, beta = 1.5, n = 500)
+sv <- c(mu = 2, alpha = 1, beta = 5)
 fit <- fit_hawkes(times = times, parameters = sv)
-compensator <- show_hawkes_GOF(fit, plot = FALSE, return_values = TRUE)$interarrivals
+compensator <- compensator_differences(fit)
 stats::ks.test(compensator, "pexp")
 ```
 
-This gives no evidence against the compensator vaules coming from a $\text{Exp}(1)$ distribution.
+This gives no evidence against the compensator values coming from a $\text{Exp}(1)$ distribution.
 
 Another goodness-of-fit test is the Box-Ljung (or Ljung–Box) test, which tests for autocorrelation between the consecutive compensator values (i.e., independence/stationarity).
 
@@ -194,8 +213,12 @@ stats::Box.test(compensator, type = "Ljung")
 
 This gives no evidence against the consecutive compensator values being independently distributed.
 
+Alternatively, both tests and some diagnostic plots are returned by calling the `show_hawkes_GOF()` function. The four panels an be interpreted as follows
 
-
+ - **top left**, plots the compensator values against the observed times, which under a well fitting model should align;
+ - **top right**, a transformed QQ plot, the observed quantities should align with the theoretical quantiles under a well fitting model;
+ - **bottom left**, the compensator differences, which under the model are assumed to be $\text{Exp}(1)$ distributed;
+ - **bottom right**, consecutive compensator differences, which should show no obvious pattern (no autocorrelation evident) under a well fitting model.
 
 
 ```{r gof, echo = TRUE,fig.height = 7,fig.width = 9}
@@ -203,75 +226,80 @@ show_hawkes_GOF(fit)
 ```
 
 
-## Fitting an inhomogenous Hawkes process
+## Fitting an inhomogenous Hawkes model
 
-Here we fit a univariate *inhomogenous* marked Hawkes process where the conditional intensity function is given by
+A univariate inhomogenous Hawkes process has $\mu = \mu(t)$ in @eq-hawkes (i.e., the baseline is time varying, rather than being constant).
 
- $$\lambda(t) = \mu(t) + \alpha \Sigma_{i:\tau_i<t}\text{exp}(-\beta * (t-\tau_i)) $$ 
-The background $\mu(t)$ is time varying, rather than being constant. 
+Below we simulate data from a Hawkes process with $\mu(t) = [A + B*\text{sin}(\frac{2 \pi t}{365.25})]$ (with $A = 1$ and $B = 0.5$) to represent a yearly cycle and self-exciting parameters $\alpha = 1$ and $\beta = 2$  using `hawkesbow` (@hawkesbow). 
 
-The following example uses simulated data. 
+```{r}
+mut <- function(t) {
+ 1 + 0.5*sin((2*pi*t)/365.25)
+}
+```
 
 ```{r}
 set.seed(1)
-library(hawkesbow)
-# Simulate a Hawkes process with mu = 1+sin(t), alpha=1, beta =2
-times <- hawkesbow::hawkes(1000, fun=function(y) {1+0.5*sin(y)}, M=1.5, repr=0.5, family="exp", rate=2)$p
+times <- hawkesbow::hawkes(1000, fun = mut,
+ M = 1.5, repr = 0.5, family = "exp", rate = 2)$p
 ```
 
-We will attempt to recover these parameter values, modelling the background as $ \mu(t) = A + Bsin(t)$. The background will be written as a function of $x$ and $y$, where $A = e^x$ and $B= logit(y) e^x$. This formulation ensures the background is never negative. 
+To fit this model in `stelfi` the function $\mu(t)$ (`background`) and its integral $\int_0^t \mu(y) dy$ (`background_integral`) are supplied by the user. To ensure $\mu(t) > 0$ below $\mu(t)$ is written as a function of $x$ and $y$, where $A = e^x$ and $B = \text{logit}(y) e^x$.  
 
 ```{r}
-## The background function must take a single parameter and the time(s) at which it is evaluated
-background <- function(params,times){
+background <- function(params,t){
         A = exp(params[[1]])
         B = stats::plogis(params[[2]]) * A
-        return(A + B*sin(times))
+        return(A + B*sin((2*pi*t)/365.25))
 }
 
-## The background_integral function must take a single parameter and the time at which it is evaluated
 background_integral <- function(params,x){
         A = exp(params[[1]])
         B = stats::plogis(params[[2]]) * A
-        return((A*x)-B*cos(x))
+        return((A*x)-B*cos((2*pi*x)/365.25))
 }
-param = list(alpha = 0.5, beta = 1.5)
-background_param = list(1,1)
-fit <- fit_hawkes_cbf(times = times, parameters = param, background = background, background_integral = background_integral, background_parameters = background_param)
 ```
 
-The estimated values of $A$ and $B$ respectively are 
+These functions are then passed to the function `fit_hawkes_cbf()` alongside the observed times (`times`) and a list of starting values for both $\mu(t)$ and the self-exciting components via the argument `background_parameters` and `parameters` respectively.
+
+```{r}
+sv = list(alpha = 0.5, beta = 1.5)
+background_sv = list(1,1)
+fit <- fit_hawkes_cbf(times = times, parameters = sv,
+background = background, background_integral = background_integral, background_parameters = background_sv)
+```
+
+The estimated values of the the transformed $A$ and $B$ parameters are returned via `fit$background_parameters`, the code below transforms them back to the original scale.
 
 ```{r}
 exp(fit$background_parameters[1])
 plogis(fit$background_parameters[2]) * exp(fit$background_parameters[1])
 ```
 
-The estimated values of $\alpha$ and $\beta$ respectively are:
+The estimated values of the self-excitement parameters $\alpha$ and $\beta$ are returned by the `get_coefs()` function as usual. The table below compares the estimated values to the true ones
 
 ```{r}
+#| echo: FALSE
 ab <- get_coefs(fit)[1:2,1]
-ab
+params <- data.frame(TRUTH = c(1, 0.5, 1, 2),
+                     stelfi = c(exp(fit$background_parameters[1]),
+		     plogis(fit$background_parameters[2]) * exp(fit$background_parameters[1]),
+		     ab[1], ab[2])
+		     )
+params <- t(params)
+knitr::kable(params, col.names = c("$A$", "$B$", "$\\alpha$", "$\\beta$"), escape = FALSE, digit = 3)
 ```
 
-
-## Simulating from a Hawkes model {#sec-simulate-hawkes}
-
+The function `show_hawkes()` can be used to show the fitted model.
 
 ```{r}
-args(sim_hawkes)
+#| warning: false
+show_hawkes(fit)
 ```
 
-**`method = 1`**
+The function `show_hawkes_GOF()` will show/print the model diagnostics discussed in @sec-gof-hawkes.
 
 ```{r}
-sim <- sim_hawkes(mu = 2, alpha = 0.2, beta = 0.3, plot = TRUE)
-head(sim)
-```
-
-**`method = 2`**
-
-```{r}
-sim <- sim_hawkes(mu = 2, alpha = 0.2, beta = 0.3, plot = TRUE, method = 2)
-head(sim)
+#| warning: false
+show_hawkes_GOF(fit)
 ```

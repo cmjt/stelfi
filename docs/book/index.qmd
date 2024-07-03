@@ -1,5 +1,13 @@
 # Preface {.unnumbered}
 
+::: {.callout-warning}
+
+This book is a **work in progress**, please bear with me as I update and fix the issues.
+
+If you have any particular examples you'd like to be included please let me know @ c.jonestodd@auckland.ac.nz
+
+:::
+
 ## Installation {.unnumbered}
 
 ```{r}
@@ -8,14 +16,14 @@ library(stelfi)
 ```
 
 
-`stelfi` is on CRAN
+**Option 1**: `stelfi` is on CRAN
 
 ```{r}
 #| eval: false
 install.packages("stelfi")
 ```
 
-otherwise the development version of `stelfi` package can be installed from GitHub
+**Option 2**: the development version of `stelfi` package can be installed from GitHub
 
 ```{r}
 #| eval: false

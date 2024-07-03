@@ -1,29 +1,26 @@
-## The `fit_mhawkes()` function
-
-```{r}
-args(fit_mhawkes)
-```
+## Multivariate Hawkes
 
 A multivariate Hawkes process allows for between- and within-stream self-excitement. In `stelfi` the conditional intensity for the $j^{th}$ ($j = 1, ..., N$) stream is given by
 
  $$\lambda(t)^{j*} = \mu_j + \Sigma_{k = 1}^N\Sigma_{i:\tau_i<t} \alpha_{jk} e^{(-\beta_j * (t-\tau_i))},$$ 
 where $j, k  \in (1, ..., N)$. Here, $\alpha_{jk}$ is the excitement caused by the $k^{th}$ stream on the $j^{th}$. Therefore, $\boldsymbol{\alpha}$ is an $N \times N$ matrix where the diagonals represent the within-stream excitement and the off-diagonals represent the excitement between streams.
+
+
  
 ```{r}
-data(multi_hawkes)
-```
-
-
-```{r}
-fit <- stelfi::fit_mhawkes(times = multi_hawkes$times, stream = multi_hawkes$stream,
-                           parameters = list(mu =  c(0.2,0.2),
-                                        alpha =  matrix(c(0.5,0.1,0.1,0.5),byrow = TRUE,nrow = 2),
-                                        beta = c(0.7,0.7)))
-get_coefs(fit)
-```
-
-## The `fit_hawkes_cbf()` function
-
-```{r}
-args(fit_hawkes_cbf)
+#| echo: false
+devtools::load_all("~/Git/stelfi")
+mu <- c(0.5, 0.9)
+alpha <- matrix(c(0.2, 0.1 ,0.6, 0.5), byrow = TRUE, nrow = 2)
+beta <- c(0.7, 0.9)
+set.seed(1)
+tmp <- hawkes::simulateHawkes(mu, alpha, beta, 300)
+data <- data.frame(times = unlist(tmp), stream =  rep(c("Stream 1", "Stream 2"),
+                                                      times = sapply(tmp, length)))
+data <- data[order(data$times),]
+sv <- list(mu =  c(0.5, 0.9),alpha = matrix(c(0.5,0.1,0.6,0.5),byrow = TRUE,nrow = 2),
+           beta = c(0.7,0.9))
+fit <- stelfi::fit_mhawkes(times = data$times, stream = data$stream,
+                           parameters = sv)
+hawkes_multivariate_plot(fit)
 ```

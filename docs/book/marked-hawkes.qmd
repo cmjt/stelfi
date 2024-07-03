@@ -1,28 +1,49 @@
-### Fitting an ETAS-type marked model
+# Marked Hawkes
 
-Here we fit a univariate marked Hawkes process  where the conditional intensity function is given by
+The conditional intensity function for the marked Hawkes model implemented in `stelfi` is given by
 
  $$\lambda(t; m(t)) = \mu + \alpha \Sigma_{i:\tau_i<t}m(\tau_i)\text{exp}(-\beta * (t-\tau_i)) $$ 
-where $\mu$ is the background rate of the process and $m(t)$ is the temporal mark. Each event $i$ has an associated mark $\tau_i$ that multiples the self-exciting component of $\lambda$. 
+where $\mu$ is the background rate of the process and $m(t)$ is the temporal mark. The only difference to @eq-hawkes is now that each event has an associated mark $m(\tau_i)$ that scales the jump sizes ($\alpha$) of the self-exciting component of $\lambda(.)$.
 
-In this example, the events are earthquakes and the marks are the Richter magnitude of each earthquake. 
+## A simulated example
+
+Simulating data from the `emhawkes` package @emhawkes where the marks (a vector that scale the jump sizes, starting at 0) are integer values $\in [1,4]$ for $t > 0$ and $0$ for $t = 0$ (see @sec-simulate-marked-hawkes for how to smulate ussing `stelfi`). The parameter values of the conditional intensity are $\mu = 1.3$, $\alpha = 0.4$, and $\beta = 1.5$. The jump sizes for the possible mark values are shown below.
 
 ```{r}
-data("nz_earthquakes")
-head(nz_earthquakes)
-nz_earthquakes <- nz_earthquakes[order(nz_earthquakes$origintime),]
-nz_earthquakes <- nz_earthquakes[!duplicated(nz_earthquakes$origintime),]
-times <- nz_earthquakes$origintime
-times <- as.numeric(difftime(times , min(times), units = "mins"))
-marks <- nz_earthquakes$magnitude
-params <- c(mu = 3, alpha = 0.05, beta = 1)
-fit <- fit_hawkes(times = times, parameters = params, marks = marks) 
-## print out estimated parameters
-pars <- get_coefs(fit)
-pars
+#| echo: false
+devtools::load_all("~/Git/stelfi")
+ kableExtra::kable_styling(
+ knitr::kable( data.frame(mark = c(1,2,3,4), jump = c(0.4, 0.8, 1.2, 1.6))), full_width = FALSE)
 ```
 
+```{r}
+#| warning: false
+require(emhawkes)
+mu <- 1.3; alpha <- 0.4; beta <-  1.5
+fn_mark <- function( ...){
+    sample(1:4, 1)
+}
+h1 <- new("hspec", mu = mu, alpha = alpha, beta = beta,
+          rmark = fn_mark)
+set.seed(123)
+res <- hsim(h1, size = 100)
+```
+
+To fit the model in `stelfi` the `fit_hawkes()` function is used and the additional optional argument `marks` supplied.
+
+
+```{r}
+sv <- c(mu = 1.3, alpha = 0.4, beta = 1.5)
+fit <- fit_hawkes(times = res$arrival, parameters = sv, marks = res$mark)
+get_coefs(fit)
+```
+
+Note the estimated coefficient $\alpha$ from `stelfi` equates to $\frac{\alpha}{\text{mark}}$ from `emhawkes`.
+
+The fitted model and diagnostic plots are plotted using `show_hawkes()` and `show_hawkes_GOF()`.
+
 ```{r, echo = TRUE,fig.height = 7,fig.width = 9}
+#| warning: false
 show_hawkes(fit)
 ```
 
@@ -30,3 +51,20 @@ show_hawkes(fit)
 ```{r, echo = TRUE,fig.height = 7,fig.width = 9}
 show_hawkes_GOF(fit)
 ```
+
+## Simulating a marked process {#sec-simulate-marked-hawkes}
+
+The TMB (@tmb) templates in `stelfi` allow you to simulate from a fitted model as below. Including the argument `complete = TRUE` returns the mark values as well as the event times.
+
+```{r}
+#| warning: false
+#| message: false
+set.seed(435)
+sim <- fit$simulate(complete = TRUE)
+## fit to simulated data
+fit <- fit_hawkes(times = sim$times, parameters = sv, marks = sim$marks)
+get_coefs(fit)
+show_hawkes(fit)
+```
+
+

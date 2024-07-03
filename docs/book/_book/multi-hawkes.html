@@ -8,7 +8,7 @@
 
 <meta name="description" content="Using stelfi">
 
-<title>The R package stelfi - 4&nbsp; Key stelfi functions</title>
+<title>The R package stelfi - 4&nbsp; Multivariate Hawkes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -31,7 +31,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./data.html" rel="next">
+<link href="./summary.html" rel="next">
 <link href="./marked-hawkes.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -82,7 +82,7 @@ ul.task-list li input[type="checkbox"] {
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes</span></h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -126,12 +126,17 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./summary.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></a>
+  <a href="./multi-hawkes.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./data.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></a>
+  <a href="./summary.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -151,7 +156,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></h1>
+<h1 class="title d-none d-lg-block"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes</span></h1>
 </div>
 
 
@@ -166,172 +171,18 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p><strong>Summary of model fitting functions offered listing the key arguments for each.</strong></p>
-<table class="table">
-<colgroup>
-<col style="width: 30%">
-<col style="width: 70%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;"><strong>Function</strong></th>
-<th style="text-align: left;"><strong>Key arguments</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;"><code>fit_hawkes()</code></td>
-<td style="text-align: left;"><ul>
-<li><p><code>times</code> - a vector of <code>numeric</code> occurrence times.</p></li>
-<li><p><code>parameters</code> - a vector of named starting values for <span class="math inline">\(\mu\)</span> (<code>mu</code>), <span class="math inline">\(\alpha\)</span> (<code>alpha</code>), and <span class="math inline">\(\beta\)</span> (<code>beta</code>).</p></li>
-<li><p><code>marks</code> - optional, a vector of marks (<span class="math inline">\(m(t)\)</span>).</p></li>
-</ul></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>fit_mhawkes()</code></td>
-<td style="text-align: left;"><ul>
-<li><p><code>times</code> - a vector of <code>numeric</code> occurrence times.</p></li>
-<li><p><code>stream</code> - <code>character</code> vector specifying the stream ID of each observation in <code>times</code>.</p></li>
-<li><p><code>parameters</code> - a vector of named starting values for <span class="math inline">\(\mu\)</span> (<code>mu</code>), <span class="math inline">\(\alpha\)</span> (<code>alpha</code>), and <span class="math inline">\(\beta\)</span> (<code>beta</code>).</p></li>
-</ul></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>fit_hawkes_cbf()</code></td>
-<td style="text-align: left;"><p>As <code>fit_hawkes()</code> plus</p>
-<ul>
-<li><p><code>background</code> - some assumed time dependent background function <span class="math inline">\(\mu(t)\)</span>.</p></li>
-<li><p><code>background_integral</code> - the integral of <code>background</code>.</p></li>
-<li><p><code>background_parameters</code> - parameter starting values for <span class="math inline">\(\mu(t)\)</span>.</p></li>
-</ul>
-<p>( <span class="math inline">\(^*\)</span>Note, <span class="math inline">\(\texttt{mu}\)</span> in <code>parameters</code> will be ignored)</p></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>fit_lgcp()</code></td>
-<td style="text-align: left;"><ul>
-<li><p><code>locs</code> - a named data frame of event locations, <code>x</code>, <code>y</code>, and <code>t</code> (optional).</p></li>
-<li><p><code>sf</code> - a polygon of the spatial domain.</p></li>
-<li><p><code>smesh</code> - a Delaunay triangulation of the spatial domain returned by <code>INLA::inla.mesh.2d()</code>.</p></li>
-<li><p><code>tmesh</code> - optional, a temporal mesh returned by <code>INLA::inla.mesh.1d()</code>).</p></li>
-<li><p><code>parameters</code> - a vector of named starting values for <span class="math inline">\(\boldsymbol{\beta}\)</span> (<code>beta</code>), | <span class="math inline">\(\text{log}(\tau)\)</span> (<code>log_tau</code>), <span class="math inline">\(\text{log}(\kappa)\)</span> (<code>log_kappa</code>), and <span class="math inline">\(\textrm{arctan}(\rho)\)</span> (<code>atanh_rho</code>, optional).</p></li>
-</ul></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>fit_mlgcp()</code></td>
-<td style="text-align: left;"><ul>
-<li><p><code>locs</code>, <code>sf</code>, and <code>smesh</code> - as <code>fit_lgcp()</code>.</p></li>
-<li><p><code>marks</code> - a matrix of marks for each observation of the point pattern.</p></li>
-<li><p><code>parameters</code> - a list of named parameters, as <code>fit_lgcp()</code> plus (<code>betamarks</code>), (<code>betapp</code>), (<code>marks_coefs_pp</code> ).</p></li>
-<li><p><code>methods</code> - integer(s) specifying mark distribution: <code>0</code>, Gaussian; <code>1</code>, Poisson; <code>2</code>, binomial; <code>3</code>, gamma.</p></li>
-<li><p><code>strfixed</code> - fixed structural parameters, depends on mark distribution.</p></li>
-<li><p><code>fields</code> - a binary vector indicating whether there is a new random field for each mark.</p></li>
-</ul></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>fit_stelfi()</code></td>
-<td style="text-align: left;"><ul>
-<li><p><code>times</code> - as <code>fit_hawkes()</code>.</p></li>
-<li><p><code>locs</code>, <code>sf</code>, and <code>smesh</code> - as <code>fit_lgcp()</code>.</p></li>
-<li><p><code>parameters</code> - a list of named parameter starting values for <span class="math inline">\(\mu\)</span> (<code>mu</code>), <span class="math inline">\(\alpha\)</span> (<code>alpha</code>), <span class="math inline">\(\beta\)</span> (<code>beta</code>), <span class="math inline">\(\sigma_x\)</span> (<code>xsigma</code>) <span class="math inline">\(\sigma_y\)</span> (<code>ysigma</code>), and <span class="math inline">\(\rho\)</span> (<code>rho</code>).</p></li>
-<li><p><code>GMRF</code> - logical, should a GMRF be included as a latent spatial effect if so <span class="math inline">\(\tau\)</span> (<code>tau</code>) and <span class="math inline">\(\kappa\)</span>(<code>kappa</code>) supplied to <code>parameters</code>.</p></li>
-</ul></td>
-</tr>
-</tbody>
-</table>
-<section id="summary-of-utility-and-simulation-functions-listing-the-key-arguments-for-each." class="level4 unnumbered">
-<h4 class="unnumbered anchored" data-anchor-id="summary-of-utility-and-simulation-functions-listing-the-key-arguments-for-each.">Summary of utility and simulation functions listing the key arguments for each.</h4>
-<table class="table">
-<colgroup>
-<col style="width: 32%">
-<col style="width: 32%">
-<col style="width: 32%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;"><strong>Function</strong></th>
-<th style="text-align: left;"><strong>Key arguments</strong></th>
-<th style="text-align: left;"><strong>Purpose</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;"><code>get_coefs()</code></td>
-<td style="text-align: left;"><ul>
-<li><code>obj</code> - a fitted model object returned by any one of the functions in the Table above</li>
-</ul></td>
-<td style="text-align: left;">Extract estimated parameter values from a fitted model.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>get_fields()</code></td>
-<td style="text-align: left;"><p>As <code>fit_lgcp()</code> and</p>
-<ul>
-<li><code>sd</code> - logical, return standard deviation.</li>
-</ul></td>
-<td style="text-align: left;">Extract estimated mean, or standard deviation, of GMRF(s).</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>get_weights()</code></td>
-<td style="text-align: left;"><ul>
-<li><p><code>mesh</code> - a Delaunay triangulation of the spatial domain returned by <code>INLA::inla.mesh. 2d()</code>.</p></li>
-<li><p><code>sf</code> - a polygon of the spatial domain.</p></li>
-</ul></td>
-<td style="text-align: left;">Calculate mesh weights.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>mesh_2_sf()</code></td>
-<td style="text-align: left;"><ul>
-<li><code>mesh</code> - a Delaunay triangulation of the spatial domain returned by <code>INLA::inla.mesh. 2d()</code>.</li>
-</ul></td>
-<td style="text-align: left;">Transforms <code>mesh</code> into a <code>sf</code> object.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>show_field()</code></td>
-<td style="text-align: left;"><ul>
-<li><p><code>x</code> - a vector of values, one per each smesh node.</p></li>
-<li><p><code>smesh</code> - as <code>fit_lgcp()</code> .</p></li>
-<li><p><code>sf</code> - as <code>fit_lgcp()</code>.</p></li>
-<li><p><code>clip</code> - logical, <em>clip</em> to domain</p></li>
-</ul></td>
-<td style="text-align: left;">Plots spatial random field values.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>show_hawkes()</code></td>
-<td style="text-align: left;"><ul>
-<li><code>obj</code> - a fitted model object returned by <code>fit_hawkes()</code> or <code>fit_hawkes_cbf()</code>.</li>
-</ul></td>
-<td style="text-align: left;">Plot fitted Hawkes model.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>show_hawkes_GOF()</code></td>
-<td style="text-align: left;"><ul>
-<li><p><code>obj</code> - as <code>show_hawkes()</code>.</p></li>
-<li><p><code>plot</code> - logical</p></li>
-<li><p><code>return_values</code> - logical, return compensator values</p></li>
-</ul></td>
-<td style="text-align: left;">Plot goodness-of-fit metrics for a Hawkes model.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>show_lambda()</code></td>
-<td style="text-align: left;"><p>As <code>fit_lgcp()</code> and</p>
-<ul>
-<li><code>clip</code> - logical, <em>clip</em> to domain</li>
-</ul></td>
-<td style="text-align: left;">Plot estimated spatial intensity from a fitted log-Gaussian Cox process model.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>sim_hawkes()</code></td>
-<td style="text-align: left;">As <code>fit_hawkes()</code></td>
-<td style="text-align: left;">Simulate a Hawkes process.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>sim_lgcp()</code></td>
-<td style="text-align: left;">As <code>fit_lgcp()</code></td>
-<td style="text-align: left;">Simulate a realisation of a log-Gaussian Cox process.</td>
-</tr>
-</tbody>
-</table>
+<p>A multivariate Hawkes process allows for between- and within-stream self-excitement. In <code>stelfi</code> the conditional intensity for the <span class="math inline">\(j^{th}\)</span> (<span class="math inline">\(j = 1, ..., N\)</span>) stream is given by</p>
+<p><span class="math display">\[\lambda(t)^{j*} = \mu_j + \Sigma_{k = 1}^N\Sigma_{i:\tau_i&lt;t} \alpha_{jk} e^{(-\beta_j * (t-\tau_i))},\]</span> where <span class="math inline">\(j, k \in (1, ..., N)\)</span>. Here, <span class="math inline">\(\alpha_{jk}\)</span> is the excitement caused by the <span class="math inline">\(k^{th}\)</span> stream on the <span class="math inline">\(j^{th}\)</span>. Therefore, <span class="math inline">\(\boldsymbol{\alpha}\)</span> is an <span class="math inline">\(N \times N\)</span> matrix where the diagonals represent the within-stream excitement and the off-diagonals represent the excitement between streams.</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>ℹ Loading stelfi</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="multi-hawkes_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -474,8 +325,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./data.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./summary.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

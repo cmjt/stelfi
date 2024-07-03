@@ -21,6 +21,25 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1.6em;
   vertical-align: middle;
 }
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
 </style>
 
 
@@ -115,57 +134,22 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./univariate-hawkes.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Hawkes process</span></a>
+  <a href="./univariate-hawkes.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./marked-hawkes.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Fitting an ETAS-type marked model</span></a>
+  <a href="./marked-hawkes.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./multi-hawkes.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">The <code>fit_mhawkes()</code> function</span></a>
+  <a href="./summary.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lgcp.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Log-Gaussian Cox process</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./lgcp-spatiotemporal.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Spatiotemporal LGCP</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./lgcp-marked.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Marked log-Gaussian Cox process</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./stelfi.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Spatiotemporal self-exciting models</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./stelfi-gmrf.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">stelfi-gmrf.html</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./meshmetrics.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Delaunay triangulation metrics</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./summary.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./data.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></a>
+  <a href="./data.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -200,10 +184,38 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>This is a book created from markdown and executable code.</p>
-<p>See <span class="citation" data-cites="knuth84">(<a href="references.html#ref-knuth84" role="doc-biblioref"><strong>knuth84?</strong></a>)</span> for additional discussion of literate programming.</p>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This book is a <strong>work in progress</strong>, please bear with me as I update and fix the issues.</p>
+<p>If you have any particular examples you’d like to be included please let me know @ c.jonestodd@auckland.ac.nz</p>
+</div>
+</div>
+<p>The <code>stelfi</code> package fits Hawkes and log-Gaussian Cox Point Process models, with extensions, using Template Model Builder (<span class="citation" data-cites="tmb">Kristensen et al. (<a href="references.html#ref-tmb" role="doc-biblioref">2016</a>)</span>).</p>
+<p><strong>Overview</strong></p>
+<p>A Hawkes process is a self-exciting temporal point process where the occurrence of an event immediately increases the chance of another (see <span class="citation" data-cites="hawkes">Hawkes (<a href="references.html#ref-hawkes" role="doc-biblioref">1971</a>)</span>). <code>stelfi</code> also offers functionality to fit self-inhibiting process and a non-homogeneous background rate.</p>
+<p>A log-Gaussian Cox process is a Poisson point process where the log-intensity is given by a Gaussian random field. <code>stelfi</code> also offers functionality to extend this to a joint likelihood formulation fitting a marked log-Gaussian Cox model.</p>
+<p>In addition, the <code>stelfi</code> offers functionality to fit self-exciting spatiotemporal point processes. Models are fitted via maximum likelihood using ‘TMB’ (Template Model Builder) (<span class="citation" data-cites="tmb">Kristensen et al. (<a href="references.html#ref-tmb" role="doc-biblioref">2016</a>)</span>). Where included 1) random fields are assumed to be Gaussian and are integrated over using the Laplace approximation and 2) a stochastic partial differential equation model, introduced by <span class="citation" data-cites="spde">Lindgren, Rue, and Lindström (<a href="references.html#ref-spde" role="doc-biblioref">2011</a>)</span>, is defined for the field(s).</p>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
+<div id="ref-hawkes" class="csl-entry" role="doc-biblioentry">
+Hawkes, AG. 1971. <span>“Spectra of Some Self-Exciting and Mutually Exciting Point Processes.”</span> <em>Biometrika</em>.
+</div>
+<div id="ref-tmb" class="csl-entry" role="doc-biblioentry">
+Kristensen, Kasper, Anders Nielsen, Casper W. Berg, Hans Skaug, and Bradley M. Bell. 2016. <span>“<span>TMB</span>: Automatic Differentiation and <span>L</span>aplace Approximation.”</span> <em>Journal of Statistical Software</em>. <a href="https://doi.org/10.18637/jss.v070.i05">https://doi.org/10.18637/jss.v070.i05</a>.
+</div>
+<div id="ref-spde" class="csl-entry" role="doc-biblioentry">
+Lindgren, Finn, Håvard Rue, and Johan Lindström. 2011. <span>“An Explicit Link Between <span>Gaussian</span> Fields and <span>Gaussian</span> <span>Markov</span> Random Fields: The Stochastic Partial Differential Equation Approach (with Discussion).”</span> <em>Journal of the Royal Statistical Society B</em> 73 (4): 423–98.
+</div>
+</div>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -347,7 +359,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   </div>
   <div class="nav-page nav-page-next">
       <a href="./univariate-hawkes.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Hawkes process</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
