@@ -310,6 +310,8 @@ fit_hawkes_cbf <- function(times, parameters = list(),
     opt2 <- stats::optim(obj$par, obj$fn, obj$gr, control = list(trace = trace))
     obj$objective <- opt2$value
     obj$background_parameters <- opt$par
+    obj$background <- background
+    obj$background_integral <- background_integral
     return(obj)
 }
 #' @details A multivariate Hawkes process that allows for between- and within-stream self-excitement.
@@ -377,6 +379,7 @@ fit_mhawkes <- function(times, stream,
     trace <- if(optim_silent) 0 else 1
     opt <- stats::optim(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
     obj$objective <- opt$value
+    obj$env$data$stream <- stream
     return(obj)
 }
                         

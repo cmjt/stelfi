@@ -27,6 +27,43 @@ hawkes_intensity <- function(times, mu, alpha, beta,
     }
     return(lam_p)
 }
+#' Multivariate Hawkes intensity function
+#' @inheritParams fit_mhawkes
+#' @param p An optional vector of pseudo times at which to calculate the intensity.
+#' @inheritParams fit_hawkes_cbf
+#' @noRd
+multi_hawkes_intensity <- function(times, mu, alpha, beta,
+                           p, stream = rep("1", length(times))) {
+    if (missing(p)) p <- times
+    n_stream <- length(table(stream))
+    if( n_stream != length(beta))
+        stop("beta should be a vector of length equal to the number of streams")
+    if( n_stream != length(mu))
+        stop("mu should be a vector of length equal to the number of streams")   
+    ## error checks for multivariate
+    if(n_stream > 1){
+        if( n_stream != nrow(alpha) |  n_stream != ncol(alpha))
+            stop("alpha should be a matrix with dims matching the number of streams (> 1)")
+    }
+    ## split times by streams
+    splt <- split(times, stream)
+    streams <-  rep(NA, length(p))
+    idx <- findInterval(times, p)
+    stream_idx <- match(stream,  names(table(stream)))
+    streams[idx] <- stream_idx
+    tmp <- streams |> as.data.frame()
+    streams <- tidyr::fill(tmp, streams)$streams
+    lam_p <- se <- list()
+    for(k in 1:n_stream){
+        lam_p[[k]] <-  rep(0, length(p))
+        se[[k]] <- list()
+        ## self-exciting components
+        se[[k]] <- lapply(1:n_stream,
+                          function(n) stelfi:::hawkes_intensity(splt[[n]], 0, alpha[k, n], beta[n], p))
+        lam_p[[k]] <- mu[k] + Reduce('+', se[[k]])
+    }
+    return(lam_p)
+}
 #' Extract reported parameter estimates
 #'
 #' Return parameter estimates from a fitted model.
@@ -82,8 +119,8 @@ get_coefs <- function(obj) {
 #' @seealso \code{\link{show_hawkes_GOF}}
 #' @export
 #' @rdname show_hawkes
-compensator_differences <- function(obj, background_integral = NULL){
-    x <- show_hawkes_GOF(obj, background_integral, plot = FALSE,
+compensator_differences <- function(obj){
+    x <- show_hawkes_GOF(obj,plot = FALSE,
                          return_values = TRUE, tests = FALSE)$compensator_differences
     return(x)
 }

@@ -30,6 +30,7 @@ show_hawkes <-  function(obj) {
             alpha <- pars[1,1]
             beta <- pars[2,1]
             background_parameters = obj$background_parameters
+            mu <- obj$background
         } else {
             mu <- pars[1,1]
             alpha <- pars[2,1]
@@ -72,6 +73,32 @@ show_hawkes <-  function(obj) {
         ggplot2::xlab("times") +  ggplot2::ylab("Number of events")
     gridExtra::grid.arrange(line, hist, ncol = 1)
 }
+#' Multivariate Hawkes fitted model plot
+hawkes_multivariate_plot <- function(obj){
+    times <- obj$env$data$times
+    stream <-  obj$env$data$stream
+    n_stream <- length(table(stream))
+    pars <- get_coefs(obj)[, 1]
+    n <- length(times)
+    n_pars <- length(pars)
+    max <- max(times)
+    p <- seq(0, max, length.out = 500)
+    lam.p <- stelfi:::multi_hawkes_intensity(times = times,
+                                             alpha = matrix(pars[(n_stream + 1):(n_pars - n_stream)],
+                                                            nrow = n_stream, byrow = TRUE),
+                                             mu = pars[1:n_stream],
+                                             beta = tail(pars, n_stream),
+                                             p = p, stream = stream)
+    dat <- data.frame(x = rep(p, times = n_stream),
+                      lam = unlist(lam.p),
+                      stream = rep(names(table(stream)), each = length(p)))
+
+    ggplot2::ggplot(dat, ggplot2::aes(x = x, y = lam, col = stream, group = stream)) +
+        ggplot2::geom_line() +
+        ggplot2::xlab("") +
+        ggplot2::ylab(expression(lambda(t))) +  ggplot2::theme_minimal() 
+    }
+
 #' Compensator and other goodness-of-fit metrics for a Hawkes process
 #'
 #' Plots a number of goodness-of-fit plots for a fitted
@@ -97,7 +124,7 @@ show_hawkes <-  function(obj) {
 #' show_hawkes_GOF(fit)
 #' @export
 #' @rdname show_hawkes
-show_hawkes_GOF <-  function(obj, background_integral = NULL, plot = TRUE, return_values = FALSE,
+show_hawkes_GOF <-  function(obj, plot = TRUE, return_values = FALSE,
                              tests = TRUE) {
     ## Retrieve values of mu (or the cbf), alpha and beta
     if (!"times" %in% names(obj)) {
@@ -108,7 +135,7 @@ show_hawkes_GOF <-  function(obj, background_integral = NULL, plot = TRUE, retur
             alpha <- pars[1,1]
             beta <- pars[2,1]
             background_parameters <- obj$background_parameters
-            mu <- background_integral
+            mu <-obj$background_integral
         } else {
             mu <- pars[1,1]
             alpha <- pars[2,1]
@@ -124,9 +151,9 @@ show_hawkes_GOF <-  function(obj, background_integral = NULL, plot = TRUE, retur
         pars <- obj$params
         alpha <- pars[["alpha"]]
         beta <- pars[["beta"]]
-        if ("background_parameters" %in% names(pars)) {
+        if ("background_parameters" %in% names(obj)) {
             background_parameters <- pars$background_parameters
-            mu <- background_integral
+            mu <- obj$background_integral
         } else {
             mu <- pars[["mu"]]
         }  
