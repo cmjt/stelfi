@@ -80,6 +80,8 @@ get_coefs <- function(obj) {
 #' values of the Gaussian Markov random field for a fitted log-Gaussian
 #' Cox process model at each node of \code{smesh}.
 #' @seealso \code{\link{show_hawkes_GOF}}
+#' @export
+#' @rdname show_hawkes
 compensator_differences <- function(obj, background_integral = NULL){
     x <- show_hawkes_GOF(obj, background_integral, plot = FALSE,
                          return_values = TRUE, tests = FALSE)$compensator_differences
