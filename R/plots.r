@@ -79,11 +79,13 @@ show_hawkes <-  function(obj) {
 #' events, 2) a histogram of transformed interarrival times, 3) a Q-Q plot of 
 #' transformed interarrival times, and 4) the CDF of consecutive interarrival 
 #' times, In addition, results of a Kolmogorov-Smirnov and
-#' Ljung-Box hypothesis test for the interarrival times are printed.
+#' Ljung-Box hypothesis test for the compensator differences are printed.
 #' 
 #' @param background_integral Function, as defined in \code{\link{fit_hawkes_cbf}}.
 #' @param plot Logical, whether to plot  goodness-of-fit plots. Default \code{TRUE}.
 #' @param return_values Logical, whether to return GOF values. Default \code{FALSE}.
+#' @param tests Logical, whether to print the results of a Kolmogorov-Smirnov and
+#' Ljung-Box hypothesis test on the compensator differences.  Default \code{TRUE}.
 #' @return \code{\link{show_hawkes_GOF}} returns no value unless \code{return_values = TRUE},
 #' in this case a list of interarrival times is returned.
 #' @examples 
@@ -95,8 +97,8 @@ show_hawkes <-  function(obj) {
 #' show_hawkes_GOF(fit)
 #' @export
 #' @rdname show_hawkes
-show_hawkes_GOF <-  function(obj, background_integral = NULL, plot = TRUE, return_values = FALSE) {
-  
+show_hawkes_GOF <-  function(obj, background_integral = NULL, plot = TRUE, return_values = FALSE,
+                             tests = TRUE) {
     ## Retrieve values of mu (or the cbf), alpha and beta
     if (!"times" %in% names(obj)) {
         times <- obj$env$data$times
@@ -149,12 +151,12 @@ show_hawkes_GOF <-  function(obj, background_integral = NULL, plot = TRUE, retur
         compensator <- compensator - mu(background_parameters,0) ## Subtract integral at zero
     }
     interarrivals <- compensator[2:length(compensator)] - compensator[1:(length(compensator)-1)]
-    
-    ## Kolmogorov-Smirnov Test
-    print(stats::ks.test(interarrivals, "pexp"))
-    ## Ljung-Box Test
-    print(stats::Box.test(interarrivals, type = "Ljung"))
-    
+    if(tests){
+        ## Kolmogorov-Smirnov Test
+        print(stats::ks.test(interarrivals, "pexp"))
+        ## Ljung-Box Test
+        print(stats::Box.test(interarrivals, type = "Ljung"))
+    }
     if (plot) {
         ## Plot of compensator versus observed events
         data <- data.frame(xs = times, observed = 1:length(times), compensator = compensator)
@@ -205,7 +207,7 @@ show_hawkes_GOF <-  function(obj, background_integral = NULL, plot = TRUE, retur
         gridExtra::grid.arrange(lineplot, qqplot, hist, scatter, ncol = 2)
     }
     if(return_values) {
-        return(list(interarrivals = interarrivals))
+        return(list(compensator_differences = interarrivals))
     }
 }
 #' Plot the estimated random field(s) of a fitted LGCP

@@ -66,12 +66,25 @@ get_coefs <- function(obj) {
     return(table)
 }
 
+#' Extract the compensator differences
+#'
+#' Extract the compensator differences from a fitted Hawkes
+#' model.
+#' @inheritParams show_hawkes_GOF
+#' @export
+#'
+
 #' Estimated random field(s)
 #' 
 #' Extract the estimated mean, or standard deviation, of the 
 #' values of the Gaussian Markov random field for a fitted log-Gaussian
 #' Cox process model at each node of \code{smesh}.
-#'
+#' @seealso \code{\link{show_hawkes_GOF}}
+compensator_differences <- function(obj, background_integral = NULL){
+    x <- show_hawkes_GOF(obj, background_integral, plot = FALSE,
+                         return_values = TRUE, tests = FALSE)$compensator_differences
+    return(x)
+}
 #' 
 #' @param obj A fitted model object returned by \code{\link{fit_lgcp}}.
 #' @param plot Logical, if \code{TRUE} then the returned values are plotted.
