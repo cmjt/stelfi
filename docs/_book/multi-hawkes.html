@@ -6,10 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Charlotte M. Jones-Todd">
 <meta name="description" content="Using stelfi">
 
-<title>The R package stelfi</title>
+<title>The R package stelfi - 4&nbsp; Multivariate Hawkes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -85,6 +84,25 @@ code span.st { color: #4070a0; } /* String */
 code span.va { color: #19177c; } /* Variable */
 code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
 </style>
 
 
@@ -95,7 +113,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./intro.html" rel="next">
+<link href="./summary.html" rel="next">
+<link href="./marked-hawkes.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -125,6 +144,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 }</script>
 
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
 
@@ -144,7 +164,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">The <code>R</code> package <code>stelfi</code></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes</span></h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -168,7 +188,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">Preface</a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Preface</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -188,7 +208,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./multi-hawkes.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes</span></a>
+  <a href="./multi-hawkes.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -215,10 +235,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a>
-  <ul class="collapse">
-  <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a></li>
-  </ul></li>
+  <li><a href="#a-simulated-example" id="toc-a-simulated-example" class="nav-link active" data-scroll-target="#a-simulated-example"><span class="toc-section-number">4.1</span>  A simulated example</a></li>
   </ul>
 </nav>
     </div>
@@ -227,24 +244,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">The <code>R</code> package <code>stelfi</code></h1>
+<h1 class="title d-none d-lg-block"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes</span></h1>
 </div>
 
-<div>
-  <div class="description">
-    Using <code>stelfi</code>
-  </div>
-</div>
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Charlotte M. Jones-Todd </p>
-          </div>
-  </div>
     
   
     
@@ -253,70 +259,65 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1>
-<div class="callout-warning callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-caption-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>This book is a <strong>work in progress</strong>, please bear with me as I update and fix the issues.</p>
-<p>If you have any particular examples you’d like to be included please let me know @ c.jonestodd@auckland.ac.nz</p>
-</div>
-</div>
-<section id="installation" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="installation">Installation</h2>
 <div class="cell">
 
 </div>
-<p><strong>Option 1</strong>: <code>stelfi</code> is on CRAN</p>
+<p>A multivariate Hawkes process allows for between- and within-stream self-excitement. In <code>stelfi</code> the conditional intensity for the <span class="math inline">\(j^{th}\)</span> (<span class="math inline">\(j = 1, ..., N\)</span>) stream is given by</p>
+<p><span class="math display">\[\lambda(t)^{j*} = \mu_j + \Sigma_{k = 1}^N\Sigma_{i:\tau_i&lt;t} \alpha_{jk} e^{(-\beta_j * (t-\tau_i))},\]</span> where <span class="math inline">\(j, k \in (1, ..., N)\)</span>. Here, <span class="math inline">\(\alpha_{jk}\)</span> is the excitement caused by the <span class="math inline">\(k^{th}\)</span> stream on the <span class="math inline">\(j^{th}\)</span>. Therefore, <span class="math inline">\(\boldsymbol{\alpha}\)</span> is an <span class="math inline">\(N \times N\)</span> matrix where the diagonals represent the within-stream excitement and the off-diagonals represent the excitement between streams.</p>
+<p>Plotted below are the conditional intensities (<span class="math inline">\(\lambda_{.}(t), t \in [0,T]\)</span>) of a bivariate Hawkes process with <span class="math inline">\(\mu = (0.5, 0.9)\)</span>, <span class="math inline">\(\boldsymbol{\alpha}\)</span> = <span class="math inline">\(\begin{bmatrix}0.2&amp;0.1 \\0.6&amp;0.5 \\\end{bmatrix}\)</span>, and <span class="math inline">\(\beta = (0.7, 0.9)\)</span>. Observed events (n = 33) are shown by the vertical dashes along the x-axis. The intensity of any stream increases immediately after any event occurs (i.e., irrespective of stream) and decays exponentially over time if no event is observed for some period. Typically, herem a jump in intensity due to the occurence of an event in the same stream is called self-excitation (diagonal elements of <span class="math inline">\(\boldsymbol{\alpha}\)</span>) and a jump in intensity due to the occurence of an event in a different stream is called cross-excitation (off-diagonal elements of <span class="math inline">\(\boldsymbol{\alpha}\)</span>).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"stelfi"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="multi-hawkes_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
 </div>
-<p><strong>Option 2</strong>: the development version of <code>stelfi</code> package can be installed from GitHub</p>
+</div>
+<section id="a-simulated-example" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="a-simulated-example"><span class="header-section-number">4.1</span> A simulated example</h2>
+<p>Simulating data from the <code>hawkes</code> package <span class="citation" data-cites="hawkes_pkg">Zaatour (<a href="references.html#ref-hawkes_pkg" role="doc-biblioref">2014</a>)</span> with <span class="math inline">\(\mu = (0.5, 0.9)\)</span>, <span class="math inline">\(\boldsymbol{\alpha}\)</span> = <span class="math inline">\(\begin{bmatrix}0.2&amp;0.1 \\0.6&amp;0.5 \\\end{bmatrix}\)</span>, and <span class="math inline">\(\beta = (0.7, 0.9)\)</span> over the time period <span class="math inline">\(t\in [0,50)\)</span>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"cmjt/stelfi"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.9</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.1</span> ,<span class="fl">0.6</span>, <span class="fl">0.5</span>), <span class="at">byrow =</span> <span class="cn">TRUE</span>, <span class="at">nrow =</span> <span class="dv">2</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.9</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> hawkes<span class="sc">::</span><span class="fu">simulateHawkes</span>(mu, alpha, beta, <span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-caption-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>To cite <code>stelfi</code> use</p>
+<p>To fit the model in <code>stelfi</code> the <code>fit_mhawkes()</code> function is used with the arguments <code>times</code> (a numeric vector of event times), <code>stream</code> (a character vector specifying the stream ID of each observation in <code>times</code>), and a lit of starting value for the parameters (<code>parameters</code>).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">citation</span>(<span class="st">"stelfi"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">## reformat data for fitting</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">times =</span> <span class="fu">unlist</span>(sim), <span class="at">stream =</span>  <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"Stream 1"</span>, <span class="st">"Stream 2"</span>),</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                                                      <span class="at">times =</span> <span class="fu">sapply</span>(sim, length)))</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data[<span class="fu">order</span>(data<span class="sc">$</span>times),]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="do">## list of starting values</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>sv <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">mu =</span>  mu,<span class="at">alpha =</span> alpha, <span class="at">beta =</span> beta)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> stelfi<span class="sc">::</span><span class="fu">fit_mhawkes</span>(<span class="at">times =</span> data<span class="sc">$</span>times, <span class="at">stream =</span> data<span class="sc">$</span>stream, <span class="at">parameters =</span> sv)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>To cite package 'stelfi' in publications use:
-
-  Jones-Todd C, van Helsdingen A (2023). _stelfi: Hawkes and
-  Log-Gaussian Cox Point Processes Using Template Model Builder_. R
-  package version 1.0.1, &lt;https://github.com/cmjt/stelfi/&gt;.
-
-  Jones-Todd CM, van Helsdingen ABM (2024). "stelfi: An R package for
-  fitting Hawkes and log-Gaussian Cox point process models." _Ecology
-  and Evolution_, *14*, e11005. doi:10.1002/ece3.11005
-  &lt;https://doi.org/10.1002/ece3.11005&gt;.
-
-To see these entries in BibTeX format, use 'print(&lt;citation&gt;,
-bibtex=TRUE)', 'toBibtex(.)', or set
-'options(citation.bibtex.max=999)'.</code></pre>
+<pre><code>       Estimate Std. Error
+mu    0.7499955 0.10506748
+mu    0.9852693 0.18009767
+alpha 0.1617181 0.07753682
+alpha 0.5438258 0.20395221
+alpha 0.1225411 0.02940381
+alpha 0.6091406 0.08140212
+beta  1.0979208 0.63608232
+beta  1.0725560 0.17178757</code></pre>
 </div>
 </div>
+<p>The fitted model is plotted using <code>show_multivariate_hawkes()</code> (default `type = “both”)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_multivariate_hawkes</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="multi-hawkes_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="864"></p>
 </div>
 </div>
 
 
-</section>
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
+<div id="ref-hawkes_pkg" class="csl-entry" role="doc-biblioentry">
+Zaatour, Riadh. 2014. <em>Hawkes: Hawkes Process Simulation and Calibration Toolkit</em>. <a href="https://CRAN.R-project.org/package=hawkes">https://CRAN.R-project.org/package=hawkes</a>.
+</div>
+</div>
 </section>
 
 </main> <!-- /main -->
@@ -455,10 +456,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./marked-hawkes.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./intro.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./summary.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

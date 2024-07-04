@@ -102,7 +102,10 @@ get_coefs <- function(obj) {
     }
     return(table)
 }
-
+#' @export
+coef.stelfi_tmb <- function(obj){
+    get_coefs(obj)[, 1]
+}
 #' Extract the compensator differences
 #'
 #' Extract the compensator differences from a fitted Hawkes

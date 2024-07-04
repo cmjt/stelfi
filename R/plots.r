@@ -11,8 +11,9 @@
 #' either \code{mu} (base rate of the Hawkes process) or \code{background_parameters}
 #' (parameter(s) for the assumed non-homogeneous background function;
 #' could be a list of multiple values). May also contain \code{marks} (a vector of numerical marks).
+#' @param type One of \code{c("fitted", "data", "both")}, default \code{"fitted"}.
 #' @return \code{\link{show_hawkes}} returns a \code{gtable} object
-#' with \code{geom_line} and \code{geom_histogram} values.
+#' with \code{geom_line} and/or \code{geom_histogram} values.
 #' @examples 
 #' data(retweets_niwa, package = "stelfi")
 #' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa),units = "mins"))))
@@ -21,7 +22,11 @@
 #' fit <- fit_hawkes(times = times, parameters = params)
 #' show_hawkes(fit)
 #' @export
-show_hawkes <-  function(obj) {
+show_hawkes <-  function(obj, type = c("fitted", "data", "both")) {
+    type <- type[1]
+    if(!type %in% c("fitted", "data", "both")){
+        stop("`type` should be one of `fitted`, `data`, `both`" )
+    }
     if (!"times" %in% names(obj)) {
         times <- obj$env$data$times
         marks <- obj$env$data$marks
@@ -71,10 +76,25 @@ show_hawkes <-  function(obj) {
     hist <-  ggplot2::ggplot(data = data,  ggplot2::aes(x = .data$times)) +
         ggplot2::geom_histogram() +  ggplot2::theme_minimal() +
         ggplot2::xlab("times") +  ggplot2::ylab("Number of events")
-    gridExtra::grid.arrange(line, hist, ncol = 1)
+    if(type == "fitted"){
+        line
+    }else{
+        if(type == "data"){
+            hist
+        }else{
+            gridExtra::grid.arrange(line, hist, ncol = 1)
+        }
+    }
 }
 #' Multivariate Hawkes fitted model plot
-hawkes_multivariate_plot <- function(obj){
+#'
+#' @inheritParams show_hawkes
+#' @export
+show_multivariate_hawkes <- function(obj, type = c("fitted", "data", "both")){
+     type <- type[1]
+     if(!type %in% c("fitted", "data", "both")){
+        stop("`type` should be one of `fitted`, `data`, `both`" )
+    }
     times <- obj$env$data$times
     stream <-  obj$env$data$stream
     n_stream <- length(table(stream))
@@ -93,10 +113,23 @@ hawkes_multivariate_plot <- function(obj){
                       lam = unlist(lam.p),
                       stream = rep(names(table(stream)), each = length(p)))
 
-    ggplot2::ggplot(dat, ggplot2::aes(x = x, y = lam, col = stream, group = stream)) +
+    line <- ggplot2::ggplot(dat, ggplot2::aes(x = x, y = lam, col = stream, group = stream)) +
         ggplot2::geom_line() +
         ggplot2::xlab("") +
-        ggplot2::ylab(expression(lambda(t))) +  ggplot2::theme_minimal() 
+        ggplot2::ylab(expression(lambda(t))) +  ggplot2::theme_minimal()
+    data <- data.frame(times = times, stream = stream)
+    hist <- ggplot2::ggplot(data = data,  ggplot2::aes(x = .data$times, fill = .data$stream)) +
+        ggplot2::geom_histogram() + ggplot2::facet_wrap(~.data$stream, ncol = 1) +  ggplot2::theme_minimal() +
+        ggplot2::xlab("times") +  ggplot2::ylab("Number of events")
+     if(type == "fitted"){
+        line
+    }else{
+        if(type == "data"){
+            hist
+        }else{
+            gridExtra::grid.arrange(line, hist, ncol = 1)
+        }
+    }
     }
 
 #' Compensator and other goodness-of-fit metrics for a Hawkes process

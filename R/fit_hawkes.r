@@ -125,6 +125,7 @@ fit_hawkes <-  function(times, parameters = list(), model = 1,
     trace <- if(optim_silent) 0 else 1
     opt <- stats::optim(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
     obj$objective <- opt$value
+    class(obj) <- "stelfi_tmb"
     return(obj)
 }
 
@@ -312,6 +313,7 @@ fit_hawkes_cbf <- function(times, parameters = list(),
     obj$background_parameters <- opt$par
     obj$background <- background
     obj$background_integral <- background_integral
+    class(obj) <- "stelfi_tmb"
     return(obj)
 }
 #' @details A multivariate Hawkes process that allows for between- and within-stream self-excitement.
@@ -380,6 +382,7 @@ fit_mhawkes <- function(times, stream,
     opt <- stats::optim(obj$par, obj$fn, obj$gr, control = list(trace = trace), ...)
     obj$objective <- opt$value
     obj$env$data$stream <- stream
+    class(obj) <- "stelfi_tmb"
     return(obj)
 }
                         

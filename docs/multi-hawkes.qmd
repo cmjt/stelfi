@@ -1,0 +1,92 @@
+## Multivariate Hawkes
+
+```{r}
+#| echo: false
+write_matrix <- function(x) {
+  begin <- "\\begin{bmatrix}"
+  end <- "\\end{bmatrix}"
+  X <-
+    apply(x, 1, function(x) {
+      paste(
+        paste(x, collapse = "&"),
+        "\\\\"
+      )
+    })
+  paste(c(begin, X, end), collapse = "")
+}
+```
+
+A multivariate Hawkes process allows for between- and within-stream self-excitement. In `stelfi` the conditional intensity for the $j^{th}$ ($j = 1, ..., N$) stream is given by
+
+ $$\lambda(t)^{j*} = \mu_j + \Sigma_{k = 1}^N\Sigma_{i:\tau_i<t} \alpha_{jk} e^{(-\beta_j * (t-\tau_i))},$$ 
+where $j, k  \in (1, ..., N)$. Here, $\alpha_{jk}$ is the excitement caused by the $k^{th}$ stream on the $j^{th}$. Therefore, $\boldsymbol{\alpha}$ is an $N \times N$ matrix where the diagonals represent the within-stream excitement and the off-diagonals represent the excitement between streams.
+
+Plotted below are the conditional intensities ($\lambda_{.}(t), t \in [0,T]$) of a bivariate Hawkes process with $\mu = (0.5, 0.9)$, $\boldsymbol{\alpha}$ = $`r write_matrix(matrix(c(0.2, 0.1 ,0.6, 0.5), nrow = 2, byrow = TRUE))`$, and $\beta = (0.7, 0.9)$. Observed events (n = 33) are shown by the vertical dashes along the x-axis.  The intensity of any stream increases immediately after any event occurs (i.e., irrespective of stream) and decays exponentially over time if no event is observed for some period. Typically, herem a jump in intensity due to the occurence of an event in the same stream is called self-excitation (diagonal elements of $\boldsymbol{\alpha}$)  and a jump in intensity due to the occurence of an event in a different stream is called cross-excitation (off-diagonal elements of $\boldsymbol{\alpha}$).
+
+
+```{r}
+#| echo: false
+#| message: false
+devtools::load_all("~/Git/stelfi")
+mu <- c(0.5, 0.9)
+alpha <- matrix(c(0.2, 0.1 ,0.6, 0.5), byrow = TRUE, nrow = 2)
+beta <- c(0.7, 0.9)
+set.seed(1)
+tmp <- hawkes::simulateHawkes(mu, alpha, beta, 10)
+data <- data.frame(times = unlist(tmp), stream =  rep(c("Stream 1", "Stream 2"),
+                                                      times = sapply(tmp, length)))
+data <- data[order(data$times),]
+dat_2 <- data.frame(x = seq(min(data$times), max(data$times), length.out = 500))
+tst <- stelfi:::multi_hawkes_intensity(times = data$times, alpha = alpha,
+                      mu = mu, beta = beta,
+                      p = dat_2$x,stream = data$stream)
+dat_2$`Stream 1` <- tst[[1]]
+dat_2$`Stream 2` <- tst[[2]]
+data_2 <- tidyr::pivot_longer(dat_2, cols = 2:3, names_to = "stream")
+
+require(ggplot2)
+ggplot(data_2, aes(x = x, y = value, col = stream, group = stream)) +
+    geom_line(linewidth = 1) +
+    geom_point(data = data, aes(x = times, y = rep(0, times = nrow(data)), col = stream, group = stream),
+               pch = "|", size = 5) +    theme_classic(base_size = 10) + ylab(expression(lambda[.]~"(t)")) +
+    xlab("") +
+    theme(legend.position = "top", legend.title = element_blank()) +
+    scale_color_manual(values =  c("black", "grey"), labels = c("Stream 1", "Stream 2")) +
+    scale_x_continuous(labels = c("t = 0","t = T"),
+                       breaks = seq(min(data$times), max(data$times), length.out = 2)) 
+```
+
+## A simulated example
+
+Simulating data from the `hawkes` package @hawkes_pkg with  $\mu = (0.5, 0.9)$, $\boldsymbol{\alpha}$ = $`r write_matrix(matrix(c(0.2, 0.1 ,0.6, 0.5), nrow = 2, byrow = TRUE))`$, and $\beta = (0.7, 0.9)$ over the time period $t\in [0,50)$.
+
+```{r}
+mu <- c(0.5, 0.9)
+alpha <- matrix(c(0.2, 0.1 ,0.6, 0.5), byrow = TRUE, nrow = 2)
+beta <- c(0.7, 0.9)
+set.seed(1)
+sim <- hawkes::simulateHawkes(mu, alpha, beta, 500)
+```
+
+To fit the model in `stelfi` the `fit_mhawkes()` function is used with the arguments `times` (a numeric vector of event times), `stream` (a character vector specifying the stream ID of each observation in `times`), and a lit of starting value for the parameters (`parameters`).
+
+
+```{r}
+## reformat data for fitting
+data <- data.frame(times = unlist(sim), stream =  rep(c("Stream 1", "Stream 2"),
+                                                      times = sapply(sim, length)))
+data <- data[order(data$times),]
+## list of starting values
+sv <- list(mu =  mu,alpha = alpha, beta = beta)
+fit <- stelfi::fit_mhawkes(times = data$times, stream = data$stream, parameters = sv)
+
+
+get_coefs(fit)
+```
+
+The fitted model is plotted using `show_multivariate_hawkes()` (default `type = "both")
+
+```{r, echo = TRUE,fig.height = 7,fig.width = 9}
+#| warning: false
+show_multivariate_hawkes(fit)
+```
