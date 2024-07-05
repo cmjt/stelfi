@@ -130,8 +130,20 @@ show_multivariate_hawkes <- function(obj, type = c("fitted", "data", "both")){
             gridExtra::grid.arrange(line, hist, ncol = 1)
         }
     }
+}
+#' Plot a fitted Hawkes model
+#' @inheritParams show_hawkes
+#' @export
+plot.stelfi_tmb <- function(obj, type = c("fitted", "data", "both") ){
+    type <- type[1]
+    if(obj$env$data$model_type == "multi_hawkes"){
+        show_multivariate_hawkes(obj, type)
+    }else{
+        if(obj$env$data$model_type == "hawkes"){
+            show_hawkes(obj, type)
+        }
     }
-
+}
 #' Compensator and other goodness-of-fit metrics for a Hawkes process
 #'
 #' Plots a number of goodness-of-fit plots for a fitted

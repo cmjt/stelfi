@@ -251,6 +251,7 @@ fit_lgcp <-  function(locs, sf, smesh, tmesh, parameters, covariates,
                         nlminb_silent = nlminb_silent,
                         simulation = FALSE,
                         ...)
+    class(res) <- "stelfi_tmb"
     return(res)
 
 }

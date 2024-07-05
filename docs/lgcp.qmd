@@ -1,50 +1,119 @@
 # Log-Gaussian Cox process {#lgcp}
 
-A Log-Gaussian Cox Process (LGCP) is a doubly stochastic spatial point process. In the simplest case, the intensity of the point process over space is given by:
+A Log-Gaussian Cox Process (LGCP) is a doubly stochastic spatial point process. In the simplest case, the intensity of the point process over space is given by
 $$\Lambda(s) = \text{exp}(\beta_0 + G(s) + \epsilon)$$
-where $\beta_0$ is a constant, known as the intercept, $G(s)$ is a Gaussian Markov Random Field (GMRF) and $\epsilon$ an error term. 
+where $\beta_0$ is a constant, known as the intercept, $G(s)$ is a Gaussian Markov Random Field (GMRF) and $\epsilon$ an error term.
 
-It is conventional to use Matérn covariance function to define the covariance of the random field. This takes two parameters $\tau$ and $\kappa$, commonly reported as $r=\frac{\sqrt{8}}{\kappa}$ and $\sigma=\frac{1}{\sqrt{4\pi\kappa^2\tau^2}}$, where $r$ is the range and $\sigma$ is the standard deviation. 
-
-## The `fit_lgcp()` function
+Plotted below is a realisation of a LGCP within a disc shaped region overlain on the latent GMRF.
 
 ```{r}
-args(fit_lgcp)
+#| echo: false
+#| message: false
+devtools::load_all("~/Git/stelfi")
+require(ggplot2)
+sf <- sf::st_as_sf(spatstat.geom::disc())
+smesh <- fmesher::fm_mesh_2d(loc.domain = sf::st_coordinates(sf)[, 1:2], max.edge = 0.2, cutoff = 0.1)
+parameters <- c(beta = 3, log_tau = 1.6, log_kappa = 1.95)
+set.seed(1)
+sim <- sim_lgcp(parameters = parameters, sf = sf, smesh = smesh)
+pts <- smesh$loc[rep(1:nrow(smesh$loc), times = sim$y),1:2 ]
+set.seed(23)
+pts <- data.frame(x = pts[,1] + runif(nrow(pts), -0.05, 0.05), y = pts[,2] + runif(nrow(pts), -0.05, 0.05))
+idx <- spatstat.geom::inside.owin(pts, w = spatstat.geom::disc())
+pts <- pts[idx, ]
+
+show_field(sim$x, smesh, sf = sf, clip = TRUE) + theme_void() + theme(legend.position = "none") +
+    theme(text = element_text(size=15)) +
+    geom_point(data = data.frame(x = pts[,1], y = pts[,2]), aes(x = x, y = y), size = 3)
+
 ```
 
+Following the Stochastic Partial Differential (SPDE) approach proposed by @spde a Matérn covariance function is used for the covariance of the random field. This takes two parameters $\tau$ and $\kappa$, commonly reported as $r=\frac{\sqrt{8}}{\kappa}$ and $\sigma=\frac{1}{\sqrt{4\pi\kappa^2\tau^2}}$, where $r$ is the range and $\sigma$ is the standard deviation. In the figure above $\beta = 3$, $\text{log}(\tau) = 1.6$, and $\text{log}(\kappa) = 1.95$.
 
-### Fitting a spatial only LGCP
+## Delauney triangluations when fitting LGCP models {#sec-mesh}
+
+## Fitting a spatial LGCP
+
+Using the applied example given in @stelfi a LGCP model is fitted to sasquatch sightings using the function `fit_lgcp()`. For more detais on the use of the Delauney triangluation see @sec-mesh.
 
 ```{r}
-data(xyt, package = "stelfi")
-domain <- sf::st_as_sf(xyt$window)
-locs <- data.frame(x = xyt$x, y = xyt$y)
-bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-smesh <- INLA::inla.mesh.2d(boundary = bnd,
-                                max.edge = 0.75, cutoff = 0.3)
-fit <- fit_lgcp(locs = locs, sf = domain, smesh = smesh,
-                                parameters = c(beta = 0, log_tau = log(1),
-                                               log_kappa = log(1)))
-get_coefs(fit)
+#| message: false
+data("sasquatch", package = "stelfi")
+## get sf of the contiguous US
+sf::sf_use_s2(FALSE)
+us <- maps::map("usa", fill = TRUE, plot = FALSE) |>
+    sf::st_as_sf() |>
+    sf::st_make_valid()
+## dataframe of sighting locations (lat, long)
+locs <- sf::st_coordinates(sasquatch) |>
+   as.data.frame()
+names(locs) <- c("x", "y")
+## Delauney triangluation of domain
+smesh <- fmesher::fm_mesh_2d(loc = locs[, 1:2], max.edge = 2, cutoff = 1)
+## fit model with user-chosen parameter starting values
+fit <- fit_lgcp(locs = locs, sf = us, smesh = smesh,
+                parameters = c(beta = 0, log_tau = log(1),
+                               log_kappa = log(1)))
+coef(fit, se = TRUE)			       
 ```
 
+The estimated GMRF can be plotted using the `show_field()` function once the values have been extracted using `get_fields()`.
 
 ```{r}
+#| message: false
 get_fields(fit, smesh) |>
-    show_field(smesh = smesh, sf = domain) + ggplot2::theme_void()
-show_lambda(fit, smesh = smesh, sf = domain) + ggplot2::theme_void()
+    show_field(smesh = smesh, sf = us, clip = TRUE) + ggplot2::theme_classic()
+```
+
+The estimated intensity surface can be plotted using the `show_lambda()` function.
+
+```{r}
+#| message: false
+show_lambda(fit, smesh = smesh, sf = us, clip = TRUE) + ggplot2::theme_classic()
 ```
 
 
+As a comparison, `inlabru` (@inlabru) is used to fit the same model to these data.
 
-
-## The `sim_lgcp()` function
-
-**Simulating a spatiotemporal LGCP**
-
-**Option 1** using `sim_lgcp`
 
 ```{r}
+#| message: false
+require(inlabru)
+require(sp)
+locs_sp <- locs; sp::coordinates(locs_sp) <- c("x", "y")
+domain <- as(us, "Spatial")
+matern <- INLA::inla.spde2.pcmatern(smesh,
+prior.sigma = c(0.1, 0.01),
+prior.range = c(5, 0.01)
+)
+## latent field
+cmp <- coordinates ~ random_field(coordinates, model = matern) + Intercept(1)
+sp::proj4string(locs_sp) <- smesh$crs <- sp::proj4string(domain)
+## fit model
+fit_inla <- lgcp(cmp, locs_sp, samplers = domain, domain = list(coordinates = smesh))
+pars <- rbind(fit_inla$summary.fixed[,1:2], fit_inla$summary.hyperpar[,1:2])
+pars
+```
+
+The table below gives the estimated parameter values from `stelfi` and `inlabru`, and hawkesbow along with the standard errors in brackets.
+
+```{r}
+#| echo: false
+stelfi <- coef(fit, se = TRUE)[c(1, 4, 5),]
+params <- data.frame(stelfi = c(paste(round(stelfi[,1], 3), "(", round(stelfi[,2], 3), ")")),
+                     inlabru = c(paste(round(pars[,1], 3), "(", round(pars[,2], 3), ")")))
+params <- t(params)
+knitr::kable(params, col.names = c("$\\beta$", "$r$", "$\\sigma$"), escape = FALSE)
+```
+
+
+## Simulating a spatiotemporal LGCP
+
+**Option 1** using `sim_lgcp
+
+```{r}
+#| eval: false
+
 parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2)
 simdata <- sim_lgcp(parameters = parameters, sf = domain, smesh = smesh, tmesh = tmesh)
 simdata$x[,1] |>
@@ -55,6 +124,8 @@ simdata$x[,1] |>
 **Option 2** directly from the fitted model
 
 ```{r}
+#| eval: false
+
 simdata <- fit$simulate()
 simdata$x[,1] |>
     show_field(smesh = smesh) +

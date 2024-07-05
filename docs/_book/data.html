@@ -8,7 +8,7 @@
 
 <meta name="description" content="Using stelfi">
 
-<title>The R package stelfi - 6&nbsp; Datasets in stelfi</title>
+<title>The R package stelfi - 7&nbsp; Datasets in stelfi</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -145,7 +145,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -194,12 +194,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./summary.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></a>
+  <a href="./lgcp.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Log-Gaussian Cox process (LGCP)</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./data.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></a>
+  <a href="./summary.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -216,19 +221,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#temporal-point-pattern-data" id="toc-temporal-point-pattern-data" class="nav-link active" data-scroll-target="#temporal-point-pattern-data"><span class="toc-section-number">6.1</span>  Temporal point pattern data</a>
+  <li><a href="#temporal-point-pattern-data" id="toc-temporal-point-pattern-data" class="nav-link active" data-scroll-target="#temporal-point-pattern-data"><span class="toc-section-number">7.1</span>  Temporal point pattern data</a>
   <ul class="collapse">
   <li><a href="#retweets_niwa" id="toc-retweets_niwa" class="nav-link" data-scroll-target="#retweets_niwa"><code>retweets_niwa</code></a></li>
   <li><a href="#uk_serial" id="toc-uk_serial" class="nav-link" data-scroll-target="#uk_serial"><code>uk_serial</code></a></li>
   </ul></li>
-  <li><a href="#spatiotemporal-point-pattern-data" id="toc-spatiotemporal-point-pattern-data" class="nav-link" data-scroll-target="#spatiotemporal-point-pattern-data"><span class="toc-section-number">6.2</span>  Spatiotemporal point pattern data</a>
+  <li><a href="#spatiotemporal-point-pattern-data" id="toc-spatiotemporal-point-pattern-data" class="nav-link" data-scroll-target="#spatiotemporal-point-pattern-data"><span class="toc-section-number">7.2</span>  Spatiotemporal point pattern data</a>
   <ul class="collapse">
   <li><a href="#sasquatch" id="toc-sasquatch" class="nav-link" data-scroll-target="#sasquatch"><code>sasquatch</code></a></li>
   <li><a href="#nz_earthquakes" id="toc-nz_earthquakes" class="nav-link" data-scroll-target="#nz_earthquakes"><code>nz_earthquakes</code></a></li>
   <li><a href="#nz_murders" id="toc-nz_murders" class="nav-link" data-scroll-target="#nz_murders"><code>nz_murders</code></a></li>
   <li><a href="#iraq_terrorism" id="toc-iraq_terrorism" class="nav-link" data-scroll-target="#iraq_terrorism"><code>iraq_terrorism</code></a></li>
   </ul></li>
-  <li><a href="#simulated-data" id="toc-simulated-data" class="nav-link" data-scroll-target="#simulated-data"><span class="toc-section-number">6.3</span>  Simulated data</a>
+  <li><a href="#simulated-data" id="toc-simulated-data" class="nav-link" data-scroll-target="#simulated-data"><span class="toc-section-number">7.3</span>  Simulated data</a>
   <ul class="collapse">
   <li><a href="#xyt" id="toc-xyt" class="nav-link" data-scroll-target="#xyt"><code>xyt</code></a></li>
   <li><a href="#marked" id="toc-marked" class="nav-link" data-scroll-target="#marked"><code>marked</code></a></li>
@@ -242,7 +247,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="data" class="quarto-section-identifier d-none d-lg-block"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></span></h1>
+<h1 class="title"><span id="data" class="quarto-section-identifier d-none d-lg-block"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></span></h1>
 </div>
 
 
@@ -279,8 +284,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 [11,] "xyt"            ""   </code></pre>
 </div>
 </div>
-<section id="temporal-point-pattern-data" class="level2" data-number="6.1">
-<h2 data-number="6.1" class="anchored" data-anchor-id="temporal-point-pattern-data"><span class="header-section-number">6.1</span> Temporal point pattern data</h2>
+<section id="temporal-point-pattern-data" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="temporal-point-pattern-data"><span class="header-section-number">7.1</span> Temporal point pattern data</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">## load the tidyverse packages</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -356,8 +361,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </section>
 </section>
-<section id="spatiotemporal-point-pattern-data" class="level2" data-number="6.2">
-<h2 data-number="6.2" class="anchored" data-anchor-id="spatiotemporal-point-pattern-data"><span class="header-section-number">6.2</span> Spatiotemporal point pattern data</h2>
+<section id="spatiotemporal-point-pattern-data" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="spatiotemporal-point-pattern-data"><span class="header-section-number">7.2</span> Spatiotemporal point pattern data</h2>
 <p>Using <code>maps</code> to create <code>sf</code> objects of country boundaries:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>us <span class="ot">&lt;-</span> maps<span class="sc">::</span><span class="fu">map</span>(<span class="st">"usa"</span>, <span class="at">fill =</span> <span class="cn">TRUE</span>, <span class="at">plot =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
@@ -638,11 +643,11 @@ replace the existing one.</code></pre>
 </div>
 </section>
 </section>
-<section id="simulated-data" class="level2" data-number="6.3">
-<h2 data-number="6.3" class="anchored" data-anchor-id="simulated-data"><span class="header-section-number">6.3</span> Simulated data</h2>
+<section id="simulated-data" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="simulated-data"><span class="header-section-number">7.3</span> Simulated data</h2>
 <section id="xyt" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="xyt"><code>xyt</code></h3>
-<p>In <a href="#lgcp">this chapter</a> a log-Gaussian Cox process is fitted to these data and in <a href="#stelfi">this chapter</a> a spatiotemporal selfexciting model is fitted.</p>
+<p>In <a href="lgcp.html">this chapter</a> a log-Gaussian Cox process is fitted to these data and in <a href="#stelfi">this chapter</a> a spatiotemporal selfexciting model is fitted.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"xyt"</span>, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>xyt_sf <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(xyt)</span>
@@ -893,7 +898,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./summary.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

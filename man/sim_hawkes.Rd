@@ -36,9 +36,9 @@ Simulates a self-exciting Hawkes process.
 \details{
 Option of two methods to simulate a Hawkes process: 
 if \code{method = "1"} then a univariate Hawkes process as 
-\code{hawkes::simulateHawkes()} is simulated,
+algorithm 2 in Ogata, Y. (1981) is simulated,
 if \code{method = "2"} then an accept/reject
-framework is used.
+framework is used).
 }
 \examples{
 sim_hawkes(10.2, 3.1, 8.9)

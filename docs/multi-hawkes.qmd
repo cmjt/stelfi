@@ -84,9 +84,9 @@ fit <- stelfi::fit_mhawkes(times = data$times, stream = data$stream, parameters 
 get_coefs(fit)
 ```
 
-The fitted model is plotted using `show_multivariate_hawkes()` (default `type = "both")
+The fitted model is plotted using `show_multivariate_hawkes()` (default `type = "fitted"`)
 
 ```{r, echo = TRUE,fig.height = 7,fig.width = 9}
 #| warning: false
-show_multivariate_hawkes(fit)
+show_multivariate_hawkes(fit, type = "both")
 ```
