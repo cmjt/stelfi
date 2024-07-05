@@ -12,22 +12,24 @@ struct diffusionkernel {
   vector<Type> w;
   matrix<Type> xyloc;
   matrix<Type> Qbase;
+  Type simple;
   diffusionkernel(vector<Type> times_, matrix<Type> locs_, Type beta_,
-    vector<Type> w_, matrix<Type> xyloc_, matrix<Type> Qbase_)   // Constructor of integrand
-  : times(times_), locs(locs_), beta(beta_), w(w_), xyloc(xyloc_), Qbase(Qbase_) {}       // Initializer list
+    vector<Type> w_, matrix<Type> xyloc_, matrix<Type> Qbase_, Type simple_)   // Constructor of integrand
+  : times(times_), locs(locs_), beta(beta_), w(w_), xyloc(xyloc_), Qbase(Qbase_), simple(simple_) {}       // Initializer list
   vector<Type> ratesep(Type t){
     using namespace density;
     matrix<Type> ans(times.size(), w.size());
     ans.setZero();
     
-    // MVNORM_t<Type> bivnorm(Qbase);
+    MVNORM_t<Type> bivnorm(Qbase);
     // for each event i
     for (int i = 0; i < times.size(); ++i) {
       if (t > times[i]){
-        
-        // Get the spatial diffusion kernel
-        matrix<Type> Q = Qbase * (t - times[i]);
-        MVNORM_t<Type> bivnorm(Q);
+        // If time dependent gaussian 
+        if (simple == 0) {
+          matrix<Type> Q = Qbase * (t - times[i]);
+          MVNORM_t<Type> bivnorm(Q);
+        }
         
         // For each 'tile' of the mesh
         for (int j = 0; j < w.size(); ++j){
@@ -195,7 +197,7 @@ Type spatial_hawkes(objective_function<Type>* obj) {
 
   // term 3
   if (simple == 0){
-    diffusionkernel<Type> diffker(times, locs, beta, w, xyloc, Qbase);
+    diffusionkernel<Type> diffker(times, locs, beta, w, xyloc, Qbase, Type(simple));
     nll += alpha * romberg::integrate(diffker, Type(0.), tmax);
   } else {
     MVNORM_t<Type> bivnorm2(Qbase);
@@ -271,7 +273,7 @@ Type spatial_hawkes(objective_function<Type>* obj) {
 
 
       // Step 5.
-      diffusionkernel<Type> diffker2(times, locs, beta, w, xyloc, Qbase);
+      diffusionkernel<Type> diffker2(times, locs, beta, w, xyloc, Qbase, Type(simple));
       lambdaXsasep = diffker2.ratesep(sa) * alpha;
       
       // If we accept time
@@ -310,9 +312,14 @@ Type spatial_hawkes(objective_function<Type>* obj) {
             
             if (temp > urate*(sum(lambdaXsasep) + D)) {
               locibase = locs.row(j);
-              Q2 = Qbase * (times[i] - times[j]);
+              
+              if (simple == 0) {
+                // If time dependent gaussian
+                Q2 = Qbase * (times[i] - times[j]);
+              } else {
+                Q2 = Qbase;
+              }
               loci = rbivnorm(locibase, Q2);
-              // loci = rbivnorm(locibase, Qbase);
               
               if (pointinSP(loci, xyloc, tv)) {
                 // Step 10
