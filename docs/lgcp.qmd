@@ -107,28 +107,3 @@ knitr::kable(params, col.names = c("$\\beta$", "$r$", "$\\sigma$"), escape = FAL
 ```
 
 
-## Simulating a spatiotemporal LGCP
-
-**Option 1** using `sim_lgcp
-
-```{r}
-#| eval: false
-
-parameters <- c(beta = 1, log_tau = log(1), log_kappa = log(1), atanh_rho = 0.2)
-simdata <- sim_lgcp(parameters = parameters, sf = domain, smesh = smesh, tmesh = tmesh)
-simdata$x[,1] |>
-    show_field(smesh = smesh) +
-    ggplot2::theme_void()
-```
-
-**Option 2** directly from the fitted model
-
-```{r}
-#| eval: false
-
-simdata <- fit$simulate()
-simdata$x[,1] |>
-    show_field(smesh = smesh) +
-    ggplot2::theme_void()
-```
-

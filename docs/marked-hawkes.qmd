@@ -7,7 +7,7 @@ where $\mu$ is the background rate of the process and $m(t)$ is the temporal mar
 
 ## A simulated example
 
-Simulating data from the `emhawkes` package @emhawkes where the marks (a vector that scale the jump sizes, starting at 0) are integer values $\in [1,4]$ for $t > 0$ and $0$ for $t = 0$ (see @sec-simulate-marked-hawkes for how to smulate ussing `stelfi`). The parameter values of the conditional intensity are $\mu = 1.3$, $\alpha = 0.4$, and $\beta = 1.5$. The jump sizes for the possible mark values are shown below.
+Below data are simulated using the `emhawkes` package [@emhawkes] where the marks (a vector that scale the jump sizes, starting at 0) are integer values $\in [1,4]$ for $t > 0$ and $0$ for $t = 0$ (see @sec-simulate-marked-hawkes for how to simulate using `stelfi`). The parameter values of the conditional intensity are $\mu = 1.3$, $\alpha = 0.4$, and $\beta = 1.5$. The jump sizes for the possible mark values are shown below.
 
 ```{r}
 #| echo: false
@@ -38,7 +38,14 @@ fit <- fit_hawkes(times = res$arrival, parameters = sv, marks = res$mark)
 get_coefs(fit)
 ```
 
-Note the estimated coefficient $\alpha$ from `stelfi` equates to $\frac{\alpha}{\text{mark}}$ from `emhawkes`.
+Note the estimated coefficient $\alpha$ from `stelfi` equates to $\frac{\alpha}{\text{mark}}$ from `emhawkes`. 
+
+```{r}
+#| warning: false
+## benchmark emhawkes
+emhawkes::hfit(h1, inter_arrival = res$inter_arrival, mark = res$mark) |>
+  summary()
+``` 
 
 The fitted model and diagnostic plots are plotted using `show_hawkes()` and `show_hawkes_GOF()`.
 
@@ -54,17 +61,41 @@ show_hawkes_GOF(fit)
 
 ## Simulating a marked process {#sec-simulate-marked-hawkes}
 
-The TMB (@tmb) templates in `stelfi` allow you to simulate from a fitted model as below. Including the argument `complete = TRUE` returns the mark values as well as the event times.
+TODO
+
+## The negative log-likelihood
+
+Below the negative log-likelihood of a univariate marked Hawkes process used by `stelfi` is written using `R` syntax and then `RTMB` [@RTMB] is used for parameter estimation. [See here for and overview](https://cran.r-project.org/web/packages/RTMB/vignettes/RTMB-introduction.html) of `RTMB`. This section is for demonstration only, feel free to modify the function as desired. Note that this can be used to fit an unmarked model by setting the vector of marks to be $\boldsymbol{1}$.
 
 ```{r}
-#| warning: false
-#| message: false
-set.seed(435)
-sim <- fit$simulate(complete = TRUE)
-## fit to simulated data
-fit <- fit_hawkes(times = sim$times, parameters = sv, marks = sim$marks)
-get_coefs(fit)
-show_hawkes(fit)
+library(RTMB)
+univariate_marked_hawkes <- function(params){
+    getAll(data, params)
+    mu <- exp(log_mu)
+    beta <- exp(log_beta)
+    alpha <- exp(logit_abratio) / (1 + exp(logit_abratio)) * (beta/mean(marks))
+    n <- length(times)
+    last <- times[n]
+    nll <- 0
+    A <- advector(numeric(n)) 
+    for(i in 2:n){
+        A[i] <- sum(exp(-beta * (times[i] - times[i - 1])) * (marks[i - 1] + A[i - 1]))
+    }
+    term_3vec <- log(mu + alpha * A)
+    nll <- (mu * last) + ((alpha/beta) * (sum(marks) - marks[n] - A[n])) - sum(term_3vec)
+    ADREPORT(mu)
+    ADREPORT(alpha)
+    ADREPORT(beta)
+    return(nll)
+}
+
+data <- list(times = res$arrival, marks = res$mark)
+params <- list(log_mu = log(1.3), logit_abratio = 0.6, log_beta = log(1.5))
+obj <- MakeADFun(univariate_marked_hawkes, params, silent = TRUE)
+opt <- nlminb(obj$par, obj$fn, obj$gr)
+summary(sdreport(obj), "report")
+
 ```
+
 
 

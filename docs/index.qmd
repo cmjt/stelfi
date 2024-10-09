@@ -2,7 +2,7 @@
 
 ::: {.callout-warning}
 
-This book is a **work in progress**, please bear with me as I update and fix the issues.
+This book is a **work in progress**, please bear with me as I continue to update it.
 
 If you have any particular examples you'd like to be included please let me know @ c.jonestodd@auckland.ac.nz
 
