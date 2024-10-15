@@ -261,7 +261,6 @@ Type spde_hawkes(objective_function<Type>* obj) {
     loci = rpoisplane_sp(xyloc, tv, x, w);
     locs.row(0) = loci;
     // Step 10 for the first time.
-    // std::cout<<times[i]<<" "<<locs(i, 0)<<" "<<locs(i, 1)<<" "<<gammac<<std::endl;
     i++;
     // Repeat from Step 3
     while (i < times.size()){
@@ -293,7 +292,6 @@ Type spde_hawkes(objective_function<Type>* obj) {
             if (pointinSP_sp(loci, xyloc, tv)){
               // Step 10
               locs.row(i) = loci;
-              // std::cout<<times[i]<<" "<<locs(i, 0)<<" "<<locs(i, 1)<<" "<<gammac<<std::endl;
               i++;
             }
             break;
@@ -305,7 +303,6 @@ Type spde_hawkes(objective_function<Type>* obj) {
         loci = rpoisplane_sp(xyloc, tv, x, w);
         locs.row(i) = loci;
         // Step 10.
-        // std::cout<<times[i]<<" "<<locs(i, 0)<<" "<<locs(i, 1)<<" "<<gammac<<std::endl;
         i++;
       }
       gammac = D + sum(lambdaXsasep);

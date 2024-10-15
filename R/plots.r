@@ -113,7 +113,7 @@ show_multivariate_hawkes <- function(obj, type = c("fitted", "data", "both")){
                       lam = unlist(lam.p),
                       stream = rep(names(table(stream)), each = length(p)))
 
-    line <- ggplot2::ggplot(dat, ggplot2::aes(x = x, y = lam, col = stream, group = stream)) +
+    line <- ggplot2::ggplot(dat, ggplot2::aes(x = .data$x, y = .data$lam, col = .data$stream, group = .data$stream)) +
         ggplot2::geom_line() +
         ggplot2::xlab("") +
         ggplot2::ylab(expression(lambda(t))) +  ggplot2::theme_minimal()

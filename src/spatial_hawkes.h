@@ -175,7 +175,6 @@ Type spatial_hawkes(objective_function<Type>* obj) {
   vector<Type> A(times.size());
   A.setZero();
   if (simple == 0) {
-    // std::cout << "[SIMULATE] SIMPLE == 0" << std::endl;
     for (int j = 1; j < times.size(); ++j)
       for (int i = 0; i < j; ++i){
         Q2 = Qbase * (times[j] - times[i]);
@@ -222,7 +221,6 @@ Type spatial_hawkes(objective_function<Type>* obj) {
     // Only for constant background without covariates
     // This simulation process follows Algorithm 4 in Section 3.3 of Reinhart (2018).
     DATA_IMATRIX(tv);
-    // std::cout << "[SIMULATE] tv dimensions: " << tv.rows() << " x " << tv.cols() << std::endl;
     /*
       Need the triangulation to check whether points generated are in the area of interest.
 

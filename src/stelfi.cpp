@@ -52,3 +52,9 @@ Type objective_function<Type>::operator() ()
 }
 
   
+// RegisteringDynamic Symbols
+
+void R_init_stelfi(DllInfo* info) {
+  R_registerRoutines(info, NULL, NULL, NULL, NULL);
+  R_useDynamicSymbols(info, TRUE);
+}
