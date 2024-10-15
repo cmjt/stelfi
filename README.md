@@ -3,10 +3,10 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/cmjt/stelfi/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/cmjt/stelfi/actions/workflows/R-CMD-check.yaml)
 [![CRAN status](https://www.r-pkg.org/badges/version/stelfi)](https://CRAN.R-project.org/package=stelfi)
-![downloads](http://cranlogs.r-pkg.org/badges/stelfi)
-![total downloads](http://cranlogs.r-pkg.org/badges/grand-total/stelfi)
 [![Codecov test coverage](https://codecov.io/gh/cmjt/stelfi/branch/master/graph/badge.svg)](https://app.codecov.io/gh/cmjt/stelfi?branch=master)
 <!-- badges: end -->
+![downloads](http://cranlogs.r-pkg.org/badges/stelfi)
+![total downloads](http://cranlogs.r-pkg.org/badges/grand-total/stelfi)
 
 `stelfi` is an `R` package that fit a range of Hawkes and log-Gaussian Cox point process models. Models are fitted via maximum likelihood using [Template Model Builder](https://github.com/kaskr/adcomp).
 
@@ -26,7 +26,15 @@ devtools::install_github("cmjt/stelfi")
 
 ## Examples
 
-See [here](https://cmjt.github.io/stelfi/) for some examples of `stelfi`'s functionality.
+::: {.callout-warning}
+
+[This ebook](https://cmjt.github.io/stelfi/) is a **work in progress**, please bear with me as I update and fix the issues.
+
+If you have any particular examples you'd like to be included please let me know @ c.jonestodd@auckland.ac.nz
+
+:::
+
+
 
 ## Issues
 
