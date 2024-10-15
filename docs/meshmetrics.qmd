@@ -1,4 +1,4 @@
-# Delaunay triangulation metrics {#meshmetrics}
+# Delaunay triangulation metrics {#sec-meshmetrics}
 
 ```{r}
 #| eval: false

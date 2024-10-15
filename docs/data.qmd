@@ -3,8 +3,7 @@
 Below are the data packaged within `stelfi`.
 
 ```{r}
-devtools::load_all("~/Git/stelfi")
-data(package = "stelfi")$result[, c("Item", "Title")]
+data(package = "stelfi")$result[, "Item"]
 ```
 
 

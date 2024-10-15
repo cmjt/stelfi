@@ -1,4 +1,4 @@
-### Including a random field
+# Including a random field in a spatiotemporal self-exciting model
 
 ```{r}
 ## Note: just because you can, doesn't mean you should...
@@ -18,3 +18,6 @@ get_fields(fit, smesh) |>
 	geom_sf(data = domain, fill = NA, col = "black", lwd = 2)  +
 	theme_void()
 ```
+
+
+TODO

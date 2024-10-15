@@ -32,6 +32,8 @@ Following the Stochastic Partial Differential (SPDE) approach proposed by @spde 
 
 ## Delauney triangluations when fitting LGCP models {#sec-mesh}
 
+TODO
+
 ## Fitting a spatial LGCP
 
 Using the applied example given in @stelfi a LGCP model is fitted to sasquatch sightings using the function `fit_lgcp()`. For more detais on the use of the Delauney triangluation see @sec-mesh.

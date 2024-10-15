@@ -12,7 +12,7 @@ If you have any particular examples you'd like to be included please let me know
 
 ```{r}
 #| echo: false
-library(stelfi)
+devtools::load_all("~/Git/stelfi")
 ```
 
 

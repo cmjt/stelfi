@@ -149,12 +149,42 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./summary.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></a>
+  <a href="./lgcp.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Log-Gaussian Cox process</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./data.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></a>
+  <a href="./lgcp-spatiotemporal.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Spatiotemporal LGCP</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lgcp-marked.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Marked log-Gaussian Cox process</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stelfi.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Spatiotemporal self-exciting models</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stelfi-gmrf.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Including a random field in a spatiotemporal self-exciting model</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./meshmetrics.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Delaunay triangulation metrics</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -203,14 +233,14 @@ Warning
 <p>If you have any particular examples you’d like to be included please let me know @ c.jonestodd@auckland.ac.nz</p>
 </div>
 </div>
-<p>The <code>stelfi</code> package fits Hawkes and log-Gaussian Cox Point Process models, with extensions, using Template Model Builder (<span class="citation" data-cites="tmb">Kristensen et al. (<a href="references.html#ref-tmb" role="doc-biblioref">2016</a>)</span>).</p>
+<p>The <code>stelfi</code> package fits Hawkes and log-Gaussian Cox Point Process models, with extensions, using Template Model Builder (<span class="citation" data-cites="tmb">Kristensen et al. (<a href="#ref-tmb" role="doc-biblioref">2016</a>)</span>).</p>
 <p><strong>Overview</strong></p>
-<p>A Hawkes process is a self-exciting temporal point process where the occurrence of an event immediately increases the chance of another (see <span class="citation" data-cites="hawkes">Hawkes (<a href="references.html#ref-hawkes" role="doc-biblioref">1971</a>)</span>). <code>stelfi</code> also offers functionality to fit self-inhibiting process and a non-homogeneous background rate.</p>
+<p>A Hawkes process is a self-exciting temporal point process where the occurrence of an event immediately increases the chance of another (see <span class="citation" data-cites="hawkes">Hawkes (<a href="#ref-hawkes" role="doc-biblioref">1971</a>)</span>). <code>stelfi</code> also offers functionality to fit self-inhibiting process and a non-homogeneous background rate.</p>
 <p>A log-Gaussian Cox process is a Poisson point process where the log-intensity is given by a Gaussian random field. <code>stelfi</code> also offers functionality to extend this to a joint likelihood formulation fitting a marked log-Gaussian Cox model.</p>
-<p>In addition, the <code>stelfi</code> offers functionality to fit self-exciting spatiotemporal point processes. Models are fitted via maximum likelihood using ‘TMB’ (Template Model Builder) (<span class="citation" data-cites="tmb">Kristensen et al. (<a href="references.html#ref-tmb" role="doc-biblioref">2016</a>)</span>). Where included 1) random fields are assumed to be Gaussian and are integrated over using the Laplace approximation and 2) a stochastic partial differential equation model, introduced by <span class="citation" data-cites="spde">Lindgren, Rue, and Lindström (<a href="references.html#ref-spde" role="doc-biblioref">2011</a>)</span>, is defined for the field(s).</p>
+<p>In addition, the <code>stelfi</code> offers functionality to fit self-exciting spatiotemporal point processes. Models are fitted via maximum likelihood using ‘TMB’ (Template Model Builder) (<span class="citation" data-cites="tmb">Kristensen et al. (<a href="#ref-tmb" role="doc-biblioref">2016</a>)</span>). Where included 1) random fields are assumed to be Gaussian and are integrated over using the Laplace approximation and 2) a stochastic partial differential equation model, introduced by <span class="citation" data-cites="spde">Lindgren, Rue, and Lindström (<a href="#ref-spde" role="doc-biblioref">2011</a>)</span>, is defined for the field(s).</p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
 <div id="ref-hawkes" class="csl-entry" role="doc-biblioentry">
 Hawkes, AG. 1971. <span>“Spectra of Some Self-Exciting and Mutually Exciting Point Processes.”</span> <em>Biometrika</em>.
 </div>

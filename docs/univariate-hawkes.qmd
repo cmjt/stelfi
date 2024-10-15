@@ -54,8 +54,8 @@ sim <- sim_hawkes(mu = 0.5, alpha = 1, beta = 1.5, plot = TRUE, method = 2)
 ## Fitting a univariate Hawkes model
 
 ```{r}
-devtools::load_all("~/Git/stelfi")
-## require(stelfi)
+#| eval: false
+require(stelfi)
 ```
 
 To fit a univariate Hawkes model in `stelfi` use the function `fit_hawkes()` with the following required arguments
@@ -154,7 +154,7 @@ mtext(1,line = 1, at = c(start,end),text = c("NIWA \n tweeted","USB owner \n fou
 
 To fit the model chose some starting values for the parameters and supply these along with the numeric times to the function `fit_hawkes()`.
 
-```{r fit model,results = 'hide',cache = TRUE}
+```{r fit model,results = 'hide'}
 sv <- c(mu = 9, alpha = 3, beta = 10)
 fit <- fit_hawkes(times = times, parameters = sv) 
 ```

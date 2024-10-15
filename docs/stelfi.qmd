@@ -53,25 +53,3 @@ get_coefs(fit)
 ```{r}
 show_hawkes(list(times = times, params = c(mu = 0.32, alpha = 232, beta = 232)))
 ```
-
-
-### Including a random field
-
-```{r}
-## Note: just because you can, doesn't mean you should...
-param <- list(mu = 1, alpha = 20, beta = 200, kappa = 2, tau = 0.1, xsigma = 0.2, ysigma = 0.2, rho = 0)
-fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh, parameters = param, GMRF = TRUE)
-get_coefs(fit)
-```
-
-```{r}
-show_hawkes(list(times = times, params = c(mu = 0.003, alpha = 259, beta = 259)))
-```
-
-```{r}
-get_fields(fit, smesh) |>
-    show_field(smesh = smesh) +
-	geom_sf(data = mesh_2_sf(smesh), fill = NA) +
-	geom_sf(data = domain, fill = NA, col = "black", lwd = 2)  +
-	theme_void()
-```

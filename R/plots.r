@@ -103,7 +103,7 @@ show_multivariate_hawkes <- function(obj, type = c("fitted", "data", "both")){
     n_pars <- length(pars)
     max <- max(times)
     p <- seq(0, max, length.out = 500)
-    lam.p <- stelfi:::multi_hawkes_intensity(times = times,
+    lam.p <- multi_hawkes_intensity(times = times,
                                              alpha = matrix(pars[(n_stream + 1):(n_pars - n_stream)],
                                                             nrow = n_stream, byrow = TRUE),
                                              mu = pars[1:n_stream],
@@ -131,19 +131,7 @@ show_multivariate_hawkes <- function(obj, type = c("fitted", "data", "both")){
         }
     }
 }
-#' Plot a fitted Hawkes model
-#' @inheritParams show_hawkes
-#' @export
-plot.stelfi_tmb <- function(obj, type = c("fitted", "data", "both") ){
-    type <- type[1]
-    if(obj$env$data$model_type == "multi_hawkes"){
-        show_multivariate_hawkes(obj, type)
-    }else{
-        if(obj$env$data$model_type == "hawkes"){
-            show_hawkes(obj, type)
-        }
-    }
-}
+
 #' Compensator and other goodness-of-fit metrics for a Hawkes process
 #'
 #' Plots a number of goodness-of-fit plots for a fitted

@@ -1,5 +1,6 @@
-## R package reference generated from DESCRIPTION metadata
-citation(auto = meta)
+citHeader("To cite `stelfi` in pubications use:")
+## bibtex
+## print(citation(auto = meta), type = "bibtex")
 
 ## Ecology & Evolution article
 bibentry(bibtype = "Article",
@@ -8,4 +9,11 @@ bibentry(bibtype = "Article",
                     person(c("Alec", "B.", "M."), "van Helsdingen")),
          year = "2024", journal = "Ecology and Evolution",
          volume = "14", pages = "e11005",
-         doi = "10.1002/ece3.11005")
+         doi = "10.1002/ece3.11005",
+         textVersion =
+             paste0("C. M. Jones-Todd, and A. B. M. van Helsdingen ABM (2024), ",
+                    "stelfi: An R package for fitting Hawkes and log-Gaussian Cox point process models, ",
+                    "Ecology and Evolution,  14, e11005,",
+                    "doi:10.1002/ece3.11005")
+         )
+

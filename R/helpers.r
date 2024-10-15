@@ -59,7 +59,7 @@ multi_hawkes_intensity <- function(times, mu, alpha, beta,
         se[[k]] <- list()
         ## self-exciting components
         se[[k]] <- lapply(1:n_stream,
-                          function(n) stelfi:::hawkes_intensity(splt[[n]], 0, alpha[k, n], beta[n], p))
+                          function(n) hawkes_intensity(splt[[n]], 0, alpha[k, n], beta[n], p))
         lam_p[[k]] <- mu[k] + Reduce('+', se[[k]])
     }
     return(lam_p)
@@ -102,27 +102,24 @@ get_coefs <- function(obj) {
     }
     return(table)
 }
-#' Extract estimated coefficients from an object of class \code{spde_tmb}
-#' 
-#' @param se Logical, default FALSE. If TRUE then standard errors are also returned.
-#' @export
-coef.stelfi_tmb <- function(obj, se = FALSE){
-    if(!se){
-        res <- get_coefs(obj)[, 1]
-    }else{
-        if(se){
-            res <- get_coefs(obj)
-        }
-    }
-    return(res)
-}
+
 #' Extract the compensator differences
 #'
 #' Extract the compensator differences from a fitted Hawkes
 #' model.
+#' @inheritParams show_hawkes
+#'  \donttest{
+#' ### ********************** ###
+#' ## A univariate Hawkes model
+#' ### ********************** ###
+#' data(retweets_niwa, package = "stelfi")
+#' times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa), units = "mins"))))
+#' params <- c(mu = 0.05, alpha = 0.05, beta = 0.1)
+#' fit <- fit_hawkes(times = times, parameters = params)
+#' compensator_differences(fit)
+#' }
 #' @seealso \code{\link{show_hawkes_GOF}}
 #' @export
-#' @rdname show_hawkes
 compensator_differences <- function(obj){
     x <- show_hawkes_GOF(obj,plot = FALSE,
                          return_values = TRUE, tests = FALSE)$compensator_differences
