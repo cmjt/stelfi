@@ -11,9 +11,9 @@ Below data are simulated using the `emhawkes` package [@emhawkes] where the mark
 
 ```{r}
 #| echo: false
-devtools::load_all("~/Git/stelfi")
- kableExtra::kable_styling(
- knitr::kable( data.frame(mark = c(1,2,3,4), jump = c(0.4, 0.8, 1.2, 1.6))), full_width = FALSE)
+require(stelfi)
+kableExtra::kable_styling(
+knitr::kable( data.frame(mark = c(1,2,3,4), jump = c(0.4, 0.8, 1.2, 1.6))), full_width = FALSE)
 ```
 
 ```{r}

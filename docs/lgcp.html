@@ -275,6 +275,7 @@ div.csl-indent {
 <p>Following the Stochastic Partial Differential (SPDE) approach proposed by <span class="citation" data-cites="spde">Lindgren, Rue, and Lindström (<a href="references.html#ref-spde" role="doc-biblioref">2011</a>)</span> a Matérn covariance function is used for the covariance of the random field. This takes two parameters <span class="math inline">\(\tau\)</span> and <span class="math inline">\(\kappa\)</span>, commonly reported as <span class="math inline">\(r=\frac{\sqrt{8}}{\kappa}\)</span> and <span class="math inline">\(\sigma=\frac{1}{\sqrt{4\pi\kappa^2\tau^2}}\)</span>, where <span class="math inline">\(r\)</span> is the range and <span class="math inline">\(\sigma\)</span> is the standard deviation. In the figure above <span class="math inline">\(\beta = 3\)</span>, <span class="math inline">\(\text{log}(\tau) = 1.6\)</span>, and <span class="math inline">\(\text{log}(\kappa) = 1.95\)</span>.</p>
 <section id="sec-mesh" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="sec-mesh"><span class="header-section-number">5.1</span> Delauney triangluations when fitting LGCP models</h2>
+<p>TODO</p>
 </section>
 <section id="fitting-a-spatial-lgcp" class="level2" data-number="5.2">
 <h2 data-number="5.2" class="anchored" data-anchor-id="fitting-a-spatial-lgcp"><span class="header-section-number">5.2</span> Fitting a spatial LGCP</h2>
@@ -296,7 +297,7 @@ div.csl-indent {
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_lgcp</span>(<span class="at">locs =</span> locs, <span class="at">sf =</span> us, <span class="at">smesh =</span> smesh,</span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>                <span class="at">parameters =</span> <span class="fu">c</span>(<span class="at">beta =</span> <span class="dv">0</span>, <span class="at">log_tau =</span> <span class="fu">log</span>(<span class="dv">1</span>),</span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>                               <span class="at">log_kappa =</span> <span class="fu">log</span>(<span class="dv">1</span>)))</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(fit, <span class="at">se =</span> <span class="cn">TRUE</span>)                   </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit)                 </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>            Estimate Std. Error
 beta      -0.7659374  0.3558810

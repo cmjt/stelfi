@@ -276,7 +276,7 @@ div.csl-indent {
 <p>Below data are simulated using the <code>emhawkes</code> package <span class="citation" data-cites="emhawkes">(<a href="references.html#ref-emhawkes" role="doc-biblioref">Lee 2023</a>)</span> where the marks (a vector that scale the jump sizes, starting at 0) are integer values <span class="math inline">\(\in [1,4]\)</span> for <span class="math inline">\(t &gt; 0\)</span> and <span class="math inline">\(0\)</span> for <span class="math inline">\(t = 0\)</span> (see <a href="#sec-simulate-marked-hawkes"><span>Section&nbsp;3.2</span></a> for how to simulate using <code>stelfi</code>). The parameter values of the conditional intensity are <span class="math inline">\(\mu = 1.3\)</span>, <span class="math inline">\(\alpha = 0.4\)</span>, and <span class="math inline">\(\beta = 1.5\)</span>. The jump sizes for the possible mark values are shown below.</p>
 <div class="cell">
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Loading stelfi</code></pre>
+<pre><code>Loading required package: stelfi</code></pre>
 </div>
 <div class="cell-output-display">
 
@@ -390,41 +390,32 @@ X-squared = 0.38285, df = 1, p-value = 0.5361</code></pre>
 <h2 data-number="3.3" class="anchored" data-anchor-id="the-negative-log-likelihood"><span class="header-section-number">3.3</span> The negative log-likelihood</h2>
 <p>Below the negative log-likelihood of a univariate marked Hawkes process used by <code>stelfi</code> is written using <code>R</code> syntax and then <code>RTMB</code> <span class="citation" data-cites="RTMB">(<a href="references.html#ref-RTMB" role="doc-biblioref">Kristensen 2024</a>)</span> is used for parameter estimation. <a href="https://cran.r-project.org/web/packages/RTMB/vignettes/RTMB-introduction.html">See here for and overview</a> of <code>RTMB</code>. This section is for demonstration only, feel free to modify the function as desired. Note that this can be used to fit an unmarked model by setting the vector of marks to be <span class="math inline">\(\boldsymbol{1}\)</span>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RTMB)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'RTMB'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:stelfi':
-
-    MakeADFun, sdreport</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>univariate_marked_hawkes <span class="ot">&lt;-</span> <span class="cf">function</span>(params){</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">getAll</span>(data, params)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> <span class="fu">exp</span>(log_mu)</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    beta <span class="ot">&lt;-</span> <span class="fu">exp</span>(log_beta)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    alpha <span class="ot">&lt;-</span> <span class="fu">exp</span>(logit_abratio) <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(logit_abratio)) <span class="sc">*</span> (beta<span class="sc">/</span><span class="fu">mean</span>(marks))</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    n <span class="ot">&lt;-</span> <span class="fu">length</span>(times)</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    last <span class="ot">&lt;-</span> times[n]</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    nll <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    A <span class="ot">&lt;-</span> <span class="fu">advector</span>(<span class="fu">numeric</span>(n)) </span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n){</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>        A[i] <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">exp</span>(<span class="sc">-</span>beta <span class="sc">*</span> (times[i] <span class="sc">-</span> times[i <span class="sc">-</span> <span class="dv">1</span>])) <span class="sc">*</span> (marks[i <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">+</span> A[i <span class="sc">-</span> <span class="dv">1</span>]))</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    term_3vec <span class="ot">&lt;-</span> <span class="fu">log</span>(mu <span class="sc">+</span> alpha <span class="sc">*</span> A)</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    nll <span class="ot">&lt;-</span> (mu <span class="sc">*</span> last) <span class="sc">+</span> ((alpha<span class="sc">/</span>beta) <span class="sc">*</span> (<span class="fu">sum</span>(marks) <span class="sc">-</span> marks[n] <span class="sc">-</span> A[n])) <span class="sc">-</span> <span class="fu">sum</span>(term_3vec)</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ADREPORT</span>(mu)</span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ADREPORT</span>(alpha)</span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ADREPORT</span>(beta)</span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(nll)</span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">times =</span> res<span class="sc">$</span>arrival, <span class="at">marks =</span> res<span class="sc">$</span>mark)</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">log_mu =</span> <span class="fu">log</span>(<span class="fl">1.3</span>), <span class="at">logit_abratio =</span> <span class="fl">0.6</span>, <span class="at">log_beta =</span> <span class="fu">log</span>(<span class="fl">1.5</span>))</span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>obj <span class="ot">&lt;-</span> <span class="fu">MakeADFun</span>(univariate_marked_hawkes, params, <span class="at">silent =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>opt <span class="ot">&lt;-</span> <span class="fu">nlminb</span>(obj<span class="sc">$</span>par, obj<span class="sc">$</span>fn, obj<span class="sc">$</span>gr)</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">sdreport</span>(obj), <span class="st">"report"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RTMB)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>univariate_marked_hawkes <span class="ot">&lt;-</span> <span class="cf">function</span>(params){</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">getAll</span>(data, params)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> <span class="fu">exp</span>(log_mu)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    beta <span class="ot">&lt;-</span> <span class="fu">exp</span>(log_beta)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    alpha <span class="ot">&lt;-</span> <span class="fu">exp</span>(logit_abratio) <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(logit_abratio)) <span class="sc">*</span> (beta<span class="sc">/</span><span class="fu">mean</span>(marks))</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    n <span class="ot">&lt;-</span> <span class="fu">length</span>(times)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    last <span class="ot">&lt;-</span> times[n]</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    nll <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    A <span class="ot">&lt;-</span> <span class="fu">advector</span>(<span class="fu">numeric</span>(n)) </span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n){</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        A[i] <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">exp</span>(<span class="sc">-</span>beta <span class="sc">*</span> (times[i] <span class="sc">-</span> times[i <span class="sc">-</span> <span class="dv">1</span>])) <span class="sc">*</span> (marks[i <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">+</span> A[i <span class="sc">-</span> <span class="dv">1</span>]))</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    term_3vec <span class="ot">&lt;-</span> <span class="fu">log</span>(mu <span class="sc">+</span> alpha <span class="sc">*</span> A)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    nll <span class="ot">&lt;-</span> (mu <span class="sc">*</span> last) <span class="sc">+</span> ((alpha<span class="sc">/</span>beta) <span class="sc">*</span> (<span class="fu">sum</span>(marks) <span class="sc">-</span> marks[n] <span class="sc">-</span> A[n])) <span class="sc">-</span> <span class="fu">sum</span>(term_3vec)</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ADREPORT</span>(mu)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ADREPORT</span>(alpha)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ADREPORT</span>(beta)</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(nll)</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">times =</span> res<span class="sc">$</span>arrival, <span class="at">marks =</span> res<span class="sc">$</span>mark)</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">log_mu =</span> <span class="fu">log</span>(<span class="fl">1.3</span>), <span class="at">logit_abratio =</span> <span class="fl">0.6</span>, <span class="at">log_beta =</span> <span class="fu">log</span>(<span class="fl">1.5</span>))</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>obj <span class="ot">&lt;-</span> <span class="fu">MakeADFun</span>(univariate_marked_hawkes, params, <span class="at">silent =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>opt <span class="ot">&lt;-</span> <span class="fu">nlminb</span>(obj<span class="sc">$</span>par, obj<span class="sc">$</span>fn, obj<span class="sc">$</span>gr)</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">sdreport</span>(obj), <span class="st">"report"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       Estimate Std. Error
 mu    1.1742764 0.25196080

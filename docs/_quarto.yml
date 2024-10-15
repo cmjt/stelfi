@@ -22,11 +22,11 @@ book:
     - marked-hawkes.qmd
     - multi-hawkes.qmd
     - lgcp.qmd
-    - lgcp-spatiotemporal.qmd
-    - lgcp-marked.qmd
-    - stelfi.qmd
-    - stelfi-gmrf.qmd
-    - meshmetrics.qmd
+    #- lgcp-spatiotemporal.qmd
+    #- lgcp-marked.qmd
+    #- stelfi.qmd
+    #- stelfi-gmrf.qmd
+    #- meshmetrics.qmd
     - summary.qmd
     - data.qmd
     - references.qmd

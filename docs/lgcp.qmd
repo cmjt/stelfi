@@ -9,8 +9,8 @@ Plotted below is a realisation of a LGCP within a disc shaped region overlain on
 ```{r}
 #| echo: false
 #| message: false
-devtools::load_all("~/Git/stelfi")
 require(ggplot2)
+require(stelfi)
 sf <- sf::st_as_sf(spatstat.geom::disc())
 smesh <- fmesher::fm_mesh_2d(loc.domain = sf::st_coordinates(sf)[, 1:2], max.edge = 0.2, cutoff = 0.1)
 parameters <- c(beta = 3, log_tau = 1.6, log_kappa = 1.95)
@@ -56,7 +56,7 @@ smesh <- fmesher::fm_mesh_2d(loc = locs[, 1:2], max.edge = 2, cutoff = 1)
 fit <- fit_lgcp(locs = locs, sf = us, smesh = smesh,
                 parameters = c(beta = 0, log_tau = log(1),
                                log_kappa = log(1)))
-coef(fit, se = TRUE)			       
+get_coefs(fit)			       
 ```
 
 The estimated GMRF can be plotted using the `show_field()` function once the values have been extracted using `get_fields()`.
@@ -101,7 +101,7 @@ The table below gives the estimated parameter values from `stelfi` and `inlabru`
 
 ```{r}
 #| echo: false
-stelfi <- coef(fit, se = TRUE)[c(1, 4, 5),]
+stelfi <- get_coefs(fit)[c(1, 4, 5),]
 params <- data.frame(stelfi = c(paste(round(stelfi[,1], 3), "(", round(stelfi[,2], 3), ")")),
                      inlabru = c(paste(round(pars[,1], 3), "(", round(pars[,2], 3), ")")))
 params <- t(params)

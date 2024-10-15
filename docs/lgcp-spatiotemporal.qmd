@@ -11,6 +11,7 @@ $$G_i(s)=\rho G_{i-1}(s) + \epsilon_i$$
 where $\rho$ is a constant between -1 and +1, and $\epsilon_i$ is normally distributed with mean 0. 
 
 ```{r}
+require(stelfi)
 ndays <- 2
 locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
 bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))

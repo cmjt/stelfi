@@ -27,7 +27,7 @@ Plotted below are the conditional intensities ($\lambda_{.}(t), t \in [0,T]$) of
 ```{r}
 #| echo: false
 #| message: false
-devtools::load_all("~/Git/stelfi")
+require(stelfi)
 mu <- c(0.5, 0.9)
 alpha <- matrix(c(0.2, 0.1 ,0.6, 0.5), byrow = TRUE, nrow = 2)
 beta <- c(0.7, 0.9)
