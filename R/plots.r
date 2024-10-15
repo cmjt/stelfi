@@ -141,7 +141,6 @@ show_multivariate_hawkes <- function(obj, type = c("fitted", "data", "both")){
 #' times, In addition, results of a Kolmogorov-Smirnov and
 #' Ljung-Box hypothesis test for the compensator differences are printed.
 #' 
-#' @param background_integral Function, as defined in \code{\link{fit_hawkes_cbf}}.
 #' @param plot Logical, whether to plot  goodness-of-fit plots. Default \code{TRUE}.
 #' @param return_values Logical, whether to return GOF values. Default \code{FALSE}.
 #' @param tests Logical, whether to print the results of a Kolmogorov-Smirnov and

@@ -6,9 +6,24 @@
 \usage{
 compensator_differences(obj)
 }
+\arguments{
+\item{obj}{A fitted model object returned by \code{\link{fit_hawkes}}.}
+}
 \description{
 Extract the compensator differences from a fitted Hawkes
 model.
+}
+\examples{
+\donttest{
+## ********************** ###
+## A univariate Hawkes model
+### ********************** ###
+data(retweets_niwa, package = "stelfi")
+times <- unique(sort(as.numeric(difftime(retweets_niwa, min(retweets_niwa), units = "mins"))))
+params <- c(mu = 0.05, alpha = 0.05, beta = 0.1)
+fit <- fit_hawkes(times = times, parameters = params)
+compensator_differences(fit)
+}
 }
 \seealso{
 \code{\link{show_hawkes_GOF}}

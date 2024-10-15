@@ -107,9 +107,9 @@ get_coefs <- function(obj) {
 #'
 #' Extract the compensator differences from a fitted Hawkes
 #' model.
-#' @inheritParams show_hawkes
-#'  \donttest{
-#' ### ********************** ###
+#' @param obj A fitted model object returned by \code{\link{fit_hawkes}}.
+#' @examples \donttest{
+#' ## ********************** ###
 #' ## A univariate Hawkes model
 #' ### ********************** ###
 #' data(retweets_niwa, package = "stelfi")

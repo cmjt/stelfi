@@ -27,8 +27,6 @@ could be a list of multiple values). May also contain \code{marks} (a vector of 
 
 \item{tests}{Logical, whether to print the results of a Kolmogorov-Smirnov and
 Ljung-Box hypothesis test on the compensator differences.  Default \code{TRUE}.}
-
-\item{background_integral}{Function, as defined in \code{\link{fit_hawkes_cbf}}.}
 }
 \value{
 \code{\link{show_hawkes}} returns a \code{gtable} object
