@@ -213,7 +213,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lgcp.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Log-Gaussian Cox process</span></a>
+  <a href="./lgcp.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Spatial log-Gaussian Cox process</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -332,31 +332,29 @@ div.csl-indent {
 </section>
 <section id="simulating-from-a-spatiotemporal-hawkes-process" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="simulating-from-a-spatiotemporal-hawkes-process"><span class="header-section-number">6.2</span> Simulating from a spatiotemporal Hawkes process</h2>
-<div class="cell" data-cahce="true">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>param <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="dv">10</span>, <span class="at">alpha =</span> <span class="dv">30</span>, <span class="at">beta =</span> <span class="dv">60</span>, <span class="at">xsigma =</span> <span class="dv">1</span>,</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">ysigma =</span> <span class="fl">0.2</span>, <span class="at">rho =</span> <span class="dv">0</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> fit<span class="sc">$</span><span class="fu">simulate</span>(<span class="at">par =</span> param)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: gganimate</code></pre>
-</div>
 <div class="cell-output-display">
-<p><img src="stelfi_files/figure-html/unnamed-chunk-8-1.gif" class="img-fluid"></p>
+<p><img src="stelfi_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_stelfi</span>(<span class="at">times =</span> sim<span class="sc">$</span>times, <span class="at">locs =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> sim<span class="sc">$</span>locs[,<span class="dv">1</span>], <span class="at">y =</span> sim<span class="sc">$</span>locs[,<span class="dv">2</span>]), <span class="at">sf =</span> domain, <span class="at">smesh =</span> smesh, <span class="at">parameters =</span> param)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_stelfi</span>(<span class="at">times =</span> sim<span class="sc">$</span>times, <span class="at">locs =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> sim<span class="sc">$</span>locs[,<span class="dv">1</span>], <span class="at">y =</span> sim<span class="sc">$</span>locs[,<span class="dv">2</span>]), </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">sf =</span> domain, <span class="at">smesh =</span> smesh, <span class="at">parameters =</span> param)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>           Estimate   Std. Error
-mu     2.144418e+04 1.000739e+03
-coefs  9.973209e+00 4.666717e-02
-alpha  4.888513e+03 2.432378e+03
-beta   8.699597e+04 4.086970e+04
-xsigma 5.106008e-01 1.457622e-01
-ysigma 9.170956e-02 2.797874e-02
-rho    8.948256e-01 1.627906e-01</code></pre>
+<pre><code>            Estimate   Std. Error
+mu      2.208999e+04 8.708973e+02
+coefs   1.000288e+01 3.942498e-02
+alpha   4.660861e+03 2.073225e+03
+beta    4.660862e+03 2.073225e+03
+xsigma  5.223267e-02 9.626304e-03
+ysigma  5.952438e-03 1.112150e-03
+rho    -9.856880e-01 7.090223e-03</code></pre>
 </div>
 </div>
 </section>
@@ -376,13 +374,13 @@ Warning
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>param <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="dv">3</span>, <span class="at">beta =</span> <span class="dv">6</span>, <span class="at">kappa =</span> <span class="fl">0.9</span>, <span class="at">tau =</span> <span class="dv">1</span>, <span class="at">xsigma =</span> <span class="fl">0.2</span>,</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">ysigma =</span> <span class="fl">0.2</span>, <span class="at">rho =</span> <span class="dv">0</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_stelfi</span>(<span class="at">times =</span> times, <span class="at">locs =</span> locs, <span class="at">sf =</span> domain, <span class="at">smesh =</span> smesh, <span class="at">parameters =</span> param,</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">GMRF =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit)</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>pars</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>param <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="dv">3</span>, <span class="at">beta =</span> <span class="dv">6</span>, <span class="at">kappa =</span> <span class="fl">0.9</span>, <span class="at">tau =</span> <span class="dv">1</span>, <span class="at">xsigma =</span> <span class="fl">0.2</span>,</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">ysigma =</span> <span class="fl">0.2</span>, <span class="at">rho =</span> <span class="dv">0</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_stelfi</span>(<span class="at">times =</span> times, <span class="at">locs =</span> locs, <span class="at">sf =</span> domain, <span class="at">smesh =</span> smesh, <span class="at">parameters =</span> param,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">GMRF =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>pars</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>            Estimate   Std. Error
 mu       0.003432117  0.004005179
@@ -396,10 +394,11 @@ kappa    9.040797872 10.518462334
 tau      0.004644464  0.009560527</code></pre>
 </div>
 </div>
-<p>The estimated GMRF can be plotted using the <code>show_field()</code> function once the values have been extracted using <code>get_fields()</code> (secc <span class="citation" data-cites="lgcp">(<a href="references.html#ref-lgcp" role="doc-biblioref"><strong>lgcp?</strong></a>)</span>).</p>
+<p>The estimated GMRF can be plotted using the <code>show_field()</code> function once the values have been extracted using <code>get_fields()</code> (<a href="lgcp.html"><span>Chapter&nbsp;5</span></a>).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_fields</span>(fit, smesh) <span class="sc">|&gt;</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show_field</span>(<span class="at">smesh =</span> smesh, <span class="at">sf =</span> domain, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> ggplot2<span class="sc">::</span><span class="fu">theme_classic</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_fields</span>(fit, smesh) <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show_field</span>(<span class="at">smesh =</span> smesh, <span class="at">sf =</span> domain, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_classic</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="stelfi_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -550,7 +549,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./lgcp.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Log-Gaussian Cox process</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Spatial log-Gaussian Cox process</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

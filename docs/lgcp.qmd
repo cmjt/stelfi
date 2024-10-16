@@ -1,6 +1,6 @@
-# Log-Gaussian Cox process {#sec-lgcp}
+# Spatial log-Gaussian Cox process {#sec-lgcp}
 
-A Log-Gaussian Cox Process (LGCP) is a doubly stochastic spatial point process. In the simplest case, the intensity of the point process over space is given by
+A log-Gaussian Cox Process (LGCP) is a doubly stochastic spatial point process. In the simplest case, the intensity of the point process over space is given by
 $$\Lambda(s) = \text{exp}(\beta_0 + G(s) + \epsilon)$$
 where $\beta_0$ is a constant, known as the intercept, $G(s)$ is a Gaussian Markov Random Field (GMRF) and $\epsilon$ an error term.
 
@@ -28,15 +28,117 @@ show_field(sim$x, smesh, sf = sf, clip = TRUE) + theme_void() + theme(legend.pos
 
 ```
 
-Following the Stochastic Partial Differential (SPDE) approach proposed by @spde a Matérn covariance function is used for the covariance of the random field. This takes two parameters $\tau$ and $\kappa$, commonly reported as $r=\frac{\sqrt{8}}{\kappa}$ and $\sigma=\frac{1}{\sqrt{4\pi\kappa^2\tau^2}}$, where $r$ is the range and $\sigma$ is the standard deviation. In the figure above $\beta = 3$, $\text{log}(\tau) = 1.6$, and $\text{log}(\kappa) = 1.95$.
+Following the Stochastic Partial Differential Equation (SPDE) approach proposed by @spde a Matérn covariance function is assumed for $G(s)$: 
+
+$$C(r; \sigma, \kappa) = \frac{\sigma^2}{2^{\nu-1} \Gamma(\nu)} (\kappa \:r)^\nu K_\nu(\kappa \: r)$$
+
+
+where $\kappa$ is a scaling parameter and $\sigma^2$ is the marginal variance ($\nu$ is typically fixed, see @spde). Rather than the scaling parameter, a range parameter $r=\frac{\sqrt{8}}{\kappa}$ is typically interpreted (corresponding to correlations near 0.1 at the distance $r$). The standard deviation is given as  $\sigma=\frac{1}{\sqrt{4\pi\kappa^2\tau^2}}$. In the figure above $\beta = 3$, $\text{log}(\tau) = 1.6$, and $\text{log}(\kappa) = 1.95$.
 
 ## Delauney triangluations when fitting LGCP models {#sec-mesh}
 
 TODO
 
-## Fitting a spatial LGCP
+## Fitting a LGCP model
 
-Using the applied example given in @stelfi a LGCP model is fitted to sasquatch sightings using the function `fit_lgcp()`. For more detais on the use of the Delauney triangluation see @sec-mesh.
+Using `spatstat` to simulate a LGCP
+
+```{r}
+#| message: false
+#| warning: false
+win <- spatstat.geom::disc()
+## here mu is beta0
+set.seed(1234)
+sim <- spatstat.random::rLGCP("matern", mu = 3,
+               var = 0.5, scale = 0.7, nu = 1,
+               win = win)
+```
+
+
+```{r}
+#| message: false
+#| warning: false
+## plotting the simulated (log) random field using ggplot
+xs = attr(sim, "Lambda")$xcol; ys = attr(sim, "Lambda")$yrow
+pxl <- expand.grid(x = xs, y = ys)
+pxl$rf <- as.vector(attr(sim, "Lambda")$v) |> log() - 3 ## minus the intercept
+require(ggplot2)
+ggplot() + 
+  geom_tile(data = pxl, aes(x = x, y = y, fill = rf), )  +
+  labs(fill = "") + xlab("") + ylab("") + 
+  scale_fill_viridis_c(option = "D", na.value = NA) +
+  coord_equal() + theme_void() +
+  geom_sf(data = sf::st_as_sf(win), fill = NA, linewidth = 2) +
+  geom_point(data = data.frame(x = sim$x, y = sim$y), aes(x = x, y = y))
+        
+```
+
+Fitting a model using `stelfi`
+
+```{r}
+#| message: false
+## dataframe of point locations 
+locs <- data.frame(x = sim$x, y = sim$y)
+## Delauney triangulation of domain
+smesh <- fmesher::fm_mesh_2d(loc = locs[, 1:2], max.edge = 0.2, cutoff = 0.1)
+## sf of domain
+sf <- sf::st_as_sf(win)
+fit <- fit_lgcp(locs = locs, sf = sf, smesh = smesh,
+                parameters = c(beta = 3, log_tau = log(1),
+                               log_kappa = log(1)))
+get_coefs(fit)			       
+```
+
+The estimated GMRF can be plotted using the `show_field()` function once the values have been extracted using `get_fields()`.
+
+```{r}
+#| message: false
+get_fields(fit, smesh) |>
+    show_field(smesh = smesh, sf = sf, clip = TRUE) + theme_void() +
+    geom_point(data = data.frame(x = sim$x, y = sim$y), aes(x = x, y = y))
+```
+As a comparison, `inlabru` (@inlabru) is used to fit the same model to these data.
+
+
+```{r}
+#| message: false
+require(inlabru)
+require(sp)
+locs_sp <- locs; sp::coordinates(locs_sp) <- c("x", "y")
+domain <- as(sf, "Spatial")
+matern <- INLA::inla.spde2.pcmatern(smesh, prior.sigma = c(0.7, 0.01), prior.range = c(4, 0.5) )
+## latent field
+cmp <- coordinates ~ random_field(coordinates, model = matern) + Intercept(1)
+sp::proj4string(locs_sp) <- smesh$crs <- sp::proj4string(domain)
+## fit model
+fit_inla <- lgcp(cmp, locs_sp, samplers = domain, domain = list(coordinates = smesh))
+pars <- rbind(fit_inla$summary.fixed[,1:2], fit_inla$summary.hyperpar[,1:2])
+pars
+```
+
+Now using `spatstat`
+
+```{r}
+ss <- spatstat.model::lgcp.estK(sim, covmodel = list(model = "matern", nu = 1))
+ss$clustpar
+ss$modelpar
+```
+
+The table below gives the estimated parameter values from `stelfi` and `inlabru` along with the standard errors in brackets (where possible).
+
+```{r}
+#| echo: false
+stelfi <- get_coefs(fit)[c(1, 4, 5),]
+params <- data.frame(stelfi = c(paste(round(stelfi[,1], 3), "(", round(stelfi[,2], 3), ")")),
+                     inlabru = c(paste(round(pars[,1], 3), "(", round(pars[,2], 3), ")")),
+                     spatstat = c(round(ss$modelpar[3], 3), round(sqrt(8)*ss$clustpar[2], 3), round(sqrt(ss$clustpar[1]), 3)))
+params <- t(params)
+knitr::kable(params, col.names = c("$\\beta_0$", "$r$", "$\\sigma$"), escape = FALSE)
+```
+
+### An applied example
+
+Using the applied example given in @stelfi a LGCP model is fitted to sasquatch sightings using the function `fit_lgcp()`. For more details on the use of the Delauney triangulation see @sec-mesh.
 
 ```{r}
 #| message: false
@@ -50,7 +152,7 @@ us <- maps::map("usa", fill = TRUE, plot = FALSE) |>
 locs <- sf::st_coordinates(sasquatch) |>
    as.data.frame()
 names(locs) <- c("x", "y")
-## Delauney triangluation of domain
+## Delauney triangulation of domain
 smesh <- fmesher::fm_mesh_2d(loc = locs[, 1:2], max.edge = 2, cutoff = 1)
 ## fit model with user-chosen parameter starting values
 fit <- fit_lgcp(locs = locs, sf = us, smesh = smesh,
@@ -59,7 +161,7 @@ fit <- fit_lgcp(locs = locs, sf = us, smesh = smesh,
 get_coefs(fit)			       
 ```
 
-The estimated GMRF can be plotted using the `show_field()` function once the values have been extracted using `get_fields()`.
+Again, the estimated GMRF can be plotted using the `show_field()` function once the values have been extracted using `get_fields()`.
 
 ```{r}
 #| message: false
@@ -75,7 +177,7 @@ show_lambda(fit, smesh = smesh, sf = us, clip = TRUE) + ggplot2::theme_classic()
 ```
 
 
-As a comparison, `inlabru` (@inlabru) is used to fit the same model to these data.
+Again, as a comparison, `inlabru` (@inlabru) is used to fit the same model to these data.
 
 
 ```{r}
@@ -97,7 +199,7 @@ pars <- rbind(fit_inla$summary.fixed[,1:2], fit_inla$summary.hyperpar[,1:2])
 pars
 ```
 
-The table below gives the estimated parameter values from `stelfi` and `inlabru`, and hawkesbow along with the standard errors in brackets.
+The table below gives the estimated parameter values from `stelfi` and `inlabru` along with the standard errors in brackets.
 
 ```{r}
 #| echo: false
@@ -105,7 +207,9 @@ stelfi <- get_coefs(fit)[c(1, 4, 5),]
 params <- data.frame(stelfi = c(paste(round(stelfi[,1], 3), "(", round(stelfi[,2], 3), ")")),
                      inlabru = c(paste(round(pars[,1], 3), "(", round(pars[,2], 3), ")")))
 params <- t(params)
-knitr::kable(params, col.names = c("$\\beta$", "$r$", "$\\sigma$"), escape = FALSE)
+knitr::kable(params, col.names = c("$\\beta_0$", "$r$", "$\\sigma$"), escape = FALSE)
 ```
 
+## SPDE as GAM
 
+TODO

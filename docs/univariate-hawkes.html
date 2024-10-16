@@ -213,7 +213,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lgcp.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Log-Gaussian Cox process</span></a>
+  <a href="./lgcp.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Spatial log-Gaussian Cox process</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -280,7 +280,7 @@ div.csl-indent {
 <p><span class="math display">\[\lambda(t) = \mu(t) + \Sigma_{i:\tau_i&lt;t}\nu(t-\tau_i).\]</span></p>
 <p>Here <span class="math inline">\(\mu(t)\)</span> is the background rate of the process and <span class="math inline">\(\Sigma_{i:\tau_i&lt;t}\nu(t-\tau_i)\)</span> is some historic temporal dependence (i.e., for times <span class="math inline">\(\tau_i &lt; t\)</span>, $ i = 1, …, T$). The classic homogeneous formulation uses an exponential decay kernal:</p>
 <p><span id="eq-hawkes"><span class="math display">\[\lambda(t) = \mu + \alpha \Sigma_{i:\tau_i&lt;t}\text{exp}(-\beta * (t-\tau_i)). \tag{2.1}\]</span></span></p>
-<p>Here the parameter <span class="math inline">\(\alpha\)</span> is the increase in intensity immediately after the occurrence of an event, and <span class="math inline">\(\beta &gt; 0\)</span> controls the exponential decay of the intensity if no event has occurred. To avoid the conditional intensity heading off to infinity <span class="math inline">\(\beta &gt; \alpha\)</span>.</p>
+<p>Here the parameter <span class="math inline">\(\alpha\)</span> is the increase in intensity immediately after the occurrence of an event, and <span class="math inline">\(\beta &gt; 0\)</span> controls the exponential decay of the intensity if no event has occurred. To avoid the conditional intensity heading off to infinity <span class="math inline">\(\beta &gt; \alpha\)</span>. See <span class="citation" data-cites="hawkesnll">(<a href="references.html#ref-hawkesnll" role="doc-biblioref"><strong>hawkesnll?</strong></a>)</span> for the negative log-likelihood written in <code>R</code> syntax.</p>
 <p>Plotted below is the conditional intensity (<span class="math inline">\(\lambda(t), t \in [0,T]\)</span>) of a Hawkes process with <span class="math inline">\(\mu = 0.1\)</span>, <span class="math inline">\(\alpha = 1\)</span>, and <span class="math inline">\(\beta = 1.5\)</span>. Observed events (n = 13) are shown by the vertical dashes along the x-axis. The intensity increases immediately after an event occurs and decays exponentially over time if no event is observed for some period.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -634,7 +634,7 @@ X-squared = 28.608, df = 1, p-value = 8.86e-08</code></pre>
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
 <div id="ref-hawkesbow" class="csl-entry" role="doc-biblioentry">
-Cheysson, Felix. 2021. <em>Hawkesbow: Estimation of Hawkes Processes from Binned Observations</em>. <a href="https://CRAN.R-project.org/package=hawkesbow">https://CRAN.R-project.org/package=hawkesbow</a>.
+Cheysson, Felix. 2021. <em><span class="nocase">hawkesbow</span>: Estimation of Hawkes Processes from Binned Observations</em>. <a href="https://CRAN.R-project.org/package=hawkesbow">https://CRAN.R-project.org/package=hawkesbow</a>.
 </div>
 <div id="ref-daley" class="csl-entry" role="doc-biblioentry">
 Daley, Daryl J, David Vere-Jones, et al. 2003. <em>An Introduction to the Theory of Point Processes: Volume i: Elementary Theory and Methods</em>. Springer.
@@ -643,7 +643,7 @@ Daley, Daryl J, David Vere-Jones, et al. 2003. <em>An Introduction to the Theory
 Hawkes, AG. 1971. <span>“Spectra of Some Self-Exciting and Mutually Exciting Point Processes.”</span> <em>Biometrika</em>.
 </div>
 <div id="ref-emhawkes" class="csl-entry" role="doc-biblioentry">
-Lee, Kyungsub. 2023. <em>Emhawkes: Exponential Multivariate Hawkes Model</em>. <a href="https://CRAN.R-project.org/package=emhawkes">https://CRAN.R-project.org/package=emhawkes</a>.
+Lee, Kyungsub. 2023. <em><span class="nocase">emhawkes</span>: Exponential Multivariate Hawkes Model</em>. <a href="https://CRAN.R-project.org/package=emhawkes">https://CRAN.R-project.org/package=emhawkes</a>.
 </div>
 <div id="ref-simhawkes" class="csl-entry" role="doc-biblioentry">
 Ogata, Y. 1981. <span>“On Lewis’ Simulation Method for Point Processes.”</span> <em>IEEE Transactions on Information Theory</em>. <a href="https://doi.org/10.1109/TIT.1981.1056305">https://doi.org/10.1109/TIT.1981.1056305</a>.

@@ -79,7 +79,6 @@ contour(x, y, z, nlevels = 10,  asp = 1)
 ## Simulating from a spatiotemporal Hawkes process
 
 ```{r}
-#| cahce: true
 param <- list(mu = 10, alpha = 30, beta = 60, xsigma = 1,
              ysigma = 0.2, rho = 0)
 sim <- fit$simulate(par = param)
@@ -87,15 +86,15 @@ sim <- fit$simulate(par = param)
 
 ```{r}
 #| echo: false
-require(gganimate)
 ggplot(data.frame(x = sim$locs[,1], y = sim$locs[,2], times = sim$times)) +
-  geom_point(aes(x = x, y = y, group = seq_along(times))) +
+  geom_point(aes(x = x, y = y, size = times)) +
 	geom_sf(data = domain, fill = NA, inherit.aes = FALSE) +
-	theme_void() + transition_reveal(times)
+	theme_void() 
 ```
 
 ```{r}
-fit <- fit_stelfi(times = sim$times, locs = data.frame(x = sim$locs[,1], y = sim$locs[,2]), sf = domain, smesh = smesh, parameters = param)
+fit <- fit_stelfi(times = sim$times, locs = data.frame(x = sim$locs[,1], y = sim$locs[,2]), 
+                  sf = domain, smesh = smesh, parameters = param)
 get_coefs(fit)
 
 ```
@@ -119,10 +118,11 @@ pars
 
 ```
 
-The estimated GMRF can be plotted using the `show_field()` function once the values have been extracted using `get_fields()` (secc @lgcp).
+The estimated GMRF can be plotted using the `show_field()` function once the values have been extracted using `get_fields()` (@sec-lgcp).
 
 ```{r}
 #| message: false
 get_fields(fit, smesh) |>
-    show_field(smesh = smesh, sf = domain, clip = TRUE) + ggplot2::theme_classic()
+    show_field(smesh = smesh, sf = domain, clip = TRUE) +
+  ggplot2::theme_classic()
 ```

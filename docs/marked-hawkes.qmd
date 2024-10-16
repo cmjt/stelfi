@@ -63,9 +63,9 @@ show_hawkes_GOF(fit)
 
 TODO
 
-## The negative log-likelihood
+## The negative log-likelihood {#sec-hawkesnll}
 
-Below the negative log-likelihood of a univariate marked Hawkes process used by `stelfi` is written using `R` syntax and then `RTMB` [@RTMB] is used for parameter estimation. [See here for and overview](https://cran.r-project.org/web/packages/RTMB/vignettes/RTMB-introduction.html) of `RTMB`. This section is for demonstration only, feel free to modify the function as desired. Note that this can be used to fit an unmarked model by setting the vector of marks to be $\boldsymbol{1}$.
+Below the negative log-likelihood of a univariate marked Hawkes process used by `stelfi` is written using `R`/`RTMB` [@RTMB] syntax. The function below returns the negative log-likelihood of a univariate marked Hawkes process, `RTMB` is used to automatically calculate the gradient and then the function is minimised via `nlminb()`. [See here for and overview](https://cran.r-project.org/web/packages/RTMB/vignettes/RTMB-introduction.html) of `RTMB`. This section is for demonstration only, feel free to modify the function as desired. Note that this can be used to fit an unmarked model by setting the vector of marks to be $\boldsymbol{1}$.
 
 ```{r}
 library(RTMB)

@@ -9,7 +9,7 @@ Here $\mu(t)$ is the background rate of the process and $\Sigma_{i:\tau_i<t}\nu(
  $$\lambda(t) = \mu + \alpha \Sigma_{i:\tau_i<t}\text{exp}(-\beta * (t-\tau_i)).$${#eq-hawkes}
 
 
-Here the parameter $\alpha$ is the increase in intensity immediately after the occurrence of an event, and $\beta > 0$ controls the exponential decay of the intensity if no event has occurred. To avoid the conditional intensity heading off to infinity $\beta > \alpha$.
+Here the parameter $\alpha$ is the increase in intensity immediately after the occurrence of an event, and $\beta > 0$ controls the exponential decay of the intensity if no event has occurred. To avoid the conditional intensity heading off to infinity $\beta > \alpha$. See @hawkesnll for the negative log-likelihood written in `R` syntax.
 
 Plotted below is the conditional intensity ($\lambda(t), t \in [0,T]$) of a Hawkes process with $\mu = 0.1$, $\alpha = 1$, and $\beta = 1.5$. Observed events (n = 13) are shown by the vertical dashes along the x-axis. The intensity increases immediately after an event occurs and decays exponentially over time if no event is observed for some period.
 

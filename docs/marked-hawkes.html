@@ -216,7 +216,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lgcp.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Log-Gaussian Cox process</span></a>
+  <a href="./lgcp.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Spatial log-Gaussian Cox process</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -250,7 +250,7 @@ div.csl-indent {
   <ul>
   <li><a href="#a-simulated-example" id="toc-a-simulated-example" class="nav-link active" data-scroll-target="#a-simulated-example"><span class="toc-section-number">3.1</span>  A simulated example</a></li>
   <li><a href="#sec-simulate-marked-hawkes" id="toc-sec-simulate-marked-hawkes" class="nav-link" data-scroll-target="#sec-simulate-marked-hawkes"><span class="toc-section-number">3.2</span>  Simulating a marked process</a></li>
-  <li><a href="#the-negative-log-likelihood" id="toc-the-negative-log-likelihood" class="nav-link" data-scroll-target="#the-negative-log-likelihood"><span class="toc-section-number">3.3</span>  The negative log-likelihood</a></li>
+  <li><a href="#sec-hawkesnll" id="toc-sec-hawkesnll" class="nav-link" data-scroll-target="#sec-hawkesnll"><span class="toc-section-number">3.3</span>  The negative log-likelihood</a></li>
   </ul>
 </nav>
     </div>
@@ -391,9 +391,9 @@ X-squared = 0.38285, df = 1, p-value = 0.5361</code></pre>
 <h2 data-number="3.2" class="anchored" data-anchor-id="sec-simulate-marked-hawkes"><span class="header-section-number">3.2</span> Simulating a marked process</h2>
 <p>TODO</p>
 </section>
-<section id="the-negative-log-likelihood" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="the-negative-log-likelihood"><span class="header-section-number">3.3</span> The negative log-likelihood</h2>
-<p>Below the negative log-likelihood of a univariate marked Hawkes process used by <code>stelfi</code> is written using <code>R</code> syntax and then <code>RTMB</code> <span class="citation" data-cites="RTMB">(<a href="references.html#ref-RTMB" role="doc-biblioref">Kristensen 2024</a>)</span> is used for parameter estimation. <a href="https://cran.r-project.org/web/packages/RTMB/vignettes/RTMB-introduction.html">See here for and overview</a> of <code>RTMB</code>. This section is for demonstration only, feel free to modify the function as desired. Note that this can be used to fit an unmarked model by setting the vector of marks to be <span class="math inline">\(\boldsymbol{1}\)</span>.</p>
+<section id="sec-hawkesnll" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="sec-hawkesnll"><span class="header-section-number">3.3</span> The negative log-likelihood</h2>
+<p>Below the negative log-likelihood of a univariate marked Hawkes process used by <code>stelfi</code> is written using <code>R</code>/<code>RTMB</code> <span class="citation" data-cites="RTMB">(<a href="references.html#ref-RTMB" role="doc-biblioref">Kristensen 2024</a>)</span> syntax. The function below returns the negative log-likelihood of a univariate marked Hawkes process, <code>RTMB</code> is used to automatically calculate the gradient and then the function is minimised via <code>nlminb()</code>. <a href="https://cran.r-project.org/web/packages/RTMB/vignettes/RTMB-introduction.html">See here for and overview</a> of <code>RTMB</code>. This section is for demonstration only, feel free to modify the function as desired. Note that this can be used to fit an unmarked model by setting the vector of marks to be <span class="math inline">\(\boldsymbol{1}\)</span>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RTMB)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>univariate_marked_hawkes <span class="ot">&lt;-</span> <span class="cf">function</span>(params){</span>
@@ -432,10 +432,10 @@ beta  0.8846088 0.50173890</code></pre>
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
 <div id="ref-RTMB" class="csl-entry" role="doc-biblioentry">
-Kristensen, Kasper. 2024. <em>RTMB: ’R’ Bindings for ’TMB’</em>. <a href="https://CRAN.R-project.org/package=RTMB">https://CRAN.R-project.org/package=RTMB</a>.
+Kristensen, Kasper. 2024. <em><span>RTMB</span>: <span>R</span> Bindings for <span>TMB</span></em>. <a href="https://CRAN.R-project.org/package=RTMB">https://CRAN.R-project.org/package=RTMB</a>.
 </div>
 <div id="ref-emhawkes" class="csl-entry" role="doc-biblioentry">
-Lee, Kyungsub. 2023. <em>Emhawkes: Exponential Multivariate Hawkes Model</em>. <a href="https://CRAN.R-project.org/package=emhawkes">https://CRAN.R-project.org/package=emhawkes</a>.
+Lee, Kyungsub. 2023. <em><span class="nocase">emhawkes</span>: Exponential Multivariate Hawkes Model</em>. <a href="https://CRAN.R-project.org/package=emhawkes">https://CRAN.R-project.org/package=emhawkes</a>.
 </div>
 </div>
 </section>
