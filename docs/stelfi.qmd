@@ -1,10 +1,8 @@
-# Spatiotemporal self-exciting models {#stelfi}
+# Spatiotemporal self-exciting models {#sec-stelfi}
 
-Although the Hawkes process is traditionally formulated as a temporal point process, it is also possible to formulate a spatiotemporal version of the Hawkes process.
+For the spatiotemporal Hawkes processes fitted by `stelfi`, temporal self-excitement follows an exponential decay function (see @reinhart). The self-excitement over space follows a Gaussian distribution centered at the triggering event. The default is that the Gaussian function has a fixed covariance matrix, independent of time. Alternatively, covariance can be directly proportional to time, meaning that the self-excitement radiates out from the center over time. This can be appropriate when the mechanism causing self-excitement travels at a finite speed, but is very memory-intensive. 
 
-For the spatiotemporal Hawkes processes fitted by this package, temporal self-excitement follows an exponential decay function. The self-excitement over space follows a Gaussian distribution centered at the triggering event. There are two formulations of this model. The default is that the Gaussian function has a fixed covariance matrix, independent of time. Alternatively, covariance can be directly proportional to time, meaning that the self-excitement radiates out from the center over time. This can be appropriate when the mechanism causing self-excitement travels at a finite speed, but is very memory-intensive. 
-
-The intensity function used by stelfi is
+The intensity function used by `stelfi` is
 
 $$\lambda(s,t) = \mu + \alpha \Sigma_{i:\tau_i<t}(\text{exp}(-\beta * (t-\tau_i)) G_i(s-x_i, t - \tau_i)).$$ 
 
@@ -12,19 +10,23 @@ Here $\mu$ is the background rate, $\beta$ is the rate of temporal decay, $\alph
 
 For the version with time-independent spatial excitement:
 $G_i(s-x_i, t - \tau_i) = f_X(s - x_i)$
-where $f_X$ is the density function of $X \sim \text{N}(0, \Sigma)$
+where $f_X$ is the density function of $X \sim \text{N}(0, \Sigma)$, ($\Sigma = \begin{pmatrix} \sigma_x^2 & \rho  \\ \rho  & \sigma_y^2  \end{pmatrix}$).
 
 For the version with time-dependent spatial excitement:
 $G_i(s-x_i, t - \tau_i) = f_X(s - x_i)$
 where $f_X$ is the density function of $X \sim \text{N}(0, (t-\tau_i)\Sigma)$
 
-## The `fit_stelfi()` function
-
 ```{r}
-args(fit_stelfi)
+#| echo: false
+#| message: false
+require(stelfi)
+require(ggplot2)
 ```
 
-### Spatiotemporal Hawkes process
+
+
+## Fitting a spatiotemporal Hawkes process
+
 
 ```{r}
 data(xyt, package = "stelfi")
@@ -41,15 +43,86 @@ ggplot(data = locs, aes(x = x, y = y, size = times)) +
 ```
 
 ```{r}
-bnd <- INLA::inla.mesh.segment(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-smesh <- INLA::inla.mesh.2d(boundary = bnd, 
+bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+smesh <- fmesher::fm_mesh_2d(boundary = bnd, 
                             max.edge = 0.75, cutoff = 0.3)
 param <- list(mu = 1, alpha = 3, beta = 6, xsigma = 0.2,
              ysigma = 0.2, rho = 0)
 fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh, parameters = param)
-get_coefs(fit)
+pars <- get_coefs(fit)
+```
+
+Note that the `coefs` estimates are the vector of coefficients (on the log scale) of any supplied covariates, the first element related to the intercept (here the log of $\mu$). The estimate temporal self-excitement (ignoring and spatial influence) can be shown using `show_hawkes()` as in @sec-hawkes.
+
+
+```{r}
+show_hawkes(list(times = times, params = c(mu = pars[1, 1], alpha = pars[3,1], beta = pars[4, 1])))
+```
+
+The bivariate Gaussian component of the diffusion kernel 
+
+```{r}
+#| message: false
+## bivariate Gaussian kernel
+sigma_x <- pars[5,1]
+sigma_y <- pars[6,1]
+rho <- pars[7,1]
+x <- y <- seq(-2, 2, 0.1)
+sigma <- matrix(c(sigma_x, rho, rho, sigma_y), 
+                 ncol = 2)
+f <- function(x, y) mvtnorm::dmvnorm(cbind(x, y), c(0,0), sigma)
+z <- outer(x,y,f)
+contour(x, y, z, nlevels = 10,  asp = 1)
+```
+
+
+## Simulating from a spatiotemporal Hawkes process
+
+```{r}
+#| cahce: true
+param <- list(mu = 10, alpha = 30, beta = 60, xsigma = 1,
+             ysigma = 0.2, rho = 0)
+sim <- fit$simulate(par = param)
 ```
 
 ```{r}
-show_hawkes(list(times = times, params = c(mu = 0.32, alpha = 232, beta = 232)))
+#| echo: false
+require(gganimate)
+ggplot(data.frame(x = sim$locs[,1], y = sim$locs[,2], times = sim$times)) +
+  geom_point(aes(x = x, y = y, group = seq_along(times))) +
+	geom_sf(data = domain, fill = NA, inherit.aes = FALSE) +
+	theme_void() + transition_reveal(times)
+```
+
+```{r}
+fit <- fit_stelfi(times = sim$times, locs = data.frame(x = sim$locs[,1], y = sim$locs[,2]), sf = domain, smesh = smesh, parameters = param)
+get_coefs(fit)
+
+```
+
+## Including a GMRF
+
+::: {.callout-warning}
+
+Sensitive to starting values. TODO
+
+:::
+
+```{r}
+param <- list(mu = 1, alpha = 3, beta = 6, kappa = 0.9, tau = 1, xsigma = 0.2,
+             ysigma = 0.2, rho = 0)
+
+fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh, parameters = param,
+                  GMRF = TRUE)
+pars <- get_coefs(fit)
+pars
+
+```
+
+The estimated GMRF can be plotted using the `show_field()` function once the values have been extracted using `get_fields()` (secc @lgcp).
+
+```{r}
+#| message: false
+get_fields(fit, smesh) |>
+    show_field(smesh = smesh, sf = domain, clip = TRUE) + ggplot2::theme_classic()
 ```

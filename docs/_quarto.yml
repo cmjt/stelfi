@@ -24,7 +24,7 @@ book:
     - lgcp.qmd
     #- lgcp-spatiotemporal.qmd
     #- lgcp-marked.qmd
-    #- stelfi.qmd
+    - stelfi.qmd
     #- stelfi-gmrf.qmd
     #- meshmetrics.qmd
     - summary.qmd

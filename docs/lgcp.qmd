@@ -1,4 +1,4 @@
-# Log-Gaussian Cox process {#lgcp}
+# Log-Gaussian Cox process {#sec-lgcp}
 
 A Log-Gaussian Cox Process (LGCP) is a doubly stochastic spatial point process. In the simplest case, the intensity of the point process over space is given by
 $$\Lambda(s) = \text{exp}(\beta_0 + G(s) + \epsilon)$$

@@ -1,4 +1,4 @@
-# Univariate Hawkes {#hawkes}
+# Univariate Hawkes {#sec-hawkes}
 
 A  univariate Hawkes process (@hawkes) is defined to be a self-exciting temporal point process where the conditional intensity function is given by
 
