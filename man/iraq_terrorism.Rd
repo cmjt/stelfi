@@ -27,7 +27,7 @@ A simple features dataframe, of type \code{POINT}, with 4208 observations and 16
 }
 }
 \source{
-\url{https://www.start.umd.edu/gtd/}
+\url{https://www.start.umd.edu/data-tools/GTD}
 }
 \description{
 A dataset containing information of terrorism activity carried out

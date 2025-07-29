@@ -1,8 +1,8 @@
 Package: stelfi
 Type: Package
 Title: Hawkes and Log-Gaussian Cox Point Processes Using Template Model Builder
-Version: 1.0.1
-Date: 2023-09-29
+Version: 1.0.2
+Date: 2025-07-29
 Authors@R: 
   c(person(given = "Charlotte M.",
            family = "Jones-Todd",
@@ -29,7 +29,7 @@ Authors@R:
            family = "FA2386-21-1-4028",
            role = "fnd"))
 Depends:
-    R (>= 4.3.0)
+    R (>= 4.5.0)
 Imports:
     TMB (>= 1.9.6),
     sf (>= 1.0.14),
@@ -49,7 +49,7 @@ BugReports: https://github.com/cmjt/stelfi/issues
 LazyData: TRUE
 LazyDataCompression: xz
 Encoding: UTF-8
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Suggests:
     testthat (>= 3.1.10),
     rmarkdown,

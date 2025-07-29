@@ -92,7 +92,7 @@ NULL
 #' \item{luminosity}{scaled: luminosity}
 #' \item{tt}{scaled: time to nearest city in minutes}
 #' }
-#' @source \url{https://www.start.umd.edu/gtd/}
+#' @source \url{https://www.start.umd.edu/data-tools/GTD}
 #' @name iraq_terrorism
 NULL
 #' Example marked point pattern data set
