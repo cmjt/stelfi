@@ -102,16 +102,15 @@ As a comparison, `inlabru` (@inlabru) is used to fit the same model to these dat
 
 ```{r}
 #| message: false
+#| eval: false
 require(inlabru)
-require(sp)
-locs_sp <- locs; sp::coordinates(locs_sp) <- c("x", "y")
-domain <- as(sf, "Spatial")
+sf_locs <- sf::st_as_sf(locs, coords = c("x", "y"))
+
 matern <- INLA::inla.spde2.pcmatern(smesh, prior.sigma = c(0.7, 0.01), prior.range = c(4, 0.5) )
 ## latent field
-cmp <- coordinates ~ random_field(coordinates, model = matern) + Intercept(1)
-sp::proj4string(locs_sp) <- smesh$crs <- sp::proj4string(domain)
+cmp <- geometry ~ random_field(geometry, model = matern) + Intercept(1)
 ## fit model
-fit_inla <- lgcp(cmp, locs_sp, samplers = domain, domain = list(coordinates = smesh))
+fit_inla <- lgcp(cmp, sf_locs, domain = list(geometry = smesh))
 pars <- rbind(fit_inla$summary.fixed[,1:2], fit_inla$summary.hyperpar[,1:2])
 pars
 ```
@@ -124,10 +123,12 @@ ss$clustpar
 ss$modelpar
 ```
 
-The table below gives the estimated parameter values from `stelfi` and `inlabru` along with the standard errors in brackets (where possible).
+
 
 ```{r}
 #| echo: false
+#| eval: false
+## The table below gives the estimated parameter values from `stelfi` and `inlabru` along with the standard errors in brackets (where possible).
 stelfi <- get_coefs(fit)[c(1, 4, 5),]
 params <- data.frame(stelfi = c(paste(round(stelfi[,1], 3), "(", round(stelfi[,2], 3), ")")),
                      inlabru = c(paste(round(pars[,1], 3), "(", round(pars[,2], 3), ")")),
@@ -177,11 +178,13 @@ show_lambda(fit, smesh = smesh, sf = us, clip = TRUE) + ggplot2::theme_classic()
 ```
 
 
-Again, as a comparison, `inlabru` (@inlabru) is used to fit the same model to these data.
+
 
 
 ```{r}
 #| message: false
+#| eval: false
+## Again, as a comparison, `inlabru` (@inlabru) is used to fit the same model to these data.
 require(inlabru)
 require(sp)
 locs_sp <- locs; sp::coordinates(locs_sp) <- c("x", "y")
@@ -199,10 +202,12 @@ pars <- rbind(fit_inla$summary.fixed[,1:2], fit_inla$summary.hyperpar[,1:2])
 pars
 ```
 
-The table below gives the estimated parameter values from `stelfi` and `inlabru` along with the standard errors in brackets.
+
 
 ```{r}
 #| echo: false
+#| eval: false
+## The table below gives the estimated parameter values from `stelfi` and `inlabru` along with the standard errors in brackets.
 stelfi <- get_coefs(fit)[c(1, 4, 5),]
 params <- data.frame(stelfi = c(paste(round(stelfi[,1], 3), "(", round(stelfi[,2], 3), ")")),
                      inlabru = c(paste(round(pars[,1], 3), "(", round(pars[,2], 3), ")")))
