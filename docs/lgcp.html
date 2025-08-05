@@ -349,94 +349,54 @@ stdev      0.4903966  0.1469378</code></pre>
 <p>As a comparison, <code>inlabru</code> (<span class="citation" data-cites="inlabru">Bachl et al. (<a href="references.html#ref-inlabru" role="doc-biblioref">2019</a>)</span>) is used to fit the same model to these data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(inlabru)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(sp)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>locs_sp <span class="ot">&lt;-</span> locs; sp<span class="sc">::</span><span class="fu">coordinates</span>(locs_sp) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>domain <span class="ot">&lt;-</span> <span class="fu">as</span>(sf, <span class="st">"Spatial"</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>matern <span class="ot">&lt;-</span> INLA<span class="sc">::</span><span class="fu">inla.spde2.pcmatern</span>(smesh, <span class="at">prior.sigma =</span> <span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.01</span>), <span class="at">prior.range =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="fl">0.5</span>) )</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="do">## latent field</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>cmp <span class="ot">&lt;-</span> coordinates <span class="sc">~</span> <span class="fu">random_field</span>(coordinates, <span class="at">model =</span> matern) <span class="sc">+</span> <span class="fu">Intercept</span>(<span class="dv">1</span>)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>sp<span class="sc">::</span><span class="fu">proj4string</span>(locs_sp) <span class="ot">&lt;-</span> smesh<span class="sc">$</span>crs <span class="ot">&lt;-</span> sp<span class="sc">::</span><span class="fu">proj4string</span>(domain)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="do">## fit model</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>fit_inla <span class="ot">&lt;-</span> <span class="fu">lgcp</span>(cmp, locs_sp, <span class="at">samplers =</span> domain, <span class="at">domain =</span> <span class="fu">list</span>(<span class="at">coordinates =</span> smesh))</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">rbind</span>(fit_inla<span class="sc">$</span>summary.fixed[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], fit_inla<span class="sc">$</span>summary.hyperpar[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>pars</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                            mean        sd
-Intercept              3.2755781 0.6680163
-Range for random_field 1.7795900 0.9046165
-Stdev for random_field 0.4655544 0.1621035</code></pre>
-</div>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>sf_locs <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(locs, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>matern <span class="ot">&lt;-</span> INLA<span class="sc">::</span><span class="fu">inla.spde2.pcmatern</span>(smesh, <span class="at">prior.sigma =</span> <span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.01</span>), <span class="at">prior.range =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="fl">0.5</span>) )</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="do">## latent field</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>cmp <span class="ot">&lt;-</span> geometry <span class="sc">~</span> <span class="fu">random_field</span>(geometry, <span class="at">model =</span> matern) <span class="sc">+</span> <span class="fu">Intercept</span>(<span class="dv">1</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="do">## fit model</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>fit_inla <span class="ot">&lt;-</span> <span class="fu">lgcp</span>(cmp, sf_locs, <span class="at">domain =</span> <span class="fu">list</span>(<span class="at">geometry =</span> smesh))</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">rbind</span>(fit_inla<span class="sc">$</span>summary.fixed[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], fit_inla<span class="sc">$</span>summary.hyperpar[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>pars</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now using <code>spatstat</code></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ss <span class="ot">&lt;-</span> spatstat.model<span class="sc">::</span><span class="fu">lgcp.estK</span>(sim, <span class="at">covmodel =</span> <span class="fu">list</span>(<span class="at">model =</span> <span class="st">"matern"</span>, <span class="at">nu =</span> <span class="dv">1</span>))</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ss<span class="sc">$</span>clustpar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ss <span class="ot">&lt;-</span> spatstat.model<span class="sc">::</span><span class="fu">lgcp.estK</span>(sim, <span class="at">covmodel =</span> <span class="fu">list</span>(<span class="at">model =</span> <span class="st">"matern"</span>, <span class="at">nu =</span> <span class="dv">1</span>))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ss<span class="sc">$</span>clustpar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      var     scale 
 0.3541098 0.3018202 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ss<span class="sc">$</span>modelpar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ss<span class="sc">$</span>modelpar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   sigma2     alpha        mu 
 0.3541098 0.3018202 3.1445250 </code></pre>
 </div>
 </div>
-<p>The table below gives the estimated parameter values from <code>stelfi</code> and <code>inlabru</code> along with the standard errors in brackets (where possible).</p>
 <div class="cell">
-<div class="cell-output-display">
-<table class="table table-sm table-striped">
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: left;"><span class="math inline">\(\beta_0\)</span></th>
-<th style="text-align: left;"><span class="math inline">\(r\)</span></th>
-<th style="text-align: left;"><span class="math inline">\(\sigma\)</span></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">stelfi</td>
-<td style="text-align: left;">3.218 ( 0.268 )</td>
-<td style="text-align: left;">0.703 ( 0.42 )</td>
-<td style="text-align: left;">0.49 ( 0.147 )</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">inlabru</td>
-<td style="text-align: left;">3.276 ( 0.668 )</td>
-<td style="text-align: left;">1.78 ( 0.905 )</td>
-<td style="text-align: left;">0.466 ( 0.162 )</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">spatstat</td>
-<td style="text-align: left;">3.145</td>
-<td style="text-align: left;">0.854</td>
-<td style="text-align: left;">0.595</td>
-</tr>
-</tbody>
-</table>
-</div>
+
 </div>
 <section id="an-applied-example" class="level3" data-number="5.2.1">
 <h3 data-number="5.2.1" class="anchored" data-anchor-id="an-applied-example"><span class="header-section-number">5.2.1</span> An applied example</h3>
 <p>Using the applied example given in <span class="citation" data-cites="stelfi">Jones-Todd and van Helsdingen (<a href="references.html#ref-stelfi" role="doc-biblioref">2024</a>)</span> a LGCP model is fitted to sasquatch sightings using the function <code>fit_lgcp()</code>. For more details on the use of the Delauney triangulation see <a href="#sec-mesh"><span>Section&nbsp;5.1</span></a>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"sasquatch"</span>, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="do">## get sf of the contiguous US</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">sf_use_s2</span>(<span class="cn">FALSE</span>)</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>us <span class="ot">&lt;-</span> maps<span class="sc">::</span><span class="fu">map</span>(<span class="st">"usa"</span>, <span class="at">fill =</span> <span class="cn">TRUE</span>, <span class="at">plot =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_as_sf</span>() <span class="sc">|&gt;</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_make_valid</span>()</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="do">## dataframe of sighting locations (lat, long)</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>locs <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_coordinates</span>(sasquatch) <span class="sc">|&gt;</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">as.data.frame</span>()</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(locs) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Delauney triangulation of domain</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>smesh <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_mesh_2d</span>(<span class="at">loc =</span> locs[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], <span class="at">max.edge =</span> <span class="dv">2</span>, <span class="at">cutoff =</span> <span class="dv">1</span>)</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="do">## fit model with user-chosen parameter starting values</span></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_lgcp</span>(<span class="at">locs =</span> locs, <span class="at">sf =</span> us, <span class="at">smesh =</span> smesh,</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>                <span class="at">parameters =</span> <span class="fu">c</span>(<span class="at">beta =</span> <span class="dv">0</span>, <span class="at">log_tau =</span> <span class="fu">log</span>(<span class="dv">1</span>),</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>                               <span class="at">log_kappa =</span> <span class="fu">log</span>(<span class="dv">1</span>)))</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit)                 </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"sasquatch"</span>, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="do">## get sf of the contiguous US</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">sf_use_s2</span>(<span class="cn">FALSE</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>us <span class="ot">&lt;-</span> maps<span class="sc">::</span><span class="fu">map</span>(<span class="st">"usa"</span>, <span class="at">fill =</span> <span class="cn">TRUE</span>, <span class="at">plot =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_as_sf</span>() <span class="sc">|&gt;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_make_valid</span>()</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="do">## dataframe of sighting locations (lat, long)</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>locs <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_coordinates</span>(sasquatch) <span class="sc">|&gt;</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">as.data.frame</span>()</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(locs) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Delauney triangulation of domain</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>smesh <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_mesh_2d</span>(<span class="at">loc =</span> locs[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], <span class="at">max.edge =</span> <span class="dv">2</span>, <span class="at">cutoff =</span> <span class="dv">1</span>)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="do">## fit model with user-chosen parameter starting values</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_lgcp</span>(<span class="at">locs =</span> locs, <span class="at">sf =</span> us, <span class="at">smesh =</span> smesh,</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>                <span class="at">parameters =</span> <span class="fu">c</span>(<span class="at">beta =</span> <span class="dv">0</span>, <span class="at">log_tau =</span> <span class="fu">log</span>(<span class="dv">1</span>),</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>                               <span class="at">log_kappa =</span> <span class="fu">log</span>(<span class="dv">1</span>)))</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit)                 </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>            Estimate Std. Error
 beta      -0.7659374  0.3558810
@@ -448,71 +408,39 @@ stdev      1.3491825  0.1480772</code></pre>
 </div>
 <p>Again, the estimated GMRF can be plotted using the <code>show_field()</code> function once the values have been extracted using <code>get_fields()</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_fields</span>(fit, smesh) <span class="sc">|&gt;</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show_field</span>(<span class="at">smesh =</span> smesh, <span class="at">sf =</span> us, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> ggplot2<span class="sc">::</span><span class="fu">theme_classic</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_fields</span>(fit, smesh) <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show_field</span>(<span class="at">smesh =</span> smesh, <span class="at">sf =</span> us, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> ggplot2<span class="sc">::</span><span class="fu">theme_classic</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="lgcp_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>The estimated intensity surface can be plotted using the <code>show_lambda()</code> function.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_lambda</span>(fit, <span class="at">smesh =</span> smesh, <span class="at">sf =</span> us, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> ggplot2<span class="sc">::</span><span class="fu">theme_classic</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_lambda</span>(fit, <span class="at">smesh =</span> smesh, <span class="at">sf =</span> us, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> ggplot2<span class="sc">::</span><span class="fu">theme_classic</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="lgcp_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Again, as a comparison, <code>inlabru</code> (<span class="citation" data-cites="inlabru">Bachl et al. (<a href="references.html#ref-inlabru" role="doc-biblioref">2019</a>)</span>) is used to fit the same model to these data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(inlabru)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(sp)</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>locs_sp <span class="ot">&lt;-</span> locs; sp<span class="sc">::</span><span class="fu">coordinates</span>(locs_sp) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>domain <span class="ot">&lt;-</span> <span class="fu">as</span>(us, <span class="st">"Spatial"</span>)</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>matern <span class="ot">&lt;-</span> INLA<span class="sc">::</span><span class="fu">inla.spde2.pcmatern</span>(smesh,</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="at">prior.sigma =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.01</span>),</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="at">prior.range =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="fl">0.01</span>)</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="do">## latent field</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>cmp <span class="ot">&lt;-</span> coordinates <span class="sc">~</span> <span class="fu">random_field</span>(coordinates, <span class="at">model =</span> matern) <span class="sc">+</span> <span class="fu">Intercept</span>(<span class="dv">1</span>)</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>sp<span class="sc">::</span><span class="fu">proj4string</span>(locs_sp) <span class="ot">&lt;-</span> smesh<span class="sc">$</span>crs <span class="ot">&lt;-</span> sp<span class="sc">::</span><span class="fu">proj4string</span>(domain)</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="do">## fit model</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>fit_inla <span class="ot">&lt;-</span> <span class="fu">lgcp</span>(cmp, locs_sp, <span class="at">samplers =</span> domain, <span class="at">domain =</span> <span class="fu">list</span>(<span class="at">coordinates =</span> smesh))</span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">rbind</span>(fit_inla<span class="sc">$</span>summary.fixed[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], fit_inla<span class="sc">$</span>summary.hyperpar[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])</span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>pars</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                             mean         sd
-Intercept              -0.4907638 0.24998054
-Range for random_field  7.9401368 0.81253926
-Stdev for random_field  0.8759888 0.06323398</code></pre>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Again, as a comparison, `inlabru` (@inlabru) is used to fit the same model to these data.</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(inlabru)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(sp)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>locs_sp <span class="ot">&lt;-</span> locs; sp<span class="sc">::</span><span class="fu">coordinates</span>(locs_sp) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>domain <span class="ot">&lt;-</span> <span class="fu">as</span>(us, <span class="st">"Spatial"</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>matern <span class="ot">&lt;-</span> INLA<span class="sc">::</span><span class="fu">inla.spde2.pcmatern</span>(smesh,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="at">prior.sigma =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.01</span>),</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="at">prior.range =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="fl">0.01</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="do">## latent field</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>cmp <span class="ot">&lt;-</span> coordinates <span class="sc">~</span> <span class="fu">random_field</span>(coordinates, <span class="at">model =</span> matern) <span class="sc">+</span> <span class="fu">Intercept</span>(<span class="dv">1</span>)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>sp<span class="sc">::</span><span class="fu">proj4string</span>(locs_sp) <span class="ot">&lt;-</span> smesh<span class="sc">$</span>crs <span class="ot">&lt;-</span> sp<span class="sc">::</span><span class="fu">proj4string</span>(domain)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="do">## fit model</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>fit_inla <span class="ot">&lt;-</span> <span class="fu">lgcp</span>(cmp, locs_sp, <span class="at">samplers =</span> domain, <span class="at">domain =</span> <span class="fu">list</span>(<span class="at">coordinates =</span> smesh))</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">rbind</span>(fit_inla<span class="sc">$</span>summary.fixed[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], fit_inla<span class="sc">$</span>summary.hyperpar[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>pars</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</div>
-<p>The table below gives the estimated parameter values from <code>stelfi</code> and <code>inlabru</code> along with the standard errors in brackets.</p>
 <div class="cell">
-<div class="cell-output-display">
-<table class="table table-sm table-striped">
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: left;"><span class="math inline">\(\beta_0\)</span></th>
-<th style="text-align: left;"><span class="math inline">\(r\)</span></th>
-<th style="text-align: left;"><span class="math inline">\(\sigma\)</span></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">stelfi</td>
-<td style="text-align: left;">-0.766 ( 0.356 )</td>
-<td style="text-align: left;">7.343 ( 1.109 )</td>
-<td style="text-align: left;">1.349 ( 0.148 )</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">inlabru</td>
-<td style="text-align: left;">-0.491 ( 0.25 )</td>
-<td style="text-align: left;">7.94 ( 0.813 )</td>
-<td style="text-align: left;">0.876 ( 0.063 )</td>
-</tr>
-</tbody>
-</table>
-</div>
+
 </div>
 </section>
 </section>
