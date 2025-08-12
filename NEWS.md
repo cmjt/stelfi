@@ -1,5 +1,20 @@
 # stelfi (development version)
 
+# stelfi 1.0.2
+
+## Breaking changes
+
+ + None
+
+## New features
+
+ + None
+
+## Minor improvements and fixes
+
+ + fixing CRAN NOTE for CRAN (re)release 
+
+
 # stelfi 0.0.3
 
 ## Breaking changes
