@@ -45,7 +45,6 @@
 #' @references Kristensen, K., Nielsen, A., Berg, C. W., Skaug, H., and
 #'  Bell B. M. (2016). {TMB}: Automatic Differentiation and Laplace
 #' Approximation. \emph{Journal of Statistical Software}, \strong{70}: 1--21.
-#' @docType package
-#' @aliases stelfi-package
-#' @name stelfi
+#' @keywords internal
+"_PACKAGE"
 NULL
