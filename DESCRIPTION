@@ -7,7 +7,7 @@ Authors@R:
   c(person(given = "Charlotte M.",
            family = "Jones-Todd",
            role = c("aut", "cre", "cph"),
-           email = "c.jonestodd@ac.nz",
+           email = "c.jonestodd@auckland.ac.nz",
            comment = c(ORCID = "0000-0003-1201-2781",
 	   "Charlotte Jones-Todd wrote and continued developmend of the main code.")),
     person(given  = "Alec",
