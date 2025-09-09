@@ -64,7 +64,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Charlotte M. Jones-Todd \email{cmjonestodd@gmail.com} (\href{https://orcid.org/0000-0003-1201-2781}{ORCID}) (Charlotte Jones-Todd wrote and continued developmend of the main code.) [copyright holder]
+\strong{Maintainer}: Charlotte M. Jones-Todd \email{c.jonestodd@auckland.ac.nz} (\href{https://orcid.org/0000-0003-1201-2781}{ORCID}) (Charlotte Jones-Todd wrote and continued developmend of the main code.) [copyright holder]
 
 Authors:
 \itemize{

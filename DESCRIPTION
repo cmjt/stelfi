@@ -49,7 +49,7 @@ BugReports: https://github.com/cmjt/stelfi/issues
 LazyData: TRUE
 LazyDataCompression: xz
 Encoding: UTF-8
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Suggests:
     testthat (>= 3.1.10),
     rmarkdown,
