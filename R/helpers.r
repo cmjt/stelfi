@@ -100,6 +100,14 @@ get_coefs <- function(obj) {
             row.names(table)[j + 2] <- paste("BP", j)
         }
     }
+    ## The code below is for fit_mhawkes()
+    ## as matricies returned in column-major order
+    if(obj$env$data$model_type == "multi_hawkes") {
+        num_stream <- length(table(obj$env$data$stream))
+        num  <- seq_len(num_stream)
+        alpha_num <- as.vector(outer(1:num_stream, 1:num_stream, paste0))
+        rownames(table) <- c(paste0("mu_", num), paste0("alpha_", alpha_num),paste0("beta_", num))
+    }
     return(table)
 }
 
