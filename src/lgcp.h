@@ -103,7 +103,7 @@ Type lgcp(objective_function<Type>* obj) {
     nll = GMRF(Q)(x);
 
     SIMULATE{
-      array<Type> xmat(x.size(), 2);
+      tmbutils::array<Type> xmat(x.size(), 2);
       AR1_t<GMRF_t<Type> >(Type(0.), GMRF(Q)).simulate(xmat);
       x = xmat.col(0);
     }
