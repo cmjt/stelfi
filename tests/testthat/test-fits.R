@@ -103,8 +103,10 @@ test_that("LGCP model fitting (spatiotemporal)", {
     skip_on_cran()
     if(requireNamespace("fmesher")){
         data(xyt, package = "stelfi")
-        print(R.version.string)
-        print(RNGkind())
+        set.seed(123)
+        print(runif(5))
+        print(rnorm(5))
+        print(sample(1:100, 10))
         domain <- sf::st_as_sf(xyt$window)
         ndays <- 2
         locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
