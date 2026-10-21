@@ -103,11 +103,11 @@ test_that("LGCP model fitting (spatiotemporal)", {
     skip_on_cran()
     if(requireNamespace("fmesher")){
         data(xyt, package = "stelfi")
-        packageVersion("TMB")
-        packageVersion("Matrix")
-        packageVersion("RcppEigen")
-        TMB::TMB.Version()
-        extSoftVersion()
+        print(packageVersion("TMB"))
+        print(packageVersion("Matrix"))
+        print(packageVersion("RcppEigen"))
+        print(TMB::TMB.Version())
+        print(extSoftVersion())
         domain <- sf::st_as_sf(xyt$window)
         ndays <- 2
         locs <- data.frame(x = xyt$x, y = xyt$y, t = xyt$t)
