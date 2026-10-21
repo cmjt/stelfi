@@ -44,6 +44,20 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
+      - name: Diagnose platform and compiler
+        shell: bash
+        run: |
+          echo "=== Architecture ==="
+          uname -m
+          echo "=== R version and platform ==="
+          Rscript -e 'print(R.version); print(RNGkind())'
+          echo "=== External libraries ==="
+          Rscript -e 'print(extSoftVersion())'
+          echo "=== Compiler configuration ==="
+          R CMD config CXX
+          R CMD config CXX17
+          R CMD config CXXFLAGS
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
