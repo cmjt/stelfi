@@ -31,14 +31,25 @@ jobs:
           extra-packages: any::covr
           needs: coverage
 
-      - name: Test coverage
+            - name: Test coverage
         run: |
-          covr::codecov(
+          # Run the package coverage
+          cov <- covr::package_coverage(
             quiet = FALSE,
             clean = FALSE,
             install_path = file.path(Sys.getenv("RUNNER_TEMP"), "package")
           )
+          print(cov)
+          # Export to a standard format that Codecov reads perfectly
+          covr::to_cobertura(cov)
         shell: Rscript {0}
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./cobertura.xml
+          fail_ci_if_error: true # Forces the step to error out if the upload fails, so you can see why
+          token: ${{ secrets.CODECOV_TOKEN }} # Highly recommended to prevent rate-limiting/upload drops
 
       - name: Show testthat output
         if: always()
@@ -47,9 +58,10 @@ jobs:
           find ${{ runner.temp }}/package -name 'testthat.Rout*' -exec cat '{}' \; || true
         shell: bash
 
-      - name: Upload test results
+      - name: Upload test failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-test-failures
           path: ${{ runner.temp }}/package
+
