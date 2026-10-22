@@ -19,7 +19,7 @@ New maintainer:
 Old maintainer(s):
   Charlotte M. Jones-Todd <c.jonestodd@auckland.ac.nz>
 
- * I (Charlotte) am the maintainer and have recently moved institutions from the University of Auckland to the Univsrsity of St Andrews and my email address has therefore changed accordingly
+ * I (Charlotte) am the maintainer and have recently moved institutions from the University of Auckland to the University of St Andrews and my email address has therefore changed accordingly
 
 The following INFO was received
 
