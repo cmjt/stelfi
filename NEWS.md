@@ -1,4 +1,18 @@
-# stelfi (development version)
+# stelfi 1.0.3
+
+## Breaking changes
+
+ + None
+
+## New features
+
+ + None
+
+## Minor improvements and fixes
+
+ + Changed maintatiner email address to cmjt@st-andrews.ac.uk (previous c.jonestodd@auckland.ac.nz) due to moving institutions
+ + For `fit_mhawkes()` (multivariate Hawkes model) have updated coefficient names to include dimension
+ + Updated some tests to test for output structure
 
 # stelfi 1.0.2
 

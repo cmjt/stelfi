@@ -1,49 +1,32 @@
-## (re/new)submission
-
-Package was archived on CRAN on 2025-04-02
-
-Resubmitted to CRAN 2025-08-19
-
-Failed two tests in `test-fits.R` for `LGCP model fitting (spatial)` on M1mac where parameters were not estimated within the tolerance given. This likely due to the slight difference in approximation. I have reformulated this test accordingly.
+##  New submission
 
 ## Test environments
 
 * ubuntu-latest (release & devel)
 * local ubuntu 20.04
-* windows-latest (release & oldrelease)
+* windows-latest (release)
 * macos-latest (release)
+* macos-15-intel (release)
 
 ## R CMD check results
 
 * No ERRORs or WARNINGs
  
-The following NOTE was received
+The following NOTEs were received
 
-* Maintainer: 'Charlotte M. Jones-Todd <c.jonestodd@auckland.ac.nz>'
+New maintainer:
+  Charlotte M. Jones-Todd <cmjt@st-andrews.ac.uk>
+Old maintainer(s):
+  Charlotte M. Jones-Todd <c.jonestodd@auckland.ac.nz>
 
-New submission
-
-Package was archived on CRAN
-
-Possibly misspelled words in DESCRIPTION:
-  Hawkes (3:8, 36:18, 36:92, 36:130)
-  Lindgren (36:925)
-  spatiotemporal (36:628)
-
- * These are the correct spellings
-
-CRAN repository db overrides:
-  X-CRAN-Comment: Archived on 2025-04-02 as issues were not corrected
-    in time
-    
-  * Again, apologies. As above I have reformilated tests for M1mac
+ * I (Charlotte) am the maintainer and have recently moved institutions from the University of Auckland to the Univsrsity of St Andrews and my email address has therefore changed accordingly
 
 The following INFO was received
 
 * checking installed package size ... INFO
- installed size is 84.5Mb
+  installed size is 91.5Mb
   sub-directories of 1Mb or more:
-    libs  83.2Mb
+    libs  90.3Mb
 
  * This sub-directory is created when the C++ template, required for its functionality, is compiled.
 
@@ -53,4 +36,8 @@ The following INFO was received
 
 ## Changes
 
-Maintainer email changed to c.jonestodd@auckland.ac.nz
+Maintainer email changed to cmjt@st-andrews.ac.uk
+
+`fit_mhawkes()` (multivariate Hawkes model) updated coefficient names to include dimension when `get_coefs()` is called on fitted model object
+
+Updated some thestthat tests
