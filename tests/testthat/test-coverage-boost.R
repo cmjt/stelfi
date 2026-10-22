@@ -55,7 +55,7 @@ test_that("show_hawkes and show_hawkes_GOF exercise plotting and return branches
                          plot = FALSE,
                          return_values = TRUE,
                          tests = FALSE)
-  expect_is(gof, "list")
+  expect_type(gof, "list")
   expect_length(gof$compensator_differences, length(times) - 1)
 })
 
