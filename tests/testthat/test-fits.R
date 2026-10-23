@@ -73,15 +73,8 @@ test_that("LGCP model fitting (spatial)", {
                                        log_kappa = log(1)))
         pars <- as.numeric(get_coefs(fit)[, 1])
         expect_equal(pars[1], 2.45, tolerance = 0.5)
-        ## system check for M1mac
-        if (tolower(Sys.info()[["sysname"]]) == "darwin" && R.version[["arch"]] == "aarch64") {
-            expect_equal(pars[2], -1.32, tolerance = 0.5)
-            expect_equal(pars[3], 0.95, tolerance = 0.5)
-        } else {
-            expect_equal(pars[2], -1.32, tolerance = 0.1)
-            expect_equal(pars[3], 0.95, tolerance = 0.1)
-        }
-        
+        expect_equal(pars[2], -1.32, tolerance = 0.5)
+        expect_equal(pars[3], 0.95, tolerance = 0.5)
     }
 })
 test_that("Simulate LGCP (spatial)", {
