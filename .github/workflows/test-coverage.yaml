@@ -21,26 +21,19 @@ jobs:
         with:
           use-public-rspm: true
 
-      - name: Add inla repo
-        run: |
-          writeLines('options(repos = c(INLA = "https://inla.r-inla-download.org/R/stable/", getOption(\"repos\")))', file("~/.Rprofile", "ab"))
-        shell: Rscript {0}
-
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::covr
           needs: coverage
 
-            - name: Test coverage
+      - name: Test coverage
         run: |
-          # Run the package coverage
           cov <- covr::package_coverage(
             quiet = FALSE,
             clean = FALSE,
             install_path = file.path(Sys.getenv("RUNNER_TEMP"), "package")
           )
           print(cov)
-          # Export to a standard format that Codecov reads perfectly
           covr::to_cobertura(cov)
         shell: Rscript {0}
 
@@ -48,13 +41,12 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           files: ./cobertura.xml
-          fail_ci_if_error: true # Forces the step to error out if the upload fails, so you can see why
-          token: ${{ secrets.CODECOV_TOKEN }} # Highly recommended to prevent rate-limiting/upload drops
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Show testthat output
         if: always()
         run: |
-          ## --------------------------------------------------------------------
           find ${{ runner.temp }}/package -name 'testthat.Rout*' -exec cat '{}' \; || true
         shell: bash
 
@@ -64,4 +56,3 @@ jobs:
         with:
           name: coverage-test-failures
           path: ${{ runner.temp }}/package
-
