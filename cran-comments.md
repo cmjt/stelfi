@@ -40,4 +40,4 @@ Maintainer email changed to cmjt@st-andrews.ac.uk
 
 `fit_mhawkes()` (multivariate Hawkes model) updated coefficient names to include dimension when `get_coefs()` is called on fitted model object
 
-Updated some thestthat tests
+Updated & added some thestthat tests
