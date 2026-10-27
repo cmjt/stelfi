@@ -1,128 +1,284 @@
 # Spatiotemporal self-exciting models {#sec-stelfi}
 
-For the spatiotemporal Hawkes processes fitted by `stelfi`, temporal self-excitement follows an exponential decay function (see @reinhart). The self-excitement over space follows a Gaussian distribution centered at the triggering event. The default is that the Gaussian function has a fixed covariance matrix, independent of time. Alternatively, covariance can be directly proportional to time, meaning that the self-excitement radiates out from the center over time. This can be appropriate when the mechanism causing self-excitement travels at a finite speed, but is very memory-intensive. 
+```{r}
+#| echo: false
+#| message: false
+library(stelfi)
+library(ggplot2)
+```
 
-The intensity function used by `stelfi` is
+## The model and your data
 
-$$\lambda(s,t) = \mu + \alpha \Sigma_{i:\tau_i<t}(\text{exp}(-\beta * (t-\tau_i)) G_i(s-x_i, t - \tau_i)).$$ 
+A spatiotemporal self-exciting model combines ideas from the Hawkes process (@sec-hawkes) and the LGCP (@sec-lgcp). Events have a time *and* a location, and each event temporarily increases the chance of further events *nearby*, in both time and space. Earthquake aftershocks, the spread of crime ("near repeat" burglaries), and outbreaks of disease are typical examples. The intensity used by `stelfi` (see @reinhart) is
 
-Here $\mu$ is the background rate, $\beta$ is the rate of temporal decay, $\alpha$ is the increase in intensity after an event, $\tau_i$ are the event times, $x_i$ are the event locations (in 2D Euclidean space) and $G_i(s-x_i, t - \tau_i)$ is the spatial self-excitement kernel.
+$$\lambda(s,t) = \mu + \alpha \sum_{i:\tau_i<t} \text{exp}(-\beta (t-\tau_i))\, f(s - x_i),$${#eq-stelfi}
 
-For the version with time-independent spatial excitement:
-$G_i(s-x_i, t - \tau_i) = f_X(s - x_i)$
-where $f_X$ is the density function of $X \sim \text{N}(0, \Sigma)$, ($\Sigma = \begin{pmatrix} \sigma_x^2 & \rho  \\ \rho  & \sigma_y^2  \end{pmatrix}$).
+where $\tau_i$ and $x_i$ are the time and location of event $i$, and
 
-For the version with time-dependent spatial excitement:
-$G_i(s-x_i, t - \tau_i) = f_X(s - x_i)$
-where $f_X$ is the density function of $X \sim \text{N}(0, (t-\tau_i)\Sigma)$
+- $\mu$ is the **background rate**, the expected number of spontaneous events per unit area per unit time;
+- $\alpha$ and $\beta$ describe the **temporal** self-excitement, exactly as for a Hawkes process: each event triggers on average $\alpha/\beta$ further events (if all of its spatial influence falls within the study region), and its influence decays with time scale $1/\beta$; and
+- $f(\cdot)$ is the **spatial triggering kernel**, a bivariate normal density centred on the triggering event with standard deviations $\sigma_x$ and $\sigma_y$ (in the x and y directions) and correlation $\rho$. So triggered events tend to occur within a couple of standard deviations of the event that triggered them, and $\rho \neq 0$ means triggering is stronger along one diagonal direction than the other.
+
+Two extensions are available:
+
+- **A spatially varying background.** Setting `GMRF = TRUE` replaces $\mu$ with $\mu(s) = \text{exp}(\beta_0 + G(s))$, where $G(s)$ is a Gaussian random field as in an LGCP. Spatial covariates can also be included in the background via the `covariates` argument (one row per mesh node). This is important if some areas simply have more events than others, as otherwise this will be mistaken for self-excitement.
+- **A spreading kernel.** Setting `time_independent = FALSE` makes the spread of the kernel grow with time since the triggering event (its covariance is proportional to $t - \tau_i$), appropriate when the triggering mechanism travels at a finite speed. This is very memory intensive.
+
+`get_coefs()` reports `mu` and `coefs` (the log of the background rate, followed by any covariate coefficients), `alpha`, `beta`, `xsigma`, `ysigma`, `rho`, and, with `GMRF = TRUE`, the field parameters `kappa` and `tau`.
+
+### What your data need to look like {#sec-stelfi-data}
+
+`fit_stelfi()` needs
+
+- `times`, a numeric vector of event times, sorted with no ties (exactly as for a Hawkes process, @sec-hawkes-data);
+- `locs`, a data frame with columns `x` and `y` giving the location of each event, in the same order as `times`;
+- `sf`, an `sf` polygon of the study region; and
+- `smesh`, a mesh of the study region (@sec-mesh).
+
+Things to be aware of:
+
+- **Use projected coordinates in sensible units** (e.g., km), as for an LGCP (@sec-lgcp-data). The units of time and distance set the units of the parameters: $\mu$ is then events per km$^2$ per day (say) and $\sigma_x$, $\sigma_y$ are in km.
+- **The mesh is used to integrate the intensity over the study region**, both the background and the spatial kernel of every event. The mesh therefore needs to be fine *relative to the spread of the kernel* ($\sigma_x$, $\sigma_y$) where there are events, otherwise the integral of the kernel is inaccurate and so are the estimates. A good approach is to build the mesh around the events (`loc = locs`) with a small `cutoff`, which gives small triangles where events are and larger ones elsewhere. `fit_stelfi()` gives a warning if the mesh looks too coarse for the estimated kernel, and the accuracy can be checked in more detail after fitting (@sec-stelfi-gof).
+- **Edge effects.** Events near the edge of the study region trigger events that may fall outside it, and are therefore unobserved. The model accounts for this (the integral of the kernel only covers the study region), but the study region should be the region where events could have been observed.
+- **Computation.** The likelihood involves every pair of events, so the cost grows with the square of the number of events. A few hundred to a few thousand events is feasible; for more, consider a subset (e.g., a time window or the larger events).
+- **Starting values.** `parameters` is a list with `coefs` (the log of the background rate, or alternatively `mu`, the background rate itself; if neither is given a crude default is used), `alpha`, `beta`, `xsigma`, `ysigma`, `rho`, and, with `GMRF = TRUE`, `kappa` and `tau`. Choose `xsigma` and `ysigma` to be roughly the distance over which you expect triggering to occur, and $\alpha < \beta$. The model can be sensitive to starting values, particularly with `GMRF = TRUE`, so it is worth trying a few.
+
+## A simulated example {#sec-stelfi-sim}
 
 ```{r}
 #| echo: false
 #| message: false
-require(stelfi)
-require(ggplot2)
-```
-
-
-
-## Fitting a spatiotemporal Hawkes process
-
-
-```{r}
 data(xyt, package = "stelfi")
-locs <- data.frame(x = xyt$x, y = xyt$y)
-times <- xyt$t
 domain <- sf::st_as_sf(xyt$window)
-```
-
-```{r}
-ggplot(data = locs, aes(x = x, y = y, size = times)) +
-	geom_point() +
-	geom_sf(data = domain, fill = NA, inherit.aes = FALSE) +
-	theme_void()
-```
-
-```{r}
 bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
-smesh <- fmesher::fm_mesh_2d(boundary = bnd, 
-                            max.edge = 0.75, cutoff = 0.3)
-param <- list(mu = 1, alpha = 3, beta = 6, xsigma = 0.2,
-             ysigma = 0.2, rho = 0)
-fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh, parameters = param)
-pars <- get_coefs(fit)
+smesh <- fmesher::fm_mesh_2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+fit0 <- fit_stelfi(times = xyt$t, locs = data.frame(x = xyt$x, y = xyt$y), sf = domain,
+                   smesh = smesh, parameters = list(alpha = 1, beta = 3, xsigma = 0.3,
+                                                    ysigma = 0.3, rho = 0))
+truth <- c(mu = 1, alpha = 2, beta = 4, xsigma = 0.5, ysigma = 0.25, rho = 0)
+set.seed(2)
+sim <- fit0$simulate(par = c(coefs = log(1), logit_abratio = qlogis(2 / 4), log_beta = log(4),
+                             log_xsigma = log(0.5), log_ysigma = log(0.25), atanh_rho = 0))
+ord <- order(sim$times)
+locs <- data.frame(x = sim$locs[ord, 1], y = sim$locs[ord, 2])
+times <- sim$times[ord]
 ```
 
-Note that the `coefs` estimates are the vector of coefficients (on the log scale) of any supplied covariates, the first element related to the intercept (here the log of $\mu$). The estimate temporal self-excitement (ignoring and spatial influence) can be shown using `show_hawkes()` as in @sec-hawkes.
-
+Data were simulated from @eq-stelfi within the (elliptical) study region of the `xyt` dataset (see @sec-data), with background rate $\mu = 1$, $\alpha = 2$ and $\beta = 4$ (so each event triggers on average $2/4 = 0.5$ events), and a kernel with $\sigma_x = 0.5$, $\sigma_y = 0.25$ and $\rho = 0$ (so triggering spreads twice as far in the x direction as in the y direction). The data are a vector of `r length(times)` sorted event times and a data frame of the corresponding locations:
 
 ```{r}
-show_hawkes(list(times = times, params = c(mu = pars[1, 1], alpha = pars[3,1], beta = pars[4, 1])))
+head(times)
+head(locs)
 ```
 
-The bivariate Gaussian component of the diffusion kernel 
+In the plot below the size of each point shows its time.
+
+```{r, fig.height = 4, fig.width = 8}
+ggplot(data.frame(locs, times), aes(x = x, y = y, size = times)) +
+    geom_point(alpha = 0.5) +
+    geom_sf(data = domain, fill = NA, inherit.aes = FALSE) +
+    theme_void()
+```
+
+### Fitting the model using `stelfi`
+
+The study region is an `sf` polygon (here taken from the `xyt` data) and the mesh follows its boundary.
+
+```{r}
+domain <- sf::st_as_sf(xyt$window)
+bnd <- fmesher::fm_as_segm(as.matrix(sf::st_coordinates(domain)[, 1:2]))
+smesh <- fmesher::fm_mesh_2d(boundary = bnd, max.edge = 0.75, cutoff = 0.3)
+area <- as.numeric(sf::st_area(domain))
+param <- list(coefs = log(length(times) / (area * max(times))), ## log events per area per time
+              alpha = 1, beta = 3, xsigma = 0.3, ysigma = 0.3, rho = 0)
+fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh, parameters = param)
+stelfi <- get_coefs(fit)
+stelfi
+```
+
+### Comparison
+
+To our knowledge no other `R` package fits exactly this model, so the estimates are compared with the true values and with a purely *temporal* Hawkes process fitted to the event times alone using `hawkesbow` (@hawkesbow). Ignoring space, the times follow (approximately) a Hawkes process with background rate $\mu \times$ area, and the same $\alpha$ and $\beta$.
 
 ```{r}
 #| message: false
-## bivariate Gaussian kernel
-sigma_x <- pars[5,1]
-sigma_y <- pars[6,1]
-rho <- pars[7,1]
-x <- y <- seq(-2, 2, 0.1)
-sigma <- matrix(c(sigma_x, rho, rho, sigma_y), 
-                 ncol = 2)
-f <- function(x, y) mvtnorm::dmvnorm(cbind(x, y), c(0,0), sigma)
-z <- outer(x,y,f)
-contour(x, y, z, nlevels = 10,  asp = 1)
-```
-
-
-## Simulating from a spatiotemporal Hawkes process
-
-```{r}
-param <- list(mu = 10, alpha = 30, beta = 60, xsigma = 1,
-             ysigma = 0.2, rho = 0)
-sim <- fit$simulate(par = param)
+#| warning: false
+fit_bow <- hawkesbow::mle(events = times, kern = "Exponential", end = max(times))
+bow <- fit_bow$par ## background, branching ratio (alpha/beta), beta
+bow
 ```
 
 ```{r}
 #| echo: false
-ggplot(data.frame(x = sim$locs[,1], y = sim$locs[,2], times = sim$times)) +
-  geom_point(aes(x = x, y = y, size = times)) +
-	geom_sf(data = domain, fill = NA, inherit.aes = FALSE) +
-	theme_void() 
+fmt <- function(x) paste0(round(x[1], 3), " (", round(x[2], 3), ")")
+params <- data.frame(
+    Truth = c(truth, truth["alpha"] / truth["beta"]),
+    stelfi = c(apply(stelfi[c("mu", "alpha", "beta", "xsigma", "ysigma", "rho"), ], 1, fmt),
+               round(stelfi["alpha", 1] / stelfi["beta", 1], 3)),
+    hawkesbow = c(round(bow[1] / area, 3), round(bow[2] * bow[3], 3), round(bow[3], 3),
+                  "-", "-", "-", round(bow[2], 3)))
+knitr::kable(t(params), col.names = c("$\\mu$", "$\\alpha$", "$\\beta$", "$\\sigma_x$",
+                                      "$\\sigma_y$", "$\\rho$", "$\\alpha/\\beta$"),
+             escape = FALSE)
 ```
 
-```{r}
-fit <- fit_stelfi(times = sim$times, locs = data.frame(x = sim$locs[,1], y = sim$locs[,2]), 
-                  sf = domain, smesh = smesh, parameters = param)
-get_coefs(fit)
+`stelfi` recovers the true values reasonably well, including the shape of the spatial kernel. The purely temporal model gets the overall rate about right but is much less able to separate background events from triggered ones, since without locations it cannot tell whether two events close together in time were also close together in space.
 
+The estimated spatial kernel is plotted below: triggered events are expected within the contours around a triggering event (at the centre).
+
+```{r, fig.height = 4, fig.width = 5}
+plot_kernel <- function(pars, lim = 2) {
+    sigma <- matrix(c(pars["xsigma", 1]^2,
+                      rep(pars["rho", 1] * pars["xsigma", 1] * pars["ysigma", 1], 2),
+                      pars["ysigma", 1]^2), ncol = 2)
+    grid <- expand.grid(x = seq(-lim, lim, length.out = 200), y = seq(-lim, lim, length.out = 200))
+    grid$density <- mvtnorm::dmvnorm(as.matrix(grid), sigma = sigma)
+    ggplot(grid, aes(x = x, y = y, z = density)) + geom_contour(col = "black") +
+        coord_equal() + theme_minimal() + xlab("Distance in x") + ylab("Distance in y")
+}
+plot_kernel(stelfi, lim = 1.5)
 ```
 
-## Including a GMRF
+## An applied example: Canterbury earthquakes {#sec-stelfi-applied}
 
-::: {.callout-warning}
+The Canterbury earthquakes were modelled in time only in @sec-marked-hawkes-applied and @sec-mhawkes-applied. Here their locations are included. To keep computation manageable, only the `r sum(stelfi::nz_earthquakes$magnitude >= 4)` earthquakes of magnitude 4 and above are used.
 
-Sensitive to starting values. TODO
+### Preparing the data
 
-:::
-
-```{r}
-param <- list(mu = 1, alpha = 3, beta = 6, kappa = 0.9, tau = 1, xsigma = 0.2,
-             ysigma = 0.2, rho = 0)
-
-fit <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh, parameters = param,
-                  GMRF = TRUE)
-pars <- get_coefs(fit)
-pars
-
-```
-
-The estimated GMRF can be plotted using the `show_field()` function once the values have been extracted using `get_fields()` (@sec-lgcp).
+The earthquakes are projected to New Zealand Transverse Mercator (EPSG:2193) and converted to km. Times are in days since the first earthquake, jittered to remove ties (@sec-marked-hawkes-applied), and the data are sorted by time.
 
 ```{r}
 #| message: false
-get_fields(fit, smesh) |>
-    show_field(smesh = smesh, sf = domain, clip = TRUE) +
-  ggplot2::theme_classic()
+data(nz_earthquakes, package = "stelfi")
+eq <- nz_earthquakes[nz_earthquakes$magnitude >= 4, ]
+xy <- sf::st_coordinates(sf::st_transform(eq, crs = 2193)) / 1000
+set.seed(1)
+days <- as.numeric(difftime(eq$origintime, min(eq$origintime), units = "days")) +
+    runif(nrow(eq), 0, 1 / (24 * 60))
+ord <- order(days)
+times <- days[ord] - min(days)
+locs <- data.frame(x = xy[ord, 1], y = xy[ord, 2])
 ```
+
+The catalogue does not come with a study region, so here the region is taken to be the convex hull of the earthquakes, extended by 20 km. In your own application the study region should reflect where events could have been recorded.
+
+```{r}
+#| message: false
+domain <- sf::st_as_sf(locs, coords = c("x", "y")) |>
+    sf::st_union() |>
+    sf::st_convex_hull() |>
+    sf::st_buffer(20)
+domain <- sf::st_sf(geometry = domain)
+```
+
+The mesh is built around the earthquakes with a small `cutoff` (1 km), so that triangles are small where earthquakes are (much smaller than the few km over which aftershocks are expected) and larger elsewhere.
+
+```{r, fig.height = 5, fig.width = 6}
+#| message: false
+smesh <- fmesher::fm_mesh_2d(loc = locs, boundary = fmesher::fm_as_segm(domain),
+                             max.edge = c(30, 100), cutoff = 1)
+smesh$n
+ggplot() +
+    geom_sf(data = mesh_2_sf(smesh), fill = NA, linewidth = 0.2) +
+    geom_sf(data = domain, fill = NA, col = "blue") +
+    geom_point(data = locs, aes(x = x, y = y), size = 0.5, col = "red") +
+    theme_void()
+```
+
+### Fitting the model
+
+Two models are fitted: one with a constant background, and one with a spatially varying background (`GMRF = TRUE`). For the latter, starting values for the field are needed: here a range of about 40 km ($\kappa = \sqrt{8}/40$).
+
+```{r}
+#| message: false
+area <- as.numeric(sf::st_area(domain))
+param <- list(coefs = log(length(times) / (area * max(times))),
+              alpha = 1, beta = 2, xsigma = 5, ysigma = 5, rho = 0)
+fit_eq <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh, parameters = param)
+get_coefs(fit_eq)
+```
+
+```{r}
+#| message: false
+param_gmrf <- c(param, kappa = sqrt(8) / 40, tau = 0.1)
+fit_eq_gmrf <- fit_stelfi(times = times, locs = locs, sf = domain, smesh = smesh,
+                          parameters = param_gmrf, GMRF = TRUE)
+pars_eq <- get_coefs(fit_eq_gmrf)
+pars_eq
+```
+
+The two models are compared using AIC (the negative log-likelihood is stored in `fit$objective`; the models have 6 and 8 parameters).
+
+```{r}
+c(constant = 2 * fit_eq$objective + 2 * 6, GMRF = 2 * fit_eq_gmrf$objective + 2 * 8)
+```
+
+The model with a spatially varying background has a much lower AIC: some parts of the region have more earthquakes than others regardless of self-excitement, and without the field this is mistaken for triggering (compare the estimates of $\alpha$ and $\beta$ for the two models). The estimated background field is shown below.
+
+```{r, fig.height = 5, fig.width = 6}
+#| message: false
+get_fields(fit_eq_gmrf, smesh) |>
+    show_field(smesh = smesh, sf = domain, clip = TRUE) + theme_void() +
+    geom_point(data = locs, aes(x = x, y = y), size = 0.3)
+```
+
+From the model with the spatially varying background:
+
+- each earthquake of magnitude 4 or more directly triggers on average $\hat{\alpha}/\hat{\beta} =$ `r round(pars_eq["alpha", 1] / pars_eq["beta", 1], 2)` further such earthquakes;
+- the triggering decays with a time scale of $1/\hat{\beta} =$ `r round(24 / pars_eq["beta", 1], 1)` hours; and
+- triggered earthquakes typically occur within a few km of the triggering earthquake ($\hat{\sigma}_x =$ `r round(pars_eq["xsigma", 1], 1)` km, $\hat{\sigma}_y =$ `r round(pars_eq["ysigma", 1], 1)` km, $\hat{\rho} =$ `r round(pars_eq["rho", 1], 2)`), see the kernel below.
+
+```{r, fig.height = 4, fig.width = 5}
+plot_kernel(pars_eq, lim = 15)
+```
+
+## Goodness-of-fit {#sec-stelfi-gof}
+
+### Checking the mesh
+
+`stelfi` integrates the spatial kernel of each event over the study region using the mesh. For an event well inside the region the integral should be close to 1 (and less than 1 for an event near the edge). This can be checked by comparing the mesh-based integral with an accurate Monte Carlo estimate (the proportion of points simulated from the kernel that fall inside the study region).
+
+```{r}
+kernel_volume <- function(pars, locs, sf, smesh, n_mc = 2000) {
+    sigma <- matrix(c(pars["xsigma", 1]^2,
+                      rep(pars["rho", 1] * pars["xsigma", 1] * pars["ysigma", 1], 2),
+                      pars["ysigma", 1]^2), ncol = 2)
+    w <- get_weights(smesh, sf)$weights
+    window <- spatstat.geom::as.owin(sf)
+    t(sapply(seq_len(nrow(locs)), function(i) {
+        centre <- unlist(locs[i, c("x", "y")])
+        mesh <- sum(w * mvtnorm::dmvnorm(smesh$loc[, 1:2], mean = centre, sigma = sigma))
+        draws <- mvtnorm::rmvnorm(n_mc, mean = centre, sigma = sigma)
+        mc <- mean(spatstat.geom::inside.owin(draws[, 1], draws[, 2], window))
+        c(mesh = mesh, monte_carlo = mc)
+    }))
+}
+set.seed(1)
+vol <- kernel_volume(pars_eq, locs, domain, smesh)
+summary(vol)
+```
+
+```{r}
+#| echo: false
+mesh_ok <- mean(abs(vol[, "mesh"] - vol[, "monte_carlo"]) < 0.1)
+```
+
+For `r round(100 * mesh_ok)`% of the earthquakes the mesh-based integral is within 0.1 of the Monte Carlo value. Where they differ a lot (typically isolated earthquakes in parts of the region where the mesh is coarse) the mesh should be refined.
+
+### Checking the temporal pattern
+
+Integrating @eq-stelfi over the study region gives the intensity of the event *times*, which is a marked Hawkes process (@sec-marked-hawkes) with background rate $\int \mu(s) ds$ (the background integrated over the region) and with the mark of each event being the integral of its kernel over the study region (the Monte Carlo values above). The goodness-of-fit checks of @sec-gof-hawkes can therefore be applied to the times, using `show_hawkes_GOF()` with a list containing the times, the parameters, and the marks.
+
+```{r}
+w <- get_weights(smesh, domain)$weights
+mu_total <- sum(w * exp(pars_eq["coefs", 1] + as.vector(get_fields(fit_eq_gmrf, smesh))))
+temporal <- list(times = times, marks = vol[, "monte_carlo"],
+                 params = c(mu = mu_total, alpha = pars_eq["alpha", 1], beta = pars_eq["beta", 1]))
+```
+
+```{r, fig.height = 7, fig.width = 9}
+#| message: false
+show_hawkes_GOF(temporal)
+```
+
+As for the purely temporal models of the earthquakes (@sec-marked-hawkes-gof), the tests reject the model and the plots show the same features: the exponential decay in time cannot describe both the burst of activity immediately after a large earthquake and the long tail of aftershocks that follows, and every earthquake is assumed to trigger equally regardless of its magnitude. Adding space improves the description of *where* aftershocks occur, but does not fix these temporal limitations.

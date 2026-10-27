@@ -69,7 +69,8 @@ Type marked_lgcp(objective_function<Type>* obj) {
   Type nll = GMRF(Q)(tempx); // the random field is a GMRF with precision Q
 
   // point process
-  vector<Type> lambdapp = exp(tempx + designmatpp*betapp) * w.cwiseEqual(0).select(vector<Type>::Ones(w.size()), w); // Eexp(eta);
+  vector<Type> etapp = tempx + designmatpp*betapp; // log intensity of the point process
+  vector<Type> lambdapp = exp(etapp) * w.cwiseEqual(0).select(vector<Type>::Ones(w.size()), w); // Eexp(eta);
   nll -= w.cwiseEqual(0).select(vector<Type>::Zero(ypp.size()), dpois(ypp, lambdapp, true)).sum(); // construct likelihood
   
   matrix<Type> lambdamarks(x.rows(), ymarks.cols());
@@ -80,7 +81,7 @@ Type marked_lgcp(objective_function<Type>* obj) {
     vector<Type> temp = lambdamarks.col(i);
     if (cov_overlap == 0){
       temp = designmatmarks * betamarks.col(i); // multiply coefficients by design matrix
-      temp += marks_coefs_pp(i) * log(lambdapp); // coefficients multiplies entire lambda of pp
+      temp += marks_coefs_pp(i) * etapp; // coefficient multiplies the log intensity of pp
     } else {
       temp = designmatmarks * betamarks.col(i); 
       temp += marks_coefs_pp(i) * temprf; //coefficient only multiplies GMRF of pp
@@ -90,8 +91,8 @@ Type marked_lgcp(objective_function<Type>* obj) {
       Q = Q_spde(spde, kappa[RFcount]) * pow(tau[RFcount],2);
       tempx = x.col(RFcount);
       nll += GMRF(Q)(tempx); // field the random effect is a GMRF with precision Q
+      temp += tempx; // Add the mark's own random field
     }
-	   temp += tempx; // Add random field
 	   lambdamarks.col(i) = temp;
   }
 

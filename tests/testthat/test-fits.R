@@ -155,7 +155,9 @@ test_that("LGCP model fitting (marked)", {
                          parameters = parameters, methods = 0,
                          fields = 0)
         pars <- as.numeric(get_coefs(fit)[, 1])
-        expect_equal(pars[1], 9.90, tolerance = 0.1)
+        ## mark intercept (changed in 1.0.4 as the mark is now linked to the
+        ## log intensity of the point process rather than the log expected count)
+        expect_equal(pars[1], 7.8, tolerance = 0.1)
         expect_true(is.finite(pars[3]))
     }
 })

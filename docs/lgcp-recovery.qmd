@@ -1,0 +1,314 @@
+# Parameter recovery: `stelfi` vs `inlabru` {#sec-recovery}
+
+A good way to compare two methods for fitting the same model is to simulate data where the true parameter values are *known*, fit the model with both methods, and see how well each recovers the truth. Repeating this many times shows how the estimators behave on average, rather than for a single dataset. In this chapter many spatial log-Gaussian Cox processes (see @sec-lgcp) are simulated and fitted using `stelfi` and `inlabru` (@inlabru), and the following are compared:
+
+- **bias**: the average difference between the estimate and the truth,
+- **RMSE**: the root mean squared error, which combines bias and variability,
+- **coverage**: how often the 95% interval contains the truth (ideally, 95% of the time),
+- **interval width**: how wide the intervals are (narrow intervals are only good if coverage is good too), and
+- **run time** and **failure rate**: how long a fit takes and how often it fails to produce sensible estimates.
+
+The parameters of interest are the intercept $\beta_0$, the range $r = \sqrt{8}/\kappa$ and the marginal standard deviation $\sigma = 1/\sqrt{4\pi\kappa^2\tau^2}$ of the field (see @sec-lgcp).
+
+::: {.callout-note}
+
+`inlabru` requires `INLA`, which is not on CRAN (see [r-inla.org](https://www.r-inla.org/download-install)). The simulation study itself takes a while to run so it is run once, the results saved to a file (`recovery-results.rds`), and the chunks that summarise the results are only evaluated if that file exists. See @sec-recovery-run.
+
+:::
+
+## Set up
+
+### The domain and the true parameter values
+
+As in @sec-lgcp the domain is a disc (of radius 1). The true values are chosen so that there is a clear spatial signal to recover: a range of 0.5 (a quarter of the width of the domain) and a marginal standard deviation of 1 for the field. The intercept is 4 so that, on average, a few hundred events are observed in each simulated dataset. The values of $\tau$ and $\kappa$ that `stelfi` works with follow by rearranging the formulas for $r$ and $\sigma$.
+
+```{r}
+#| message: false
+#| warning: false
+require(stelfi)
+require(ggplot2)
+## domain
+disc_sf <- sf::st_as_sf(spatstat.geom::disc())
+bb <- sf::st_bbox(disc_sf)
+area <- as.numeric(sf::st_area(disc_sf))
+## true values of the parameters of interest
+true_beta <- 4; true_range <- 0.5; true_sigma <- 1
+## the corresponding values of kappa and tau
+true_kappa <- sqrt(8) / true_range
+true_tau <- 1 / (true_sigma * sqrt(4 * pi) * true_kappa)
+true_par <- c(beta = true_beta, log_tau = log(true_tau), log_kappa = log(true_kappa))
+round(true_par, 3)
+```
+
+### Two meshes
+
+Two triangulations of the domain are used (see @sec-mesh). A *fine* mesh is used to **simulate** the data and a *coarser* mesh to **fit** the models. Simulating and fitting on the same mesh would be a little too kind to the methods (the simulated field would be exactly representable by the model), whereas in practice the true field is never exactly the piecewise linear field on the mesh you choose. The fitting mesh has a `max.edge` of 0.1, which is a fifth of the true range of 0.5 (the rule of thumb from @sec-mesh), and is the same for every replicate and for both packages.
+
+```{r}
+#| message: false
+loc_domain <- sf::st_coordinates(disc_sf)[, 1:2]
+mesh_sim <- fmesher::fm_mesh_2d(loc.domain = loc_domain, max.edge = c(0.05, 0.3),
+                                offset = c(0.05, 0.4), cutoff = 0.01)
+mesh_fit <- fmesher::fm_mesh_2d(loc.domain = loc_domain, max.edge = c(0.1, 0.3),
+                                offset = c(0.05, 0.4), cutoff = 0.03)
+c(simulation = mesh_sim$n, fitting = mesh_fit$n)
+```
+
+## Simulating the data
+
+A realisation of the Gaussian field on the fine mesh is simulated using `sim_lgcp()`. Rather than placing events at the mesh nodes, events are then simulated at *continuous* locations from the intensity $\lambda(s) = \text{exp}(\beta_0 + G(s))$ (the field is interpolated between nodes) by **thinning**:
+
+1. simulate a homogeneous Poisson process with rate $\lambda_{max} = \text{exp}(\beta_0 + \text{max}_i x_i)$, which is at least as large as the intensity everywhere, over the bounding box of the domain,
+2. keep only the points inside the domain, and
+3. keep each remaining point $s$ with probability $\lambda(s) / \lambda_{max}$.
+
+The retained points are an exact draw from the LGCP given the field.
+
+```{r}
+sim_events <- function() {
+    ## 1. simulate the field (values at the nodes of the fine mesh)
+    s <- sim_lgcp(parameters = true_par, sf = disc_sf, smesh = mesh_sim)
+    x <- as.vector(s$x)
+    ## 2. homogeneous Poisson process with the maximum rate over the bounding box
+    lambda_max <- exp(true_beta + max(x))
+    area_bb <- (bb["xmax"] - bb["xmin"]) * (bb["ymax"] - bb["ymin"])
+    n0 <- rpois(1, lambda_max * area_bb)
+    cand <- data.frame(x = runif(n0, bb["xmin"], bb["xmax"]),
+                       y = runif(n0, bb["ymin"], bb["ymax"]))
+    ## keep points inside the domain
+    inside <- lengths(sf::st_intersects(sf::st_as_sf(cand, coords = c("x", "y")),
+                                        disc_sf)) > 0
+    cand <- cand[inside, ]
+    ## 3. thin: keep with probability lambda(s) / lambda_max
+    A <- fmesher::fm_basis(mesh_sim, loc = as.matrix(cand))
+    lambda <- exp(true_beta + as.vector(A %*% x))
+    cand[runif(nrow(cand)) < lambda / lambda_max, ]
+}
+```
+
+One simulated dataset is shown below.
+
+```{r}
+set.seed(1)
+locs <- sim_events()
+nrow(locs)
+ggplot() +
+    geom_sf(data = disc_sf, fill = NA) +
+    geom_point(data = locs, aes(x = x, y = y)) +
+    theme_void()
+```
+
+::: {.callout-note}
+
+The field is simulated using `stelfi`'s own parameterisation of the Matérn field. This is the standard SPDE field with a range $r$ and marginal standard deviation $\sigma$ related to $\kappa$ and $\tau$ as above, which is also what `inlabru` models via `inla.spde2.pcmatern()`. Both packages are therefore fitting a model that is correct up to the mesh, but it is worth knowing that the simulator and one of the fitting methods share code.
+
+:::
+
+## Fitting the models
+
+### `stelfi`
+
+The same default-type starting values are used for every dataset (as a user would): $\log(\tau) = \log(\kappa) = 0$ and the intercept is started at the log of the average number of events per unit area.
+
+```{r}
+#| message: false
+start_values <- function(n) {
+    c(beta = log(n / area), log_tau = log(1), log_kappa = log(1))
+}
+fit <- fit_lgcp(locs = locs, sf = disc_sf, smesh = mesh_fit,
+                parameters = start_values(nrow(locs)))
+get_coefs(fit)
+```
+
+Rows 1, 4 and 5 of `get_coefs()` are $\beta_0$, $r$, and $\sigma$. `stelfi` gives estimates with standard errors, and a 95% Wald interval is made from these. The range and standard deviation are positive so the interval is calculated on the log scale (the standard error of the log of an estimate is approximately the standard error divided by the estimate, the delta method) and transformed back, this stops intervals going below zero.
+
+```{r}
+tidy_stelfi <- function(fit) {
+    cf <- as.matrix(get_coefs(fit)[c(1, 4, 5), 1:2])
+    est <- unname(cf[, 1]); se <- unname(cf[, 2])
+    z <- 1.96
+    data.frame(param = c("beta", "range", "sigma"), est = est,
+               lower = c(est[1] - z * se[1], est[2:3] * exp(-z * se[2:3] / est[2:3])),
+               upper = c(est[1] + z * se[1], est[2:3] * exp( z * se[2:3] / est[2:3])))
+}
+tidy_stelfi(fit)
+```
+
+### `inlabru`
+
+`inlabru` is Bayesian so priors are needed for the field. Penalised complexity priors are used (as in @sec-iraq) and are set to be weak relative to the domain, `prior.range = c(0.05, 0.01)` means $P(r < 0.05) = 0.01$ and `prior.sigma = c(5, 0.01)` means $P(\sigma > 5) = 0.01$. Note that the true values (0.5 and 1) are not at the centre of the priors, but neither are they in the tails.
+
+Two configurations of `inlabru` are compared. The first, `"inlabru (eb)"`, is the one used in @sec-iraq: the hyperparameters are not integrated over (empirical Bayes) and a Gaussian approximation is used, which is the closest to maximum likelihood. The second, `"inlabru (default)"`, uses the default settings, which integrate over the uncertainty in the hyperparameters (the range and standard deviation) and so is the "full" Bayesian answer. For `inlabru` the estimate is the posterior mean and the interval is the 95% *credible* interval. This is not the same thing as a confidence interval, but if the priors are weak the two should be similar and coverage is still an informative thing to check.
+
+```{r}
+#| eval: false
+require(inlabru)
+require(INLA)
+
+matern <- INLA::inla.spde2.pcmatern(mesh_fit,
+                                    prior.sigma = c(5, 0.01),
+                                    prior.range = c(0.05, 0.01))
+cmp <- geometry ~ mySmooth(geometry, model = matern) + Intercept(1)
+
+fit_inlabru <- function(locs, config = c("eb", "default")) {
+    config <- match.arg(config)
+    opts <- if (config == "eb") {
+        inlabru::bru_options(control.inla = list(int.strategy = "eb",
+                                                 strategy = "gaussian",
+                                                 diagonal = 1e-4,
+                                                 control.vb = list(enable = FALSE)))
+    } else {
+        inlabru::bru_options()
+    }
+    pts <- sf::st_as_sf(locs, coords = c("x", "y"))
+    inlabru::lgcp(cmp, data = pts, samplers = disc_sf,
+                  domain = list(geometry = mesh_fit), options = opts)
+}
+
+tidy_inlabru <- function(fit) {
+    cols <- c("mean", "0.025quant", "0.975quant")
+    tab <- rbind(fit$summary.fixed["Intercept", cols],
+                 fit$summary.hyperpar["Range for mySmooth", cols],
+                 fit$summary.hyperpar["Stdev for mySmooth", cols])
+    data.frame(param = c("beta", "range", "sigma"), est = tab[, 1],
+               lower = tab[, 2], upper = tab[, 3])
+}
+```
+
+## Running the study {#sec-recovery-run}
+
+For each replicate a dataset is simulated and then fitted by the three methods. Each fit is wrapped so that if it fails (an error, or non-finite estimates or intervals, such as a standard error that cannot be calculated) the replicate is recorded as a failure instead of stopping the whole study, since the failure rate is itself part of the comparison. The time taken for each fit is recorded too (so this is the time for the fit alone, not for simulation). The seed is set to the replicate number, so any single replicate can be reproduced.
+
+```{r}
+#| eval: false
+attempt <- function(method, fit_fun, tidy_fun) {
+    time <- system.time(fit <- try(suppressMessages(fit_fun()), silent = TRUE))[["elapsed"]]
+    res <- if (inherits(fit, "try-error")) NULL else try(tidy_fun(fit), silent = TRUE)
+    ok <- !is.null(res) && !inherits(res, "try-error") &&
+        all(is.finite(unlist(res[, c("est", "lower", "upper")])))
+    if (is.null(res) || inherits(res, "try-error")) {
+        res <- data.frame(param = c("beta", "range", "sigma"),
+                          est = NA_real_, lower = NA_real_, upper = NA_real_)
+    }
+    data.frame(method = method, res, time = time, ok = ok)
+}
+
+run_one <- function(r) {
+    set.seed(r)
+    locs <- sim_events()
+    out <- rbind(
+        attempt("stelfi",
+                function() fit_lgcp(locs = locs, sf = disc_sf, smesh = mesh_fit,
+                                    parameters = start_values(nrow(locs))),
+                tidy_stelfi),
+        attempt("inlabru (eb)", function() fit_inlabru(locs, "eb"), tidy_inlabru),
+        attempt("inlabru (default)", function() fit_inlabru(locs, "default"), tidy_inlabru))
+    data.frame(rep = r, n_events = nrow(locs), out)
+}
+
+n_rep <- 100
+results <- do.call(rbind, pbapply::pblapply(1:n_rep, run_one))
+saveRDS(results, "recovery-results.rds")
+```
+
+Increasing `n_rep` reduces the Monte Carlo error of the summaries, with 100 replicates the Monte Carlo standard error of an estimated coverage of 95% is about 2 percentage points ($\sqrt{0.95 \times 0.05 / 100}$), so coverages between roughly 91% and 99% cannot be distinguished from 95%. For a final version of the chapter 500 or more replicates are better. The replicates are independent so can be run in parallel (e.g., using `parallel::mclapply()` on Linux/macOS).
+
+## Results
+
+```{r}
+#| eval: !expr file.exists("recovery-results.rds")
+#| echo: false
+truth <- c(beta = true_beta, range = true_range, sigma = true_sigma)
+results <- readRDS("recovery-results.rds")
+results$truth <- truth[results$param]
+results$method <- factor(results$method, levels = c("stelfi", "inlabru (eb)", "inlabru (default)"))
+## only use fits that gave sensible estimates for bias, RMSE, coverage, width
+good <- results[results$ok, ]
+good$error <- good$est - good$truth
+good$covered <- good$lower <= good$truth & good$truth <= good$upper
+```
+
+### Failures and run time
+
+The failure rate is the proportion of replicates in which a method did not return finite estimates and intervals, the run time is the median time (in seconds) for a single fit.
+
+```{r}
+#| eval: !expr file.exists("recovery-results.rds")
+one <- results[results$param == "beta", ]
+do.call(rbind, lapply(split(one, one$method), function(d) {
+    data.frame(method = d$method[1], replicates = nrow(d),
+               failure_rate = round(mean(!d$ok), 3),
+               median_seconds = round(median(d$time), 2))
+})) |>
+    knitr::kable(row.names = FALSE)
+```
+
+```{r}
+#| eval: !expr file.exists("recovery-results.rds")
+ggplot(one, aes(x = method, y = time, fill = method)) +
+    geom_boxplot(show.legend = FALSE) +
+    scale_y_log10() + xlab("") + ylab("seconds per fit (log scale)") +
+    theme_classic()
+```
+
+### Estimates
+
+The boxplots show the distribution of the estimates over the replicates for each method, the dashed line is the true value. A method that recovers the parameter well is centred on the line (low bias) with a narrow box (low variability). The intercept is usually well estimated, while the range and the standard deviation of the field are typically much harder to estimate, in particular in a small domain with a few hundred events, so more spread for these two is not surprising.
+
+```{r}
+#| eval: !expr file.exists("recovery-results.rds")
+ggplot(good, aes(x = method, y = est, fill = method)) +
+    geom_boxplot(show.legend = FALSE) +
+    geom_hline(aes(yintercept = truth), linetype = "dashed") +
+    facet_wrap(~ param, scales = "free_y", nrow = 1) +
+    xlab("") + ylab("estimate") +
+    theme_classic() + theme(axis.text.x = element_text(angle = 25, hjust = 1))
+```
+
+### Bias, RMSE, and interval width
+
+The table gives, for each method and parameter, the mean bias (estimate minus truth), the relative bias (bias as a proportion of the truth), the RMSE and the mean width of the 95% intervals. Bias and RMSE are averaged over the replicates where the fit succeeded.
+
+```{r}
+#| eval: !expr file.exists("recovery-results.rds")
+summ <- do.call(rbind, lapply(split(good, list(good$method, good$param), drop = TRUE),
+                              function(d) {
+    data.frame(method = d$method[1], param = d$param[1], n = nrow(d),
+               bias = mean(d$error), rel_bias = mean(d$error) / d$truth[1],
+               rmse = sqrt(mean(d$error^2)),
+               width = mean(d$upper - d$lower),
+               coverage = mean(d$covered))
+}))
+summ <- summ[order(summ$param, summ$method), ]
+knitr::kable(summ[, c("param", "method", "n", "bias", "rel_bias", "rmse", "width")],
+             digits = 3, row.names = FALSE)
+```
+
+Things to look for: (1) does the bias differ between `stelfi` and `inlabru`, and does the bias in the range and standard deviation change in size between the empirical Bayes and the default `inlabru` (the latter integrates over the hyperparameters and tends to give larger posterior means for scale parameters when the likelihood is skewed)? (2) is the RMSE dominated by bias or by variability? If the RMSE is close to the standard deviation of the estimates the error is mostly variability, while if it is much bigger the method is systematically off. (3) the priors in `inlabru` pull estimates, a lower RMSE for the range or standard deviation could be due to the prior, and might be a feature of the particular prior chosen here, see @sec-recovery-extensions.
+
+### Coverage
+
+Finally, the proportion of replicates in which the 95% interval contained the true value is plotted, with a band of $\pm 1.96$ Monte Carlo standard errors. Coverage well *below* 95% means intervals are too narrow and the uncertainty is understated, coverage well *above* 95% means they are conservative (too wide). Remember that the `stelfi` intervals are Wald intervals based on the Laplace approximation, and the `inlabru` intervals are credible intervals, and that the `eb` version of `inlabru` ignores the uncertainty in the hyperparameters when calculating the uncertainty for the intercept.
+
+```{r}
+#| eval: !expr file.exists("recovery-results.rds")
+summ$mc_se <- sqrt(summ$coverage * (1 - summ$coverage) / summ$n)
+ggplot(summ, aes(x = method, y = coverage, colour = method)) +
+    geom_pointrange(aes(ymin = coverage - 1.96 * mc_se, ymax = coverage + 1.96 * mc_se),
+                    show.legend = FALSE) +
+    geom_hline(yintercept = 0.95, linetype = "dashed") +
+    facet_wrap(~ param, nrow = 1) +
+    ylim(0, 1) + xlab("") + ylab("coverage of 95% interval") +
+    theme_classic() + theme(axis.text.x = element_text(angle = 25, hjust = 1))
+```
+
+## Extending the study {#sec-recovery-extensions}
+
+The set-up above is a single scenario. The same code can be used to explore how the conclusions change by altering:
+
+- **the mesh**: change `mesh_fit` to a coarser or finer mesh (as in @sec-mesh-compare) to see how bias in the range and standard deviation changes, and how the run times of the two packages scale with the number of nodes.
+- **the number of events**: change `true_beta`. Fewer events carry less information about the field, so bias and interval widths for the range and the standard deviation are expected to grow.
+- **the strength of the spatial signal**: change `true_sigma` and `true_range`.
+- **the priors** in `inlabru`: change `prior.range` and `prior.sigma` (e.g., a much weaker prior, or a prior centred on the truth) to see how much of the `inlabru` result is due to the prior rather than to the data. Note that `stelfi` has no priors.
+- **the starting values** for `stelfi`: starting further from the truth shows how often the optimiser fails, which is relevant given the warnings elsewhere in this book that some models are sensitive to starting values.
+- **the domain**: replacing the disc with a more complicated region (as in @sec-iraq).

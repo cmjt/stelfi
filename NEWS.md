@@ -1,3 +1,21 @@
+# stelfi 1.0.4
+
+## Breaking changes
+
+ + `fit_mhawkes()`: the decay of the excitement of stream j is now governed by the decay rate of stream j (`beta[j]`), as documented, i.e., the intensity of stream j is mu_j + sum_k alpha_jk sum_{i in k} exp(-beta_j (t - t_i)). Previously the decay rate of the stream causing the excitement was used. `alpha[j, k]` is now constrained to be at most `beta[j]`. Estimates for models with unequal decay rates will change.
+ + `fit_mlgcp()`: the coefficient linking each mark to the point process (`marks_coefs_pp`) now multiplies the log intensity of the point process. Previously it multiplied the log of the expected number of events in the area around each mesh node, which made the mark intercepts and links depend on the mesh. In addition, a mark with `fields = 0` no longer has the point process field added to its linear predictor. Estimates of `betamarks` and `marks_coefs_pp` will change.
+
+## Minor improvements and fixes
+
+ + `fit_lgcp()` (spatiotemporal): mesh nodes with no area within the domain are now excluded from the likelihood (as for the spatial model); previously they were included, biasing the estimates when the mesh extended beyond the domain.
+ + `fit_lgcp()` (spatiotemporal): counts are now ordered by time knot regardless of the order of the data (previously unsorted data gave incorrect results), time knots with no events no longer cause a crash, events at the last knot are no longer dropped, and an informative error is given if any time is outside the range of the time knots.
+ + `sim_lgcp()` (spatiotemporal): now works for any time mesh.
+ + `fit_mhawkes()`: corrected the compensator, which subtracted the final event from every stream rather than only from the stream it belongs to.
+ + `show_multivariate_hawkes()`: the fitted intensity now uses the correct (previously transposed) `alpha` matrix.
+ + `fit_mlgcp()`: `locs` can now be a `data.frame` as well as a `matrix`.
+ + `fit_stelfi()`: a starting value for the background rate can be given as `mu` (previously ignored unless given as `coefs`).
+ + `fit_stelfi()`: warns if the mesh is too coarse to accurately integrate the estimated spatial self-excitation kernel over the domain.
+
 # stelfi 1.0.3
 
 ## Breaking changes

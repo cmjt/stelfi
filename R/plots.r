@@ -104,8 +104,9 @@ show_multivariate_hawkes <- function(obj, type = c("fitted", "data", "both")){
     max <- max(times)
     p <- seq(0, max, length.out = 500)
     lam.p <- multi_hawkes_intensity(times = times,
+                                             ## alpha is reported in column-major order
                                              alpha = matrix(pars[(n_stream + 1):(n_pars - n_stream)],
-                                                            nrow = n_stream, byrow = TRUE),
+                                                            nrow = n_stream),
                                              mu = pars[1:n_stream],
                                              beta = tail(pars, n_stream),
                                              p = p, stream = stream)

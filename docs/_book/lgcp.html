@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Using stelfi">
+
+<title>5&nbsp; Spatial and spatiotemporal log-Gaussian Cox processes – The `R` package `stelfi`</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./lgcp-recovery.html" rel="next">
+<link href="./multi-hawkes.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-0346a4669161aa0b1fb4455b7891709f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">The <code>R</code> package <code>stelfi</code></span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./lgcp.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Spatial and spatiotemporal log-Gaussian Cox processes</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/cmjt/stelfi" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:c.jonestodd@auckland.ac.nz" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope"></i></a>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./univariate-hawkes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes process</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./marked-hawkes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes process</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multi-hawkes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes process</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lgcp.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Spatial and spatiotemporal log-Gaussian Cox processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lgcp-recovery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Parameter recovery: <code>stelfi</code> vs <code>inlabru</code></span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lgcp-spatiotemporal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatiotemporal LGCP</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stelfi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Spatiotemporal self-exciting models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#the-model-and-your-data" id="toc-the-model-and-your-data" class="nav-link active" data-scroll-target="#the-model-and-your-data"><span class="header-section-number">5.1</span> The model and your data</a>
+  <ul class="collapse">
+  <li><a href="#sec-mesh" id="toc-sec-mesh" class="nav-link" data-scroll-target="#sec-mesh"><span class="header-section-number">5.1.1</span> Meshes</a></li>
+  <li><a href="#sec-lgcp-data" id="toc-sec-lgcp-data" class="nav-link" data-scroll-target="#sec-lgcp-data"><span class="header-section-number">5.1.2</span> What your data need to look like</a></li>
+  </ul></li>
+  <li><a href="#sec-lgcp-sim" id="toc-sec-lgcp-sim" class="nav-link" data-scroll-target="#sec-lgcp-sim"><span class="header-section-number">5.2</span> A simulated example</a>
+  <ul class="collapse">
+  <li><a href="#fitting-the-model-using-stelfi" id="toc-fitting-the-model-using-stelfi" class="nav-link" data-scroll-target="#fitting-the-model-using-stelfi"><span class="header-section-number">5.2.1</span> Fitting the model using <code>stelfi</code></a></li>
+  <li><a href="#comparison-with-inlabru-and-spatstat" id="toc-comparison-with-inlabru-and-spatstat" class="nav-link" data-scroll-target="#comparison-with-inlabru-and-spatstat"><span class="header-section-number">5.2.2</span> Comparison with <code>inlabru</code> and <code>spatstat</code></a></li>
+  </ul></li>
+  <li><a href="#applied-examples" id="toc-applied-examples" class="nav-link" data-scroll-target="#applied-examples"><span class="header-section-number">5.3</span> Applied examples</a>
+  <ul class="collapse">
+  <li><a href="#sec-sasquatch" id="toc-sec-sasquatch" class="nav-link" data-scroll-target="#sec-sasquatch"><span class="header-section-number">5.3.1</span> Sasquatch sightings in the USA</a></li>
+  <li><a href="#sec-iraq" id="toc-sec-iraq" class="nav-link" data-scroll-target="#sec-iraq"><span class="header-section-number">5.3.2</span> Terrorism events in Iraq</a></li>
+  </ul></li>
+  <li><a href="#sec-lgcp-gof" id="toc-sec-lgcp-gof" class="nav-link" data-scroll-target="#sec-lgcp-gof"><span class="header-section-number">5.4</span> Goodness-of-fit</a>
+  <ul class="collapse">
+  <li><a href="#preparing-the-observed-pattern" id="toc-preparing-the-observed-pattern" class="nav-link" data-scroll-target="#preparing-the-observed-pattern"><span class="header-section-number">5.4.1</span> Preparing the observed pattern</a></li>
+  <li><a href="#simulating-from-the-fitted-model" id="toc-simulating-from-the-fitted-model" class="nav-link" data-scroll-target="#simulating-from-the-fitted-model"><span class="header-section-number">5.4.2</span> Simulating from the fitted model</a></li>
+  <li><a href="#simulation-envelopes" id="toc-simulation-envelopes" class="nav-link" data-scroll-target="#simulation-envelopes"><span class="header-section-number">5.4.3</span> Simulation envelopes</a></li>
+  </ul></li>
+  <li><a href="#sec-lgcpst" id="toc-sec-lgcpst" class="nav-link" data-scroll-target="#sec-lgcpst"><span class="header-section-number">5.5</span> Spatiotemporal LGCP</a>
+  <ul class="collapse">
+  <li><a href="#the-model-and-your-data-1" id="toc-the-model-and-your-data-1" class="nav-link" data-scroll-target="#the-model-and-your-data-1"><span class="header-section-number">5.5.1</span> The model and your data</a></li>
+  <li><a href="#sec-lgcpst-sim" id="toc-sec-lgcpst-sim" class="nav-link" data-scroll-target="#sec-lgcpst-sim"><span class="header-section-number">5.5.2</span> A simulated example</a></li>
+  <li><a href="#sec-lgcp-iraq-st" id="toc-sec-lgcp-iraq-st" class="nav-link" data-scroll-target="#sec-lgcp-iraq-st"><span class="header-section-number">5.5.3</span> An applied example: terrorism events in Iraq by year</a></li>
+  <li><a href="#sec-lgcpst-gof" id="toc-sec-lgcpst-gof" class="nav-link" data-scroll-target="#sec-lgcpst-gof"><span class="header-section-number">5.5.4</span> Goodness-of-fit</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-lgcp" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Spatial and spatiotemporal log-Gaussian Cox processes</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="the-model-and-your-data" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="the-model-and-your-data"><span class="header-section-number">5.1</span> The model and your data</h2>
+<p>A log-Gaussian Cox process (LGCP) is a model for the <em>locations</em> of events in a study region. Unlike a Hawkes process, events do not cause other events. Instead, the intensity (the expected number of events per unit area) varies smoothly over space because of some unobserved environmental “surface”: events are more common where the surface is high and rarer where it is low. In the simplest case the intensity at location <span class="math inline">\(s\)</span> is</p>
+<p><span id="eq-lgcp"><span class="math display">\[\lambda(s) = \text{exp}(\beta_0 + G(s)), \tag{5.1}\]</span></span></p>
+<p>where <span class="math inline">\(\beta_0\)</span> is the <strong>intercept</strong>, the log intensity at an “average” location, and <span class="math inline">\(G(s)\)</span> is a <strong>Gaussian random field</strong>, a smooth random surface with mean zero. Because <span class="math inline">\(G(s)\)</span> is estimated from the data, the model can capture spatial clustering of events without you having to explain where it comes from. Covariates (e.g., population density) can be added to the log intensity, <span class="math inline">\(\beta_0 + \beta_1 x_1(s) + ... + G(s)\)</span>, and the random field then captures the spatial variation that the covariates do not explain.</p>
+<p>Plotted below is a realisation of an LGCP within a disc shaped region, overlain on the random field <span class="math inline">\(G(s)\)</span>: events are more common where the field is high (yellow).</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The random field is described by two parameters, which <code>stelfi</code> reports on an interpretable scale:</p>
+<ul>
+<li>the <strong>range</strong> <span class="math inline">\(r\)</span>, the distance at which the correlation between values of the field drops to about 0.1. A small range means the intensity varies over short distances (small “hot spots”), a large range means it varies smoothly over large distances; and</li>
+<li>the <strong>standard deviation</strong> <span class="math inline">\(\sigma\)</span> of the field, how much the log intensity varies from place to place. For example <span class="math inline">\(\sigma = 1\)</span> means that, on the log scale, the intensity typically varies by <span class="math inline">\(\pm 1\)</span> from <span class="math inline">\(\beta_0\)</span>, i.e., by a factor of about <span class="math inline">\(e^{1} \approx 2.7\)</span>.</li>
+</ul>
+<p>Internally the field is parameterised by <span class="math inline">\(\tau\)</span> and <span class="math inline">\(\kappa\)</span>, so <code>get_coefs()</code> reports <code>log_tau</code> and <code>log_kappa</code> (the parameters that are actually estimated) along with <code>range</code> <span class="math inline">\(= \sqrt{8}/\kappa\)</span> and <code>stdev</code> <span class="math inline">\(= 1/\sqrt{4\pi\kappa^2\tau^2}\)</span>. Following <span class="citation" data-cites="spde">Lindgren, Rue, and Lindström (<a href="references.html#ref-spde" role="doc-biblioref">2011</a>)</span>, the field has a Matérn covariance function with smoothness <span class="math inline">\(\nu = 1\)</span>, and it is represented using the stochastic partial differential equation (SPDE) approach on a triangulation (a <em>mesh</em>) of the study region.</p>
+<section id="sec-mesh" class="level3" data-number="5.1.1">
+<h3 data-number="5.1.1" class="anchored" data-anchor-id="sec-mesh"><span class="header-section-number">5.1.1</span> Meshes</h3>
+<p>The SPDE approach represents the continuous random field <span class="math inline">\(G(s)\)</span> by its values at the nodes (vertices) of a triangulation of the study region, and interpolates linearly between nodes. The mesh therefore controls both how finely the field can vary in space and how much computation is needed. In <code>stelfi</code> (and <code>inlabru</code>) the mesh is built using the <code>fmesher</code> package, the key arguments of <code>fmesher::fm_mesh_2d()</code> are:</p>
+<ul>
+<li><code>loc</code>: locations (usually the observed events) that the mesh is built around, so there are mesh nodes close to the data;</li>
+<li><code>boundary</code>: (optional) a polygon the mesh should follow, typically the study region (converted using <code>fmesher::fm_as_segm()</code>);</li>
+<li><code>max.edge</code>: the largest allowed triangle edge length. A vector of length two, <code>c(inner, outer)</code>, gives a finer mesh inside the region and a coarser mesh in an outer extension, which reduces the inflated variance of the field near the edge of the mesh; and</li>
+<li><code>cutoff</code>: the minimum allowed distance between nodes. Locations closer together than this share a node, which avoids lots of tiny triangles where events are clustered.</li>
+</ul>
+<p>There is a trade-off. A mesh that is too coarse cannot capture spatial variation at a scale smaller than its triangles, while a mesh that is too fine is slow and memory-hungry and can make fitting unstable. A common rule of thumb is that <code>max.edge</code> (inner) should be no more than about a fifth of the range of the field. Since the range is not known before fitting, it is good practice to fit the model using a few meshes and check that the conclusions do not change, see <span class="quarto-unresolved-ref">?sec-mesh-compare</span>. The mesh can be plotted using <code>mesh_2_sf()</code> and <code>ggplot2</code> (e.g., <a href="#sec-iraq" class="quarto-xref"><span>Section 5.3.2</span></a>).</p>
+<p>Note that the mesh is only used to represent the random field (and to approximate the integral of the intensity over the study region). The study region itself is given by the <code>sf</code> argument of <code>fit_lgcp()</code>, and the parts of the mesh outside it do not contribute any area.</p>
+<section id="sec-meshmetrics" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="sec-meshmetrics">Checking the quality of a mesh</h4>
+<p>Long thin triangles, or triangles that vary a lot in size, can cause numerical problems. The function <code>meshmetrics()</code> returns an <code>sf</code> object with geometric summaries of each triangle, including its area, its interior angles, the radius-edge ratio (circumradius divided by the shortest edge) and a <code>quality</code> measure, <span class="math inline">\(\frac{4\sqrt{3}|A|}{\sum_{i = 1}^3 L_i^2}\)</span> where <span class="math inline">\(A\)</span> is the area and <span class="math inline">\(L_i\)</span> the edge lengths, which is 1 for an equilateral triangle and approaches 0 for a degenerate one. Plotting these is a quick way to spot “bad” triangles. Below this is done for the example mesh <code>horse_mesh</code> (see <span class="quarto-unresolved-ref">?sec-data</span>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"horse_mesh"</span>, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>metrics <span class="ot">&lt;-</span> <span class="fu">meshmetrics</span>(horse_mesh)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>patchwork<span class="sc">::</span><span class="fu">wrap_plots</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(metrics, <span class="fu">aes</span>(<span class="at">fill =</span> area)) <span class="sc">+</span> <span class="fu">geom_sf</span>() <span class="sc">+</span> <span class="fu">theme_void</span>(),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(metrics, <span class="fu">aes</span>(<span class="at">fill =</span> quality)) <span class="sc">+</span> <span class="fu">geom_sf</span>() <span class="sc">+</span> <span class="fu">theme_void</span>(),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">nrow =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-lgcp-data" class="level3" data-number="5.1.2">
+<h3 data-number="5.1.2" class="anchored" data-anchor-id="sec-lgcp-data"><span class="header-section-number">5.1.2</span> What your data need to look like</h3>
+<p><code>fit_lgcp()</code> needs three things:</p>
+<ul>
+<li><code>locs</code>, a <strong>data frame of event locations</strong> with columns named <code>x</code> and <code>y</code> (and <code>t</code> for a spatiotemporal model, <a href="#sec-lgcpst" class="quarto-xref"><span>Section 5.5</span></a>);</li>
+<li><code>sf</code>, an <strong><code>sf</code> polygon of the study region</strong>; and</li>
+<li><code>smesh</code>, a <strong>mesh</strong> (<a href="#sec-mesh" class="quarto-xref"><span>Section 5.1.1</span></a>).</li>
+</ul>
+<p>Things to be aware of:</p>
+<ul>
+<li><strong>Use a projected coordinate system.</strong> The field is defined in terms of distances, so longitude and latitude (in degrees) should be projected to a planar coordinate system (e.g., UTM) using <code>sf::st_transform()</code>. Working in kilometres rather than metres keeps the numbers well scaled and makes the parameters easy to interpret: the intensity is then per km<span class="math inline">\(^2\)</span> and the range is in km. The events, the study region and the mesh must all be in the same coordinates (it is often easiest to drop the CRS once everything is projected, see <a href="#sec-iraq" class="quarto-xref"><span>Section 5.3.2</span></a>).</li>
+<li><strong>The study region should be where events <em>could</em> have been observed.</strong> The model assumes that every part of the study region was observed with equal effort. If, for example, sightings can only be made where there are people, then the intensity estimates the rate of <em>reported</em> events, and the random field will pick up variation in observation effort as well as variation in the underlying process. Including a covariate that describes effort (e.g., population density) can help. Events outside the study region are ignored.</li>
+<li><strong>Events are summarised by mesh node.</strong> <code>stelfi</code> counts the number of events closest to each mesh node (i.e., in each cell of the “dual” mesh) and models these counts. Detail at scales smaller than the mesh triangles is therefore lost, which is another reason to check that results are not sensitive to the mesh.</li>
+<li><strong>Duplicate locations are allowed</strong> for fitting (unlike tied times in a Hawkes process), but they need to be jittered for some of the goodness-of-fit checks (<a href="#sec-lgcp-gof" class="quarto-xref"><span>Section 5.4</span></a>).</li>
+<li><strong>Covariates must be given at the mesh nodes</strong>, as a matrix with one row per mesh node (<code>smesh$n</code> rows) and one column per covariate. If your covariate is a raster or is only known at some locations, it needs to be extracted or interpolated at the mesh nodes, see <a href="#sec-iraq" class="quarto-xref"><span>Section 5.3.2</span></a>.</li>
+<li><strong>Events do not interact.</strong> An LGCP describes clustering caused by a smooth environment, not clustering caused by events triggering each other. If the latter is plausible, consider a spatiotemporal self-exciting model (<a href="stelfi.html" class="quarto-xref"><span>Chapter 8</span></a>).</li>
+<li><strong>Number of events.</strong> The field parameters (in particular the range) are hard to estimate with few events or when the range is large relative to the study region. A few hundred events is a reasonable minimum.</li>
+</ul>
+</section>
+</section>
+<section id="sec-lgcp-sim" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="sec-lgcp-sim"><span class="header-section-number">5.2</span> A simulated example</h2>
+<p>Data were simulated from an LGCP (using <code>spatstat</code>, <span class="citation" data-cites="spatstat">Baddeley, Rubak, and Turner (<a href="references.html#ref-spatstat" role="doc-biblioref">2015</a>)</span>) within a disc of radius 1, with intercept <span class="math inline">\(\beta_0 = 4\)</span>, field standard deviation <span class="math inline">\(\sigma = 1\)</span>, and range <span class="math inline">\(r =\)</span> 0.566. The data are a data frame of 272 event locations:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(locs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           x          y
+1 -0.1800667  0.8802885
+2  0.5430666 -0.5046758
+3  0.2112133  0.8551978
+4  0.1208994  0.9408004
+5  0.2303162 -0.8321345
+6 -0.4731538  0.5615277</code></pre>
+</div>
+</div>
+<p>The study region is a disc of radius 1, which is converted to an <code>sf</code> polygon. The plot below shows the events and the true (simulated) random field.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>sf <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_sf</span>(<span class="at">geometry =</span> sf<span class="sc">::</span><span class="fu">st_geometry</span>(sf<span class="sc">::</span><span class="fu">st_as_sf</span>(spatstat.geom<span class="sc">::</span><span class="fu">disc</span>())))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Coordinate system already present.
+ℹ Adding new coordinate system, which will replace the existing one.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="fitting-the-model-using-stelfi" class="level3" data-number="5.2.1">
+<h3 data-number="5.2.1" class="anchored" data-anchor-id="fitting-the-model-using-stelfi"><span class="header-section-number">5.2.1</span> Fitting the model using <code>stelfi</code></h3>
+<p>First a mesh is built around the events (<a href="#sec-mesh" class="quarto-xref"><span>Section 5.1.1</span></a>). Here <code>max.edge</code> is 0.1 inside the region, about a fifth of the true range.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>smesh <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_mesh_2d</span>(<span class="at">loc =</span> locs[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], <span class="at">max.edge =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.3</span>), <span class="at">cutoff =</span> <span class="fl">0.03</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>smesh<span class="sc">$</span>n <span class="do">## number of mesh nodes</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1124</code></pre>
+</div>
+</div>
+<p>The model is fitted using <code>fit_lgcp()</code> with starting values for <span class="math inline">\(\beta_0\)</span> (<code>beta</code>), <span class="math inline">\(\log(\tau)\)</span> (<code>log_tau</code>) and <span class="math inline">\(\log(\kappa)\)</span> (<code>log_kappa</code>). A sensible starting value for the intercept is the log of the average number of events per unit area.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>area <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(sf<span class="sc">::</span><span class="fu">st_area</span>(sf))</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_lgcp</span>(<span class="at">locs =</span> locs, <span class="at">sf =</span> sf, <span class="at">smesh =</span> smesh,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">parameters =</span> <span class="fu">c</span>(<span class="at">beta =</span> <span class="fu">log</span>(<span class="fu">nrow</span>(locs) <span class="sc">/</span> area), <span class="at">log_tau =</span> <span class="fu">log</span>(<span class="dv">1</span>), <span class="at">log_kappa =</span> <span class="fu">log</span>(<span class="dv">1</span>)))</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>stelfi <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>stelfi</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            Estimate Std. Error
+beta       4.1456922  0.1798657
+log_tau   -3.2271510  0.2588465
+log_kappa  2.2036142  0.2577273
+range      0.3122680  0.0804800
+stdev      0.7850755  0.1059713</code></pre>
+</div>
+</div>
+<p>The estimated random field is extracted using <code>get_fields()</code> and plotted using <code>show_field()</code>. Compare this with the true field above.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_fields</span>(fit, smesh) <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show_field</span>(<span class="at">smesh =</span> smesh, <span class="at">sf =</span> sf, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">data =</span> locs, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="fl">0.8</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="comparison-with-inlabru-and-spatstat" class="level3" data-number="5.2.2">
+<h3 data-number="5.2.2" class="anchored" data-anchor-id="comparison-with-inlabru-and-spatstat"><span class="header-section-number">5.2.2</span> Comparison with <code>inlabru</code> and <code>spatstat</code></h3>
+<p>The same model is fitted below using <code>inlabru</code> (<span class="citation" data-cites="inlabru">Bachl et al. (<a href="references.html#ref-inlabru" role="doc-biblioref">2019</a>)</span>) and <code>spatstat</code> (<span class="citation" data-cites="spatstat">Baddeley, Rubak, and Turner (<a href="references.html#ref-spatstat" role="doc-biblioref">2015</a>)</span>). When comparing the results bear in mind that:</p>
+<ul>
+<li><code>stelfi</code> uses <em>maximum likelihood</em> (the field is integrated out using the Laplace approximation) so there are no priors and the estimates have standard errors.</li>
+<li><code>inlabru</code> is <em>Bayesian</em> (using INLA), so priors are needed for the field and it reports posterior means and standard deviations. Penalised complexity priors are used via <code>inla.spde2.pcmatern()</code>: <code>prior.range = c(0.05, 0.01)</code> means <span class="math inline">\(P(r &lt; 0.05) = 0.01\)</span> and <code>prior.sigma = c(5, 0.01)</code> means <span class="math inline">\(P(\sigma &gt; 5) = 0.01\)</span>, both deliberately weak. To make <code>inlabru</code> as close as possible to a maximum likelihood fit, the hyperparameters are not integrated over (<code>int.strategy = "eb"</code>). The same mesh is used for both.</li>
+<li><code>spatstat</code> fits the model by <em>minimum contrast</em>, matching the theoretical <span class="math inline">\(K\)</span> function of the LGCP to the empirical one. This does not use a mesh and does not give standard errors. Its Matérn scale parameter (reported as <code>alpha</code> in <code>modelpar</code>) is <span class="math inline">\(1/\kappa\)</span>, so the range is <span class="math inline">\(\sqrt{8} \times\)</span> scale, and it reports the variance <code>sigma2</code> rather than the standard deviation.</li>
+</ul>
+<p>Note that <code>inlabru</code> requires the geometry column of the study region to be called <code>geometry</code>, which is why <code>sf</code> was created using <code>sf::st_sf(geometry = ...)</code> above.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(inlabru)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(INLA)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>sf_locs <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(locs, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>))</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>matern <span class="ot">&lt;-</span> INLA<span class="sc">::</span><span class="fu">inla.spde2.pcmatern</span>(smesh, <span class="at">prior.range =</span> <span class="fu">c</span>(<span class="fl">0.05</span>, <span class="fl">0.01</span>), <span class="at">prior.sigma =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="fl">0.01</span>))</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>cmp <span class="ot">&lt;-</span> geometry <span class="sc">~</span> <span class="fu">field</span>(geometry, <span class="at">model =</span> matern) <span class="sc">+</span> <span class="fu">Intercept</span>(<span class="dv">1</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>fit_bru <span class="ot">&lt;-</span> <span class="fu">lgcp</span>(cmp, sf_locs, <span class="at">samplers =</span> sf, <span class="at">domain =</span> <span class="fu">list</span>(<span class="at">geometry =</span> smesh),</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">options =</span> <span class="fu">bru_options</span>(<span class="at">control.inla =</span> <span class="fu">list</span>(<span class="at">int.strategy =</span> <span class="st">"eb"</span>)))</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>bru <span class="ot">&lt;-</span> <span class="fu">rbind</span>(fit_bru<span class="sc">$</span>summary.fixed[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], fit_bru<span class="sc">$</span>summary.hyperpar[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>bru</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                     mean        sd
+Intercept       4.1897730 0.1942439
+Range for field 0.4284088 0.1123945
+Stdev for field 0.7812108 0.1223858</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ss <span class="ot">&lt;-</span> spatstat.model<span class="sc">::</span><span class="fu">lgcp.estK</span>(sim, <span class="at">covmodel =</span> <span class="fu">list</span>(<span class="at">model =</span> <span class="st">"matern"</span>, <span class="at">nu =</span> <span class="dv">1</span>))</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>ss<span class="sc">$</span>modelpar</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   sigma2     alpha        mu 
+0.6509685 0.1252826 4.1359896 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><span class="math inline">\(\beta_0\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(r\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\sigma\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Truth</td>
+<td style="text-align: left;">4.000</td>
+<td style="text-align: left;">0.566</td>
+<td style="text-align: left;">1.000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stelfi</td>
+<td style="text-align: left;">4.146 (0.18)</td>
+<td style="text-align: left;">0.312 (0.08)</td>
+<td style="text-align: left;">0.785 (0.106)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">inlabru</td>
+<td style="text-align: left;">4.19 (0.194)</td>
+<td style="text-align: left;">0.428 (0.112)</td>
+<td style="text-align: left;">0.781 (0.122)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">spatstat</td>
+<td style="text-align: left;">4.136</td>
+<td style="text-align: left;">0.354</td>
+<td style="text-align: left;">0.807</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><code>stelfi</code> and <code>inlabru</code> give very similar estimates, as they fit the same model on the same mesh. <code>spatstat</code> uses a very different method but tells a similar story. The intercept is well estimated by all three, while the range and the standard deviation of the field are much harder to pin down from a single dataset (note the larger standard errors). How well <code>stelfi</code> and <code>inlabru</code> recover the parameters <em>on average</em> over many simulated datasets is explored in <a href="lgcp-recovery.html" class="quarto-xref"><span>Chapter 6</span></a>.</p>
+</section>
+</section>
+<section id="applied-examples" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="applied-examples"><span class="header-section-number">5.3</span> Applied examples</h2>
+<section id="sec-sasquatch" class="level3" data-number="5.3.1">
+<h3 data-number="5.3.1" class="anchored" data-anchor-id="sec-sasquatch"><span class="header-section-number">5.3.1</span> Sasquatch sightings in the USA</h3>
+<p>The <code>sasquatch</code> data (see <span class="quarto-unresolved-ref">?sec-data</span>) are the locations of 972 reported sasquatch (bigfoot) sightings in the contiguous USA between 2000 and 2005, collated by the Bigfoot Field Researchers Organization. This example is also used in <span class="citation" data-cites="stelfi">Jones-Todd and van Helsdingen (<a href="references.html#ref-stelfi" role="doc-biblioref">2024</a>)</span>.</p>
+<section id="preparing-the-data" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="preparing-the-data">Preparing the data</h4>
+<p>The sightings are given as longitude/latitude. They, and the boundary of the contiguous USA (from the <code>maps</code> package), are projected to the Conus Albers projection (EPSG:5070) and converted from metres to kilometres.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"sasquatch"</span>, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">sf_use_s2</span>(<span class="cn">FALSE</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="do">## boundary of the contiguous USA: projected and in km</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>us <span class="ot">&lt;-</span> maps<span class="sc">::</span><span class="fu">map</span>(<span class="st">"usa"</span>, <span class="at">fill =</span> <span class="cn">TRUE</span>, <span class="at">plot =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_as_sf</span>() <span class="sc">|&gt;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_make_valid</span>() <span class="sc">|&gt;</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">5070</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>us_km <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_sf</span>(<span class="at">geometry =</span> sf<span class="sc">::</span><span class="fu">st_union</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(us)) <span class="sc">/</span> <span class="dv">1000</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="do">## sighting locations: projected and in km</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>locs_sq <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_transform</span>(sasquatch, <span class="at">crs =</span> <span class="dv">5070</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_coordinates</span>() <span class="sc">|&gt;</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.data.frame</span>()</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(locs_sq) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>locs_sq <span class="ot">&lt;-</span> locs_sq <span class="sc">/</span> <span class="dv">1000</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(locs_sq)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          x        y
+1 -515.6556 2280.102
+2 1532.8509 2407.822
+3 -398.2722 2817.326
+4 -505.9007 2766.177
+5 1734.8802 2163.947
+6 -832.7920 1547.099</code></pre>
+</div>
+</div>
+</section>
+<section id="fitting-the-model" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="fitting-the-model">Fitting the model</h4>
+<p>The mesh has a maximum edge length of 200 km (the contiguous USA is about 4500 km across).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>smesh_km <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_mesh_2d</span>(<span class="at">loc =</span> locs_sq[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], <span class="at">max.edge =</span> <span class="fu">c</span>(<span class="dv">200</span>, <span class="dv">500</span>), <span class="at">cutoff =</span> <span class="dv">100</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>area_sq <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(sf<span class="sc">::</span><span class="fu">st_area</span>(us_km))</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>fit_sq <span class="ot">&lt;-</span> <span class="fu">fit_lgcp</span>(<span class="at">locs =</span> locs_sq, <span class="at">sf =</span> us_km, <span class="at">smesh =</span> smesh_km,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">parameters =</span> <span class="fu">c</span>(<span class="at">beta =</span> <span class="fu">log</span>(<span class="fu">nrow</span>(locs_sq) <span class="sc">/</span> area_sq),</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">log_tau =</span> <span class="fu">log</span>(<span class="dv">1</span>), <span class="at">log_kappa =</span> <span class="fu">log</span>(<span class="dv">1</span>)))</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>coefs <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit_sq)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>coefs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            Estimate  Std. Error
+beta       -9.937128   0.3865470
+log_tau     4.046748   0.1069927
+log_kappa  -5.662232   0.1818064
+range     813.993537 147.9892483
+stdev       1.419028   0.1880643</code></pre>
+</div>
+</div>
+<p>From these estimates, the range of the field is around 814 km, so sightings are clustered at a regional scale, and the standard deviation of 1.42 means the intensity of sightings varies by a large factor between regions. The estimated random field and the estimated intensity (expected number of sightings per km<span class="math inline">\(^2\)</span>) are plotted using <code>show_field()</code> and <code>show_lambda()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_fields</span>(fit_sq, smesh_km) <span class="sc">|&gt;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show_field</span>(<span class="at">smesh =</span> smesh_km, <span class="at">sf =</span> us_km, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_lambda</span>(fit_sq, <span class="at">smesh =</span> smesh_km, <span class="at">sf =</span> us_km, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The hot spots (e.g., the Pacific Northwest) are clear. Remember, though, that these are <em>reported</em> sightings: the model cannot distinguish places where sasquatch are common from places where many people are out looking for them (<a href="#sec-lgcp-data" class="quarto-xref"><span>Section 5.1.2</span></a>).</p>
+</section>
+</section>
+<section id="sec-iraq" class="level3" data-number="5.3.2">
+<h3 data-number="5.3.2" class="anchored" data-anchor-id="sec-iraq"><span class="header-section-number">5.3.2</span> Terrorism events in Iraq</h3>
+<p>The <code>iraq_terrorism</code> data (see <span class="quarto-unresolved-ref">?sec-data</span>) are the locations and dates of terrorism events in Iraq carried out by ISIL between 2013 and 2017. This example shows the full <code>stelfi</code> workflow for a region with an awkward boundary, compares <code>stelfi</code> with <code>inlabru</code> on several meshes, explores how sensitive the results are to the mesh, and includes covariates in the intensity. A spatiotemporal version is in <a href="lgcp-spatiotemporal.html#sec-lgcp-iraq-st" class="quarto-xref"><span>Section 7.1</span></a>.</p>
+<section id="preparing-the-data-1" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="preparing-the-data-1">Preparing the data</h4>
+<p>The event locations are projected to UTM zone 38N (EPSG:32638), which covers most of Iraq, and converted to kilometres. The boundary of Iraq is obtained from the <code>rnaturalearth</code> package and transformed in the same way.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"iraq_terrorism"</span>, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="do">## event locations (lon/lat) -&gt; UTM zone 38N -&gt; km</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>locs_km <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(sf<span class="sc">::</span><span class="fu">st_coordinates</span>(sf<span class="sc">::</span><span class="fu">st_transform</span>(iraq_terrorism, <span class="at">crs =</span> <span class="dv">32638</span>)) <span class="sc">/</span> <span class="dv">1000</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(locs_km) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="do">## the boundary of Iraq in the same coordinates</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>iraq_sf <span class="ot">&lt;-</span> rnaturalearth<span class="sc">::</span><span class="fu">ne_countries</span>(<span class="at">country =</span> <span class="st">"Iraq"</span>, <span class="at">scale =</span> <span class="st">"medium"</span>, <span class="at">returnclass =</span> <span class="st">"sf"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">32638</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_union</span>()                     <span class="do">## collapse to a single polygon</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>iraq_sf_km <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_sf</span>(<span class="at">geometry =</span> sf<span class="sc">::</span><span class="fu">st_geometry</span>(iraq_sf) <span class="sc">/</span> <span class="dv">1000</span>)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="do">## once in km the coordinates are just planar numbers, so drop the CRS</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="do">## so that the events, the boundary and the mesh are all treated consistently</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">st_crs</span>(iraq_sf_km) <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>points_km <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(locs_km, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)) <span class="do">## used by inlabru</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="building-the-meshes" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="building-the-meshes">Building the meshes</h4>
+<p>Three meshes are built, each following the boundary of Iraq (<code>boundary</code>) and placed around the events, with a finer inner and coarser outer part (<code>max.edge = c(inner, outer)</code>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mesh_args <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">coarse =</span> <span class="fu">list</span>(<span class="at">max.edge =</span> <span class="fu">c</span>(<span class="dv">60</span>, <span class="dv">200</span>), <span class="at">cutoff =</span> <span class="dv">15</span>),</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">medium =</span> <span class="fu">list</span>(<span class="at">max.edge =</span> <span class="fu">c</span>(<span class="dv">40</span>, <span class="dv">200</span>), <span class="at">cutoff =</span> <span class="dv">5</span>),</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">fine   =</span> <span class="fu">list</span>(<span class="at">max.edge =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">100</span>), <span class="at">cutoff =</span> <span class="dv">2</span>))</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>meshes <span class="ot">&lt;-</span> <span class="fu">lapply</span>(mesh_args, <span class="cf">function</span>(a) {</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    fmesher<span class="sc">::</span><span class="fu">fm_mesh_2d</span>(<span class="at">loc =</span> locs_km[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>],</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">boundary =</span> fmesher<span class="sc">::</span><span class="fu">fm_as_segm</span>(iraq_sf_km),</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>                        <span class="at">max.edge =</span> a<span class="sc">$</span>max.edge, <span class="at">cutoff =</span> a<span class="sc">$</span>cutoff)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(meshes, <span class="cf">function</span>(m) m<span class="sc">$</span>n) <span class="do">## number of nodes in each mesh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>coarse medium   fine 
+   598   1568  11940 </code></pre>
+</div>
+</div>
+<p>The medium mesh, the events, and the boundary of Iraq (blue) are shown below.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_sf</span>(<span class="at">data =</span> <span class="fu">mesh_2_sf</span>(meshes<span class="sc">$</span>medium), <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_sf</span>(<span class="at">data =</span> iraq_sf_km, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_sf</span>(<span class="at">data =</span> points_km, <span class="at">size =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="fitting-with-stelfi" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="fitting-with-stelfi">Fitting with <code>stelfi</code></h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>area_km2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(sf<span class="sc">::</span><span class="fu">st_area</span>(iraq_sf_km))</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>beta_start <span class="ot">&lt;-</span> <span class="fu">log</span>(<span class="fu">nrow</span>(locs_km) <span class="sc">/</span> area_km2)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>start <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">beta =</span> beta_start, <span class="at">log_tau =</span> <span class="fu">log</span>(<span class="dv">1</span>), <span class="at">log_kappa =</span> <span class="fu">log</span>(<span class="dv">1</span>))</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>fits_stelfi <span class="ot">&lt;-</span> <span class="fu">lapply</span>(meshes, <span class="cf">function</span>(m) {</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fit_lgcp</span>(<span class="at">locs =</span> locs_km, <span class="at">sf =</span> iraq_sf_km, <span class="at">smesh =</span> m, <span class="at">parameters =</span> start)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fits_stelfi<span class="sc">$</span>medium)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             Estimate Std. Error
+beta      -10.4615767 0.39736153
+log_tau     0.1693602 0.06063699
+log_kappa  -2.6639452 0.07788022
+range      40.5958551 3.16161410
+stdev       3.4180592 0.18938261</code></pre>
+</div>
+</div>
+<p>The estimated random field and intensity surface (events per km<span class="math inline">\(^2\)</span>) for the medium mesh:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_fields</span>(fits_stelfi<span class="sc">$</span>medium, meshes<span class="sc">$</span>medium) <span class="sc">|&gt;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show_field</span>(<span class="at">smesh =</span> meshes<span class="sc">$</span>medium, <span class="at">sf =</span> iraq_sf_km, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_lambda</span>(fits_stelfi<span class="sc">$</span>medium, <span class="at">smesh =</span> meshes<span class="sc">$</span>medium, <span class="at">sf =</span> iraq_sf_km, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="comparing-with-inlabru" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="comparing-with-inlabru">Comparing with <code>inlabru</code></h4>
+<p>The same model is fitted using <code>inlabru</code> on the same three meshes, with weak penalised complexity priors (<span class="math inline">\(P(r &lt; 5\text{ km}) = 0.01\)</span> and <span class="math inline">\(P(\sigma &gt; 10) = 0.01\)</span>) and empirical Bayes (see <a href="#sec-lgcp-sim" class="quarto-xref"><span>Section 5.2</span></a>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>fit_bru <span class="ot">&lt;-</span> <span class="cf">function</span>(mesh) {</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    matern <span class="ot">&lt;-</span> INLA<span class="sc">::</span><span class="fu">inla.spde2.pcmatern</span>(mesh, <span class="at">prior.sigma =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="fl">0.01</span>), <span class="at">prior.range =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="fl">0.01</span>))</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    cmp <span class="ot">&lt;-</span> geometry <span class="sc">~</span> <span class="fu">mySmooth</span>(geometry, <span class="at">model =</span> matern) <span class="sc">+</span> <span class="fu">Intercept</span>(<span class="dv">1</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    inlabru<span class="sc">::</span><span class="fu">lgcp</span>(cmp, <span class="at">data =</span> points_km, <span class="at">samplers =</span> iraq_sf_km,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">domain =</span> <span class="fu">list</span>(<span class="at">geometry =</span> mesh),</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">options =</span> inlabru<span class="sc">::</span><span class="fu">bru_options</span>(</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">control.inla =</span> <span class="fu">list</span>(<span class="at">int.strategy =</span> <span class="st">"eb"</span>, <span class="at">strategy =</span> <span class="st">"gaussian"</span>,</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>                                          <span class="at">diagonal =</span> <span class="fl">1e-4</span>, <span class="at">control.vb =</span> <span class="fu">list</span>(<span class="at">enable =</span> <span class="cn">FALSE</span>))))</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>fits_inlabru <span class="ot">&lt;-</span> <span class="fu">lapply</span>(meshes, fit_bru)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The table gives the estimates (standard error for <code>stelfi</code>, posterior standard deviation for <code>inlabru</code>, in brackets) for each mesh. Because the coordinates are in km in both, <span class="math inline">\(\beta_0\)</span> is the log intensity per km<span class="math inline">\(^2\)</span> and <span class="math inline">\(r\)</span> is in km.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Mesh</th>
+<th style="text-align: left;">Package</th>
+<th style="text-align: left;"><span class="math inline">\(\beta_0\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(r\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\sigma\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">coarse</td>
+<td style="text-align: left;">stelfi</td>
+<td style="text-align: left;">-9.554 (0.514)</td>
+<td style="text-align: left;">87.421 (10.276)</td>
+<td style="text-align: left;">2.96 (0.239)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">coarse</td>
+<td style="text-align: left;">inlabru</td>
+<td style="text-align: left;">-8.035 (0.534)</td>
+<td style="text-align: left;">120.815 (15.646)</td>
+<td style="text-align: left;">2.867 (0.287)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">medium</td>
+<td style="text-align: left;">stelfi</td>
+<td style="text-align: left;">-10.462 (0.397)</td>
+<td style="text-align: left;">40.596 (3.162)</td>
+<td style="text-align: left;">3.418 (0.189)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">medium</td>
+<td style="text-align: left;">inlabru</td>
+<td style="text-align: left;">-8.287 (0.308)</td>
+<td style="text-align: left;">50.181 (4.288)</td>
+<td style="text-align: left;">3.226 (0.206)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fine</td>
+<td style="text-align: left;">stelfi</td>
+<td style="text-align: left;">-11.672 (0.207)</td>
+<td style="text-align: left;">8.423 (0.568)</td>
+<td style="text-align: left;">5.729 (0.309)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fine</td>
+<td style="text-align: left;">inlabru</td>
+<td style="text-align: left;">-8.664 (0.244)</td>
+<td style="text-align: left;">28.141 (1.661)</td>
+<td style="text-align: left;">4.058 (0.196)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>When reading the table look for (1) agreement <em>between packages</em> for a given mesh, and (2) agreement <em>across meshes</em> for a given package.</p>
+<p><strong>Between packages.</strong> For the coarse and medium meshes the two packages tell a similar story: a field with a large standard deviation (around 3, so the intensity varies by orders of magnitude across Iraq) and a range of tens of kilometres, although the <code>inlabru</code> range is somewhat larger. The intercepts differ more. This is partly because the packages approximate the integral of the intensity over the study region differently (<code>stelfi</code> assigns each event and each piece of area to its nearest mesh node, <code>inlabru</code> uses integration points), and partly because the intercept is only weakly identified when the field is this variable. The differences are largest for the fine mesh, where the two approximations differ most.</p>
+<p><strong>Across meshes.</strong> The estimates do <em>not</em> stabilise: as the mesh gets finer the estimated range gets smaller and the standard deviation larger, for both packages.</p>
+</section>
+<section id="sec-mesh-compare" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="sec-mesh-compare">Sensitivity to the mesh</h4>
+<p>The number of nodes, and so the computational cost, increases a lot from the coarse to the fine mesh. The intensity surfaces estimated by <code>stelfi</code> using the three meshes are shown below.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>lambdas <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">names</span>(meshes), <span class="cf">function</span>(m) {</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show_lambda</span>(fits_stelfi[[m]], <span class="at">smesh =</span> meshes[[m]], <span class="at">sf =</span> iraq_sf_km, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme_void</span>() <span class="sc">+</span> <span class="fu">ggtitle</span>(m) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>patchwork<span class="sc">::</span><span class="fu">wrap_plots</span>(lambdas, <span class="at">nrow =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>If the mesh is adequate the estimates, and the large scale pattern of the intensity, should be similar for all three meshes; if the range and standard deviation change noticeably then the coarser mesh cannot represent the field. Here the broad pattern (the hot spots around Baghdad and along the Tigris and Euphrates) is the same, but the estimated range keeps shrinking as the mesh is refined. The reason is the data: attacks are concentrated in particular towns and cities, so there is spatial structure at every scale down to a few kilometres, and whatever mesh is used the field picks up variation down to the smallest scale the mesh can represent. In this situation:</p>
+<ul>
+<li>the range should be interpreted as “the scale of variation resolved at this mesh”, and the mesh reported alongside the results;</li>
+<li>choose the mesh to match the scale of the question being asked (e.g., differences between regions versus between neighbourhoods); and</li>
+<li>consider whether the fine scale clustering is better explained by covariates (e.g., the locations of towns, population density) or by events triggering further events (<a href="stelfi.html" class="quarto-xref"><span>Chapter 8</span></a>).</li>
+</ul>
+</section>
+<section id="including-covariates" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="including-covariates">Including covariates</h4>
+<p>Covariates are included in the log intensity, <span class="math inline">\(\lambda(s) = \text{exp}(\beta_0 + \beta_1 x_1(s) + ... + G(s))\)</span>, using the <code>covariates</code> argument of <code>fit_lgcp()</code>. The covariates must be a matrix with one column per covariate and <strong>one row per mesh node</strong>, and the starting value <code>beta</code> becomes a vector: the intercept followed by one coefficient per covariate. It is a good idea to standardise covariates (using <code>scale()</code>), so that the coefficients are the change in log intensity per standard deviation increase in the covariate and the optimiser works with parameters on a similar scale. The medium mesh is used below.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>smesh <span class="ot">&lt;-</span> meshes<span class="sc">$</span>medium</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Distance to Baghdad.</strong> Here the covariate is the distance (in km) from each mesh node to Baghdad (33.30°N, 44.40°E).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>baghdad <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(<span class="fu">data.frame</span>(<span class="at">lon =</span> <span class="fl">44.40</span>, <span class="at">lat =</span> <span class="fl">33.30</span>), <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"lon"</span>, <span class="st">"lat"</span>), <span class="at">crs =</span> <span class="dv">4326</span>) <span class="sc">|&gt;</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">32638</span>)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>baghdad_km <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_coordinates</span>(baghdad) <span class="sc">/</span> <span class="dv">1000</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>mesh_coords <span class="ot">&lt;-</span> smesh<span class="sc">$</span>loc[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>baghdad_dist <span class="ot">&lt;-</span> <span class="fu">sqrt</span>((mesh_coords[, <span class="dv">1</span>] <span class="sc">-</span> baghdad_km[<span class="dv">1</span>])<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> (mesh_coords[, <span class="dv">2</span>] <span class="sc">-</span> baghdad_km[<span class="dv">2</span>])<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>baghdad_scaled <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">scale</span>(baghdad_dist))</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(baghdad_dist) <span class="do">## km per unit of the scaled covariate</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 142.8089</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>fit_baghdad <span class="ot">&lt;-</span> <span class="fu">fit_lgcp</span>(<span class="at">locs =</span> locs_km, <span class="at">sf =</span> iraq_sf_km, <span class="at">smesh =</span> smesh,</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">parameters =</span> <span class="fu">list</span>(<span class="at">beta =</span> <span class="fu">c</span>(beta_start, <span class="dv">0</span>), <span class="at">log_tau =</span> <span class="fu">log</span>(<span class="dv">1</span>), <span class="at">log_kappa =</span> <span class="fu">log</span>(<span class="dv">1</span>)),</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">covariates =</span> baghdad_scaled)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit_baghdad)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             Estimate Std. Error
+beta      -10.1442624 0.34778483
+beta       -1.3433509 0.28134940
+log_tau     0.1179046 0.06460445
+log_kappa  -2.5396546 0.07987871
+range      35.8511413 2.86374286
+stdev       3.1779551 0.16668768</code></pre>
+</div>
+</div>
+<p>The second <code>beta</code> is the change in the log intensity per standard deviation (see above, in km) increase in distance from Baghdad, so <span class="math inline">\(\text{exp}(\hat{\beta}_1)\)</span> is the multiplicative change in the intensity. A negative coefficient means events are more intense closer to Baghdad. Note that the mesh extends beyond the boundary of Iraq, so the standardisation uses nodes outside the country too.</p>
+<p><strong>Population density.</strong> In these data population density is only recorded at the event locations, not at the mesh nodes, so it has to be interpolated to the mesh nodes. Here inverse distance weighting (<code>gstat::idw()</code>) is used.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>points_pop <span class="ot">&lt;-</span> points_km</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>points_pop<span class="sc">$</span>popdensity <span class="ot">&lt;-</span> iraq_terrorism<span class="sc">$</span>popdensity</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>mesh_sf <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(<span class="fu">as.data.frame</span>(smesh<span class="sc">$</span>loc[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]) <span class="sc">|&gt;</span> <span class="fu">setNames</span>(<span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)), <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>))</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>idw_fit <span class="ot">&lt;-</span> gstat<span class="sc">::</span><span class="fu">idw</span>(<span class="at">formula =</span> popdensity <span class="sc">~</span> <span class="dv">1</span>, <span class="at">locations =</span> points_pop,</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">newdata =</span> mesh_sf, <span class="at">debug.level =</span> <span class="dv">0</span>)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>scaled_popdensity <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">scale</span>(idw_fit<span class="sc">$</span>var1.pred))</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>fit_pop <span class="ot">&lt;-</span> <span class="fu">fit_lgcp</span>(<span class="at">locs =</span> locs_km, <span class="at">sf =</span> iraq_sf_km, <span class="at">smesh =</span> smesh,</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">parameters =</span> <span class="fu">list</span>(<span class="at">beta =</span> <span class="fu">c</span>(beta_start, <span class="dv">0</span>), <span class="at">log_tau =</span> <span class="fu">log</span>(<span class="dv">1</span>), <span class="at">log_kappa =</span> <span class="fu">log</span>(<span class="dv">1</span>)),</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>                    <span class="at">covariates =</span> scaled_popdensity)</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit_pop)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             Estimate Std. Error
+beta      -9.36865654 0.27424276
+beta      -1.58631396 0.14909077
+log_tau    0.05934407 0.07069666
+log_kappa -2.36289605 0.08056003
+range     30.04261333 2.42023386
+stdev      2.82367676 0.13280817</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Care is needed when interpreting this coefficient. Because population density is only known at the <em>events</em>, the interpolated surface is informed only by where events happened, not by where people live in general, so it is not an independent description of the population. A population density raster covering the whole of Iraq would be preferable. It is also worth remembering that the random field can absorb spatial structure shared with a covariate (spatial confounding), so check the standard error of the coefficient, and compare the model with and without the covariate (e.g., by looking at how much the estimated field changes).</p>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="sec-lgcp-gof" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="sec-lgcp-gof"><span class="header-section-number">5.4</span> Goodness-of-fit</h2>
+<p>A natural question is whether point patterns simulated from the fitted model look like the observed pattern. This can be checked by comparing <em>summary functions</em> of the observed pattern with those of patterns simulated from the fitted model, using <code>spatstat</code> (<span class="citation" data-cites="spatstat">Baddeley, Rubak, and Turner (<a href="references.html#ref-spatstat" role="doc-biblioref">2015</a>)</span>). Two nearest-neighbour summaries are used here:</p>
+<ul>
+<li>the <strong><span class="math inline">\(G\)</span> function</strong>, the distribution function of the distance from a typical event to its <em>nearest other event</em>. For a clustered pattern <span class="math inline">\(G(r)\)</span> rises faster than for a completely random (Poisson) pattern since events tend to have a close neighbour; and</li>
+<li>the <strong><span class="math inline">\(F\)</span> function</strong> (empty space function), the distribution function of the distance from an <em>arbitrary location</em> to the nearest event. For a clustered pattern <span class="math inline">\(F(r)\)</span> rises more slowly than for a Poisson pattern since there are large empty gaps between clusters.</li>
+</ul>
+<p>If the fitted LGCP is adequate, the observed curves should lie within the envelope formed by the curves of the simulated patterns. Distances must be measured in planar coordinates, so this is done for the sasquatch model (<a href="#sec-sasquatch" class="quarto-xref"><span>Section 5.3.1</span></a>), which was fitted in km.</p>
+<section id="preparing-the-observed-pattern" class="level3" data-number="5.4.1">
+<h3 data-number="5.4.1" class="anchored" data-anchor-id="preparing-the-observed-pattern"><span class="header-section-number">5.4.1</span> Preparing the observed pattern</h3>
+<p>The observed events are converted to a <code>spatstat</code> point pattern (<code>ppp</code>) within the study region (<code>owin</code>). Some sightings share exactly the same location, which gives nearest-neighbour distances of zero, so the pattern is jittered slightly using <code>rjitter()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(spatstat.geom)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(spatstat.explore)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>us_window <span class="ot">&lt;-</span> <span class="fu">as.owin</span>(us_km)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>obs_ppp <span class="ot">&lt;-</span> <span class="fu">ppp</span>(<span class="at">x =</span> locs_sq<span class="sc">$</span>x, <span class="at">y =</span> locs_sq<span class="sc">$</span>y, <span class="at">window =</span> us_window)</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>obs_ppp <span class="ot">&lt;-</span> <span class="fu">rjitter</span>(obs_ppp, <span class="at">retry =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="simulating-from-the-fitted-model" class="level3" data-number="5.4.2">
+<h3 data-number="5.4.2" class="anchored" data-anchor-id="simulating-from-the-fitted-model"><span class="header-section-number">5.4.2</span> Simulating from the fitted model</h3>
+<p>The function below simulates one point pattern from the fitted LGCP using <code>sim_lgcp()</code> and the estimated parameters. This simulates a <em>new</em> random field each time (the model is checked as a whole, not just the estimated field). <code>sim_lgcp()</code> returns the number of events <em>per mesh node</em>, so each node is repeated as many times as it has events and the resulting pattern is jittered (by half the mesh <code>cutoff</code>) so that events are spread around the node.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>generate_simulated_ppp <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    sim <span class="ot">&lt;-</span> <span class="fu">sim_lgcp</span>(<span class="at">sf =</span> us_km, <span class="at">smesh =</span> smesh_km,</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">parameters =</span> <span class="fu">c</span>(<span class="at">beta =</span> <span class="fu">unname</span>(coefs[<span class="st">"beta"</span>, <span class="dv">1</span>]),</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">log_tau =</span> <span class="fu">unname</span>(coefs[<span class="st">"log_tau"</span>, <span class="dv">1</span>]),</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">log_kappa =</span> <span class="fu">unname</span>(coefs[<span class="st">"log_kappa"</span>, <span class="dv">1</span>])))</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">sum</span>(sim<span class="sc">$</span>y) <span class="sc">&lt;</span> <span class="dv">2</span>) <span class="fu">return</span>(<span class="cn">NULL</span>) <span class="do">## need two events for nearest-neighbour distances</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    idx <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(smesh_km<span class="sc">$</span>loc), <span class="at">times =</span> sim<span class="sc">$</span>y)</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    sim_ppp <span class="ot">&lt;-</span> <span class="fu">ppp</span>(<span class="at">x =</span> smesh_km<span class="sc">$</span>loc[idx, <span class="dv">1</span>], <span class="at">y =</span> smesh_km<span class="sc">$</span>loc[idx, <span class="dv">2</span>],</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">window =</span> us_window, <span class="at">check =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rjitter</span>(sim_ppp, <span class="at">radius =</span> <span class="dv">50</span>, <span class="at">retry =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="simulation-envelopes" class="level3" data-number="5.4.3">
+<h3 data-number="5.4.3" class="anchored" data-anchor-id="simulation-envelopes"><span class="header-section-number">5.4.3</span> Simulation envelopes</h3>
+<p>A simulation envelope gives, for each distance <span class="math inline">\(r\)</span>, the range (here the minimum and maximum) of the summary function over many simulated patterns. With 39 simulations a pointwise envelope based on the minimum and maximum corresponds to a test with significance level <span class="math inline">\(2/(39 + 1) = 0.05\)</span> at each <span class="math inline">\(r\)</span> (more simulations, e.g., 99, are preferable but take longer). Passing the list of LGCP simulations to the <code>simulate</code> argument of <code>envelope()</code> is important, otherwise the envelope is formed from completely random patterns and instead tests whether there is any spatial structure at all.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">3</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>sim_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">39</span>, <span class="cf">function</span>(i) <span class="fu">generate_simulated_ppp</span>())</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>sim_list <span class="ot">&lt;-</span> <span class="fu">Filter</span>(<span class="fu">Negate</span>(is.null), sim_list)</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>g_envelope <span class="ot">&lt;-</span> <span class="fu">envelope</span>(<span class="at">Y =</span> obs_ppp, <span class="at">fun =</span> Gest, <span class="at">simulate =</span> sim_list,</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">nsim =</span> <span class="fu">length</span>(sim_list), <span class="at">savefuns =</span> <span class="cn">TRUE</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(g_envelope, <span class="at">main =</span> <span class="st">"Sasquatch LGCP: G function"</span>, <span class="at">xlab =</span> <span class="st">"Distance (km)"</span>, <span class="at">legend =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>f_envelope <span class="ot">&lt;-</span> <span class="fu">envelope</span>(<span class="at">Y =</span> obs_ppp, <span class="at">fun =</span> Fest, <span class="at">simulate =</span> sim_list,</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">nsim =</span> <span class="fu">length</span>(sim_list), <span class="at">savefuns =</span> <span class="cn">TRUE</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(f_envelope, <span class="at">main =</span> <span class="st">"Sasquatch LGCP: F function"</span>, <span class="at">xlab =</span> <span class="st">"Distance (km)"</span>, <span class="at">legend =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In each plot the solid black line is the observed function, the dashed red line is the mean of the simulated patterns, and the grey band is the envelope. Where the observed curve leaves the band the fitted model is not reproducing that aspect of the data. Points to bear in mind when reading these plots:</p>
+<ul>
+<li>at distances smaller than the mesh resolution (here about 100 to 200 km) the simulated patterns are only as realistic as the jittering used to spread events around their mesh node, so differences at very short distances say more about the mesh than about the model; and</li>
+<li>the <span class="math inline">\(G\)</span> function is about how close events are to <em>each other</em>. If events are much closer together than the model expects (more short nearest-neighbour distances), this suggests clustering at a finer scale than the field can capture, e.g., because events trigger one another (<a href="stelfi.html" class="quarto-xref"><span>Chapter 8</span></a>) or because of duplicated reports.</li>
+</ul>
+</section>
+</section>
+<section id="sec-lgcpst" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="sec-lgcpst"><span class="header-section-number">5.5</span> Spatiotemporal LGCP</h2>
+<section id="the-model-and-your-data-1" class="level3" data-number="5.5.1">
+<h3 data-number="5.5.1" class="anchored" data-anchor-id="the-model-and-your-data-1"><span class="header-section-number">5.5.1</span> The model and your data</h3>
+<p>If the event locations are recorded over a period of time, the spatial pattern may change over time. A spatiotemporal LGCP allows this by having a separate random field at each of a set of <strong>time knots</strong> <span class="math inline">\(t_1, t_2, ..., t_K\)</span>:</p>
+<p><span class="math display">\[\lambda_k(s) = \text{exp}(\beta_0 + G_k(s)),\]</span></p>
+<p>where the fields are linked over time by a first order autoregressive (AR(1)) process,</p>
+<p><span class="math display">\[G_k(s) = \rho\, G_{k-1}(s) + \epsilon_k(s),\]</span></p>
+<p>and the <span class="math inline">\(\epsilon_k(s)\)</span> are independent random fields. All of the fields share the same range and standard deviation. The new parameter is <span class="math inline">\(\rho\)</span> (<span class="math inline">\(-1 &lt; \rho &lt; 1\)</span>), the correlation between the fields at consecutive time knots: <span class="math inline">\(\rho\)</span> close to 1 means the spatial pattern of events is very persistent over time, <span class="math inline">\(\rho\)</span> close to 0 means the pattern at one knot is almost unrelated to the pattern at the previous one. <code>get_coefs()</code> reports <code>rho</code> along with the parameters of the spatial model, and <code>atanh_rho</code> is the transformed parameter used when giving starting values.</p>
+<p>To fit the model you need, in addition to a spatial model (<a href="#sec-lgcp-data" class="quarto-xref"><span>Section 5.1.2</span></a>):</p>
+<ul>
+<li><strong>a column <code>t</code> in <code>locs</code></strong> giving the time of each event; and</li>
+<li><strong>a temporal mesh</strong> <code>tmesh</code>, built using <code>fmesher::fm_mesh_1d()</code> with the knots as its argument, e.g., <code>fmesher::fm_mesh_1d(0:5)</code> for knots at <span class="math inline">\(t = 0, 1, ..., 5\)</span>.</li>
+</ul>
+<p>Each event is assigned to its nearest time knot, so knot <span class="math inline">\(t_k\)</span> covers the time period from halfway between <span class="math inline">\(t_{k-1}\)</span> and <span class="math inline">\(t_k\)</span> to halfway between <span class="math inline">\(t_k\)</span> and <span class="math inline">\(t_{k+1}\)</span>, and the first and last knots cover only half a period. Things to be aware of:</p>
+<ul>
+<li><strong>The times and knots must be on the same scale.</strong> For example, if <code>t</code> is in years since the start of the study, the knots should be too. Check <code>tmesh$loc</code> to see the knots that were created.</li>
+<li><strong>Every knot must have some events in the period it covers, and no event can be later than the last knot.</strong> For example, with yearly data starting at <span class="math inline">\(t = 0\)</span> and finishing within year 5, use continuous (decimal) times and knots <code>0:5</code>, so the last knot covers the final half year. (The current version of <code>stelfi</code> can crash, rather than give an error, if this is not the case.)</li>
+<li><strong>Sort the data by time</strong> before fitting.</li>
+<li><strong>The cost grows with the number of knots</strong>, since there is a field at every knot: roughly the number of mesh nodes times the number of knots. A coarser spatial mesh than for a purely spatial model is often needed.</li>
+</ul>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In the current version of <code>stelfi</code>, spatiotemporal models should be fitted using a mesh that <strong>does not extend beyond the study region</strong>, i.e., built with the study region as its <code>boundary</code> and a single value for <code>max.edge</code>, so that every mesh node has some area of the study region associated with it. Using a mesh with an outer extension (as is usual for spatial models, <a href="#sec-mesh" class="quarto-xref"><span>Section 5.1.1</span></a>) gives badly biased estimates. You can check this with <code>sum(get_weights(smesh, sf)$weights == 0)</code>, which should be 0.</p>
+</div>
+</div>
+</section>
+<section id="sec-lgcpst-sim" class="level3" data-number="5.5.2">
+<h3 data-number="5.5.2" class="anchored" data-anchor-id="sec-lgcpst-sim"><span class="header-section-number">5.5.2</span> A simulated example</h3>
+<p>Data were simulated from a spatiotemporal LGCP within a disc of radius 2 over the time period <span class="math inline">\([0, 5)\)</span>, with <span class="math inline">\(\beta_0 = 2\)</span>, range <span class="math inline">\(r = 1\)</span>, standard deviation <span class="math inline">\(\sigma = 1\)</span>, and <span class="math inline">\(\rho = 0.7\)</span>, with one field per unit of time. The data are a data frame of 891 events with columns <code>x</code>, <code>y</code>, and <code>t</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(locs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           x           y           t
+1  1.9298853  0.31397382 0.008389111
+2 -0.1897221  1.06251820 0.009234515
+3  1.7794098  0.41180309 0.010330225
+4  1.6102736  0.02557874 0.011357767
+5  0.2621431 -0.15527212 0.018003215
+6  1.7512718  0.49230152 0.034940886</code></pre>
+</div>
+</div>
+<p>The spatial mesh follows the boundary of the study region with no outer extension (see the warning above) and the temporal mesh has knots at <span class="math inline">\(0, 1, ..., 5\)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>disc_sf <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_sf</span>(<span class="at">geometry =</span> sf<span class="sc">::</span><span class="fu">st_geometry</span>(sf<span class="sc">::</span><span class="fu">st_as_sf</span>(spatstat.geom<span class="sc">::</span><span class="fu">disc</span>(<span class="at">radius =</span> <span class="dv">2</span>))))</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>smesh <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_mesh_2d</span>(<span class="at">boundary =</span> fmesher<span class="sc">::</span><span class="fu">fm_as_segm</span>(disc_sf), <span class="at">max.edge =</span> <span class="fl">0.2</span>, <span class="at">cutoff =</span> <span class="fl">0.05</span>)</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">get_weights</span>(smesh, disc_sf)<span class="sc">$</span>weights <span class="sc">==</span> <span class="dv">0</span>) <span class="do">## no nodes outside the region</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>tmesh <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_mesh_1d</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">5</span>)</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>tmesh<span class="sc">$</span>loc</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0 1 2 3 4 5</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>fit_st <span class="ot">&lt;-</span> <span class="fu">fit_lgcp</span>(<span class="at">locs =</span> locs, <span class="at">sf =</span> disc_sf, <span class="at">smesh =</span> smesh, <span class="at">tmesh =</span> tmesh,</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">parameters =</span> <span class="fu">c</span>(<span class="at">beta =</span> <span class="dv">1</span>, <span class="at">log_tau =</span> <span class="fu">log</span>(<span class="dv">1</span>), <span class="at">log_kappa =</span> <span class="fu">log</span>(<span class="dv">1</span>), <span class="at">atanh_rho =</span> <span class="dv">0</span>))</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>stelfi_st <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit_st)</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>stelfi_st</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            Estimate Std. Error
+rho        0.5998841 0.07272397
+beta       1.8393273 0.32568893
+log_tau   -2.1073093 0.10586796
+log_kappa  0.7947107 0.13262724
+range      1.2776342 0.16944910
+stdev      1.0482127 0.09213091</code></pre>
+</div>
+</div>
+<p>The same model can be fitted using <code>inlabru</code>, by giving the field a <code>group</code> (the time) with an AR(1) <code>control.group</code>, and including time in the <code>domain</code> of the point process.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>matern <span class="ot">&lt;-</span> INLA<span class="sc">::</span><span class="fu">inla.spde2.pcmatern</span>(smesh, <span class="at">prior.range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.01</span>), <span class="at">prior.sigma =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="fl">0.01</span>))</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>pts <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(locs, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>))</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>cmp <span class="ot">&lt;-</span> <span class="er">~</span> <span class="fu">field</span>(geometry, <span class="at">model =</span> matern, <span class="at">group =</span> t, <span class="at">group_mapper =</span> <span class="fu">bm_fmesher</span>(tmesh),</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">control.group =</span> <span class="fu">list</span>(<span class="at">model =</span> <span class="st">"ar1"</span>)) <span class="sc">+</span> <span class="fu">Intercept</span>(<span class="dv">1</span>)</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>fit_bru_st <span class="ot">&lt;-</span> <span class="fu">lgcp</span>(cmp, <span class="at">data =</span> pts, <span class="at">samplers =</span> disc_sf,</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">domain =</span> <span class="fu">list</span>(<span class="at">geometry =</span> smesh, <span class="at">t =</span> tmesh),</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">formula =</span> geometry <span class="sc">+</span> t <span class="sc">~</span> field <span class="sc">+</span> Intercept,</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">options =</span> <span class="fu">bru_options</span>(<span class="at">control.inla =</span> <span class="fu">list</span>(<span class="at">int.strategy =</span> <span class="st">"eb"</span>)))</span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>bru_st <span class="ot">&lt;-</span> <span class="fu">rbind</span>(fit_bru_st<span class="sc">$</span>summary.fixed[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], fit_bru_st<span class="sc">$</span>summary.hyperpar[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>bru_st</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                        mean         sd
+Intercept          1.9663577 0.43998299
+Range for field    1.7118879 0.24379425
+Stdev for field    1.1097761 0.11783808
+GroupRho for field 0.6048413 0.07667944</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><span class="math inline">\(\beta_0\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(r\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\sigma\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\rho\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Truth</td>
+<td style="text-align: left;">2.0</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">0.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stelfi</td>
+<td style="text-align: left;">1.839 (0.326)</td>
+<td style="text-align: left;">1.278 (0.169)</td>
+<td style="text-align: left;">1.048 (0.092)</td>
+<td style="text-align: left;">0.6 (0.073)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">inlabru</td>
+<td style="text-align: left;">1.966 (0.44)</td>
+<td style="text-align: left;">1.712 (0.244)</td>
+<td style="text-align: left;">1.11 (0.118)</td>
+<td style="text-align: left;">0.605 (0.077)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Both packages give similar estimates and recover the true values reasonably well. The estimated field at any time knot can be extracted using <code>get_fields()</code> (which, with <code>tmesh</code>, returns a matrix with one column per knot) and the intensity plotted using <code>show_lambda()</code> with the <code>timestamp</code> argument (the index of the knot).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">6</span>), <span class="cf">function</span>(k) {</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show_lambda</span>(fit_st, <span class="at">smesh =</span> smesh, <span class="at">sf =</span> disc_sf, <span class="at">tmesh =</span> tmesh, <span class="at">timestamp =</span> k, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme_void</span>() <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="fu">paste</span>(<span class="st">"t ="</span>, tmesh<span class="sc">$</span>loc[k]))</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>patchwork<span class="sc">::</span><span class="fu">wrap_plots</span>(plots, <span class="at">nrow =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="sec-lgcp-iraq-st" class="level3" data-number="5.5.3">
+<h3 data-number="5.5.3" class="anchored" data-anchor-id="sec-lgcp-iraq-st"><span class="header-section-number">5.5.3</span> An applied example: terrorism events in Iraq by year</h3>
+<p>The <code>iraq_terrorism</code> data (<a href="#sec-iraq" class="quarto-xref"><span>Section 5.3.2</span></a>) also record the year, month and day of each event, so the intensity can be allowed to change over time. Here time is measured in years since the start of 2013 (as a decimal, using the month and day) and there is one knot per year.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>locs_st <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(sf<span class="sc">::</span><span class="fu">st_coordinates</span>(sf<span class="sc">::</span><span class="fu">st_transform</span>(iraq_terrorism, <span class="at">crs =</span> <span class="dv">32638</span>)) <span class="sc">/</span> <span class="dv">1000</span>)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(locs_st) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>locs_st<span class="sc">$</span>t <span class="ot">&lt;-</span> (iraq_terrorism<span class="sc">$</span>iyear <span class="sc">-</span> <span class="dv">2013</span>) <span class="sc">+</span> (iraq_terrorism<span class="sc">$</span>imonth <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="dv">12</span> <span class="sc">+</span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>    (iraq_terrorism<span class="sc">$</span>iday <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="dv">365</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>locs_st <span class="ot">&lt;-</span> locs_st[<span class="fu">order</span>(locs_st<span class="sc">$</span>t), ]</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(locs_st<span class="sc">$</span>t)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2965753 4.9988584</code></pre>
+</div>
+</div>
+<p>The spatial mesh follows the boundary of Iraq with no outer extension, and is coarser than for the spatial model because there are six fields to estimate. The temporal knots are at <span class="math inline">\(t = 0, 1, ..., 5\)</span> (the start of each year), so the final knot covers the second half of 2017.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>smesh_st <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_mesh_2d</span>(<span class="at">boundary =</span> fmesher<span class="sc">::</span><span class="fu">fm_as_segm</span>(iraq_sf_km), <span class="at">max.edge =</span> <span class="dv">50</span>, <span class="at">cutoff =</span> <span class="dv">20</span>)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">nodes =</span> smesh_st<span class="sc">$</span>n, <span class="at">outside =</span> <span class="fu">sum</span>(<span class="fu">get_weights</span>(smesh_st, iraq_sf_km)<span class="sc">$</span>weights <span class="sc">==</span> <span class="dv">0</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  nodes outside 
+    496       0 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>tmesh_st <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_mesh_1d</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Starting values matter for this model. For the intercept, the log of the average number of events per km<span class="math inline">\(^2\)</span> per year is a sensible start. For the range a starting value of around 300 km is used (<span class="math inline">\(\kappa = \sqrt{8}/300\)</span>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>n_years <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>start <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">beta =</span> <span class="fu">log</span>(<span class="fu">nrow</span>(locs_st) <span class="sc">/</span> (area_km2 <span class="sc">*</span> n_years)),</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">log_tau =</span> <span class="fu">log</span>(<span class="fl">0.1</span>), <span class="at">log_kappa =</span> <span class="fu">log</span>(<span class="fu">sqrt</span>(<span class="dv">8</span>) <span class="sc">/</span> <span class="dv">300</span>), <span class="at">atanh_rho =</span> <span class="fl">0.2</span>)</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>fit_iraq_st <span class="ot">&lt;-</span> <span class="fu">fit_lgcp</span>(<span class="at">locs =</span> locs_st, <span class="at">sf =</span> iraq_sf_km, <span class="at">smesh =</span> smesh_st, <span class="at">tmesh =</span> tmesh_st,</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">parameters =</span> start)</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>coefs_st <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit_iraq_st)</span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>coefs_st</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             Estimate Std. Error
+rho         0.9220853 0.01286857
+beta      -11.5955606 0.56488818
+log_tau     1.2540996 0.08731190
+log_kappa  -3.5544586 0.09573922
+range      98.9069365 9.46927254
+stdev       2.8146752 0.19977800</code></pre>
+</div>
+</div>
+<p>The estimated correlation between the fields of consecutive years is <span class="math inline">\(\hat{\rho} =\)</span> 0.92, so the spatial pattern of events is very persistent from year to year. The estimated intensity in each year is plotted below.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="cf">function</span>(k) {</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show_lambda</span>(fit_iraq_st, <span class="at">smesh =</span> smesh_st, <span class="at">sf =</span> iraq_sf_km, <span class="at">tmesh =</span> tmesh_st,</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">timestamp =</span> k, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme_void</span>() <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="fu">paste</span>(<span class="st">"t ="</span>, tmesh_st<span class="sc">$</span>loc[k]))</span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>patchwork<span class="sc">::</span><span class="fu">wrap_plots</span>(plots, <span class="at">nrow =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp_files/figure-html/unnamed-chunk-44-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>If the model does not converge, things to try are a coarser spatial mesh, fewer knots, different starting values (in particular <code>beta</code>, <code>log_tau</code> and <code>atanh_rho</code>), or fitting a spatial LGCP (<a href="#sec-iraq" class="quarto-xref"><span>Section 5.3.2</span></a>) to each year first to get an idea of sensible values for <span class="math inline">\(\beta_0\)</span>, <span class="math inline">\(\tau\)</span>, and <span class="math inline">\(\kappa\)</span>.</p>
+</section>
+<section id="sec-lgcpst-gof" class="level3" data-number="5.5.4">
+<h3 data-number="5.5.4" class="anchored" data-anchor-id="sec-lgcpst-gof"><span class="header-section-number">5.5.4</span> Goodness-of-fit</h3>
+<p>The simulation envelopes of <a href="#sec-lgcp-gof" class="quarto-xref"><span>Section 5.4</span></a> can be used for a single time period. Below a slightly different check is used: rather than simulating new random fields, events are simulated from the <em>estimated</em> intensity for one knot (an inhomogeneous Poisson process), and the <span class="math inline">\(G\)</span> function of these is compared with that of the observed events in the corresponding period. This asks whether, <em>given</em> the estimated intensity surface, the events are more clustered than expected. Here the knot at <span class="math inline">\(t = 2\)</span> (mid 2014 to mid 2015) is checked.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>knot <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="do">## the index of the knot at t = 2</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>in_period <span class="ot">&lt;-</span> <span class="fu">abs</span>(locs_st<span class="sc">$</span>t <span class="sc">-</span> tmesh_st<span class="sc">$</span>loc[knot]) <span class="sc">&lt;</span> <span class="fl">0.5</span></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> locs_st[in_period, ]</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>iraq_window <span class="ot">&lt;-</span> <span class="fu">as.owin</span>(iraq_sf_km)</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>obs_ppp_st <span class="ot">&lt;-</span> <span class="fu">rjitter</span>(<span class="fu">ppp</span>(obs<span class="sc">$</span>x, obs<span class="sc">$</span>y, <span class="at">window =</span> iraq_window), <span class="at">retry =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: 1 point was rejected as lying outside the specified window</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: data contain duplicated points</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="do">## estimated log intensity at the mesh nodes for this knot</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>eta <span class="ot">&lt;-</span> coefs_st[<span class="st">"beta"</span>, <span class="dv">1</span>] <span class="sc">+</span> <span class="fu">get_fields</span>(fit_iraq_st, smesh_st, tmesh_st)[, knot]</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a><span class="do">## simulate from the estimated intensity (per km^2 per year) by thinning</span></span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>sim_from_fitted <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>    bb <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_bbox</span>(iraq_sf_km)</span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a>    lmax <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">max</span>(eta))</span>
+<span id="cb64-7"><a href="#cb64-7" aria-hidden="true" tabindex="-1"></a>    n0 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="dv">1</span>, lmax <span class="sc">*</span> (bb[<span class="st">"xmax"</span>] <span class="sc">-</span> bb[<span class="st">"xmin"</span>]) <span class="sc">*</span> (bb[<span class="st">"ymax"</span>] <span class="sc">-</span> bb[<span class="st">"ymin"</span>]))</span>
+<span id="cb64-8"><a href="#cb64-8" aria-hidden="true" tabindex="-1"></a>    cand <span class="ot">&lt;-</span> <span class="fu">ppp</span>(<span class="fu">runif</span>(n0, bb[<span class="st">"xmin"</span>], bb[<span class="st">"xmax"</span>]), <span class="fu">runif</span>(n0, bb[<span class="st">"ymin"</span>], bb[<span class="st">"ymax"</span>]),</span>
+<span id="cb64-9"><a href="#cb64-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">window =</span> <span class="fu">owin</span>(bb[<span class="fu">c</span>(<span class="st">"xmin"</span>, <span class="st">"xmax"</span>)], bb[<span class="fu">c</span>(<span class="st">"ymin"</span>, <span class="st">"ymax"</span>)]))</span>
+<span id="cb64-10"><a href="#cb64-10" aria-hidden="true" tabindex="-1"></a>    cand <span class="ot">&lt;-</span> cand[iraq_window]</span>
+<span id="cb64-11"><a href="#cb64-11" aria-hidden="true" tabindex="-1"></a>    lambda <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">as.vector</span>(fmesher<span class="sc">::</span><span class="fu">fm_basis</span>(smesh_st, <span class="at">loc =</span> <span class="fu">cbind</span>(cand<span class="sc">$</span>x, cand<span class="sc">$</span>y)) <span class="sc">%*%</span> eta))</span>
+<span id="cb64-12"><a href="#cb64-12" aria-hidden="true" tabindex="-1"></a>    cand[<span class="fu">runif</span>(cand<span class="sc">$</span>n) <span class="sc">&lt;</span> lambda <span class="sc">/</span> lmax]</span>
+<span id="cb64-13"><a href="#cb64-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb64-14"><a href="#cb64-14" aria-hidden="true" tabindex="-1"></a>sims <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">39</span>, <span class="cf">function</span>(i) <span class="fu">sim_from_fitted</span>())</span>
+<span id="cb64-15"><a href="#cb64-15" aria-hidden="true" tabindex="-1"></a>g_env_st <span class="ot">&lt;-</span> <span class="fu">envelope</span>(obs_ppp_st, <span class="at">fun =</span> Gest, <span class="at">simulate =</span> sims, <span class="at">nsim =</span> <span class="dv">39</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(g_env_st, <span class="at">main =</span> <span class="st">"Iraq, t = 2: G function"</span>, <span class="at">xlab =</span> <span class="st">"Distance (km)"</span>, <span class="at">legend =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp_files/figure-html/unnamed-chunk-46-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The observed <span class="math inline">\(G\)</span> function lies well above the envelope at short distances: many events are much closer to another event than would be expected given the estimated intensity. This is not surprising: the mesh (and the knots) can only describe variation in intensity at scales of tens of kilometres and a year, whereas attacks are often concentrated in particular towns and occur in bursts. A finer mesh would help, but this kind of small scale clustering in space and time is also exactly what a self-exciting model is designed to capture, see <a href="stelfi.html" class="quarto-xref"><span>Chapter 8</span></a>.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-inlabru" class="csl-entry" role="listitem">
+Bachl, Fabian E., Finn Lindgren, David L. Borchers, and Janine B. Illian. 2019. <span>“<span class="nocase">inlabru</span>: An <span>R</span> Package for <span>Bayesian</span> Spatial Modelling from Ecological Survey Data.”</span> <em>Methods in Ecology and Evolution</em> 10: 760–66. <a href="https://doi.org/10.1111/2041-210X.13168">https://doi.org/10.1111/2041-210X.13168</a>.
+</div>
+<div id="ref-spatstat" class="csl-entry" role="listitem">
+Baddeley, Adrian, Ege Rubak, and Rolf Turner. 2015. <em>Spatial Point Patterns: Methodology and Applications with <span>R</span></em>. London: Chapman; Hall/CRC Press.
+</div>
+<div id="ref-stelfi" class="csl-entry" role="listitem">
+Jones-Todd, Charlotte M., and Alec B. M. van Helsdingen. 2024. <span>“<span class="nocase">stelfi</span>: An <span>R</span> Package for Fitting Hawkes and Log-Gaussian Cox Point Process Models.”</span> <em>Ecology and Evolution</em> 14: e11005. <a href="https://doi.org/10.1002/ece3.11005">https://doi.org/10.1002/ece3.11005</a>.
+</div>
+<div id="ref-spde" class="csl-entry" role="listitem">
+Lindgren, Finn, Håvard Rue, and Johan Lindström. 2011. <span>“An Explicit Link Between <span>Gaussian</span> Fields and <span>Gaussian</span> <span>Markov</span> Random Fields: The Stochastic Partial Differential Equation Approach (with Discussion).”</span> <em>Journal of the Royal Statistical Society B</em> 73 (4): 423–98.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./multi-hawkes.html" class="pagination-link" aria-label="Multivariate Hawkes process">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes process</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./lgcp-recovery.html" class="pagination-link" aria-label="Parameter recovery: `stelfi` vs `inlabru`">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Parameter recovery: <code>stelfi</code> vs <code>inlabru</code></span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

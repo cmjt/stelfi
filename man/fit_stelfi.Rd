@@ -31,6 +31,7 @@ of the domain.}
 \item{parameters}{A list of named parameters:
 \itemize{
 \item \code{coefs}, logged base rate of the Hawkes process and coefficients of covariates
+(alternatively \code{mu}, the base rate, can be supplied, in which case covariate coefficients start at 0)
 \item \code{alpha}, intensity jump after an event occurrence
 \item \code{beta},  rate of exponential decay of intensity after event occurrence
 \item \code{tau},  \eqn{\tau} parameter for the GMRF (supplied only if \code{GMRF = TRUE})

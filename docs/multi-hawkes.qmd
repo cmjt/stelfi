@@ -1,92 +1,263 @@
-## Multivariate Hawkes
-
-```{r}
-#| echo: false
-write_matrix <- function(x) {
-  begin <- "\\begin{bmatrix}"
-  end <- "\\end{bmatrix}"
-  X <-
-    apply(x, 1, function(x) {
-      paste(
-        paste(x, collapse = "&"),
-        "\\\\"
-      )
-    })
-  paste(c(begin, X, end), collapse = "")
-}
-```
-
-A multivariate Hawkes process allows for between- and within-stream self-excitement. In `stelfi` the conditional intensity for the $j^{th}$ ($j = 1, ..., N$) stream is given by
-
- $$\lambda(t)^{j*} = \mu_j + \Sigma_{k = 1}^N\Sigma_{i:\tau_i<t} \alpha_{jk} e^{(-\beta_j * (t-\tau_i))},$$ 
-where $j, k  \in (1, ..., N)$. Here, $\alpha_{jk}$ is the excitement caused by the $k^{th}$ stream on the $j^{th}$. Therefore, $\boldsymbol{\alpha}$ is an $N \times N$ matrix where the diagonals represent the within-stream excitement and the off-diagonals represent the excitement between streams.
-
-Plotted below are the conditional intensities ($\lambda_{.}(t), t \in [0,T]$) of a bivariate Hawkes process with $\mu = (0.5, 0.9)$, $\boldsymbol{\alpha}$ = $`r write_matrix(matrix(c(0.2, 0.1 ,0.6, 0.5), nrow = 2, byrow = TRUE))`$, and $\beta = (0.7, 0.9)$. Observed events (n = 33) are shown by the vertical dashes along the x-axis.  The intensity of any stream increases immediately after any event occurs (i.e., irrespective of stream) and decays exponentially over time if no event is observed for some period. Typically, herem a jump in intensity due to the occurence of an event in the same stream is called self-excitation (diagonal elements of $\boldsymbol{\alpha}$)  and a jump in intensity due to the occurence of an event in a different stream is called cross-excitation (off-diagonal elements of $\boldsymbol{\alpha}$).
-
+# Multivariate Hawkes process {#sec-mhawkes}
 
 ```{r}
 #| echo: false
 #| message: false
-require(stelfi)
+library(stelfi)
+library(ggplot2)
+write_matrix <- function(x) {
+  X <- apply(x, 1, function(r) paste(paste(r, collapse = "&"), "\\\\"))
+  paste(c("\\begin{bmatrix}", X, "\\end{bmatrix}"), collapse = "")
+}
+```
+
+## The model and your data
+
+Often events come in different types, or **streams**, and events of one type can trigger events of another. For example, large earthquakes trigger small ones, attacks by one group might provoke attacks by another, and buy orders on a stock exchange can trigger sell orders. A multivariate Hawkes process extends the univariate Hawkes process (@sec-hawkes) so that each stream has its own intensity, and every event can increase the intensity of *every* stream. In `stelfi` the conditional intensity of stream $j$ ($j = 1, ..., N$) is
+
+$$\lambda_j(t) = \mu_j + \sum_{k = 1}^N \alpha_{jk} \sum_{i:\tau_i<t,\ s_i = k} \text{exp}(-\beta_j (t-\tau_i)),$${#eq-mhawkes}
+
+where $s_i$ is the stream of the event at time $\tau_i$. The parameters are
+
+- $\mu_j$, the background rate of stream $j$;
+- $\alpha_{jk}$, the jump in the intensity of stream $j$ caused by an event in stream $k$. These form an $N \times N$ matrix $\boldsymbol{\alpha}$: the diagonal elements ($\alpha_{jj}$) describe **self-excitation** (events triggering events of the same type) and the off-diagonal elements describe **cross-excitation** (events of one type triggering events of another type); and
+- $\beta_j$, the rate at which excitement of stream $j$ decays, i.e., how quickly the intensity of stream $j$ returns to its background rate after an event in any stream.
+
+The expected number of stream $j$ events directly triggered by a single stream $k$ event is $\alpha_{jk}/\beta_j$. `stelfi` constrains each of these to be at most 1 (i.e., $\alpha_{jk} \leq \beta_j$).
+
+Plotted below are the conditional intensities of a bivariate (two stream) Hawkes process with $\boldsymbol{\mu} = (0.5, 0.9)$, $\boldsymbol{\alpha}$ = $`r write_matrix(matrix(c(0.2, 0.1 ,0.6, 0.5), nrow = 2, byrow = TRUE))`$, and $\boldsymbol{\beta} = (0.7, 0.9)$. Events are shown by the vertical dashes along the x-axis. An event in either stream increases the intensity of both streams, but an event in stream 1 has a much bigger effect on stream 2 ($\alpha_{21} = 0.6$) than an event in stream 2 has on stream 1 ($\alpha_{12} = 0.1$).
+
+```{r, fig.height = 4, fig.width = 8}
+#| echo: false
 mu <- c(0.5, 0.9)
 alpha <- matrix(c(0.2, 0.1 ,0.6, 0.5), byrow = TRUE, nrow = 2)
 beta <- c(0.7, 0.9)
 set.seed(1)
 tmp <- hawkes::simulateHawkes(mu, alpha, beta, 10)
-data <- data.frame(times = unlist(tmp), stream =  rep(c("Stream 1", "Stream 2"),
-                                                      times = sapply(tmp, length)))
-data <- data[order(data$times),]
+data <- data.frame(times = unlist(tmp), stream = rep(c("Stream 1", "Stream 2"), times = lengths(tmp)))
+data <- data[order(data$times), ]
 dat_2 <- data.frame(x = seq(min(data$times), max(data$times), length.out = 500))
-tst <- stelfi:::multi_hawkes_intensity(times = data$times, alpha = alpha,
-                      mu = mu, beta = beta,
-                      p = dat_2$x,stream = data$stream)
+tst <- stelfi:::multi_hawkes_intensity(times = data$times, alpha = alpha, mu = mu, beta = beta,
+                                       p = dat_2$x, stream = data$stream)
 dat_2$`Stream 1` <- tst[[1]]
 dat_2$`Stream 2` <- tst[[2]]
 data_2 <- tidyr::pivot_longer(dat_2, cols = 2:3, names_to = "stream")
-
-require(ggplot2)
 ggplot(data_2, aes(x = x, y = value, col = stream, group = stream)) +
     geom_line(linewidth = 1) +
-    geom_point(data = data, aes(x = times, y = rep(0, times = nrow(data)), col = stream, group = stream),
-               pch = "|", size = 5) +    theme_classic(base_size = 10) + ylab(expression(lambda[.]~"(t)")) +
-    xlab("") +
+    geom_point(data = data, aes(x = times, y = 0, col = stream, group = stream),
+               pch = "|", size = 5) +
+    theme_classic(base_size = 10) + ylab(expression(lambda[j]~"(t)")) + xlab("") +
     theme(legend.position = "top", legend.title = element_blank()) +
-    scale_color_manual(values =  c("black", "grey"), labels = c("Stream 1", "Stream 2")) +
+    scale_color_manual(values = c("black", "grey")) +
     scale_x_continuous(labels = c("t = 0","t = T"),
-                       breaks = seq(min(data$times), max(data$times), length.out = 2)) 
+                       breaks = seq(min(data$times), max(data$times), length.out = 2))
 ```
 
-## A simulated example
+### What your data need to look like {#sec-mhawkes-data}
 
-Simulating data from the `hawkes` package @hawkes_pkg with  $\mu = (0.5, 0.9)$, $\boldsymbol{\alpha}$ = $`r write_matrix(matrix(c(0.2, 0.1 ,0.6, 0.5), nrow = 2, byrow = TRUE))`$, and $\beta = (0.7, 0.9)$ over the time period $t\in [0,50)$.
+`fit_mhawkes()` needs two vectors of the same length:
+
+- `times`, the event times of **all streams combined**, sorted in ascending order with no ties (see @sec-hawkes-data; ties *between* streams are not allowed either); and
+- `stream`, a character vector giving the stream of each event, so `stream[i]` is the type of the event at `times[i]`.
+
+In addition:
+
+- **Streams are ordered alphabetically.** Parameters for "stream 1" refer to the first stream name in alphabetical order. Choose stream names so that this order is the one you want (e.g., `"A_small"` and `"B_large"`).
+- **The number of parameters grows quickly.** With $N$ streams there are $N + N^2 + N$ parameters (8 for two streams, 15 for three). Each stream needs a reasonable number of events, and in particular there need to be enough events in each stream to estimate the cross-excitation parameters. Two or three streams is usually plenty.
+- **Every event must belong to exactly one stream.** If your event types overlap, or the type is unknown for some events, these need to be dealt with before fitting.
+- The limitations of the univariate model apply to each stream: constant background rates, exponential decay, and an observation period from $0$ to the last event.
+
+## A simulated example {#sec-mhawkes-sim}
 
 ```{r}
+#| echo: false
 mu <- c(0.5, 0.9)
 alpha <- matrix(c(0.2, 0.1 ,0.6, 0.5), byrow = TRUE, nrow = 2)
 beta <- c(0.7, 0.9)
 set.seed(1)
 sim <- hawkes::simulateHawkes(mu, alpha, beta, 500)
+data <- data.frame(times = unlist(sim), stream = rep(c("Stream 1", "Stream 2"), times = lengths(sim)))
+data <- data[order(data$times), ]
+rownames(data) <- NULL
 ```
 
-To fit the model in `stelfi` the `fit_mhawkes()` function is used with the arguments `times` (a numeric vector of event times), `stream` (a character vector specifying the stream ID of each observation in `times`), and a lit of starting value for the parameters (`parameters`).
-
+Data were simulated (using the `hawkes` package, @hawkes_pkg) from a bivariate Hawkes process with the parameters given above over the time period $t \in [0, 500]$. The data are a data frame with one row per event, sorted by time:
 
 ```{r}
-## reformat data for fitting
-data <- data.frame(times = unlist(sim), stream =  rep(c("Stream 1", "Stream 2"),
-                                                      times = sapply(sim, length)))
-data <- data[order(data$times),]
-## list of starting values
-sv <- list(mu =  mu,alpha = alpha, beta = beta)
-fit <- stelfi::fit_mhawkes(times = data$times, stream = data$stream, parameters = sv)
-
-
-get_coefs(fit)
+head(data)
+table(data$stream)
 ```
 
-The fitted model is plotted using `show_multivariate_hawkes()` (default `type = "fitted"`)
+### Fitting the model using `stelfi`
 
-```{r, echo = TRUE,fig.height = 7,fig.width = 9}
-#| warning: false
+The model is fitted using `fit_mhawkes()` with the `times`, the `stream` of each event, and a list of starting values: a vector `mu`, a matrix `alpha`, and a vector `beta`. Because there are many parameters it is a good idea to ask the optimiser (`optim()`) to use the `"BFGS"` method, which uses the gradient that `TMB` calculates, rather than the default (Nelder-Mead), which can stop before reaching the maximum.
+
+```{r}
+sv <- list(mu = c(0.5, 0.5),
+           alpha = matrix(c(0.3, 0.3, 0.3, 0.3), nrow = 2),
+           beta = c(1, 1))
+fit <- fit_mhawkes(times = data$times, stream = data$stream, parameters = sv,
+                   method = "BFGS")
+stelfi <- get_coefs(fit)
+stelfi
+```
+
+The rows labelled `alpha_jk` are $\alpha_{jk}$, the effect of stream $k$ on stream $j$.
+
+### Comparison with the `hawkes` package
+
+The `hawkes` package (@hawkes_pkg) does not have a fitting function, but it does provide the negative log-likelihood (`likelihoodHawkes()`), which can be minimised using `optim()`. The parameters are estimated on the log scale (to keep them positive) and the standard errors are obtained from the Hessian using the delta method.
+
+```{r}
+nll <- function(p) {
+    hawkes::likelihoodHawkes(lambda0 = exp(p[1:2]),
+                             alpha = matrix(exp(p[3:6]), nrow = 2, byrow = TRUE),
+                             beta = exp(p[7:8]), history = sim)
+}
+start <- log(c(0.5, 0.5, 0.3, 0.3, 0.3, 0.3, 1, 1))
+opt <- optim(start, nll, method = "BFGS", hessian = TRUE)
+est <- exp(opt$par)
+se <- est * sqrt(diag(solve(opt$hessian))) ## delta method
+## order: mu_1, mu_2, alpha_11, alpha_12, alpha_21, alpha_22, beta_1, beta_2
+hk <- cbind(Estimate = est, "Std. Error" = se)
+```
+
+```{r}
+#| echo: false
+fmt <- function(x) paste0(round(x[1], 3), " (", round(x[2], 3), ")")
+## put the hawkes estimates in the same (column-major) order as stelfi
+hk <- hk[c(1, 2, 3, 5, 4, 6, 7, 8), ]
+params <- data.frame(Truth = c(mu, as.vector(alpha), beta),
+                     stelfi = apply(stelfi, 1, fmt),
+                     hawkes = apply(hk, 1, fmt))
+knitr::kable(t(params), col.names = c("$\\mu_1$", "$\\mu_2$", "$\\alpha_{11}$", "$\\alpha_{21}$",
+                                      "$\\alpha_{12}$", "$\\alpha_{22}$", "$\\beta_1$", "$\\beta_2$"),
+             escape = FALSE)
+```
+
+The two approaches give very similar estimates, and both recover the true values well. In particular both correctly identify that events in stream 1 strongly excite stream 2 ($\alpha_{21}$) but not the other way around ($\alpha_{12}$).
+
+### Plotting the fitted model
+
+The fitted intensities (top) and the data (bottom) are plotted using `show_multivariate_hawkes()`.
+
+```{r, fig.height = 7, fig.width = 9}
+#| message: false
 show_multivariate_hawkes(fit, type = "both")
 ```
+
+## An applied example: large and small earthquakes {#sec-mhawkes-applied}
+
+In @sec-marked-hawkes-applied the magnitude of each Canterbury earthquake was used as a mark. An alternative is to split the earthquakes into two streams, small (magnitude 3 to 4) and large (magnitude 4 and above), and ask how much each type triggers the other. The data are prepared exactly as before (times in days, jittered to remove ties).
+
+```{r}
+data(nz_earthquakes, package = "stelfi")
+eq <- data.frame(time = nz_earthquakes$origintime, magnitude = nz_earthquakes$magnitude)
+eq$days <- as.numeric(difftime(eq$time, min(eq$time), units = "days"))
+set.seed(1)
+eq$days <- eq$days + runif(nrow(eq), 0, 1 / (24 * 60))
+eq <- eq[order(eq$days), ]
+eq$days <- eq$days - eq$days[1]
+## streams (alphabetical order: "M3-4" is stream 1, "M4+" is stream 2)
+eq$size <- ifelse(eq$magnitude >= 4, "M4+", "M3-4")
+table(eq$size)
+```
+
+```{r}
+sv <- list(mu = c(0.3, 0.05),
+           alpha = matrix(c(1, 0.5, 0.5, 0.5), nrow = 2),
+           beta = c(2, 2))
+fit_eq <- fit_mhawkes(times = eq$days, stream = eq$size, parameters = sv, method = "BFGS")
+pars_eq <- get_coefs(fit_eq)
+pars_eq
+```
+
+```{r}
+## estimated parameters as a vector mu, a matrix alpha, and a vector beta
+mhawkes_pars <- function(fit) {
+    cf <- get_coefs(fit)[, 1]
+    N <- length(table(fit$env$data$stream))
+    list(mu = cf[1:N],
+         alpha = matrix(cf[(N + 1):(N + N^2)], nrow = N), ## column-major order
+         beta = cf[(N + N^2 + 1):(2 * N + N^2)])
+}
+```
+
+```{r}
+#| echo: false
+pe <- mhawkes_pars(fit_eq)
+br <- sweep(pe$alpha, 1, pe$beta, "/")
+```
+
+Here stream 1 is small earthquakes and stream 2 is large earthquakes. It is easiest to interpret the estimates as the expected number of events of each type directly triggered by one event, $\alpha_{jk}/\beta_j$:
+
+```{r}
+pe <- mhawkes_pars(fit_eq)
+branching <- sweep(pe$alpha, 1, pe$beta, "/") ## alpha_jk / beta_j
+dimnames(branching) <- list(triggered = c("small", "large"), trigger = c("small", "large"))
+round(branching, 3)
+```
+
+- A small earthquake triggers on average `r round(br[1, 1], 2)` further small earthquakes and only `r round(br[2, 1], 3)` large ones.
+- A large earthquake triggers on average `r round(br[1, 2], 2)` small earthquake(s) (see the note below) and `r round(br[2, 2], 2)` large ones.
+- After an earthquake, the rate of large earthquakes returns to its background level very quickly ($1/\hat{\beta}_2 =$ `r round(24 * 60 / pe$beta[2])` minutes), whereas the rate of small earthquakes stays raised for longer ($1/\hat{\beta}_1 =$ `r round(24 / pe$beta[1], 1)` hours).
+
+Notice that the estimate of $\alpha_{12}/\beta_1$ (small earthquakes triggered by a large one) is 1, the maximum allowed by `stelfi`. In reality large earthquakes trigger many more than one aftershock each, so this constraint is limiting the model here, and the estimate should be read as "at least one". The marked model (@sec-marked-hawkes-applied), where the effect of an earthquake grows continuously with its magnitude, does not have this limitation, and is probably a more natural model for these data.
+
+## Goodness-of-fit {#sec-mhawkes-gof}
+
+The ideas of @sec-gof-hawkes apply to each stream separately: if the model is correct then, for each stream $j$, the compensator $\Lambda_j(t) = \int_0^t \lambda_j(s) ds$ evaluated at the times of the stream $j$ events transforms them into a unit rate Poisson process, so the differences between consecutive values should be $\text{Exp}(1)$. Note that $\lambda_j(t)$ depends on the events in *all* streams. For @eq-mhawkes the compensator is
+
+$$\Lambda_j(t) = \mu_j t + \sum_{k=1}^N \frac{\alpha_{jk}}{\beta_j} \sum_{i:\tau_i < t,\ s_i = k} \left(1 - \text{exp}(-\beta_j (t - \tau_i))\right).$$
+
+`show_hawkes_GOF()` does not (yet) work for multivariate models, but the compensator differences are easily calculated with the function below (which uses the helper `mhawkes_pars()` defined in @sec-mhawkes-applied), and the tests from @sec-gof-hawkes applied to each stream.
+
+```{r}
+mhawkes_compensator_differences <- function(fit) {
+    times <- fit$env$data$times
+    stream <- fit$env$data$stream
+    pars <- mhawkes_pars(fit)
+    s <- as.integer(factor(stream))
+    out <- lapply(seq_along(pars$mu), function(j) {
+        comp <- sapply(times[s == j], function(t) {
+            prev <- times < t
+            pars$mu[j] * t + sum(pars$alpha[j, s[prev]] / pars$beta[j] *
+                                 (1 - exp(-pars$beta[j] * (t - times[prev]))))
+        })
+        diff(c(0, comp))
+    })
+    names(out) <- sort(unique(stream))
+    out
+}
+```
+
+For the simulated example (where the model is correct) there is no evidence of lack of fit in either stream:
+
+```{r}
+cd <- mhawkes_compensator_differences(fit)
+sapply(cd, function(x) c(KS = ks.test(x, "pexp")$p.value,
+                         Ljung_Box = Box.test(x, type = "Ljung")$p.value))
+```
+
+For the earthquake model:
+
+```{r}
+cd_eq <- mhawkes_compensator_differences(fit_eq)
+sapply(cd_eq, function(x) c(KS = ks.test(x, "pexp")$p.value,
+                            Ljung_Box = Box.test(x, type = "Ljung")$p.value))
+```
+
+QQ plots of the compensator differences for each stream against the $\text{Exp}(1)$ distribution are shown below.
+
+```{r, fig.height = 4, fig.width = 9}
+qq <- do.call(rbind, lapply(names(cd_eq), function(nm) {
+    pp <- ppoints(200)
+    data.frame(stream = nm, theoretical = qexp(pp), observed = quantile(cd_eq[[nm]], pp))
+}))
+ggplot(qq, aes(x = theoretical, y = observed)) +
+    geom_point() + geom_abline(intercept = 0, slope = 1, col = "red") +
+    facet_wrap(~stream, scales = "free") + theme_minimal() +
+    xlab("Theoretical quantiles, Exp(1)") + ylab("Observed quantiles")
+```
+
+The QQ plots show that the *distribution* of the compensator differences is reasonably close to $\text{Exp}(1)$ for both streams (apart from the longest gaps between small earthquakes), so the KS tests reject the model mainly because there are a lot of data. The Ljung-Box tests, however, give very small p-values: short gaps tend to follow short gaps, so the model is not fully capturing the clustering of earthquakes. As for the univariate and marked models (@sec-marked-hawkes-gof), the likely reasons are that exponential decay is too simple to describe aftershock sequences and that (as discussed above) the constraint on $\alpha_{12}$ prevents a large earthquake from triggering many small ones.

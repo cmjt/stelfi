@@ -107,6 +107,7 @@ fit_hspat_tmb <- function(times, locs, sf,
 #' @param parameters A list of named parameters:
 #' \itemize{
 #' \item \code{coefs}, logged base rate of the Hawkes process and coefficients of covariates
+#' (alternatively \code{mu}, the base rate, can be supplied, in which case covariate coefficients start at 0)
 #' \item \code{alpha}, intensity jump after an event occurrence
 #' \item \code{beta},  rate of exponential decay of intensity after event occurrence
 #' \item \code{tau},  \eqn{\tau} parameter for the GMRF (supplied only if \code{GMRF = TRUE})
@@ -188,6 +189,10 @@ fit_stelfi <-  function(times, locs, sf, smesh,  parameters, covariates,
                         nlminb_silent = TRUE, ...) {
     ## parameters
     coefs <- parameters[["coefs"]]
+    if (is.null(coefs) && !is.null(parameters[["mu"]])) {
+      coefs <- log(parameters[["mu"]])
+      if (!missing(covariates)) coefs <- c(coefs, numeric(ncol(covariates)))
+    }
     if (is.null(coefs)) {
       if (!missing(covariates)) {
         coefs <- numeric(ncol(covariates) + 1)
@@ -274,6 +279,19 @@ fit_stelfi <-  function(times, locs, sf, smesh,  parameters, covariates,
                             lmat = lmat, simple = as.numeric(time_independent),
                             tmb_silent = tmb_silent,
                             nlminb_silent = nlminb_silent, ...)
+    }
+    ## check the mesh is fine enough to integrate the estimated spatial kernel
+    if (time_independent) {
+        pl <- res$env$parList(par = res$env$last.par.best)
+        vol <- kernel_mesh_volume(locs = locs, nodes = smesh$loc[, 1:2], w = w,
+                                  xsigma = exp(pl$log_xsigma), ysigma = exp(pl$log_ysigma),
+                                  rho = tanh(pl$atanh_rho))
+        if (any(vol > 1.1)) {
+            warning(sprintf(paste0("The integral of the estimated spatial kernel over the domain, as approximated ",
+                                   "using smesh, exceeds 1.1 for %d of %d events (max %.2f). The mesh is likely too ",
+                                   "coarse relative to the estimated kernel; consider a finer mesh where there are events."),
+                            sum(vol > 1.1), length(vol), max(vol)))
+        }
     }
     return(res)
 }

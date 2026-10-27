@@ -59,7 +59,7 @@ multi_hawkes_intensity <- function(times, mu, alpha, beta,
         se[[k]] <- list()
         ## self-exciting components
         se[[k]] <- lapply(1:n_stream,
-                          function(n) hawkes_intensity(splt[[n]], 0, alpha[k, n], beta[n], p))
+                          function(n) hawkes_intensity(splt[[n]], 0, alpha[k, n], beta[k], p))
         lam_p[[k]] <- mu[k] + Reduce('+', se[[k]])
     }
     return(lam_p)
@@ -317,4 +317,22 @@ dual_mesh <- function(mesh) {
                          geometry = geometry))
     }
     else stop("It only works for R2!")
+}
+
+#' Internal function to approximate the integral of a bivariate normal kernel
+#' centred at each location over the domain, using the mesh weights
+#' @param locs A matrix of event locations.
+#' @param nodes A matrix of mesh node locations.
+#' @param w A vector of mesh weights (areas within the domain).
+#' @param xsigma,ysigma,rho Parameters of the bivariate normal kernel.
+#' @noRd
+kernel_mesh_volume <- function(locs, nodes, w, xsigma, ysigma, rho) {
+    locs <- as.matrix(locs)
+    sapply(seq_len(nrow(locs)), function(i) {
+        dx <- (nodes[, 1] - locs[i, 1]) / xsigma
+        dy <- (nodes[, 2] - locs[i, 2]) / ysigma
+        q <- (dx^2 - 2 * rho * dx * dy + dy^2) / (1 - rho^2)
+        dens <- exp(-q / 2) / (2 * pi * xsigma * ysigma * sqrt(1 - rho^2))
+        sum(w * dens)
+    })
 }

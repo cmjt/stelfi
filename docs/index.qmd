@@ -2,11 +2,20 @@
 
 ::: {.callout-warning}
 
-This book is a **work in progress**, please bear with me as I continue to update it.
-
-If you have any particular examples you'd like to be included please let me know @ c.jonestodd@auckland.ac.nz
+This book is a **work in progress**. If you have any particular examples you'd like to be included please let me know @ [cmjt@st-andrews.ac.uk](mailto:cmjt@st-andrews.ac.uk)
 
 :::
+
+
+Contributors to this ebook include:
+
+  + Charlotte M. Jones-Todd
+    + maintainer and main contributor
+  + André Leader
+    + case studies in @sec-iraq & @sec-lgcp-iraq-st
+  + Claude
+
+See @sec-intro for an overview of the models in `stelfi`, a guide to which chapter suits your data, and a summary of the key functions.
 
 ## Installation {.unnumbered}
 
@@ -32,10 +41,10 @@ devtools::install_github("cmjt/stelfi")
 ```
 
 
+## Citing `stelfi` {.unnumbered}
 
-::: {.callout-note}
 
 ```{r}
 citation("stelfi")
 ```
-:::
+

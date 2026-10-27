@@ -1,0 +1,195 @@
+# Simple `RTMB` templates {#sec-rtmb}
+
+```{r}
+#| echo: false
+#| message: false
+library(stelfi)
+library(ggplot2)
+```
+
+`stelfi` fits its models using likelihoods written in `C++` for `TMB` (@tmb). The `RTMB` package (@RTMB) lets you write the same kind of likelihood in `R`, while still getting automatic differentiation (fast and accurate gradients) and the Laplace approximation for random effects. This chapter gives simple `RTMB` versions of two of the `stelfi` likelihoods, a marked Hawkes process and a spatial LGCP, and checks that they give the same answers as `stelfi`. They are intended as a starting point if you want to see exactly what is being fitted or want to modify a model, for example to use a different self-excitement kernel, add covariates in a different way, or change a distribution.
+
+Every `RTMB` model follows the same pattern:
+
+1. write a function of the parameters that returns the **negative log-likelihood**, getting the data and parameters using `getAll()`, and marking any derived quantities you want standard errors for using `ADREPORT()`;
+2. create the model object using `MakeADFun()`, naming any random effects in `random`;
+3. minimise the negative log-likelihood using, e.g., `nlminb()`; and
+4. get estimates and standard errors using `sdreport()`.
+
+See the [`RTMB` introduction](https://cran.r-project.org/web/packages/RTMB/vignettes/RTMB-introduction.html) for more details.
+
+```{r}
+#| message: false
+library(RTMB)
+```
+
+## A marked Hawkes process {#sec-hawkesnll}
+
+The function below is the negative log-likelihood of the marked Hawkes process of @eq-marked-hawkes (an unmarked process is obtained by setting all marks to 1). For a Hawkes process with intensity $\lambda(t)$ observed over $[0, T]$ the log-likelihood is
+
+$$\log L = \sum_{i=1}^n \log \lambda(\tau_i) - \int_0^T \lambda(t) dt.$$
+
+The sum over past events in $\lambda(\tau_i)$ is computed recursively (the term `A` below), which makes the likelihood fast to evaluate. The parameters are transformed so that they can take any value during optimisation: $\mu$ and $\beta$ are on the log scale, and $\alpha$ is parameterised through the logit of the average branching ratio, which keeps $\alpha \bar{m} < \beta$ (@sec-marked-hawkes). As in `stelfi`, the integral is taken up to the last event.
+
+```{r}
+marked_hawkes_nll <- function(params) {
+    getAll(data, params)
+    mu <- exp(log_mu)
+    beta <- exp(log_beta)
+    alpha <- plogis(logit_abratio) * beta / mean(marks)
+    n <- length(times)
+    ## A[i] = sum over j < i of marks[j] * exp(-beta * (times[i] - times[j]))
+    A <- advector(numeric(n))
+    for (i in 2:n) {
+        A[i] <- exp(-beta * (times[i] - times[i - 1])) * (marks[i - 1] + A[i - 1])
+    }
+    ## sum of log intensities at the events
+    loglik <- sum(log(mu + alpha * A))
+    ## minus the integral of the intensity from 0 to the last event
+    loglik <- loglik - mu * times[n] - (alpha / beta) * (sum(marks) - marks[n] - A[n])
+    ADREPORT(mu)
+    ADREPORT(alpha)
+    ADREPORT(beta)
+    -loglik
+}
+```
+
+This is applied to the Canterbury earthquakes with marks $\text{exp}(\text{magnitude} - 3)$, prepared exactly as in @sec-marked-hawkes-applied.
+
+```{r}
+data(nz_earthquakes, package = "stelfi")
+eq <- data.frame(time = nz_earthquakes$origintime, magnitude = nz_earthquakes$magnitude)
+eq$days <- as.numeric(difftime(eq$time, min(eq$time), units = "days"))
+set.seed(1)
+eq$days <- eq$days + runif(nrow(eq), 0, 1 / (24 * 60))
+eq <- eq[order(eq$days), ]
+eq$days <- eq$days - eq$days[1]
+eq$mark <- exp(eq$magnitude - 3)
+```
+
+```{r}
+data <- list(times = eq$days, marks = eq$mark)
+params <- list(log_mu = log(0.3), logit_abratio = 0, log_beta = log(2))
+obj <- MakeADFun(marked_hawkes_nll, params, silent = TRUE)
+opt <- nlminb(obj$par, obj$fn, obj$gr)
+summary(sdreport(obj), "report")
+```
+
+The same model fitted using `stelfi`:
+
+```{r}
+fit <- fit_hawkes(times = eq$days, parameters = c(mu = 0.3, alpha = 1, beta = 2), marks = eq$mark)
+get_coefs(fit)
+```
+
+The estimates agree (up to small differences due to the optimiser).
+
+Some ideas for modifying the template: replace the exponential kernel with another kernel (you will need its integral, and for most kernels the recursive calculation of `A` no longer works, so the sum has to be over all pairs of events, which is slower); let the background vary with time (as in @sec-hawkes-cbf); or let the effect of the mark be estimated, e.g., using `marks^gamma` with $\gamma$ an additional parameter.
+
+## A spatial LGCP {#sec-lgcpnll}
+
+Given events $s_1, ..., s_n$ in a study region $D$, the log-likelihood of a Poisson process with intensity $\lambda(s) = \text{exp}(\beta_0 + G(s))$, conditional on the random field, is
+
+$$\log L = \sum_{j=1}^n \log \lambda(s_j) - \int_D \lambda(s)\,ds.$$
+
+The field is represented on the mesh (@sec-mesh) as $G(s) = \sum_i \psi_i(s) x_i$, where the $\psi_i$ are piecewise linear basis functions and the values at the mesh nodes $\boldsymbol{x}$ have a multivariate normal distribution with mean zero and sparse precision matrix
+
+$$\boldsymbol{Q} = \tau^2(\kappa^4 \boldsymbol{C} + 2\kappa^2 \boldsymbol{G} + \boldsymbol{G}\boldsymbol{C}^{-1}\boldsymbol{G}),$$
+
+where $\boldsymbol{C}$ and $\boldsymbol{G}$ are matrices that depend only on the mesh (returned by `fmesher::fm_fem()`). Two more ingredients are needed:
+
+- a sparse "projection" matrix $\boldsymbol{A}$ that gives the value of the field at any set of locations from the values at the mesh nodes, i.e., $G(s_j) = (\boldsymbol{A}\boldsymbol{x})_j$ (from `fmesher::fm_basis()`); and
+- integration points $u_k$ with weights $w_k$ (from `fmesher::fm_int()`), so that the integral over the study region is approximated by $\int_D \lambda(s)ds \approx \sum_k w_k \lambda(u_k)$. The weights sum to the area of $D$.
+
+The random field $\boldsymbol{x}$ is a random effect: it is integrated out of the likelihood using the Laplace approximation by naming it in the `random` argument of `MakeADFun()`.
+
+The sasquatch data are used, prepared exactly as in @sec-sasquatch.
+
+```{r}
+#| message: false
+#| warning: false
+data("sasquatch", package = "stelfi")
+sf::sf_use_s2(FALSE)
+us <- maps::map("usa", fill = TRUE, plot = FALSE) |>
+    sf::st_as_sf() |>
+    sf::st_make_valid() |>
+    sf::st_transform(crs = 5070)
+us_km <- sf::st_sf(geometry = sf::st_union(sf::st_geometry(us)) / 1000)
+sf::st_crs(us_km) <- NA ## planar km, matching the mesh
+locs <- sf::st_transform(sasquatch, crs = 5070) |>
+    sf::st_coordinates() |>
+    as.data.frame()
+names(locs) <- c("x", "y")
+locs <- locs / 1000
+smesh <- fmesher::fm_mesh_2d(loc = locs[, 1:2], max.edge = c(200, 500), cutoff = 100)
+```
+
+The data needed by the template are the three mesh matrices, the projection matrices for the events and for the integration points, and the integration weights.
+
+```{r}
+#| message: false
+fem <- fmesher::fm_fem(smesh, order = 2)
+as_T <- function(M) as(as(M, "generalMatrix"), "TsparseMatrix") ## sparse format used by RTMB
+ips <- fmesher::fm_int(smesh, samplers = us_km)
+data <- list(C = as_T(fem$c0), G1 = as_T(fem$g1), G2 = as_T(fem$g2),
+             A_pts = fmesher::fm_basis(smesh, loc = as.matrix(locs)),
+             A_ips = fmesher::fm_basis(smesh, loc = sf::st_coordinates(ips)[, 1:2]),
+             w = ips$weight)
+```
+
+```{r}
+lgcp_nll <- function(params) {
+    getAll(data, params)
+    tau <- exp(log_tau)
+    kappa <- exp(log_kappa)
+    ## precision matrix of the field at the mesh nodes
+    Q <- tau^2 * (kappa^4 * C + 2 * kappa^2 * G1 + G2)
+    ## the random field: a multivariate normal with precision Q
+    nll <- -dgmrf(x, 0, Q, log = TRUE)
+    ## log intensity at the events and at the integration points
+    eta_pts <- beta + A_pts %*% x
+    eta_ips <- beta + A_ips %*% x
+    ## minus (sum of log intensity at events - integral of the intensity)
+    nll <- nll - sum(eta_pts) + sum(w * exp(eta_ips))
+    ## range and standard deviation of the field
+    range <- sqrt(8) / kappa
+    stdev <- 1 / sqrt(4 * pi * kappa^2 * tau^2)
+    ADREPORT(beta)
+    ADREPORT(range)
+    ADREPORT(stdev)
+    nll
+}
+```
+
+```{r}
+#| message: false
+params <- list(beta = log(nrow(locs) / sum(data$w)), log_tau = log(1),
+               log_kappa = log(1), x = rep(0, smesh$n))
+obj <- MakeADFun(lgcp_nll, params, random = "x", silent = TRUE)
+opt <- nlminb(obj$par, obj$fn, obj$gr)
+sdr <- sdreport(obj)
+summary(sdr, "report")
+```
+
+The same model fitted using `stelfi`:
+
+```{r}
+#| message: false
+fit <- fit_lgcp(locs = locs, sf = us_km, smesh = smesh,
+                parameters = c(beta = log(nrow(locs) / sum(data$w)), log_tau = log(1), log_kappa = log(1)))
+get_coefs(fit)[c("beta", "range", "stdev"), ]
+```
+
+The estimates are close, but not identical, because the two implementations approximate the likelihood slightly differently: `stelfi` counts the events closest to each mesh node and gives each node the area of the study region closest to it, whereas the template uses the exact event locations and integration points. The estimated field (the values of the random effects at the optimum) can be extracted from the `sdreport()` and plotted as before.
+
+```{r, fig.height = 4, fig.width = 8}
+#| message: false
+x_hat <- as.list(sdr, "Estimate")$x
+show_field(x_hat, smesh = smesh, sf = us_km, clip = TRUE) + theme_void()
+```
+
+Some ideas for modifying the template:
+
+- **covariates**: replace `beta` with a vector of coefficients and the intercept in `eta_pts` and `eta_ips` with a design matrix times that vector (e.g., `X_pts %*% beta`), with the covariates evaluated at the events and at the integration points;
+- **sampling effort**: add the log of a known effort surface (evaluated at the events and integration points) to `eta_pts` and `eta_ips` as an offset; and
+- **marks**: add the log-likelihood of each mark, with a linear predictor that includes the field at the events (`A_pts %*% x`), to give a marked LGCP (@sec-mlgcp).

@@ -55,11 +55,12 @@ sim_lgcp <- function(parameters, sf,
         atanh_rho <- parameters[["atanh_rho"]]
         if (length(atanh_rho) != 1)
             stop("atanh_rho must be a single number")
+        k <- length(tmesh$loc)
         if (!missing(covariates)) if (nrow(covariates) != nrow(smesh$loc) * k)
                                       stop("nrow.covariates should be size of spatial mesh by number of time knots")
-        k <- length(tmesh$loc)
+        ## dummy locations (only the structure of the data is used), one set per time knot
         locs <- matrix(0, nrow = k * 10, ncol = 2)
-        locs <- data.frame(x = locs[, 1], y = locs[, 2], t = rep(0:(k - 1), each = 10))
+        locs <- data.frame(x = locs[, 1], y = locs[, 2], t = rep(tmesh$loc, each = 10))
         tmp <- prep_data_lgcp(locs = locs, sf = sf, smesh = smesh, tmesh = tmesh)
         
     } else {
