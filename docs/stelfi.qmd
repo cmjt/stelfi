@@ -1,7 +1,8 @@
 # Spatiotemporal self-exciting models {#sec-stelfi}
 
 ```{r}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Packages used in this chapter"
 #| message: false
 library(stelfi)
 library(ggplot2)
@@ -45,8 +46,11 @@ Things to be aware of:
 
 ## A simulated example {#sec-stelfi-sim}
 
+Data were simulated from @eq-stelfi within the (elliptical) study region of the `xyt` dataset (see @sec-data), with background rate $\mu = 1$, $\alpha = 2$ and $\beta = 4$ (so each event triggers on average $2/4 = 0.5$ events), and a kernel with $\sigma_x = 0.5$, $\sigma_y = 0.25$ and $\rho = 0$ (so triggering spreads twice as far in the x direction as in the y direction).
+
+`stelfi` does not have a separate simulation function for this model. Instead, the fitted model object returned by `fit_stelfi()` has a `simulate()` method that simulates a new point pattern, over the same study region and time period, from the model with any given parameter values. So below the model is first fitted to the `xyt` data (the estimates themselves are not used), and the `simulate()` method is then called with the true parameter values. These must be given on the scale used internally by `stelfi`: the log of $\mu$ (`coefs`), the logit of $\alpha/\beta$, the logs of $\beta$, $\sigma_x$ and $\sigma_y$, and $\text{atanh}(\rho)$.
+
 ```{r}
-#| echo: false
 #| message: false
 data(xyt, package = "stelfi")
 domain <- sf::st_as_sf(xyt$window)
@@ -59,12 +63,13 @@ truth <- c(mu = 1, alpha = 2, beta = 4, xsigma = 0.5, ysigma = 0.25, rho = 0)
 set.seed(2)
 sim <- fit0$simulate(par = c(coefs = log(1), logit_abratio = qlogis(2 / 4), log_beta = log(4),
                              log_xsigma = log(0.5), log_ysigma = log(0.25), atanh_rho = 0))
+## sort the events by time
 ord <- order(sim$times)
 locs <- data.frame(x = sim$locs[ord, 1], y = sim$locs[ord, 2])
 times <- sim$times[ord]
 ```
 
-Data were simulated from @eq-stelfi within the (elliptical) study region of the `xyt` dataset (see @sec-data), with background rate $\mu = 1$, $\alpha = 2$ and $\beta = 4$ (so each event triggers on average $2/4 = 0.5$ events), and a kernel with $\sigma_x = 0.5$, $\sigma_y = 0.25$ and $\rho = 0$ (so triggering spreads twice as far in the x direction as in the y direction). The data are a vector of `r length(times)` sorted event times and a data frame of the corresponding locations:
+The data are a vector of `r length(times)` sorted event times and a data frame of the corresponding locations:
 
 ```{r}
 head(times)
@@ -82,7 +87,7 @@ ggplot(data.frame(locs, times), aes(x = x, y = y, size = times)) +
 
 ### Fitting the model using `stelfi`
 
-The study region is an `sf` polygon (here taken from the `xyt` data) and the mesh follows its boundary.
+The study region is an `sf` polygon (here taken from the `xyt` data) and the mesh follows its boundary. These are the same as those used to simulate the data, but are repeated below so that the code needed to fit the model is all in one place.
 
 ```{r}
 domain <- sf::st_as_sf(xyt$window)
@@ -109,7 +114,8 @@ bow
 ```
 
 ```{r}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Code for this table"
 fmt <- function(x) paste0(round(x[1], 3), " (", round(x[2], 3), ")")
 params <- data.frame(
     Truth = c(truth, truth["alpha"] / truth["beta"]),
@@ -259,7 +265,8 @@ summary(vol)
 ```
 
 ```{r}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Code"
 mesh_ok <- mean(abs(vol[, "mesh"] - vol[, "monte_carlo"]) < 0.1)
 ```
 

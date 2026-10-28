@@ -32,14 +32,14 @@ The table below summarises which model suits which type of data, and in which ch
 
 ## How the model chapters are organised
 
-Each of the model fitting chapters (@sec-hawkes to @sec-stelfi) follows the same structure:
+Each of the model fitting chapters (@sec-hawkes to @sec-stelfi, other than @sec-mesh on meshes) follows the same structure:
 
 1. **The model and your data**: a short description of the model, what the parameters mean, and what your data need to look like (including common problems and limitations).
-2. **A simulated example**: data are simulated from the model with *known* parameter values. The model is then fitted using `stelfi` and, where one exists, a competing `R` package, and the estimates from both are compared with each other and with the truth. The code used to simulate the data is not shown (this book is about fitting models to your data, not simulating them), but the structure of the simulated data is.
+2. **A simulated example**: data are simulated from the model with *known* parameter values. The model is then fitted using `stelfi` and, where one exists, a competing `R` package, and the estimates from both are compared with each other and with the truth. The code used to simulate the data is shown, so that every chapter is fully reproducible, and so that you can change the parameter values (or the amount of data) and see how well the model is estimated.
 3. **An applied example**: the model is fitted to one of the datasets that come with `stelfi` (see @sec-data) and the estimates are interpreted.
 4. **Goodness-of-fit**: some procedures to check whether the fitted model adequately describes the data.
 
-The chapters build on one another: the univariate Hawkes chapter (@sec-hawkes) introduces ideas used in all of the Hawkes-type chapters, and the spatial LGCP chapter (@sec-lgcp), in particular the section on meshes (@sec-mesh), introduces ideas used in all of the spatial chapters. If you are new to these models, start there.
+The chapters build on one another: the univariate Hawkes chapter (@sec-hawkes) introduces ideas used in all of the Hawkes-type chapters, and the chapter on meshes (@sec-mesh) and the spatial LGCP chapter (@sec-lgcp) introduce ideas used in all of the spatial chapters. If you are new to these models, start there.
 
 ## A typical `stelfi` workflow
 

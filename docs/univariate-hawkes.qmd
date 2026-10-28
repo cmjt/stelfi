@@ -1,7 +1,8 @@
 # Univariate Hawkes process {#sec-hawkes}
 
 ```{r}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Packages used in this chapter"
 #| message: false
 library(stelfi)
 library(ggplot2)
@@ -27,7 +28,8 @@ Two derived quantities are usually of most interest:
 Plotted below is the conditional intensity of a Hawkes process with $\mu = 0.5$, $\alpha = 1$, and $\beta = 1.5$. The events are shown by the vertical dashes along the x-axis. The intensity jumps by $\alpha$ each time an event occurs and decays exponentially back towards $\mu$ if no event occurs.
 
 ```{r, fig.height = 4, fig.width = 8}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Code for this figure"
 mu <- 0.5; alpha <- 1; beta <- 1.5
 tim <- sim_hawkes(mu = mu, alpha = alpha, beta = beta, n = 15)
 p <- seq(min(tim), max(tim), length.out = 1000)
@@ -55,12 +57,13 @@ As a rough guide you need at least a hundred or so events to estimate the three 
 
 ## A simulated example {#sec-hawkes-sim}
 
+Data were simulated from a Hawkes process with $\mu = 1.3$, $\alpha = 0.4$, and $\beta = 1.5$ over $t \in [0, 500]$ (so the true branching ratio is $\alpha/\beta =$ `r round(0.4/1.5, 3)`) using `sim_hawkes()`. Here `n` is the end of the observation period (not the number of events), and `seed` sets the random number seed so that the same data are simulated every time.
+
 ```{r}
-#| echo: false
-times <- sim_hawkes(mu = 1.3, alpha = 0.4, beta = 1.5, n = 500)
+times <- sim_hawkes(mu = 1.3, alpha = 0.4, beta = 1.5, n = 500, seed = 123)
 ```
 
-Data were simulated from a Hawkes process with $\mu = 1.3$, $\alpha = 0.4$, and $\beta = 1.5$ over $t \in [0, 500]$ (so the true branching ratio is $\alpha/\beta =$ `r round(0.4/1.5, 3)`). The data are simply a sorted numeric vector of `r length(times)` event times:
+The data are simply a sorted numeric vector of `r length(times)` event times:
 
 ```{r}
 head(times)
@@ -108,7 +111,8 @@ bow
 The table below gives the estimates (standard errors in brackets) from each package alongside the true values. Note that `hawkesbow` estimates the branching ratio $\alpha/\beta$ directly, rather than $\alpha$.
 
 ```{r}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Code for this table"
 fmt <- function(x) paste0(round(x[1], 3), " (", round(x[2], 3), ")")
 params <- data.frame(Truth = c(1.3, 0.4, 1.5, round(0.4/1.5, 3)),
                      stelfi = c(apply(stelfi, 1, fmt), "-"),
@@ -139,7 +143,8 @@ length(retweets_niwa) - length(times) ## number of dropped duplicates
 The histogram below shows the number of retweets per hour from the original tweet to the time (just over two days later) that the owner of the USB stick came forward.
 
 ```{r, fig.height = 4, fig.width = 8}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Code for this figure"
 start <- lubridate::ymd_hms("2019-02-05 02:27:07")
 end <- lubridate::ymd_hms("2019-02-07 06:50:08")
 hist(retweets_niwa, breaks = "hours", axes = FALSE,
@@ -187,8 +192,8 @@ Small p-values indicate that the model does not describe the data well. With lar
 The compensator differences can be extracted using `compensator_differences()` and tested directly. For the model fitted to the simulated data in @sec-hawkes-sim (where the model is correct):
 
 ```{r}
-#| echo: false
-times_sim <- sim_hawkes(mu = 1.3, alpha = 0.4, beta = 1.5, n = 500)
+## the same simulated data as in the simulated example (same parameters and seed)
+times_sim <- sim_hawkes(mu = 1.3, alpha = 0.4, beta = 1.5, n = 500, seed = 123)
 fit_sim <- fit_hawkes(times = times_sim, parameters = c(mu = 1, alpha = 0.5, beta = 2))
 ```
 
@@ -221,14 +226,15 @@ The compensator follows the observed number of retweets closely (top left), so t
 
 In some applications the background rate itself changes over time, for example with the time of day or the season. Ignoring this can make it look as though there is self-excitement when really events are just more common at certain times. A Hawkes process with a time-varying background replaces $\mu$ in @eq-hawkes with a function $\mu(t)$. This model is fitted in `stelfi` using `fit_hawkes_cbf()` (custom background function).
 
+Data were simulated (using `hawkesbow`, @hawkesbow) over 1000 days from a Hawkes process with a yearly cycle in the background, $\mu(t) = A + B\,\text{sin}(\frac{2 \pi t}{365.25})$, with $A = 1$ and $B = 0.5$, and self-excitement parameters $\alpha = 1$ and $\beta = 2$. `hawkesbow::hawkes()` parameterises the exponential kernel by the branching ratio (`repr` $= \alpha/\beta$) and the decay rate (`rate` $= \beta$), and `M` is an upper bound on the background function, used to simulate the background events by thinning.
+
 ```{r}
-#| echo: false
-mut <- function(t) 1 + 0.5 * sin((2 * pi * t) / 365.25)
+mut <- function(t) 1 + 0.5 * sin((2 * pi * t) / 365.25) ## the background rate mu(t)
 set.seed(1)
 times <- hawkesbow::hawkes(1000, fun = mut, M = 1.5, repr = 0.5, family = "exp", rate = 2)$p
 ```
 
-Data were simulated (using `hawkesbow`, @hawkesbow) over 1000 days from a Hawkes process with a yearly cycle in the background, $\mu(t) = A + B\,\text{sin}(\frac{2 \pi t}{365.25})$, with $A = 1$ and $B = 0.5$, and self-excitement parameters $\alpha = 1$ and $\beta = 2$. As before the data are a sorted vector of `r length(times)` event times.
+As before the data are a sorted vector of `r length(times)` event times.
 
 To fit this model you need to supply both $\mu(t)$ (`background`) and its integral $\int_0^t \mu(s) ds$ (`background_integral`) as functions of a vector of parameters and time. To ensure $\mu(t) > 0$ the parameters are transformed: $A = e^{x}$ and $B = \text{logit}^{-1}(y) A$, so that $0 < B < A$.
 
@@ -257,7 +263,8 @@ get_coefs(fit)
 `get_coefs()` returns $\alpha$ and $\beta$ as usual, the (transformed) background parameters are in `fit$background_parameters`. These are transformed back to $A$ and $B$ below and compared with the truth.
 
 ```{r}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Code for this table"
 ab <- get_coefs(fit)[1:2, 1]
 A <- exp(fit$background_parameters[1])
 B <- plogis(fit$background_parameters[2]) * A

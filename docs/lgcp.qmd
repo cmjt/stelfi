@@ -1,7 +1,8 @@
 # Spatial and spatiotemporal log-Gaussian Cox processes {#sec-lgcp}
 
 ```{r}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Packages used in this chapter"
 #| message: false
 library(stelfi)
 library(ggplot2)
@@ -18,7 +19,8 @@ where $\beta_0$ is the **intercept**, the log intensity at an "average" location
 Plotted below is a realisation of an LGCP within a disc shaped region, overlain on the random field $G(s)$: events are more common where the field is high (yellow).
 
 ```{r, fig.height = 5, fig.width = 5}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Code for this figure"
 #| message: false
 sf <- sf::st_as_sf(spatstat.geom::disc())
 smesh <- fmesher::fm_mesh_2d(loc.domain = sf::st_coordinates(sf)[, 1:2], max.edge = 0.2, cutoff = 0.1)
@@ -39,32 +41,7 @@ The random field is described by two parameters, which `stelfi` reports on an in
 
 Internally the field is parameterised by $\tau$ and $\kappa$, so `get_coefs()` reports `log_tau` and `log_kappa` (the parameters that are actually estimated) along with `range` $= \sqrt{8}/\kappa$ and `stdev` $= 1/\sqrt{4\pi\kappa^2\tau^2}$. Following @spde, the field has a Matérn covariance function with smoothness $\nu = 1$, and it is represented using the stochastic partial differential equation (SPDE) approach on a triangulation (a *mesh*) of the study region.
 
-### Meshes {#sec-mesh}
-
-The SPDE approach represents the continuous random field $G(s)$ by its values at the nodes (vertices) of a triangulation of the study region, and interpolates linearly between nodes. The mesh therefore controls both how finely the field can vary in space and how much computation is needed. In `stelfi` (and `inlabru`) the mesh is built using the `fmesher` package, the key arguments of `fmesher::fm_mesh_2d()` are:
-
-- `loc`: locations (usually the observed events) that the mesh is built around, so there are mesh nodes close to the data;
-- `boundary`: (optional) a polygon the mesh should follow, typically the study region (converted using `fmesher::fm_as_segm()`);
-- `max.edge`: the largest allowed triangle edge length. A vector of length two, `c(inner, outer)`, gives a finer mesh inside the region and a coarser mesh in an outer extension, which reduces the inflated variance of the field near the edge of the mesh; and
-- `cutoff`: the minimum allowed distance between nodes. Locations closer together than this share a node, which avoids lots of tiny triangles where events are clustered.
-
-There is a trade-off. A mesh that is too coarse cannot capture spatial variation at a scale smaller than its triangles, while a mesh that is too fine is slow and memory-hungry and can make fitting unstable. A common rule of thumb is that `max.edge` (inner) should be no more than about a fifth of the range of the field. Since the range is not known before fitting, it is good practice to fit the model using a few meshes and check that the conclusions do not change, see @sec-mesh-compare. The mesh can be plotted using `mesh_2_sf()` and `ggplot2` (e.g., @sec-iraq).
-
-Note that the mesh is only used to represent the random field (and to approximate the integral of the intensity over the study region). The study region itself is given by the `sf` argument of `fit_lgcp()`, and the parts of the mesh outside it do not contribute any area.
-
-#### Checking the quality of a mesh {#sec-meshmetrics .unnumbered}
-
-Long thin triangles, or triangles that vary a lot in size, can cause numerical problems. The function `meshmetrics()` returns an `sf` object with geometric summaries of each triangle, including its area, its interior angles, the radius-edge ratio (circumradius divided by the shortest edge) and a `quality` measure, $\frac{4\sqrt{3}|A|}{\sum_{i = 1}^3 L_i^2}$ where $A$ is the area and $L_i$ the edge lengths, which is 1 for an equilateral triangle and approaches 0 for a degenerate one. Plotting these is a quick way to spot "bad" triangles. Below this is done for the example mesh `horse_mesh` (see @sec-data).
-
-```{r, fig.height = 4, fig.width = 9}
-#| message: false
-data("horse_mesh", package = "stelfi")
-metrics <- meshmetrics(horse_mesh)
-patchwork::wrap_plots(
-    ggplot(metrics, aes(fill = area)) + geom_sf() + theme_void(),
-    ggplot(metrics, aes(fill = quality)) + geom_sf() + theme_void(),
-    nrow = 1)
-```
+The mesh controls how finely the field can vary in space and how much computation is needed, so it is an important part of fitting any spatial model in `stelfi`. How to build a mesh, and how to check whether it is adequate, is covered in @sec-mesh.
 
 ### What your data need to look like {#sec-lgcp-data}
 
@@ -86,8 +63,9 @@ Things to be aware of:
 
 ## A simulated example {#sec-lgcp-sim}
 
+Data were simulated from an LGCP (using `spatstat`, @spatstat) within a disc of radius 1, with intercept $\beta_0 = 4$, field standard deviation $\sigma = 1$, and range $r = \sqrt{8} \times 0.2 \approx$ `r round(sqrt(8) * 0.2, 3)`. In `spatstat.random::rLGCP()` the field has a Matérn covariance with smoothness `nu` $= 1$ (the same as in `stelfi`), `mu` is the intercept, `var` is the variance of the field ($\sigma^2$), and `scale` is $1/\kappa$, so that the range is $\sqrt{8} \times$ `scale`.
+
 ```{r}
-#| echo: false
 #| message: false
 #| warning: false
 win <- spatstat.geom::disc()
@@ -97,7 +75,7 @@ locs <- data.frame(x = sim$x, y = sim$y)
 truth <- c(beta = 4, range = sqrt(8) * 0.2, sigma = 1)
 ```
 
-Data were simulated from an LGCP (using `spatstat`, @spatstat) within a disc of radius 1, with intercept $\beta_0 = 4$, field standard deviation $\sigma = 1$, and range $r =$ `r round(truth[2], 3)`. The data are a data frame of `r nrow(locs)` event locations:
+The data are a data frame of `r nrow(locs)` event locations:
 
 ```{r}
 head(locs)
@@ -111,7 +89,8 @@ sf <- sf::st_sf(geometry = sf::st_geometry(sf::st_as_sf(spatstat.geom::disc())))
 ```
 
 ```{r, fig.height = 5, fig.width = 6}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Code for this figure"
 xs <- attr(sim, "Lambda")$xcol; ys <- attr(sim, "Lambda")$yrow
 pxl <- expand.grid(x = xs, y = ys)
 pxl$rf <- log(as.vector(t(attr(sim, "Lambda")$v))) - 4 ## minus the intercept
@@ -182,7 +161,8 @@ ss$modelpar
 ```
 
 ```{r}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Code for this table"
 fmt <- function(x) paste0(round(x[1], 3), " (", round(x[2], 3), ")")
 params <- data.frame(Truth = round(truth, 3),
                      stelfi = apply(stelfi[c("beta", "range", "stdev"), ], 1, fmt),
@@ -192,7 +172,7 @@ params <- data.frame(Truth = round(truth, 3),
 knitr::kable(t(params), col.names = c("$\\beta_0$", "$r$", "$\\sigma$"), escape = FALSE)
 ```
 
-`stelfi` and `inlabru` give very similar estimates, as they fit the same model on the same mesh. `spatstat` uses a very different method but tells a similar story. The intercept is well estimated by all three, while the range and the standard deviation of the field are much harder to pin down from a single dataset (note the larger standard errors). How well `stelfi` and `inlabru` recover the parameters *on average* over many simulated datasets is explored in @sec-recovery.
+`stelfi` and `inlabru` give very similar estimates, as they fit the same model on the same mesh. `spatstat` uses a very different method but tells a similar story. The intercept is well estimated by all three, while the range and the standard deviation of the field are much harder to pin down from a single dataset (note the larger standard errors).
 
 ## Applied examples
 
@@ -282,62 +262,79 @@ points_km <- sf::st_as_sf(locs_km, coords = c("x", "y")) ## used by inlabru
 
 #### Building the meshes {.unnumbered}
 
-Three meshes are built, each following the boundary of Iraq (`boundary`) and placed around the events, with a finer inner and coarser outer part (`max.edge = c(inner, outer)`).
+To show how much the mesh matters, three very different meshes are built. Each follows the boundary of Iraq (`boundary`), is placed around the events, and has a finer inner and coarser outer part (`max.edge = c(inner, outer)`).
+
+- **Too coarse** (`max.edge = c(200, 400)`, `cutoff = 100`): triangles a couple of hundred km across, larger than many of the clusters of attacks;
+- **Adequate** (`max.edge = c(40, 150)`, `cutoff = 20`): triangles a few tens of km across. The relatively large `cutoff` means that events in the same town share a node, so there are no very small triangles; and
+- **Too fine** (`max.edge = c(10, 100)`, `cutoff = 1`): there is a node at almost every distinct event location, so there are many tiny triangles where attacks are clustered.
 
 ```{r}
 #| message: false
-mesh_args <- list(coarse = list(max.edge = c(60, 200), cutoff = 15),
-                  medium = list(max.edge = c(40, 200), cutoff = 5),
-                  fine   = list(max.edge = c(10, 100), cutoff = 2))
+mesh_args <- list(too_coarse = list(max.edge = c(200, 400), cutoff = 100),
+                  adequate   = list(max.edge = c(40, 150), cutoff = 20),
+                  too_fine   = list(max.edge = c(10, 100), cutoff = 1))
 meshes <- lapply(mesh_args, function(a) {
     fmesher::fm_mesh_2d(loc = locs_km[, 1:2],
                         boundary = fmesher::fm_as_segm(iraq_sf_km),
                         max.edge = a$max.edge, cutoff = a$cutoff)
 })
-sapply(meshes, function(m) m$n) ## number of nodes in each mesh
+## number of nodes, and the size of the triangles (km^2)
+t(sapply(meshes, function(m) {
+    area <- as.numeric(sf::st_area(mesh_2_sf(m)))
+    c(nodes = m$n, triangles = length(area), median_area = round(median(area)),
+      smallest_area = round(min(area), 2), below_10km2 = sum(area < 10))
+}))
 ```
 
-The medium mesh, the events, and the boundary of Iraq (blue) are shown below.
+(The triangle areas are calculated directly from `mesh_2_sf()`, since `meshmetrics()` (@sec-meshmetrics) is slow for a mesh with tens of thousands of triangles.) The three meshes, the events, and the boundary of Iraq (blue) are shown below.
 
-```{r, fig.height = 6, fig.width = 6}
+```{r, fig.height = 4, fig.width = 10}
 #| message: false
-ggplot() +
-    geom_sf(data = mesh_2_sf(meshes$medium), fill = NA) +
-    geom_sf(data = iraq_sf_km, fill = NA, col = "blue", linewidth = 1) +
-    geom_sf(data = points_km, size = 0.5) +
-    theme_void()
+patchwork::wrap_plots(lapply(names(meshes), function(m) {
+    ggplot() +
+        geom_sf(data = mesh_2_sf(meshes[[m]]), fill = NA, linewidth = 0.1) +
+        geom_sf(data = iraq_sf_km, fill = NA, col = "blue", linewidth = 0.8) +
+        geom_sf(data = points_km, size = 0.2, col = "red") +
+        theme_void() + ggtitle(m)
+}), nrow = 1)
 ```
 
 #### Fitting with `stelfi` {.unnumbered}
+
+The model is fitted using each mesh, and the time taken (in seconds) is recorded using `system.time()`.
 
 ```{r}
 #| message: false
 area_km2 <- as.numeric(sf::st_area(iraq_sf_km))
 beta_start <- log(nrow(locs_km) / area_km2)
 start <- c(beta = beta_start, log_tau = log(1), log_kappa = log(1))
-fits_stelfi <- lapply(meshes, function(m) {
-    fit_lgcp(locs = locs_km, sf = iraq_sf_km, smesh = m, parameters = start)
-})
-get_coefs(fits_stelfi$medium)
+fits_stelfi <- list(); time_stelfi <- c()
+for (m in names(meshes)) {
+    time_stelfi[m] <- system.time(
+        fits_stelfi[[m]] <- fit_lgcp(locs = locs_km, sf = iraq_sf_km, smesh = meshes[[m]],
+                                     parameters = start)
+    )["elapsed"]
+}
+get_coefs(fits_stelfi$adequate)
 ```
 
-The estimated random field and intensity surface (events per km$^2$) for the medium mesh:
+The estimated random field and intensity surface (events per km$^2$) for the adequate mesh:
 
 ```{r, fig.height = 5, fig.width = 6}
 #| message: false
-get_fields(fits_stelfi$medium, meshes$medium) |>
-    show_field(smesh = meshes$medium, sf = iraq_sf_km, clip = TRUE) + theme_void()
+get_fields(fits_stelfi$adequate, meshes$adequate) |>
+    show_field(smesh = meshes$adequate, sf = iraq_sf_km, clip = TRUE) + theme_void()
 ```
 
 ```{r, fig.height = 5, fig.width = 6}
 #| message: false
-show_lambda(fits_stelfi$medium, smesh = meshes$medium, sf = iraq_sf_km, clip = TRUE) +
+show_lambda(fits_stelfi$adequate, smesh = meshes$adequate, sf = iraq_sf_km, clip = TRUE) +
     theme_void()
 ```
 
 #### Comparing with `inlabru` {.unnumbered}
 
-The same model is fitted using `inlabru` on the same three meshes, with weak penalised complexity priors ($P(r < 5\text{ km}) = 0.01$ and $P(\sigma > 10) = 0.01$) and empirical Bayes (see @sec-lgcp-sim).
+The same model is fitted using `inlabru` on the same three meshes, with weak penalised complexity priors ($P(r < 5\text{ km}) = 0.01$ and $P(\sigma > 10) = 0.01$) and empirical Bayes (see @sec-lgcp-sim), again recording the time taken.
 
 ```{r}
 #| message: false
@@ -350,36 +347,36 @@ fit_bru <- function(mesh) {
                       control.inla = list(int.strategy = "eb", strategy = "gaussian",
                                           diagonal = 1e-4, control.vb = list(enable = FALSE))))
 }
-fits_inlabru <- lapply(meshes, fit_bru)
+fits_inlabru <- list(); time_inlabru <- c()
+for (m in names(meshes)) {
+    time_inlabru[m] <- system.time(fits_inlabru[[m]] <- fit_bru(meshes[[m]]))["elapsed"]
+}
 ```
 
-The table gives the estimates (standard error for `stelfi`, posterior standard deviation for `inlabru`, in brackets) for each mesh. Because the coordinates are in km in both, $\beta_0$ is the log intensity per km$^2$ and $r$ is in km.
+#### Sensitivity to the mesh {#sec-mesh-compare .unnumbered}
+
+The table gives, for each mesh and package, the number of mesh nodes, the time taken to fit the model (in seconds; this will vary from computer to computer), and the estimates (standard error for `stelfi`, posterior standard deviation for `inlabru`, in brackets). Because the coordinates are in km, $\beta_0$ is the log intensity per km$^2$ and $r$ is in km.
 
 ```{r}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Code for this table"
 rows <- lapply(names(meshes), function(m) {
     s <- get_coefs(fits_stelfi[[m]])[c("beta", "range", "stdev"), 1:2]
     b <- rbind(fits_inlabru[[m]]$summary.fixed[, 1:2], fits_inlabru[[m]]$summary.hyperpar[, 1:2])
-    data.frame(mesh = m, package = c("stelfi", "inlabru"),
+    data.frame(mesh = m, nodes = meshes[[m]]$n, package = c("stelfi", "inlabru"),
+               time = round(c(time_stelfi[m], time_inlabru[m]), 1),
                beta0 = c(fmt(s[1, ]), fmt(b[1, ])),
                range = c(fmt(s[2, ]), fmt(b[2, ])),
                sigma = c(fmt(s[3, ]), fmt(b[3, ])))
 })
-knitr::kable(do.call(rbind, rows),
-             col.names = c("Mesh", "Package", "$\\beta_0$", "$r$", "$\\sigma$"), escape = FALSE)
+knitr::kable(do.call(rbind, rows), row.names = FALSE,
+             col.names = c("Mesh", "Nodes", "Package", "Time (s)", "$\\beta_0$", "$r$", "$\\sigma$"),
+             escape = FALSE)
 ```
 
-When reading the table look for (1) agreement *between packages* for a given mesh, and (2) agreement *across meshes* for a given package.
+The intensity surfaces estimated by `stelfi` using the three meshes are shown below.
 
-**Between packages.** For the coarse and medium meshes the two packages tell a similar story: a field with a large standard deviation (around 3, so the intensity varies by orders of magnitude across Iraq) and a range of tens of kilometres, although the `inlabru` range is somewhat larger. The intercepts differ more. This is partly because the packages approximate the integral of the intensity over the study region differently (`stelfi` assigns each event and each piece of area to its nearest mesh node, `inlabru` uses integration points), and partly because the intercept is only weakly identified when the field is this variable. The differences are largest for the fine mesh, where the two approximations differ most.
-
-**Across meshes.** The estimates do *not* stabilise: as the mesh gets finer the estimated range gets smaller and the standard deviation larger, for both packages.
-
-#### Sensitivity to the mesh {#sec-mesh-compare .unnumbered}
-
-The number of nodes, and so the computational cost, increases a lot from the coarse to the fine mesh. The intensity surfaces estimated by `stelfi` using the three meshes are shown below.
-
-```{r, fig.height = 4, fig.width = 9}
+```{r, fig.height = 4, fig.width = 10}
 #| message: false
 lambdas <- lapply(names(meshes), function(m) {
     show_lambda(fits_stelfi[[m]], smesh = meshes[[m]], sf = iraq_sf_km, clip = TRUE) +
@@ -388,18 +385,22 @@ lambdas <- lapply(names(meshes), function(m) {
 patchwork::wrap_plots(lambdas, nrow = 1)
 ```
 
-If the mesh is adequate the estimates, and the large scale pattern of the intensity, should be similar for all three meshes; if the range and standard deviation change noticeably then the coarser mesh cannot represent the field. Here the broad pattern (the hot spots around Baghdad and along the Tigris and Euphrates) is the same, but the estimated range keeps shrinking as the mesh is refined. The reason is the data: attacks are concentrated in particular towns and cities, so there is spatial structure at every scale down to a few kilometres, and whatever mesh is used the field picks up variation down to the smallest scale the mesh can represent. In this situation:
+- **Too coarse.** With only a few dozen nodes both fits are almost instant, but the triangles are larger than the clusters of attacks. The field can only vary smoothly over hundreds of km, so the estimated range is several hundred km, the hot spots are smeared out, and the intensity surface is blocky.
+- **Too fine.** With over ten thousand nodes both fits take far longer (here `stelfi` was the slower of the two for this mesh: `TMB` runs on a single thread by default, whereas `INLA` uses several). The field now resolves individual towns: the estimated range drops to a few km and the standard deviation increases, and the two packages disagree much more, since their approximations of the integral of the intensity over Iraq (`stelfi` assigns each event and each piece of area to its nearest mesh node, `inlabru` uses integration points) differ most when the mesh is this fine. Very little is gained for the extra computation: the large scale pattern of the intensity is the same as for the adequate mesh.
+- **Adequate.** The fits take a second or two, the intensity surface shows the hot spots around Baghdad and along the Tigris and Euphrates, and the two packages tell a similar story: a field with a large standard deviation (around 3, so the intensity varies by orders of magnitude across Iraq) and a range of around 100 km (`inlabru`'s is somewhat larger). The intercepts differ more between the packages, partly because of the different integration schemes and partly because the intercept is only weakly identified when the field is this variable.
+
+Note that the estimated range does *not* settle down as the mesh is refined, for either package. The reason is the data: attacks are concentrated in particular towns and cities, so there is spatial structure at every scale down to a few kilometres, and whatever mesh is used the field picks up variation down to the smallest scale the mesh can represent. This also means that the rule of thumb of @sec-mesh-resolution (inner `max.edge` no more than about a fifth of the range) cannot be satisfied. In this situation:
 
 - the range should be interpreted as "the scale of variation resolved at this mesh", and the mesh reported alongside the results;
-- choose the mesh to match the scale of the question being asked (e.g., differences between regions versus between neighbourhoods); and
+- choose the mesh to match the scale of the question being asked (e.g., differences between regions versus between neighbourhoods), avoiding many small triangles that add computation without changing the large scale pattern; and
 - consider whether the fine scale clustering is better explained by covariates (e.g., the locations of towns, population density) or by events triggering further events (@sec-stelfi).
 
 #### Including covariates {.unnumbered}
 
-Covariates are included in the log intensity, $\lambda(s) = \text{exp}(\beta_0 + \beta_1 x_1(s) + ... + G(s))$, using the `covariates` argument of `fit_lgcp()`. The covariates must be a matrix with one column per covariate and **one row per mesh node**, and the starting value `beta` becomes a vector: the intercept followed by one coefficient per covariate. It is a good idea to standardise covariates (using `scale()`), so that the coefficients are the change in log intensity per standard deviation increase in the covariate and the optimiser works with parameters on a similar scale. The medium mesh is used below.
+Covariates are included in the log intensity, $\lambda(s) = \text{exp}(\beta_0 + \beta_1 x_1(s) + ... + G(s))$, using the `covariates` argument of `fit_lgcp()`. The covariates must be a matrix with one column per covariate and **one row per mesh node**, and the starting value `beta` becomes a vector: the intercept followed by one coefficient per covariate. It is a good idea to standardise covariates (using `scale()`), so that the coefficients are the change in log intensity per standard deviation increase in the covariate and the optimiser works with parameters on a similar scale. The adequate mesh is used below.
 
 ```{r}
-smesh <- meshes$medium
+smesh <- meshes$adequate
 ```
 
 **Distance to Baghdad.** Here the covariate is the distance (in km) from each mesh node to Baghdad (33.30°N, 44.40°E).
@@ -541,8 +542,13 @@ Each event is assigned to its nearest time knot, so knot $t_k$ covers the time p
 
 ### A simulated example {#sec-lgcpst-sim}
 
+Data were simulated from a spatiotemporal LGCP within a disc of radius 2 over the time period $[0, 5)$, with $\beta_0 = 2$, range $r = 1$, standard deviation $\sigma = 1$, and $\rho = 0.7$, with one field per unit of time. The simulation has three steps:
+
+1. **Independent fields.** At each of the $K = 6$ time knots ($t = 0, 1, ..., 5$) an independent random field $\epsilon_k(s)$ is simulated at the mesh nodes using `sim_lgcp()` (only the simulated field, `$x`, is used). `sim_lgcp()` takes the field parameters on the internal scale, so the range and standard deviation are first converted to $\kappa = \sqrt{8}/r$ and $\tau = 1/(\sigma\sqrt{4\pi}\kappa)$.
+2. **AR(1) fields.** The fields are linked over time, $G_k(s) = \rho\, G_{k-1}(s) + \sqrt{1 - \rho^2}\, \epsilon_k(s)$. The factor $\sqrt{1 - \rho^2}$ keeps the standard deviation of every $G_k(s)$ equal to $\sigma$.
+3. **Events.** The events in the time period covered by each knot (@sec-lgcpst) are simulated by *thinning*: candidate events are simulated uniformly over the disc at the maximum of the intensity $\lambda_{\max}$, and each candidate at location $s$ is kept with probability $\lambda_k(s)/\lambda_{\max}$, with the field at $s$ interpolated from the mesh nodes using `fmesher::fm_basis()`. The kept events are given times drawn uniformly within the period.
+
 ```{r}
-#| echo: false
 #| message: false
 disc_sf <- sf::st_sf(geometry = sf::st_geometry(sf::st_as_sf(spatstat.geom::disc(radius = 2))))
 smesh <- fmesher::fm_mesh_2d(boundary = fmesher::fm_as_segm(disc_sf), max.edge = 0.2, cutoff = 0.05)
@@ -551,14 +557,17 @@ k <- tmesh$n
 truth_st <- c(beta = 2, range = 1, sigma = 1, rho = 0.7)
 kap <- unname(sqrt(8) / truth_st["range"]); tau <- unname(1 / (truth_st["sigma"] * sqrt(4 * pi) * kap))
 set.seed(3)
+## 1. independent fields, one column per time knot
 e <- sapply(1:k, function(i)
     as.vector(sim_lgcp(c(beta = 0, log_tau = log(tau), log_kappa = log(kap)), sf = disc_sf, smesh = smesh)$x))
+## 2. AR(1) fields
 x <- e
 for (i in 2:k) x[, i] <- truth_st["rho"] * x[, i - 1] + sqrt(1 - truth_st["rho"]^2) * e[, i]
+## 3. events, by thinning, for the time period covered by each knot
 locs <- do.call(rbind, lapply(1:k, function(i) {
     lo <- max(0, tmesh$loc[i] - 0.5); hi <- min(5, tmesh$loc[i] + 0.5)
     lmax <- exp(truth_st["beta"] + max(x[, i]))
-    n0 <- rpois(1, lmax * 16 * (hi - lo))
+    n0 <- rpois(1, lmax * 16 * (hi - lo)) ## candidates over the 4 by 4 square around the disc
     cand <- data.frame(x = runif(n0, -2, 2), y = runif(n0, -2, 2))
     cand <- cand[sqrt(cand$x^2 + cand$y^2) < 2, ]
     A <- fmesher::fm_basis(smesh, loc = as.matrix(cand))
@@ -570,13 +579,13 @@ locs <- locs[order(locs$t), ]
 rownames(locs) <- NULL
 ```
 
-Data were simulated from a spatiotemporal LGCP within a disc of radius 2 over the time period $[0, 5)$, with $\beta_0 = 2$, range $r = 1$, standard deviation $\sigma = 1$, and $\rho = 0.7$, with one field per unit of time. The data are a data frame of `r nrow(locs)` events with columns `x`, `y`, and `t`:
+The data are a data frame of `r nrow(locs)` events with columns `x`, `y`, and `t`:
 
 ```{r}
 head(locs)
 ```
 
-The spatial mesh follows the boundary of the study region and the temporal mesh has knots at $0, 1, ..., 5$.
+The spatial mesh follows the boundary of the study region and the temporal mesh has knots at $0, 1, ..., 5$. These are the meshes used to simulate the data, repeated here so that the code needed to fit the model is all in one place.
 
 ```{r}
 #| message: false
@@ -611,7 +620,8 @@ bru_st
 ```
 
 ```{r}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Code for this table"
 params <- data.frame(Truth = truth_st,
                      stelfi = apply(stelfi_st[c("beta", "range", "stdev", "rho"), ], 1, fmt),
                      inlabru = apply(bru_st, 1, fmt))

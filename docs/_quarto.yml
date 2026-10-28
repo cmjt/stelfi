@@ -21,14 +21,13 @@ book:
     - univariate-hawkes.qmd
     - marked-hawkes.qmd
     - multi-hawkes.qmd
+    - mesh.qmd
     - lgcp.qmd
     - lgcp-marked.qmd
     - stelfi.qmd
     - rtmb.qmd
     - data.qmd
     - references.qmd
-  appendices:
-    - lgcp-recovery.qmd
 
 bibliography: references.bib
 

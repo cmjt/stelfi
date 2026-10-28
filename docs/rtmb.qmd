@@ -1,7 +1,8 @@
 # Simple `RTMB` templates {#sec-rtmb}
 
 ```{r}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Packages used in this chapter"
 #| message: false
 library(stelfi)
 library(ggplot2)

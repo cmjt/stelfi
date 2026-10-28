@@ -1,7 +1,8 @@
 # Marked log-Gaussian Cox process {#sec-mlgcp}
 
 ```{r}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Packages used in this chapter"
 #| message: false
 library(stelfi)
 library(ggplot2)
@@ -52,18 +53,53 @@ Things to be aware of:
 
 ## A simulated example {#sec-mlgcp-sim}
 
-The `marked` dataset in `stelfi` (see @sec-data) is a simulated marked point pattern: `r nrow(stelfi::marked)` events in a 3 by 3 square, each with three marks, `m1` (Gaussian), `m2` (binary), and `m3` (gamma). Here the Gaussian mark is used.
+Data were simulated from a marked LGCP with a single Gaussian mark within a 3 by 3 square. The point process has intercept $\beta_{pp} = 4$ and a field with range $r_{pp} = 1.5$ and standard deviation $\sigma_{pp} = 1$. The mark has intercept $\beta_m = 1$, link $\alpha = 0.5$ (so marks are larger where events are more common), its own field with range $r_m = 1.5$ and standard deviation $\sigma_m = 0.5$, and a residual standard deviation of 0.3. The simulation has three steps:
+
+1. **Fields.** Two independent random fields, $G_{pp}(s)$ and $G_m(s)$, are simulated at the nodes of a mesh using `sim_lgcp()` (only the simulated field, `$x`, is used). `sim_lgcp()` takes the field parameters on the internal scale, so the range and standard deviation are first converted to $\kappa = \sqrt{8}/r$ and $\tau = 1/(\sigma\sqrt{4\pi}\kappa)$ by the function `spde_pars()`.
+2. **Events.** The events are simulated by *thinning*: candidate events are simulated uniformly over the square at the maximum of the intensity $\lambda_{\max}$, and each candidate at location $s$ is kept with probability $\lambda(s)/\lambda_{\max}$, where $\log \lambda(s) = \beta_{pp} + G_{pp}(s)$ and the field at $s$ is interpolated from the mesh nodes using `fmesher::fm_basis()`.
+3. **Marks.** The mark of each event is drawn from a normal distribution with mean $\eta(s) = \beta_m + \alpha \log \lambda(s) + G_m(s)$ and standard deviation 0.3.
 
 ```{r}
-data(marked, package = "stelfi")
-head(marked)
+#| message: false
+loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
+domain <- sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(loc.d))))
+smesh <- fmesher::fm_mesh_2d(loc.domain = loc.d, offset = c(0.3, 1),
+                             max.edge = c(0.3, 0.7), cutoff = 0.05)
+truth <- c(betapp = 4, range_pp = 1.5, sigma_pp = 1,
+           betam = 1, range_m = 1.5, sigma_m = 0.5, alpha = 0.5, sd_m = 0.3)
+spde_pars <- function(range, sigma) {
+    kappa <- unname(sqrt(8) / range); sigma <- unname(sigma)
+    c(log_tau = log(1 / (sigma * sqrt(4 * pi) * kappa)), log_kappa = log(kappa))
+}
+set.seed(1)
+## 1. the fields at the mesh nodes
+g_pp <- as.vector(sim_lgcp(c(beta = 0, spde_pars(truth["range_pp"], truth["sigma_pp"])),
+                           sf = domain, smesh = smesh)$x)
+g_m <- as.vector(sim_lgcp(c(beta = 0, spde_pars(truth["range_m"], truth["sigma_m"])),
+                          sf = domain, smesh = smesh)$x)
+## 2. the events, by thinning
+lmax <- exp(truth["betapp"] + max(g_pp))
+n0 <- rpois(1, lmax * 9) ## candidates over the 3 by 3 square
+cand <- data.frame(x = runif(n0, 0, 3), y = runif(n0, 0, 3))
+A <- fmesher::fm_basis(smesh, loc = as.matrix(cand))
+log_lambda <- truth["betapp"] + as.vector(A %*% g_pp)
+keep <- runif(n0) < exp(log_lambda) / lmax
+sim <- cand[keep, ]
+## 3. the marks
+eta <- truth["betam"] + truth["alpha"] * log_lambda[keep] + as.vector(A[keep, ] %*% g_m)
+sim$m <- rnorm(nrow(sim), mean = eta, sd = truth["sd_m"])
+rownames(sim) <- NULL
+```
+
+The data are a data frame of `r nrow(sim)` event locations and the corresponding marks:
+
+```{r}
+head(sim)
 ```
 
 ```{r, fig.height = 5, fig.width = 6}
-loc.d <- 3 * cbind(c(0, 1, 1, 0, 0), c(0, 0, 1, 1, 0))
-domain <- sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(loc.d))))
-ggplot(marked, aes(x = x, y = y, col = m1)) +
-    geom_point(size = 2) + labs(col = "m1") +
+ggplot(sim, aes(x = x, y = y, col = m)) +
+    geom_point(size = 1.5) + labs(col = "Mark") +
     scale_color_viridis_c() +
     geom_sf(data = domain, fill = NA, inherit.aes = FALSE) +
     theme_void()
@@ -71,14 +107,12 @@ ggplot(marked, aes(x = x, y = y, col = m1)) +
 
 ### Fitting the model using `stelfi`
 
-A mesh is built over the square, and the locations and marks are put into matrices. The standard deviation of the Gaussian mark is fixed at the standard deviation of `m1` (through `strfixed`, on the log scale), and the mark is given its own random field (`fields = 1`), so there are two fields: one for the point process and one for the mark.
+The mesh used to simulate the data is also used to fit the model, and the locations and marks are put into matrices. In practice the residual standard deviation of the marks is unknown, so, as suggested in @sec-mlgcp-data, the standard deviation of the Gaussian mark is fixed at the standard deviation of the marks (through `strfixed`, on the log scale). The mark is given its own random field (`fields = 1`), so there are two fields: one for the point process and one for the mark.
 
 ```{r}
-smesh <- fmesher::fm_mesh_2d(loc.domain = loc.d, offset = c(0.3, 1),
-                             max.edge = c(0.3, 0.7), cutoff = 0.05)
-locs <- cbind(x = marked$x, y = marked$y)
-marks <- cbind(m1 = marked$m1)
-strfixed <- matrix(log(sd(marked$m1)), nrow = nrow(locs), ncol = 1)
+locs <- cbind(x = sim$x, y = sim$y)
+marks <- cbind(m = sim$m)
+strfixed <- matrix(log(sd(sim$m)), nrow = nrow(locs), ncol = 1)
 parameters <- list(betapp = 0, betamarks = matrix(0, nrow = 1, ncol = 1),
                    marks_coefs_pp = 0, log_tau = c(0, 0), log_kappa = c(0, 0))
 fit <- fit_mlgcp(locs = locs, marks = marks, sf = domain, smesh = smesh,
@@ -108,7 +142,7 @@ patchwork::wrap_plots(
 #| message: false
 library(inlabru)
 library(INLA)
-pts <- sf::st_as_sf(marked, coords = c("x", "y"))
+pts <- sf::st_as_sf(sim, coords = c("x", "y"))
 matern_pp <- inla.spde2.pcmatern(smesh, prior.sigma = c(5, 0.01), prior.range = c(0.1, 0.01))
 matern_m <- inla.spde2.pcmatern(smesh, prior.sigma = c(5, 0.01), prior.range = c(0.1, 0.01))
 cmp <- ~ Intercept_pp(1) + field_pp(geometry, model = matern_pp) +
@@ -116,8 +150,8 @@ cmp <- ~ Intercept_pp(1) + field_pp(geometry, model = matern_pp) +
     field_m(geometry, model = matern_m)
 lik_pp <- bru_obs("cp", formula = geometry ~ Intercept_pp + field_pp,
                   data = pts, samplers = domain, domain = list(geometry = smesh))
-lik_m <- bru_obs("gaussian", formula = m1 ~ Intercept_m + field_copy + field_m, data = pts,
-                 control.family = list(hyper = list(prec = list(initial = -2 * log(sd(marked$m1)),
+lik_m <- bru_obs("gaussian", formula = m ~ Intercept_m + field_copy + field_m, data = pts,
+                 control.family = list(hyper = list(prec = list(initial = -2 * log(sd(sim$m)),
                                                                  fixed = TRUE))))
 fit_bru <- bru(cmp, lik_pp, lik_m,
                options = list(control.inla = list(int.strategy = "eb")))
@@ -126,7 +160,8 @@ fit_bru$summary.hyperpar[, 1:2]
 ```
 
 ```{r}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Code for this table"
 fmt <- function(x) paste0(round(x[1], 3), " (", round(x[2], 3), ")")
 tk <- stelfi[rownames(stelfi) %in% c("tau", "kappa"), ]
 tau <- tk[rownames(tk) == "tau", 1]; kappa <- tk[rownames(tk) == "kappa", 1]
@@ -134,6 +169,9 @@ st_range <- sqrt(8) / kappa
 st_sd <- 1 / sqrt(4 * pi * kappa^2 * tau^2)
 hp <- fit_bru$summary.hyperpar
 params <- data.frame(
+    Truth = c(truth["betapp"], truth["range_pp"], truth["sigma_pp"],
+              truth["betam"] + truth["alpha"] * truth["betapp"],
+              truth["range_m"], truth["sigma_m"], truth["alpha"]),
     stelfi = c(fmt(stelfi["betapp", ]), round(st_range[1], 3), round(st_sd[1], 3),
                round(stelfi["betamarks", 1] + stelfi["marks_coefs_pp", 1] * stelfi["betapp", 1], 3),
                round(st_range[2], 3), round(st_sd[2], 3),
@@ -148,7 +186,7 @@ knitr::kable(t(params), col.names = c("$\\beta_{pp}$", "$r_{pp}$", "$\\sigma_{pp
              escape = FALSE)
 ```
 
-In `stelfi` the link $\alpha$ multiplies the whole log intensity, $\beta_{pp} + G_{pp}(s)$, whereas in `inlabru` the scaling multiplies only the field $G_{pp}(s)$. The two models are the same, but the mark intercepts differ by $\alpha \beta_{pp}$, so the table shows $\beta_m + \alpha \beta_{pp}$ for `stelfi`. The two packages agree closely on the point process intercept, the mark intercept, and the link: the marks are larger where events are more common. They differ more on the parameters of the fields, which are poorly determined with only `r nrow(marked)` events. In particular, both packages estimate the mark's own field to have a small standard deviation (for `stelfi` it is essentially zero, and its standard error cannot be calculated), suggesting that the spatial variation in the marks is largely explained by the link with the point process, and that a model with `fields = 0` may be adequate.
+In `stelfi` the link $\alpha$ multiplies the whole log intensity, $\beta_{pp} + G_{pp}(s)$, whereas in `inlabru` the scaling multiplies only the field $G_{pp}(s)$. The two models are the same, but the mark intercepts differ by $\alpha \beta_{pp}$, so the table shows $\beta_m + \alpha \beta_{pp}$ for `stelfi` and for the truth ($1 + 0.5 \times 4 = 3$). The two packages agree closely with each other, and with the truth, on the point process intercept and the mark intercept, and both correctly find that the marks are larger where events are more common (a positive link), although both overestimate the link. As in @sec-lgcp-sim, the range and standard deviation of the fields are harder to pin down from a single dataset. Note in particular that both packages underestimate the standard deviation of the mark's own field, $\sigma_m$. This is a consequence of fixing the residual standard deviation at the standard deviation of the marks (`r round(sd(sim$m), 3)`), which is much larger than the true value (0.3): the model then attributes some of the spatial variation in the marks to residual noise rather than to the field. This is why it is worth refitting with a smaller fixed standard deviation (see @sec-mlgcp-gof).
 
 ## An applied example: fatal terrorism attacks in Iraq {#sec-mlgcp-applied}
 
@@ -166,8 +204,8 @@ sum(is.na(iraq_terrorism$nkill)) ## events with a missing number killed
 iraq <- iraq_terrorism[!is.na(iraq_terrorism$nkill), ]
 locs_km <- sf::st_coordinates(sf::st_transform(iraq, crs = 32638)) / 1000
 colnames(locs_km) <- c("x", "y")
-marks <- cbind(fatal = as.numeric(iraq$nkill > 0))
-table(marks)
+marks_iraq <- cbind(fatal = as.numeric(iraq$nkill > 0))
+table(marks_iraq)
 iraq_sf <- rnaturalearth::ne_countries(country = "Iraq", scale = "medium", returnclass = "sf") |>
     sf::st_transform(crs = 32638) |>
     sf::st_union()
@@ -177,18 +215,18 @@ sf::st_crs(iraq_sf_km) <- NA
 
 ### Fitting the model
 
-The coarse mesh from @sec-iraq is used. The mark is binomial (`methods = 2`) with one trial per event (the default `strfixed`), and has its own random field.
+A mesh slightly coarser than the adequate mesh of [Sensitivity to the mesh](lgcp.qmd#sec-mesh-compare) in @sec-iraq (`max.edge = c(60, 200)`, `cutoff = 15`) is used, to keep the fit quick. The mark is binomial (`methods = 2`) with one trial per event (the default `strfixed`), and has its own random field.
 
 ```{r}
 #| message: false
-smesh <- fmesher::fm_mesh_2d(loc = locs_km, boundary = fmesher::fm_as_segm(iraq_sf_km),
-                             max.edge = c(60, 200), cutoff = 15)
+smesh_iraq <- fmesher::fm_mesh_2d(loc = locs_km, boundary = fmesher::fm_as_segm(iraq_sf_km),
+                                  max.edge = c(60, 200), cutoff = 15)
 area_km2 <- as.numeric(sf::st_area(iraq_sf_km))
-parameters <- list(betapp = log(nrow(locs_km) / area_km2),
-                   betamarks = matrix(0, nrow = 1, ncol = 1), marks_coefs_pp = 0,
-                   log_tau = c(0, 0), log_kappa = log(c(sqrt(8) / 50, sqrt(8) / 50)))
-fit_iraq <- fit_mlgcp(locs = locs_km, marks = marks, sf = iraq_sf_km, smesh = smesh,
-                      parameters = parameters, methods = 2, fields = 1)
+parameters_iraq <- list(betapp = log(nrow(locs_km) / area_km2),
+                        betamarks = matrix(0, nrow = 1, ncol = 1), marks_coefs_pp = 0,
+                        log_tau = c(0, 0), log_kappa = log(c(sqrt(8) / 50, sqrt(8) / 50)))
+fit_iraq <- fit_mlgcp(locs = locs_km, marks = marks_iraq, sf = iraq_sf_km, smesh = smesh_iraq,
+                      parameters = parameters_iraq, methods = 2, fields = 1)
 coefs <- get_coefs(fit_iraq)
 coefs
 ```
@@ -199,11 +237,11 @@ The plots below show the estimated random field of the point process (where atta
 
 ```{r, fig.height = 4, fig.width = 9}
 #| message: false
-fields_iraq <- get_fields(fit_iraq, smesh)
+fields_iraq <- get_fields(fit_iraq, smesh_iraq)
 patchwork::wrap_plots(
-    show_field(fields_iraq[, 1], smesh = smesh, sf = iraq_sf_km, clip = TRUE) + theme_void() +
+    show_field(fields_iraq[, 1], smesh = smesh_iraq, sf = iraq_sf_km, clip = TRUE) + theme_void() +
         ggtitle("Point process field"),
-    show_field(fields_iraq[, 2], smesh = smesh, sf = iraq_sf_km, clip = TRUE) + theme_void() +
+    show_field(fields_iraq[, 2], smesh = smesh_iraq, sf = iraq_sf_km, clip = TRUE) + theme_void() +
         ggtitle("Mark (fatal) field"),
     nrow = 1)
 ```
@@ -234,8 +272,8 @@ For the Gaussian mark the linear predictor is the predicted mean, so the residua
 
 ```{r, fig.height = 4, fig.width = 9}
 pred <- mark_predictor(fit, smesh, locs)
-res <- marked$m1 - pred
-c(residual_sd = sd(res), fixed_sd = sd(marked$m1))
+res <- sim$m - pred
+c(residual_sd = sd(res), fixed_sd = sd(sim$m), true_sd = unname(truth["sd_m"]))
 patchwork::wrap_plots(
     ggplot(data.frame(pred, res), aes(x = pred, y = res)) + geom_point() +
         geom_hline(yintercept = 0, linetype = "dashed") + theme_minimal() +
@@ -245,18 +283,33 @@ patchwork::wrap_plots(
     nrow = 1)
 ```
 
-The residuals show no obvious pattern and look roughly normal. Their standard deviation is smaller than the fixed standard deviation, because the random field explains some of the variation in the marks. Since the standard deviation is fixed rather than estimated, it is worth refitting with `strfixed` set to the log of the residual standard deviation and checking that the conclusions do not change.
+The residuals show no obvious pattern and look roughly normal. Their standard deviation is much smaller than the fixed standard deviation, because the random fields explain much of the variation in the marks, and it is close to the true value. Since the standard deviation is fixed rather than estimated, it is worth refitting with `strfixed` set to the log of the residual standard deviation and checking that the conclusions do not change.
+
+```{r}
+strfixed_res <- matrix(log(sd(res)), nrow = nrow(locs), ncol = 1)
+fit_res <- fit_mlgcp(locs = locs, marks = marks, sf = domain, smesh = smesh,
+                     parameters = parameters, methods = 0, fields = 1, strfixed = strfixed_res)
+coefs_res <- get_coefs(fit_res)
+kappa_res <- coefs_res[rownames(coefs_res) == "kappa", 1]
+tau_res <- coefs_res[rownames(coefs_res) == "tau", 1]
+rbind(original = c(link = stelfi["marks_coefs_pp", 1], sigma_m = st_sd[2]),
+      refitted = c(link = coefs_res["marks_coefs_pp", 1],
+                   sigma_m = 1 / sqrt(4 * pi * kappa_res[2]^2 * tau_res[2]^2)),
+      truth = c(link = unname(truth["alpha"]), sigma_m = unname(truth["sigma_m"])))
+```
+
+The link is essentially unchanged, but the estimated standard deviation of the mark's field increases towards the true value: with less of the variation in the marks attributed to noise, more is attributed to the field.
 
 ### The applied example
 
 For a binary mark the linear predictor is on the logit scale, so the predicted probability that an attack is fatal is $\text{logit}^{-1}(\eta)$. A simple check of these predictions is to group the attacks by their predicted probability (here into ten groups of equal size) and compare the average predicted probability in each group with the observed proportion of fatal attacks. For a well calibrated model the points should lie close to the line $y = x$.
 
 ```{r, fig.height = 4, fig.width = 5}
-p_fatal <- plogis(mark_predictor(fit_iraq, smesh, locs_km))
+p_fatal <- plogis(mark_predictor(fit_iraq, smesh_iraq, locs_km))
 group <- cut(p_fatal, breaks = unique(quantile(p_fatal, probs = seq(0, 1, 0.1))),
              include.lowest = TRUE)
 calib <- data.frame(predicted = tapply(p_fatal, group, mean),
-                    observed = tapply(marks[, 1], group, mean),
+                    observed = tapply(marks_iraq[, 1], group, mean),
                     n = as.vector(table(group)))
 calib$se <- sqrt(calib$observed * (1 - calib$observed) / calib$n)
 ggplot(calib, aes(x = predicted, y = observed)) +

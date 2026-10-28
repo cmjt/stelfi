@@ -1,7 +1,8 @@
 # Datasets in `stelfi` {#sec-data}
 
 ```{r}
-#| echo: false
+#| code-fold: true
+#| code-summary: "Packages used in this chapter"
 #| message: false
 library(stelfi)
 library(ggplot2)
@@ -23,7 +24,7 @@ data(package = "stelfi")$results[, c("Item", "Title")]
 | `sasquatch`      | Dates and locations                       | @sec-sasquatch, @sec-lgcp-gof, @sec-rtmb |
 | `iraq_terrorism` | Dates, locations, and event information   | @sec-iraq, @sec-lgcp-iraq-st, @sec-mlgcp-applied |
 | `xyt`            | Times and locations (simulated)           | @sec-stelfi-sim |
-| `marked`         | Locations with three marks (simulated)    | @sec-mlgcp-sim |
+| `marked`         | Locations with three marks (simulated)    | -- |
 | `horse_mesh`, `horse_sf` | An example mesh and polygon       | @sec-meshmetrics |
 
 ## Temporal data
@@ -70,7 +71,7 @@ The following datasets are `sf` objects of type `POINT`, with the location of ea
 #| message: false
 #| warning: false
 sf::sf_use_s2(FALSE)
-boundary <- function(region, database = "world") {
+boundary <- function(region = ".", database = "world") {
     maps::map(database, region, fill = TRUE, plot = FALSE) |>
         sf::st_as_sf() |>
         sf::st_make_valid()
@@ -111,7 +112,7 @@ nz_murders
 patchwork::wrap_plots(
     ggplot(nz_murders, aes(x = full_date)) + geom_histogram(bins = 100) +
         ylab("Number of murders") + xlab("") + theme_bw(),
-    ggplot(nz_murders) + geom_sf(data = boundary("nz", "nz"), fill = NA) +
+    ggplot(nz_murders) + geom_sf(data = boundary(database = "nz"), fill = NA) +
         geom_sf(alpha = 0.3) + theme_bw() + coord_sf(xlim = c(165, 180)),
     nrow = 1)
 ```
@@ -128,7 +129,7 @@ sasquatch[, c("date", "state", "classification")]
 ```{r, fig.height = 4, fig.width = 8}
 #| message: false
 #| warning: false
-ggplot(sasquatch) + geom_sf(data = boundary("usa", "usa"), fill = NA) +
+ggplot(sasquatch) + geom_sf(data = boundary(database = "usa"), fill = NA) +
     geom_sf(alpha = 0.3) + theme_bw()
 ```
 
@@ -170,7 +171,7 @@ ggplot(data.frame(x = xyt$x, y = xyt$y, t = xyt$t), aes(x = x, y = y, size = t))
 
 ### `marked` {.unnumbered}
 
-A simulated marked point pattern of `r nrow(marked)` events in the square $[0, 3] \times [0, 3]$: a data frame with the locations (`x`, `y`) and three marks, `m1` (Gaussian), `m2` (binary, 0/1) and `m3` (gamma). It is used in @sec-mlgcp-sim.
+A simulated marked point pattern of `r nrow(marked)` events in the square $[0, 3] \times [0, 3]$: a data frame with the locations (`x`, `y`) and three marks, `m1` (Gaussian), `m2` (binary, 0/1) and `m3` (gamma). It is used in the examples of `fit_mlgcp()` (see `?fit_mlgcp`); the simulated example in @sec-mlgcp-sim simulates its own data instead, so that the true parameter values are known.
 
 ```{r}
 data(marked, package = "stelfi")
