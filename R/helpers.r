@@ -218,14 +218,19 @@ get_weights <- function(mesh, sf, plot = FALSE) {
         ## check for invalid geometries
         sf <- sf::st_make_valid(sf)
     }
-    w <- sapply(1:nrow(dmesh), function(i) {
-        coord <- sf::st_coordinates(dmesh[i, ])[, 1:2]
-        coord <- sf::st_polygon(list(coord))
-        if (any(sf::st_intersects(coord, sf, sparse = FALSE)))
-            return(sf::st_area(sf::st_intersection(coord, sf)))
-        else return(0)
-    })
-    weights <- data.frame(ID = 1:nrow(dmesh), weights = unlist(w))
+    region <- sf::st_geometry(sf)
+    if (length(region) > 1) region <- sf::st_union(region)
+    ## vectorised: only the dual cells that touch the domain are intersected
+    cells <- sf::st_geometry(dmesh)
+    w <- numeric(length(cells))
+    hit <- which(lengths(sf::st_intersects(cells, region)) > 0)
+    if (length(hit) > 0) {
+        inter <- sf::st_intersection(cells[hit], region)
+        idx <- attr(inter, "idx")[, 1]
+        areas <- split(as.numeric(sf::st_area(inter)), factor(idx, levels = seq_along(hit)))
+        w[hit] <- vapply(areas, sum, numeric(1))
+    }
+    weights <- data.frame(ID = 1:nrow(dmesh), weights = w)
     res <- dplyr::left_join(dmesh, weights, by = "ID")
     if(plot) {
         p <-  ggplot2::ggplot(res) +
@@ -250,23 +255,13 @@ get_weights <- function(mesh, sf, plot = FALSE) {
 points_in_mesh <- function(xy, dmesh, weights) {
   xy <- sf::st_as_sf(xy, coords = c("x", "y"))
   xy <- sf::st_geometry(xy)
+  ## one (spatially indexed) call: the points contained in each dual cell
+  contained <- sf::st_contains(sf::st_geometry(dmesh), xy)
   if (missing(weights)) {
-    sapply(1:nrow(dmesh), function(i) {
-      coord <- sf::st_coordinates(sf::st_as_sf(dmesh[i, ]))[, 1:2]
-      coord <- sf::st_polygon(list(coord))
-      sum(sf::st_contains(coord, xy, sparse = FALSE) > 0)
-    })
+    lengths(contained)
   }
   else {
-    result <- rep(0, nrow(dmesh))
-    for (i in 1:nrow(dmesh)) {
-      coord <- sf::st_coordinates(sf::st_as_sf(dmesh[i, ]))[, 1:2]
-      coord <- sf::st_polygon(list(coord))
-      temp_result <- sf::st_contains(coord, xy, sparse = FALSE)
-      temp_result <- temp_result * weights
-      result[i] <- sum(temp_result)
-    }
-    return(result)
+    vapply(contained, function(j) sum(weights[j]), numeric(1))
   }
 }
 #' Internal function to construct the dual mesh
@@ -280,9 +275,12 @@ dual_mesh <- function(mesh) {
     if (mesh$manifold == 'R2') {
         ce <- t(sapply(1:nrow(mesh$graph$tv), function(i)
             colMeans(mesh$loc[mesh$graph$tv[i, ], 1:2])))
+        ## triangles that have node i as vertex k, precomputed for all nodes
+        tri_by_node <- lapply(1:3, function(k)
+            split(seq_len(nrow(mesh$graph$tv)), factor(mesh$graph$tv[, k], levels = 1:mesh$n)))
         pls <- lapply(1:mesh$n, function(i) {
             p <- unique(Reduce('rbind', lapply(1:3, function(k) {
-                j <- which(mesh$graph$tv[, k] == i)
+                j <- tri_by_node[[k]][[i]]
                 if (length(j) > 0)
                     return(rbind(ce[j, , drop = FALSE],
                                  cbind(mesh$loc[mesh$graph$tv[j, k], 1] +

@@ -15,6 +15,8 @@
  + `fit_mlgcp()`: `locs` can now be a `data.frame` as well as a `matrix`.
  + `fit_stelfi()`: a starting value for the background rate can be given as `mu` (previously ignored unless given as `coefs`).
  + `fit_stelfi()`: warns if the mesh is too coarse to accurately integrate the estimated spatial self-excitation kernel over the domain.
+ + `get_weights()`, and the counting of events around each mesh node used by `fit_lgcp()` and `fit_mlgcp()`, are now vectorised (one spatially indexed `sf` call rather than one per mesh node), and the dual mesh is built more efficiently. Results are unchanged, but data preparation for large meshes is much faster (e.g., from about a minute to under two seconds for a mesh with 12,000 nodes and 4,000 events).
+ + `get_weights()`: a domain `sf` with more than one feature (e.g., several adjacent polygons) is now combined before the weights are calculated. Previously the weights of mesh nodes whose dual cell overlapped more than one feature were incorrect.
 
 # stelfi 1.0.3
 
