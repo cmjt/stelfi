@@ -47,7 +47,8 @@ fit_mhawkes(
 \item \code{alpha}, a matrix of the between- and within-stream self-excitement: the diagonal
 elements represent the within-stream excitement and the off-diagonals the excitement between streams,
 \item \code{beta}, a vector of the exponential intensity decay for each stream of the multivariate
-Hawkes process,
+Hawkes process (\eqn{\beta_j} is the rate at which the excitement of stream \eqn{j} decays),
+with \code{alpha[j, k]} \eqn{\le} \code{beta[j]},
 }}
 
 \item{model}{A numeric indicator specifying which model to fit:
@@ -118,7 +119,8 @@ before being passed to \code{TMB}.
 
 A multivariate Hawkes process that allows for between- and within-stream self-excitement.
 The conditional intensity for the \eqn{j^{th}} (\eqn{j = 1, ..., N}) stream is given by
-\eqn{\lambda(t)^{j*} = \mu_j + \Sigma_{k = 1}^N\Sigma_{i:\tau_i<t} \alpha_{jk} e^{(-\beta_j * (t-\tau_i))}}, where
+\eqn{\lambda(t)^{j*} = \mu_j + \Sigma_{k = 1}^N\Sigma_{i:\tau_i<t, s_i = k} \alpha_{jk} e^{(-\beta_j * (t-\tau_i))}}, where
+\eqn{s_i} is the stream of the event at time \eqn{\tau_i} and
 \eqn{j, k  \in (1, ..., N)}. Here, \eqn{\alpha_{jk}} is the excitement caused by the
 \eqn{k^{th}} stream on the \eqn{j^{th}}. Therefore, \eqn{\boldsymbol{\alpha}} is an \eqn{N x N}
 matrix where the diagonals represent the within-stream excitement and the off-diagonals

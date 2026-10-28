@@ -10,7 +10,7 @@
 #' covariate coefficients of each mark.
 #' @param betapp Numeric starting value of the  intercept of point process.
 #' @param marks_coefs_pp The numeric starting value of the coefficient that connects
-#' the mark intensity to the point process intensity.
+#' the mark linear predictor to the log intensity of the point process.
 #' @param log_kappa  The numeric starting value of log of kappas for the
 #' random field(s). The first element is for the random field of the
 #' point process.
@@ -20,7 +20,7 @@
 #' @param cov_overlap Logical, if \code{TRUE} then  marks and point process
 #' share covariates. In that case, To avoid parameter redundancy and non-identifiability
 #' {marks_coefs_pp} multiples only the GMRF of the point process.
-#' If \code{FALSE}, \code{marks_coef_pp} multiples the full value of lambda
+#' If \code{FALSE}, \code{marks_coef_pp} multiples the full log intensity of the point process
 #' @param designmatpp Design matrix for point process. The first column is ones.
 #' If there are covariates, then the covariates are in the subsequent columns.
 #' @param designmatmarks The design matrix for the marks.
@@ -56,23 +56,27 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' \eqn{\Lambda(\boldsymbol{x}) = \textrm{exp}(\boldsymbol{X}\beta + G(\boldsymbol{x}) + \epsilon)},
 #' for design matrix \eqn{\boldsymbol{X}}, coefficients \eqn{\boldsymbol{\beta}}, and random error \eqn{\epsilon}.
 #'
-#' Each mark, \eqn{m_j}, is jointly modelled and has their own random field
-#' \eqn{M_j(s) = f^{-1}((\boldsymbol{X}\beta)_{m_j} + G_{m_j}(\boldsymbol{x}) + \alpha_{m_j}\; G(\boldsymbol{x}) + \epsilon_{m_j})}
-#' where \eqn{\alpha_{.}} are coefficient(s) linking the point process and the mark(s).
+#' Each mark, \eqn{m_j}, is jointly modelled with linear predictor
+#' \eqn{M_j(s) = f^{-1}((\boldsymbol{X}\beta)_{m_j} + \alpha_{m_j}\; \textrm{log}(\Lambda(\boldsymbol{x})) + G_{m_j}(\boldsymbol{x}))}
+#' where \eqn{\alpha_{.}} are coefficient(s) linking the point process and the mark(s), and
+#' \eqn{G_{m_j}} is a random field specific to mark \eqn{j} (included only if \code{fields[j] = 1}).
+#' If the marks and the point process share covariates, then \eqn{\alpha_{m_j}} multiplies only the random field
+#' of the point process, \eqn{G(\boldsymbol{x})}, to avoid non-identifiability.
 #'
 #'  \eqn{M_j(s)} depends on the distribution of the marks. If the marks are from a Poisson distribution, it is
 #' the intensity (as with the point process). If the marks are from a Binomial distribution, it is the
 #' success probability, and the user must supply the number of trials for each event (via \code{strfixed}).
 #' If the marks are normally distributed then this models the mean, and the user must supply
-#' the standard deviation (via \code{strfixed}). The user can choose for the point processes and the marks to
-#' share a common GMRF, i.e. \eqn{G_m(s) = G_{pp}(s)}; this is controlled via the argument \code{fields}.
+#' the standard deviation (via \code{strfixed}). If \code{fields[j] = 0} then mark \eqn{j} has no random
+#' field of its own and depends on space only through the (scaled, by \eqn{\alpha_{m_j}}) log intensity of the
+#' point process.
 #'
 #' @references Lindgren, F., Rue, H., and Lindström, J. (2011)
 #' An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic
 #' partial differential equation approach. \emph{Journal of the Royal Statistical Society: Series B
 #' (Statistical Methodology)}, \strong{73}: 423--498.
 #' 
-#' @param locs A \code{data.frame} of \code{x} and \code{y} locations, 2xn.
+#' @param locs A \code{data.frame} (or \code{matrix}) of \code{x} and \code{y} locations, 2xn.
 #' @param marks  A matrix of marks for each observation of the point pattern.
 #' @param parameters a list of named parameters:
 #' log_tau, log_kappa, betamarks, betapp, marks_coefs_pp.
@@ -92,7 +96,8 @@ fit_mlgcp_tmb <- function(ypp, marks, lmat, spde, w, strfixed, methods,
 #' \item Gamma, then this is the log of the scale.
 #' }
 #' @param fields A binary vector indicating whether there is a new random
-#' field for each mark. By default, each mark has its own random field.
+#' field for each mark. By default, each mark has its own random field. If \code{0}, the
+#' mark has no field of its own (see details).
 #' @param covariates Covariate(s) corresponding to each area in the spatial mesh
 #' @param pp_covariates Which columns of the covariates apply to the point process
 #' @param marks_covariates Which columns of the covariates apply to the marks.
@@ -218,7 +223,7 @@ fit_mlgcp <-  function(locs, sf, marks, smesh, parameters = list(), methods,
     ## SPDE
     spde <- fmesher::fm_fem(smesh, alpha = 2)[c("c0", "g1", "g2")]
     names(spde) <-  c("M0", "M1", "M2") ## to satisfy TMB
-    lmat <-  fmesher::fm_basis(smesh, locs)
+    lmat <-  fmesher::fm_basis(smesh, as.matrix(as.data.frame(locs)[, c("x", "y")]))
     if(!missing(covariates)) {
         ## overlap of covariates
         if (length(Reduce(intersect, list(marks_covariates, pp_covariates))) > 0) {

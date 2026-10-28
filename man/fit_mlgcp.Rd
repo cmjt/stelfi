@@ -22,7 +22,7 @@ fit_mlgcp(
 )
 }
 \arguments{
-\item{locs}{A \code{data.frame} of \code{x} and \code{y} locations, 2xn.}
+\item{locs}{A \code{data.frame} (or \code{matrix}) of \code{x} and \code{y} locations, 2xn.}
 
 \item{sf}{An \code{sf} of type \code{POLYGON} specifying the spatial region
 of the domain.}
@@ -52,7 +52,8 @@ Defaults to \code{1}. If mark distribution
 }}
 
 \item{fields}{A binary vector indicating whether there is a new random
-field for each mark. By default, each mark has its own random field.}
+field for each mark. By default, each mark has its own random field. If \code{0}, the
+mark has no field of its own (see details).}
 
 \item{covariates}{Covariate(s) corresponding to each area in the spatial mesh}
 
@@ -86,16 +87,20 @@ The random intensity surface of the point process is (as \code{\link{fit_lgcp}})
 \eqn{\Lambda(\boldsymbol{x}) = \textrm{exp}(\boldsymbol{X}\beta + G(\boldsymbol{x}) + \epsilon)},
 for design matrix \eqn{\boldsymbol{X}}, coefficients \eqn{\boldsymbol{\beta}}, and random error \eqn{\epsilon}.
 
-Each mark, \eqn{m_j}, is jointly modelled and has their own random field
-\eqn{M_j(s) = f^{-1}((\boldsymbol{X}\beta)_{m_j} + G_{m_j}(\boldsymbol{x}) + \alpha_{m_j}\; G(\boldsymbol{x}) + \epsilon_{m_j})}
-where \eqn{\alpha_{.}} are coefficient(s) linking the point process and the mark(s).
+Each mark, \eqn{m_j}, is jointly modelled with linear predictor
+\eqn{M_j(s) = f^{-1}((\boldsymbol{X}\beta)_{m_j} + \alpha_{m_j}\; \textrm{log}(\Lambda(\boldsymbol{x})) + G_{m_j}(\boldsymbol{x}))}
+where \eqn{\alpha_{.}} are coefficient(s) linking the point process and the mark(s), and
+\eqn{G_{m_j}} is a random field specific to mark \eqn{j} (included only if \code{fields[j] = 1}).
+If the marks and the point process share covariates, then \eqn{\alpha_{m_j}} multiplies only the random field
+of the point process, \eqn{G(\boldsymbol{x})}, to avoid non-identifiability.
 
  \eqn{M_j(s)} depends on the distribution of the marks. If the marks are from a Poisson distribution, it is
 the intensity (as with the point process). If the marks are from a Binomial distribution, it is the
 success probability, and the user must supply the number of trials for each event (via \code{strfixed}).
 If the marks are normally distributed then this models the mean, and the user must supply
-the standard deviation (via \code{strfixed}). The user can choose for the point processes and the marks to
-share a common GMRF, i.e. \eqn{G_m(s) = G_{pp}(s)}; this is controlled via the argument \code{fields}.
+the standard deviation (via \code{strfixed}). If \code{fields[j] = 0} then mark \eqn{j} has no random
+field of its own and depends on space only through the (scaled, by \eqn{\alpha_{m_j}}) log intensity of the
+point process.
 }
 \examples{
 \donttest{

@@ -270,19 +270,27 @@ prep_data_lgcp <- function(locs, sf, smesh, tmesh) {
     ## spatial or spatiotemporal
     if (!missing(tmesh)) {
         k <- length(tmesh$loc)
+        ## each event is assigned to its nearest time knot
         t.breaks <- sort(c(tmesh$loc[c(1, k)],
                            tmesh$loc[2:k - 1] / 2 + tmesh$loc[2:k] / 2))
-        time <- factor(findInterval(locs$t, t.breaks),
-                       levels = 1:(length(t.breaks) - 1))
-        y.pp <- list()
-        for(i in unique(time)) {
-            y.pp[[i]] <-  points_in_mesh(locs[time == i, ], w)
-        }
-        ypp <- as.numeric(unlist(y.pp))
+        if (any(locs$t < t.breaks[1] | locs$t > t.breaks[k + 1]))
+            stop("all times (locs$t) must lie within the range of the time knots (tmesh$loc)")
+        time <- findInterval(locs$t, t.breaks, rightmost.closed = TRUE)
+        ## counts at each mesh node for each time knot, in knot order
+        ## (time knots with no events have zero counts)
+        ypp <- unlist(lapply(seq_len(k), function(i) {
+            if (any(time == i)) {
+                points_in_mesh(locs[time == i, , drop = FALSE], w)
+            } else {
+                rep(0, nv)
+            }
+        }))
+        ypp <- as.numeric(ypp)
         w.t <- Matrix::diag(fmesher::fm_fem(tmesh)$c0)
         expected <- w_areas[rep(1:nv, k)] * (w.t[rep(1:k, each = nv)])
         A <-  Matrix::sparseMatrix(i = 1:(k*nv), j = 1:(k*nv), x = 1) ## (testing) fmesher::fm_basis(smesh, smesh$loc[rep(1:nv, k), ])
-        idx <- rep(1, length(ypp))
+        ## nodes with no area within the domain do not contribute to the likelihood
+        idx <- as.numeric(expected > 0)
     }else{
         ypp <- points_in_mesh(locs, w)
         expected <- w_areas

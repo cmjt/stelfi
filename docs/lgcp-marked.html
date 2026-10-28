@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Using stelfi">
+
+<title>7&nbsp; Marked log-Gaussian Cox process – The `R` package `stelfi`</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./stelfi.html" rel="next">
+<link href="./lgcp.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-0346a4669161aa0b1fb4455b7891709f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">The <code>R</code> package <code>stelfi</code></span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./lgcp-marked.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Marked log-Gaussian Cox process</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/cmjt/stelfi" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:c.jonestodd@auckland.ac.nz" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope"></i></a>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./univariate-hawkes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes process</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./marked-hawkes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes process</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multi-hawkes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes process</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mesh.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Meshes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lgcp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Spatial and spatiotemporal log-Gaussian Cox processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lgcp-marked.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Marked log-Gaussian Cox process</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stelfi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Spatiotemporal self-exciting models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rtmb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Simple <code>RTMB</code> templates</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#the-model-and-your-data" id="toc-the-model-and-your-data" class="nav-link active" data-scroll-target="#the-model-and-your-data"><span class="header-section-number">7.1</span> The model and your data</a>
+  <ul class="collapse">
+  <li><a href="#sec-mlgcp-data" id="toc-sec-mlgcp-data" class="nav-link" data-scroll-target="#sec-mlgcp-data"><span class="header-section-number">7.1.1</span> What your data need to look like</a></li>
+  </ul></li>
+  <li><a href="#sec-mlgcp-sim" id="toc-sec-mlgcp-sim" class="nav-link" data-scroll-target="#sec-mlgcp-sim"><span class="header-section-number">7.2</span> A simulated example</a>
+  <ul class="collapse">
+  <li><a href="#fitting-the-model-using-stelfi" id="toc-fitting-the-model-using-stelfi" class="nav-link" data-scroll-target="#fitting-the-model-using-stelfi"><span class="header-section-number">7.2.1</span> Fitting the model using <code>stelfi</code></a></li>
+  <li><a href="#comparison-with-inlabru" id="toc-comparison-with-inlabru" class="nav-link" data-scroll-target="#comparison-with-inlabru"><span class="header-section-number">7.2.2</span> Comparison with <code>inlabru</code></a></li>
+  </ul></li>
+  <li><a href="#sec-mlgcp-applied" id="toc-sec-mlgcp-applied" class="nav-link" data-scroll-target="#sec-mlgcp-applied"><span class="header-section-number">7.3</span> An applied example: fatal terrorism attacks in Iraq</a>
+  <ul class="collapse">
+  <li><a href="#preparing-the-data" id="toc-preparing-the-data" class="nav-link" data-scroll-target="#preparing-the-data"><span class="header-section-number">7.3.1</span> Preparing the data</a></li>
+  <li><a href="#fitting-the-model" id="toc-fitting-the-model" class="nav-link" data-scroll-target="#fitting-the-model"><span class="header-section-number">7.3.2</span> Fitting the model</a></li>
+  </ul></li>
+  <li><a href="#sec-mlgcp-gof" id="toc-sec-mlgcp-gof" class="nav-link" data-scroll-target="#sec-mlgcp-gof"><span class="header-section-number">7.4</span> Goodness-of-fit</a>
+  <ul class="collapse">
+  <li><a href="#the-simulated-example" id="toc-the-simulated-example" class="nav-link" data-scroll-target="#the-simulated-example"><span class="header-section-number">7.4.1</span> The simulated example</a></li>
+  <li><a href="#the-applied-example" id="toc-the-applied-example" class="nav-link" data-scroll-target="#the-applied-example"><span class="header-section-number">7.4.2</span> The applied example</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-mlgcp" class="quarto-section-identifier"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Marked log-Gaussian Cox process</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<details class="code-fold">
+<summary>Packages used in this chapter</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stelfi)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="the-model-and-your-data" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="the-model-and-your-data"><span class="header-section-number">7.1</span> The model and your data</h2>
+<p>Often something is measured on each event as well as its location: the number of people killed in an attack, the size of a tree, or whether a disease case was severe. These measurements are called <strong>marks</strong>. A marked LGCP models the locations of the events <em>and</em> their marks together. This allows you to ask not only where events happen (as in <a href="lgcp.html" class="quarto-xref"><span>Chapter 6</span></a>) but also how the marks vary over space, and whether the marks are related to how many events there are (e.g., are attacks more deadly where attacks are more frequent?).</p>
+<p>In <code>stelfi</code> the locations follow an LGCP exactly as in <a href="lgcp.html" class="quarto-xref"><span>Chapter 6</span></a>,</p>
+<p><span class="math display">\[\lambda(s) = \text{exp}(\beta_{pp} + G_{pp}(s)),\]</span></p>
+<p>where the subscript <span class="math inline">\(pp\)</span> stands for “point process”. Each mark <span class="math inline">\(j\)</span> then has its own linear predictor,</p>
+<p><span class="math display">\[\eta_j(s) = \beta_{m_j} + \alpha_j \log \lambda(s) + G_{m_j}(s),\]</span></p>
+<p>where <span class="math inline">\(\beta_{m_j}\)</span> is the intercept for the mark, <span class="math inline">\(G_{m_j}(s)\)</span> is an (optional) random field for the mark, <span class="math inline">\(\log \lambda(s) = \beta_{pp} + G_{pp}(s)\)</span> is the log intensity of the point process, and <span class="math inline">\(\alpha_j\)</span> links the mark to the point process: if <span class="math inline">\(\alpha_j &gt; 0\)</span> the mark tends to be larger where events are more common, if <span class="math inline">\(\alpha_j &lt; 0\)</span> it tends to be smaller, and if <span class="math inline">\(\alpha_j = 0\)</span> the mark is unrelated to the intensity. The linear predictor is related to the mark through a distribution chosen using the <code>methods</code> argument:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 21%">
+<col style="width: 18%">
+<col style="width: 47%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><code>methods</code></th>
+<th style="text-align: left;">Mark distribution</th>
+<th style="text-align: left;"><span class="math inline">\(\eta_j(s)\)</span> is</th>
+<th style="text-align: left;">Fixed structural parameter (<code>strfixed</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><code>0</code></td>
+<td style="text-align: left;">Gaussian</td>
+<td style="text-align: left;">the mean</td>
+<td style="text-align: left;">the log of the standard deviation</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>1</code></td>
+<td style="text-align: left;">Poisson</td>
+<td style="text-align: left;">the log of the mean</td>
+<td style="text-align: left;">not used</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>2</code></td>
+<td style="text-align: left;">Binomial</td>
+<td style="text-align: left;">the logit of the success probability</td>
+<td style="text-align: left;">the number of trials</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>3</code></td>
+<td style="text-align: left;">Gamma</td>
+<td style="text-align: left;">the log of the mean</td>
+<td style="text-align: left;">the log of the scale</td>
+</tr>
+</tbody>
+</table>
+<p><code>get_coefs()</code> reports the intercepts (<code>betapp</code>, <code>betamarks</code>), the link coefficients (<code>marks_coefs_pp</code>, the <span class="math inline">\(\alpha_j\)</span>) and the parameters <code>tau</code> and <code>kappa</code> of each random field (the first for the point process). The range and standard deviation of each field are <span class="math inline">\(\sqrt{8}/\kappa\)</span> and <span class="math inline">\(1/\sqrt{4\pi\kappa^2\tau^2}\)</span>, as in <a href="lgcp.html" class="quarto-xref"><span>Chapter 6</span></a>.</p>
+<section id="sec-mlgcp-data" class="level3" data-number="7.1.1">
+<h3 data-number="7.1.1" class="anchored" data-anchor-id="sec-mlgcp-data"><span class="header-section-number">7.1.1</span> What your data need to look like</h3>
+<p><code>fit_mlgcp()</code> needs everything that <code>fit_lgcp()</code> needs (<a href="lgcp.html#sec-lgcp-data" class="quarto-xref"><span>Section 6.1.1</span></a>) and some extra arguments:</p>
+<ul>
+<li><code>locs</code>, the event locations, a data frame (or matrix) with columns named <code>x</code> and <code>y</code>;</li>
+<li><code>marks</code>, a <strong>matrix</strong> with one row per event (in the same order as <code>locs</code>) and one column per mark, even if there is only one mark;</li>
+<li><code>methods</code>, a vector giving the distribution of each mark (see the table above);</li>
+<li><code>fields</code>, a vector of 0s and 1s, one per mark, saying whether each mark has its own random field <span class="math inline">\(G_{m_j}(s)\)</span> (1, the default) or not (0). Without its own field, a mark depends on location only through <span class="math inline">\(\alpha_j \log \lambda(s)\)</span>;</li>
+<li><code>strfixed</code>, a matrix the same size as <code>marks</code> with the fixed structural parameter for each mark of each event (see the table above); and</li>
+<li><code>parameters</code>, a list of starting values: <code>betapp</code> (a number), <code>betamarks</code> (a matrix with one column per mark), <code>marks_coefs_pp</code> (one per mark), and <code>log_tau</code> and <code>log_kappa</code> (one per field, the point process field first, so of length <code>1 + sum(fields)</code>).</li>
+</ul>
+<p>Things to be aware of:</p>
+<ul>
+<li><strong>No missing marks.</strong> Every event needs a value for every mark. Removing events with missing marks also removes them from the point pattern, so the intensity will be underestimated; if many marks are missing, consider fitting the locations with <code>fit_lgcp()</code> using all events.</li>
+<li><strong>Gaussian and gamma marks have a <em>fixed</em> scale.</strong> <code>stelfi</code> does not estimate the standard deviation of Gaussian marks (or the scale of gamma marks); you supply its log through <code>strfixed</code>. A natural choice is the standard deviation of the marks, which is an upper bound for the residual standard deviation, and it is sensible to check that the conclusions do not change for smaller values (<a href="#sec-mlgcp-gof" class="quarto-xref"><span>Section 7.4</span></a>).</li>
+<li><strong>Binomial marks need the number of trials.</strong> For a yes/no mark (e.g., fatal or not) the marks are 0/1 and the number of trials is 1, which is the default (<code>strfixed</code> is a matrix of 1s).</li>
+<li><strong>Poisson marks are counts</strong> and the Poisson distribution assumes the variance equals the mean. Counts with occasional very large values (e.g., the number killed in an attack) are usually much more variable than this, and a binary or transformed mark may be more appropriate.</li>
+<li><strong>Marks are modelled at the mesh nodes</strong> and interpolated to the events, so the mesh (<a href="mesh.html" class="quarto-xref"><span>Chapter 5</span></a>) affects the marks as well as the point process.</li>
+</ul>
+</section>
+</section>
+<section id="sec-mlgcp-sim" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="sec-mlgcp-sim"><span class="header-section-number">7.2</span> A simulated example</h2>
+<p>Data were simulated from a marked LGCP with a single Gaussian mark within a 3 by 3 square. The point process has intercept <span class="math inline">\(\beta_{pp} = 4\)</span> and a field with range <span class="math inline">\(r_{pp} = 1.5\)</span> and standard deviation <span class="math inline">\(\sigma_{pp} = 1\)</span>. The mark has intercept <span class="math inline">\(\beta_m = 1\)</span>, link <span class="math inline">\(\alpha = 0.5\)</span> (so marks are larger where events are more common), its own field with range <span class="math inline">\(r_m = 1.5\)</span> and standard deviation <span class="math inline">\(\sigma_m = 0.5\)</span>, and a residual standard deviation of 0.3. The simulation has three steps:</p>
+<ol type="1">
+<li><strong>Fields.</strong> Two independent random fields, <span class="math inline">\(G_{pp}(s)\)</span> and <span class="math inline">\(G_m(s)\)</span>, are simulated at the nodes of a mesh using <code>sim_lgcp()</code> (only the simulated field, <code>$x</code>, is used). <code>sim_lgcp()</code> takes the field parameters on the internal scale, so the range and standard deviation are first converted to <span class="math inline">\(\kappa = \sqrt{8}/r\)</span> and <span class="math inline">\(\tau = 1/(\sigma\sqrt{4\pi}\kappa)\)</span> by the function <code>spde_pars()</code>.</li>
+<li><strong>Events.</strong> The events are simulated by <em>thinning</em>: candidate events are simulated uniformly over the square at the maximum of the intensity <span class="math inline">\(\lambda_{\max}\)</span>, and each candidate at location <span class="math inline">\(s\)</span> is kept with probability <span class="math inline">\(\lambda(s)/\lambda_{\max}\)</span>, where <span class="math inline">\(\log \lambda(s) = \beta_{pp} + G_{pp}(s)\)</span> and the field at <span class="math inline">\(s\)</span> is interpolated from the mesh nodes using <code>fmesher::fm_basis()</code>.</li>
+<li><strong>Marks.</strong> The mark of each event is drawn from a normal distribution with mean <span class="math inline">\(\eta(s) = \beta_m + \alpha \log \lambda(s) + G_m(s)\)</span> and standard deviation 0.3.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>loc.d <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="sc">*</span> <span class="fu">cbind</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>domain <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_sf</span>(<span class="at">geometry =</span> sf<span class="sc">::</span><span class="fu">st_sfc</span>(sf<span class="sc">::</span><span class="fu">st_polygon</span>(<span class="fu">list</span>(loc.d))))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>smesh <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_mesh_2d</span>(<span class="at">loc.domain =</span> loc.d, <span class="at">offset =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="dv">1</span>),</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                             <span class="at">max.edge =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.7</span>), <span class="at">cutoff =</span> <span class="fl">0.05</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>truth <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">betapp =</span> <span class="dv">4</span>, <span class="at">range_pp =</span> <span class="fl">1.5</span>, <span class="at">sigma_pp =</span> <span class="dv">1</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">betam =</span> <span class="dv">1</span>, <span class="at">range_m =</span> <span class="fl">1.5</span>, <span class="at">sigma_m =</span> <span class="fl">0.5</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">sd_m =</span> <span class="fl">0.3</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>spde_pars <span class="ot">&lt;-</span> <span class="cf">function</span>(range, sigma) {</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    kappa <span class="ot">&lt;-</span> <span class="fu">unname</span>(<span class="fu">sqrt</span>(<span class="dv">8</span>) <span class="sc">/</span> range); sigma <span class="ot">&lt;-</span> <span class="fu">unname</span>(sigma)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="at">log_tau =</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">/</span> (sigma <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">4</span> <span class="sc">*</span> pi) <span class="sc">*</span> kappa)), <span class="at">log_kappa =</span> <span class="fu">log</span>(kappa))</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 1. the fields at the mesh nodes</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>g_pp <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(<span class="fu">sim_lgcp</span>(<span class="fu">c</span>(<span class="at">beta =</span> <span class="dv">0</span>, <span class="fu">spde_pars</span>(truth[<span class="st">"range_pp"</span>], truth[<span class="st">"sigma_pp"</span>])),</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                           <span class="at">sf =</span> domain, <span class="at">smesh =</span> smesh)<span class="sc">$</span>x)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>g_m <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(<span class="fu">sim_lgcp</span>(<span class="fu">c</span>(<span class="at">beta =</span> <span class="dv">0</span>, <span class="fu">spde_pars</span>(truth[<span class="st">"range_m"</span>], truth[<span class="st">"sigma_m"</span>])),</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>                          <span class="at">sf =</span> domain, <span class="at">smesh =</span> smesh)<span class="sc">$</span>x)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 2. the events, by thinning</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>lmax <span class="ot">&lt;-</span> <span class="fu">exp</span>(truth[<span class="st">"betapp"</span>] <span class="sc">+</span> <span class="fu">max</span>(g_pp))</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>n0 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="dv">1</span>, lmax <span class="sc">*</span> <span class="dv">9</span>) <span class="do">## candidates over the 3 by 3 square</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>cand <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="fu">runif</span>(n0, <span class="dv">0</span>, <span class="dv">3</span>), <span class="at">y =</span> <span class="fu">runif</span>(n0, <span class="dv">0</span>, <span class="dv">3</span>))</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_basis</span>(smesh, <span class="at">loc =</span> <span class="fu">as.matrix</span>(cand))</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>log_lambda <span class="ot">&lt;-</span> truth[<span class="st">"betapp"</span>] <span class="sc">+</span> <span class="fu">as.vector</span>(A <span class="sc">%*%</span> g_pp)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>keep <span class="ot">&lt;-</span> <span class="fu">runif</span>(n0) <span class="sc">&lt;</span> <span class="fu">exp</span>(log_lambda) <span class="sc">/</span> lmax</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> cand[keep, ]</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="do">## 3. the marks</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>eta <span class="ot">&lt;-</span> truth[<span class="st">"betam"</span>] <span class="sc">+</span> truth[<span class="st">"alpha"</span>] <span class="sc">*</span> log_lambda[keep] <span class="sc">+</span> <span class="fu">as.vector</span>(A[keep, ] <span class="sc">%*%</span> g_m)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>sim<span class="sc">$</span>m <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="fu">nrow</span>(sim), <span class="at">mean =</span> eta, <span class="at">sd =</span> truth[<span class="st">"sd_m"</span>])</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(sim) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The data are a data frame of 672 event locations and the corresponding marks:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          x         y        m
+1 0.8616250 2.6786497 3.727222
+2 2.5772541 0.2420001 2.848326
+3 1.5616079 0.2014157 3.515483
+4 1.2658525 2.8298075 3.960114
+5 1.4650062 2.3107670 3.951888
+6 0.6848285 1.9421926 2.986840</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sim, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">col =</span> m)) <span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">col =</span> <span class="st">"Mark"</span>) <span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_viridis_c</span>() <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_sf</span>(<span class="at">data =</span> domain, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp-marked_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="fitting-the-model-using-stelfi" class="level3" data-number="7.2.1">
+<h3 data-number="7.2.1" class="anchored" data-anchor-id="fitting-the-model-using-stelfi"><span class="header-section-number">7.2.1</span> Fitting the model using <code>stelfi</code></h3>
+<p>The mesh used to simulate the data is also used to fit the model, and the locations and marks are put into matrices. In practice the residual standard deviation of the marks is unknown, so, as suggested in <a href="#sec-mlgcp-data" class="quarto-xref"><span>Section 7.1.1</span></a>, the standard deviation of the Gaussian mark is fixed at the standard deviation of the marks (through <code>strfixed</code>, on the log scale). The mark is given its own random field (<code>fields = 1</code>), so there are two fields: one for the point process and one for the mark.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>locs <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="at">x =</span> sim<span class="sc">$</span>x, <span class="at">y =</span> sim<span class="sc">$</span>y)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>marks <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="at">m =</span> sim<span class="sc">$</span>m)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>strfixed <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">log</span>(<span class="fu">sd</span>(sim<span class="sc">$</span>m)), <span class="at">nrow =</span> <span class="fu">nrow</span>(locs), <span class="at">ncol =</span> <span class="dv">1</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">betapp =</span> <span class="dv">0</span>, <span class="at">betamarks =</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> <span class="dv">1</span>, <span class="at">ncol =</span> <span class="dv">1</span>),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">marks_coefs_pp =</span> <span class="dv">0</span>, <span class="at">log_tau =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="at">log_kappa =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_mlgcp</span>(<span class="at">locs =</span> locs, <span class="at">marks =</span> marks, <span class="at">sf =</span> domain, <span class="at">smesh =</span> smesh,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">parameters =</span> parameters, <span class="at">methods =</span> <span class="dv">0</span>, <span class="at">fields =</span> <span class="dv">1</span>, <span class="at">strfixed =</span> strfixed)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>stelfi <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>stelfi</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                Estimate Std. Error
+betamarks      0.7190827 0.40281119
+betapp         4.0383804 0.26805757
+marks_coefs_pp 0.5851238 0.09128521
+tau            0.1544795 0.02443375
+tau            0.6057058 0.26202397
+kappa          2.4022381 0.56684950
+kappa          2.1592333 0.94172066</code></pre>
+</div>
+</div>
+<p>The estimated fields are returned by <code>get_fields()</code> as a matrix with one column per field (the point process field first).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fields <span class="ot">&lt;-</span> <span class="fu">get_fields</span>(fit, smesh)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>patchwork<span class="sc">::</span><span class="fu">wrap_plots</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show_field</span>(fields[, <span class="dv">1</span>], <span class="at">smesh =</span> smesh, <span class="at">sf =</span> domain, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggtitle</span>(<span class="st">"Point process field"</span>),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show_field</span>(fields[, <span class="dv">2</span>], <span class="at">smesh =</span> smesh, <span class="at">sf =</span> domain, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggtitle</span>(<span class="st">"Mark field"</span>),</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">nrow =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp-marked_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="comparison-with-inlabru" class="level3" data-number="7.2.2">
+<h3 data-number="7.2.2" class="anchored" data-anchor-id="comparison-with-inlabru"><span class="header-section-number">7.2.2</span> Comparison with <code>inlabru</code></h3>
+<p><code>inlabru</code> (<span class="citation" data-cites="inlabru">Bachl et al. (<a href="references.html#ref-inlabru" role="doc-biblioref">2019</a>)</span>) can fit joint models with several likelihoods that share components. Below, the point process is an LGCP (<code>"cp"</code>) with its own intercept and field, and the mark is Gaussian with its own intercept, its own field, and a scaled copy of the point process field (<code>copy = "field_pp"</code>, the scaling being estimated). The Gaussian standard deviation is fixed at the same value as for <code>stelfi</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(inlabru)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(INLA)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>pts <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(sim, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>))</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>matern_pp <span class="ot">&lt;-</span> <span class="fu">inla.spde2.pcmatern</span>(smesh, <span class="at">prior.sigma =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="fl">0.01</span>), <span class="at">prior.range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.01</span>))</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>matern_m <span class="ot">&lt;-</span> <span class="fu">inla.spde2.pcmatern</span>(smesh, <span class="at">prior.sigma =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="fl">0.01</span>), <span class="at">prior.range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.01</span>))</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>cmp <span class="ot">&lt;-</span> <span class="er">~</span> <span class="fu">Intercept_pp</span>(<span class="dv">1</span>) <span class="sc">+</span> <span class="fu">field_pp</span>(geometry, <span class="at">model =</span> matern_pp) <span class="sc">+</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Intercept_m</span>(<span class="dv">1</span>) <span class="sc">+</span> <span class="fu">field_copy</span>(geometry, <span class="at">copy =</span> <span class="st">"field_pp"</span>, <span class="at">fixed =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">field_m</span>(geometry, <span class="at">model =</span> matern_m)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>lik_pp <span class="ot">&lt;-</span> <span class="fu">bru_obs</span>(<span class="st">"cp"</span>, <span class="at">formula =</span> geometry <span class="sc">~</span> Intercept_pp <span class="sc">+</span> field_pp,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>                  <span class="at">data =</span> pts, <span class="at">samplers =</span> domain, <span class="at">domain =</span> <span class="fu">list</span>(<span class="at">geometry =</span> smesh))</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>lik_m <span class="ot">&lt;-</span> <span class="fu">bru_obs</span>(<span class="st">"gaussian"</span>, <span class="at">formula =</span> m <span class="sc">~</span> Intercept_m <span class="sc">+</span> field_copy <span class="sc">+</span> field_m, <span class="at">data =</span> pts,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control.family =</span> <span class="fu">list</span>(<span class="at">hyper =</span> <span class="fu">list</span>(<span class="at">prec =</span> <span class="fu">list</span>(<span class="at">initial =</span> <span class="sc">-</span><span class="dv">2</span> <span class="sc">*</span> <span class="fu">log</span>(<span class="fu">sd</span>(sim<span class="sc">$</span>m)),</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>                                                                 <span class="at">fixed =</span> <span class="cn">TRUE</span>))))</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>fit_bru <span class="ot">&lt;-</span> <span class="fu">bru</span>(cmp, lik_pp, lik_m,</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>               <span class="at">options =</span> <span class="fu">list</span>(<span class="at">control.inla =</span> <span class="fu">list</span>(<span class="at">int.strategy =</span> <span class="st">"eb"</span>)))</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>fit_bru<span class="sc">$</span>summary.fixed[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 mean        sd
+Intercept_pp 4.074627 0.3314925
+Intercept_m  3.085065 0.2480326</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fit_bru<span class="sc">$</span>summary.hyperpar[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                         mean         sd
+Range for field_pp  1.8764875 0.53594053
+Stdev for field_pp  0.7864042 0.17449347
+Range for field_m   1.7222173 0.98612120
+Stdev for field_m   0.2436282 0.08035900
+Beta for field_copy 0.6968687 0.09230247</code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code for this table</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fmt <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">paste0</span>(<span class="fu">round</span>(x[<span class="dv">1</span>], <span class="dv">3</span>), <span class="st">" ("</span>, <span class="fu">round</span>(x[<span class="dv">2</span>], <span class="dv">3</span>), <span class="st">")"</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>tk <span class="ot">&lt;-</span> stelfi[<span class="fu">rownames</span>(stelfi) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"tau"</span>, <span class="st">"kappa"</span>), ]</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>tau <span class="ot">&lt;-</span> tk[<span class="fu">rownames</span>(tk) <span class="sc">==</span> <span class="st">"tau"</span>, <span class="dv">1</span>]; kappa <span class="ot">&lt;-</span> tk[<span class="fu">rownames</span>(tk) <span class="sc">==</span> <span class="st">"kappa"</span>, <span class="dv">1</span>]</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>st_range <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="dv">8</span>) <span class="sc">/</span> kappa</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>st_sd <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="dv">4</span> <span class="sc">*</span> pi <span class="sc">*</span> kappa<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> tau<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>hp <span class="ot">&lt;-</span> fit_bru<span class="sc">$</span>summary.hyperpar</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">Truth =</span> <span class="fu">c</span>(truth[<span class="st">"betapp"</span>], truth[<span class="st">"range_pp"</span>], truth[<span class="st">"sigma_pp"</span>],</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>              truth[<span class="st">"betam"</span>] <span class="sc">+</span> truth[<span class="st">"alpha"</span>] <span class="sc">*</span> truth[<span class="st">"betapp"</span>],</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>              truth[<span class="st">"range_m"</span>], truth[<span class="st">"sigma_m"</span>], truth[<span class="st">"alpha"</span>]),</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">stelfi =</span> <span class="fu">c</span>(<span class="fu">fmt</span>(stelfi[<span class="st">"betapp"</span>, ]), <span class="fu">round</span>(st_range[<span class="dv">1</span>], <span class="dv">3</span>), <span class="fu">round</span>(st_sd[<span class="dv">1</span>], <span class="dv">3</span>),</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>               <span class="fu">round</span>(stelfi[<span class="st">"betamarks"</span>, <span class="dv">1</span>] <span class="sc">+</span> stelfi[<span class="st">"marks_coefs_pp"</span>, <span class="dv">1</span>] <span class="sc">*</span> stelfi[<span class="st">"betapp"</span>, <span class="dv">1</span>], <span class="dv">3</span>),</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>               <span class="fu">round</span>(st_range[<span class="dv">2</span>], <span class="dv">3</span>), <span class="fu">round</span>(st_sd[<span class="dv">2</span>], <span class="dv">3</span>),</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>               <span class="fu">fmt</span>(stelfi[<span class="st">"marks_coefs_pp"</span>, ])),</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">inlabru =</span> <span class="fu">c</span>(<span class="fu">fmt</span>(fit_bru<span class="sc">$</span>summary.fixed[<span class="st">"Intercept_pp"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]),</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>                <span class="fu">round</span>(hp[<span class="st">"Range for field_pp"</span>, <span class="dv">1</span>], <span class="dv">3</span>), <span class="fu">round</span>(hp[<span class="st">"Stdev for field_pp"</span>, <span class="dv">1</span>], <span class="dv">3</span>),</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>                <span class="fu">fmt</span>(fit_bru<span class="sc">$</span>summary.fixed[<span class="st">"Intercept_m"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]),</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>                <span class="fu">round</span>(hp[<span class="st">"Range for field_m"</span>, <span class="dv">1</span>], <span class="dv">3</span>), <span class="fu">round</span>(hp[<span class="st">"Stdev for field_m"</span>, <span class="dv">1</span>], <span class="dv">3</span>),</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>                <span class="fu">fmt</span>(hp[<span class="st">"Beta for field_copy"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])))</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">t</span>(params), <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">beta_{pp}$"</span>, <span class="st">"$r_{pp}$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">sigma_{pp}$"</span>,</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>                                      <span class="st">"$</span><span class="sc">\\</span><span class="st">beta_{m}$"</span>, <span class="st">"$r_{m}$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">sigma_{m}$"</span>, <span class="st">"link"</span>),</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>             <span class="at">escape =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 9%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 8%">
+<col style="width: 13%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><span class="math inline">\(\beta_{pp}\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(r_{pp}\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\sigma_{pp}\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\beta_{m}\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(r_{m}\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\sigma_{m}\)</span></th>
+<th style="text-align: left;">link</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Truth</td>
+<td style="text-align: left;">4.0</td>
+<td style="text-align: left;">1.5</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">3.0</td>
+<td style="text-align: left;">1.5</td>
+<td style="text-align: left;">0.5</td>
+<td style="text-align: left;">0.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stelfi</td>
+<td style="text-align: left;">4.038 (0.268)</td>
+<td style="text-align: left;">1.177</td>
+<td style="text-align: left;">0.76</td>
+<td style="text-align: left;">3.082</td>
+<td style="text-align: left;">1.31</td>
+<td style="text-align: left;">0.216</td>
+<td style="text-align: left;">0.585 (0.091)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">inlabru</td>
+<td style="text-align: left;">4.075 (0.331)</td>
+<td style="text-align: left;">1.876</td>
+<td style="text-align: left;">0.786</td>
+<td style="text-align: left;">3.085 (0.248)</td>
+<td style="text-align: left;">1.722</td>
+<td style="text-align: left;">0.244</td>
+<td style="text-align: left;">0.697 (0.092)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>In <code>stelfi</code> the link <span class="math inline">\(\alpha\)</span> multiplies the whole log intensity, <span class="math inline">\(\beta_{pp} + G_{pp}(s)\)</span>, whereas in <code>inlabru</code> the scaling multiplies only the field <span class="math inline">\(G_{pp}(s)\)</span>. The two models are the same, but the mark intercepts differ by <span class="math inline">\(\alpha \beta_{pp}\)</span>, so the table shows <span class="math inline">\(\beta_m + \alpha \beta_{pp}\)</span> for <code>stelfi</code> and for the truth (<span class="math inline">\(1 + 0.5 \times 4 = 3\)</span>). The two packages agree closely with each other, and with the truth, on the point process intercept and the mark intercept, and both correctly find that the marks are larger where events are more common (a positive link), although both overestimate the link. As in <a href="lgcp.html#sec-lgcp-sim" class="quarto-xref"><span>Section 6.2</span></a>, the range and standard deviation of the fields are harder to pin down from a single dataset. Note in particular that both packages underestimate the standard deviation of the mark’s own field, <span class="math inline">\(\sigma_m\)</span>. This is a consequence of fixing the residual standard deviation at the standard deviation of the marks (0.745), which is much larger than the true value (0.3): the model then attributes some of the spatial variation in the marks to residual noise rather than to the field. This is why it is worth refitting with a smaller fixed standard deviation (see <a href="#sec-mlgcp-gof" class="quarto-xref"><span>Section 7.4</span></a>).</p>
+</section>
+</section>
+<section id="sec-mlgcp-applied" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="sec-mlgcp-applied"><span class="header-section-number">7.3</span> An applied example: fatal terrorism attacks in Iraq</h2>
+<p>In <a href="lgcp.html#sec-iraq" class="quarto-xref"><span>Section 6.3.2</span></a> the locations of terrorism events in Iraq were modelled. The <code>iraq_terrorism</code> data also record the number of people killed in each attack (<code>nkill</code>). Here a marked LGCP is used to ask whether the <em>probability that an attack is fatal</em> varies over space, and whether attacks are more or less likely to be fatal where attacks are more frequent. The mark is binary: 1 if at least one person was killed and 0 otherwise.</p>
+<section id="preparing-the-data" class="level3" data-number="7.3.1">
+<h3 data-number="7.3.1" class="anchored" data-anchor-id="preparing-the-data"><span class="header-section-number">7.3.1</span> Preparing the data</h3>
+<p>The number killed is missing for some events. These events are removed (see <a href="#sec-mlgcp-data" class="quarto-xref"><span>Section 7.1.1</span></a> for the consequences). The locations are projected to km and the boundary of Iraq obtained exactly as in <a href="lgcp.html#sec-iraq" class="quarto-xref"><span>Section 6.3.2</span></a>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"iraq_terrorism"</span>, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(iraq_terrorism<span class="sc">$</span>nkill)) <span class="do">## events with a missing number killed</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 396</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>iraq <span class="ot">&lt;-</span> iraq_terrorism[<span class="sc">!</span><span class="fu">is.na</span>(iraq_terrorism<span class="sc">$</span>nkill), ]</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>locs_km <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_coordinates</span>(sf<span class="sc">::</span><span class="fu">st_transform</span>(iraq, <span class="at">crs =</span> <span class="dv">32638</span>)) <span class="sc">/</span> <span class="dv">1000</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(locs_km) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>marks_iraq <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="at">fatal =</span> <span class="fu">as.numeric</span>(iraq<span class="sc">$</span>nkill <span class="sc">&gt;</span> <span class="dv">0</span>))</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(marks_iraq)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>marks_iraq
+   0    1 
+ 854 2958 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>iraq_sf <span class="ot">&lt;-</span> rnaturalearth<span class="sc">::</span><span class="fu">ne_countries</span>(<span class="at">country =</span> <span class="st">"Iraq"</span>, <span class="at">scale =</span> <span class="st">"medium"</span>, <span class="at">returnclass =</span> <span class="st">"sf"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">32638</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_union</span>()</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>iraq_sf_km <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_sf</span>(<span class="at">geometry =</span> sf<span class="sc">::</span><span class="fu">st_geometry</span>(iraq_sf) <span class="sc">/</span> <span class="dv">1000</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">st_crs</span>(iraq_sf_km) <span class="ot">&lt;-</span> <span class="cn">NA</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="fitting-the-model" class="level3" data-number="7.3.2">
+<h3 data-number="7.3.2" class="anchored" data-anchor-id="fitting-the-model"><span class="header-section-number">7.3.2</span> Fitting the model</h3>
+<p>A mesh slightly coarser than the adequate mesh of <a href="./lgcp.html#sec-mesh-compare">Sensitivity to the mesh</a> in <a href="lgcp.html#sec-iraq" class="quarto-xref"><span>Section 6.3.2</span></a> (<code>max.edge = c(60, 200)</code>, <code>cutoff = 15</code>) is used, to keep the fit quick. The mark is binomial (<code>methods = 2</code>) with one trial per event (the default <code>strfixed</code>), and has its own random field.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>smesh_iraq <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_mesh_2d</span>(<span class="at">loc =</span> locs_km, <span class="at">boundary =</span> fmesher<span class="sc">::</span><span class="fu">fm_as_segm</span>(iraq_sf_km),</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">max.edge =</span> <span class="fu">c</span>(<span class="dv">60</span>, <span class="dv">200</span>), <span class="at">cutoff =</span> <span class="dv">15</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>area_km2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(sf<span class="sc">::</span><span class="fu">st_area</span>(iraq_sf_km))</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>parameters_iraq <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">betapp =</span> <span class="fu">log</span>(<span class="fu">nrow</span>(locs_km) <span class="sc">/</span> area_km2),</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">betamarks =</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> <span class="dv">1</span>, <span class="at">ncol =</span> <span class="dv">1</span>), <span class="at">marks_coefs_pp =</span> <span class="dv">0</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">log_tau =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="at">log_kappa =</span> <span class="fu">log</span>(<span class="fu">c</span>(<span class="fu">sqrt</span>(<span class="dv">8</span>) <span class="sc">/</span> <span class="dv">50</span>, <span class="fu">sqrt</span>(<span class="dv">8</span>) <span class="sc">/</span> <span class="dv">50</span>)))</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>fit_iraq <span class="ot">&lt;-</span> <span class="fu">fit_mlgcp</span>(<span class="at">locs =</span> locs_km, <span class="at">marks =</span> marks_iraq, <span class="at">sf =</span> iraq_sf_km, <span class="at">smesh =</span> smesh_iraq,</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>                      <span class="at">parameters =</span> parameters_iraq, <span class="at">methods =</span> <span class="dv">2</span>, <span class="at">fields =</span> <span class="dv">1</span>)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>coefs <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit_iraq)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>coefs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  Estimate  Std. Error
+betamarks       1.11262974 0.297716613
+betapp         -9.76955609 0.566186056
+marks_coefs_pp -0.06383226 0.061472125
+tau             3.16719124 0.276935078
+tau             4.41661608 1.865067676
+kappa           0.02957014 0.003702121
+kappa           0.07346352 0.023726269</code></pre>
+</div>
+</div>
+<p>The link coefficient <span class="math inline">\(\hat{\alpha} =\)</span> -0.064 (standard error 0.061) is close to zero: there is little evidence that attacks are more (or less) likely to be fatal in places where attacks are more frequent. The intercept for the mark, 1.11 on the logit scale, together with the link term, describes the overall probability of a fatal attack, while the random field for the mark describes how this probability varies over space.</p>
+<p>The plots below show the estimated random field of the point process (where attacks are more or less frequent than average) and of the mark (where attacks are more or less likely than average to be fatal).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>fields_iraq <span class="ot">&lt;-</span> <span class="fu">get_fields</span>(fit_iraq, smesh_iraq)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>patchwork<span class="sc">::</span><span class="fu">wrap_plots</span>(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show_field</span>(fields_iraq[, <span class="dv">1</span>], <span class="at">smesh =</span> smesh_iraq, <span class="at">sf =</span> iraq_sf_km, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggtitle</span>(<span class="st">"Point process field"</span>),</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show_field</span>(fields_iraq[, <span class="dv">2</span>], <span class="at">smesh =</span> smesh_iraq, <span class="at">sf =</span> iraq_sf_km, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggtitle</span>(<span class="st">"Mark (fatal) field"</span>),</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">nrow =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp-marked_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-mlgcp-gof" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="sec-mlgcp-gof"><span class="header-section-number">7.4</span> Goodness-of-fit</h2>
+<p>A marked LGCP has two parts, and each should be checked:</p>
+<ul>
+<li><strong>the point process.</strong> The locations are modelled exactly as in an LGCP, so the simulation envelopes of <a href="lgcp.html#sec-lgcp-gof" class="quarto-xref"><span>Section 6.4</span></a> can be used; and</li>
+<li><strong>the marks.</strong> The fitted model gives a predicted value of each mark (e.g., the probability that each attack is fatal) which can be compared with the observed marks.</li>
+</ul>
+<p>To check the marks, the fitted linear predictor <span class="math inline">\(\eta_j(s)\)</span> is needed at each event. The function below calculates it from the fitted model (for models without covariates), following the definition of <span class="math inline">\(\eta_j(s)\)</span> above.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mark_predictor <span class="ot">&lt;-</span> <span class="cf">function</span>(fit, smesh, locs, <span class="at">mark =</span> <span class="dv">1</span>) {</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    pars <span class="ot">&lt;-</span> fit<span class="sc">$</span>env<span class="sc">$</span><span class="fu">parList</span>(<span class="at">par =</span> fit<span class="sc">$</span>env<span class="sc">$</span>last.par.best) <span class="do">## estimates, including the fields</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    fields <span class="ot">&lt;-</span> fit<span class="sc">$</span>env<span class="sc">$</span>data<span class="sc">$</span>mark_field</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    log_lambda <span class="ot">&lt;-</span> pars<span class="sc">$</span>betapp[<span class="dv">1</span>] <span class="sc">+</span> pars<span class="sc">$</span>x[, <span class="dv">1</span>] <span class="do">## log intensity of the point process at each node</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    eta <span class="ot">&lt;-</span> pars<span class="sc">$</span>betamarks[<span class="dv">1</span>, mark] <span class="sc">+</span> pars<span class="sc">$</span>marks_coefs_pp[mark] <span class="sc">*</span> log_lambda</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (fields[mark] <span class="sc">==</span> <span class="dv">1</span>) eta <span class="ot">&lt;-</span> eta <span class="sc">+</span> pars<span class="sc">$</span>x[, <span class="dv">1</span> <span class="sc">+</span> <span class="fu">cumsum</span>(fields)[mark]] <span class="do">## the mark's own field</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.vector</span>(fmesher<span class="sc">::</span><span class="fu">fm_basis</span>(smesh, <span class="at">loc =</span> locs) <span class="sc">%*%</span> eta) <span class="do">## interpolate to the events</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="the-simulated-example" class="level3" data-number="7.4.1">
+<h3 data-number="7.4.1" class="anchored" data-anchor-id="the-simulated-example"><span class="header-section-number">7.4.1</span> The simulated example</h3>
+<p>For the Gaussian mark the linear predictor is the predicted mean, so the residuals are the observed minus the predicted marks. If the model is adequate the residuals should show no pattern against the predicted values, and their standard deviation should be no larger than the fixed standard deviation used in <code>strfixed</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">mark_predictor</span>(fit, smesh, locs)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> sim<span class="sc">$</span>m <span class="sc">-</span> pred</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">residual_sd =</span> <span class="fu">sd</span>(res), <span class="at">fixed_sd =</span> <span class="fu">sd</span>(sim<span class="sc">$</span>m), <span class="at">true_sd =</span> <span class="fu">unname</span>(truth[<span class="st">"sd_m"</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>residual_sd    fixed_sd     true_sd 
+  0.3406189   0.7447414   0.3000000 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>patchwork<span class="sc">::</span><span class="fu">wrap_plots</span>(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">data.frame</span>(pred, res), <span class="fu">aes</span>(<span class="at">x =</span> pred, <span class="at">y =</span> res)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">xlab</span>(<span class="st">"Predicted mark"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Residual"</span>),</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">data.frame</span>(res), <span class="fu">aes</span>(<span class="at">sample =</span> res)) <span class="sc">+</span> <span class="fu">stat_qq</span>() <span class="sc">+</span> <span class="fu">stat_qq_line</span>() <span class="sc">+</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"Normal QQ plot of residuals"</span>),</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">nrow =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp-marked_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The residuals show no obvious pattern and look roughly normal. Their standard deviation is much smaller than the fixed standard deviation, because the random fields explain much of the variation in the marks, and it is close to the true value. Since the standard deviation is fixed rather than estimated, it is worth refitting with <code>strfixed</code> set to the log of the residual standard deviation and checking that the conclusions do not change.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>strfixed_res <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">log</span>(<span class="fu">sd</span>(res)), <span class="at">nrow =</span> <span class="fu">nrow</span>(locs), <span class="at">ncol =</span> <span class="dv">1</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>fit_res <span class="ot">&lt;-</span> <span class="fu">fit_mlgcp</span>(<span class="at">locs =</span> locs, <span class="at">marks =</span> marks, <span class="at">sf =</span> domain, <span class="at">smesh =</span> smesh,</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">parameters =</span> parameters, <span class="at">methods =</span> <span class="dv">0</span>, <span class="at">fields =</span> <span class="dv">1</span>, <span class="at">strfixed =</span> strfixed_res)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>coefs_res <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit_res)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>kappa_res <span class="ot">&lt;-</span> coefs_res[<span class="fu">rownames</span>(coefs_res) <span class="sc">==</span> <span class="st">"kappa"</span>, <span class="dv">1</span>]</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>tau_res <span class="ot">&lt;-</span> coefs_res[<span class="fu">rownames</span>(coefs_res) <span class="sc">==</span> <span class="st">"tau"</span>, <span class="dv">1</span>]</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">original =</span> <span class="fu">c</span>(<span class="at">link =</span> stelfi[<span class="st">"marks_coefs_pp"</span>, <span class="dv">1</span>], <span class="at">sigma_m =</span> st_sd[<span class="dv">2</span>]),</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">refitted =</span> <span class="fu">c</span>(<span class="at">link =</span> coefs_res[<span class="st">"marks_coefs_pp"</span>, <span class="dv">1</span>],</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">sigma_m =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="dv">4</span> <span class="sc">*</span> pi <span class="sc">*</span> kappa_res[<span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> tau_res[<span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span>)),</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">truth =</span> <span class="fu">c</span>(<span class="at">link =</span> <span class="fu">unname</span>(truth[<span class="st">"alpha"</span>]), <span class="at">sigma_m =</span> <span class="fu">unname</span>(truth[<span class="st">"sigma_m"</span>])))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              link sigma_m.kappa
+original 0.5851238     0.2156919
+refitted 0.5901986     0.2941287
+truth    0.5000000     0.5000000</code></pre>
+</div>
+</div>
+<p>The link is essentially unchanged, but the estimated standard deviation of the mark’s field increases towards the true value: with less of the variation in the marks attributed to noise, more is attributed to the field.</p>
+</section>
+<section id="the-applied-example" class="level3" data-number="7.4.2">
+<h3 data-number="7.4.2" class="anchored" data-anchor-id="the-applied-example"><span class="header-section-number">7.4.2</span> The applied example</h3>
+<p>For a binary mark the linear predictor is on the logit scale, so the predicted probability that an attack is fatal is <span class="math inline">\(\text{logit}^{-1}(\eta)\)</span>. A simple check of these predictions is to group the attacks by their predicted probability (here into ten groups of equal size) and compare the average predicted probability in each group with the observed proportion of fatal attacks. For a well calibrated model the points should lie close to the line <span class="math inline">\(y = x\)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>p_fatal <span class="ot">&lt;-</span> <span class="fu">plogis</span>(<span class="fu">mark_predictor</span>(fit_iraq, smesh_iraq, locs_km))</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>group <span class="ot">&lt;-</span> <span class="fu">cut</span>(p_fatal, <span class="at">breaks =</span> <span class="fu">unique</span>(<span class="fu">quantile</span>(p_fatal, <span class="at">probs =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.1</span>))),</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">include.lowest =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>calib <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">predicted =</span> <span class="fu">tapply</span>(p_fatal, group, mean),</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">observed =</span> <span class="fu">tapply</span>(marks_iraq[, <span class="dv">1</span>], group, mean),</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">n =</span> <span class="fu">as.vector</span>(<span class="fu">table</span>(group)))</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>calib<span class="sc">$</span>se <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(calib<span class="sc">$</span>observed <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> calib<span class="sc">$</span>observed) <span class="sc">/</span> calib<span class="sc">$</span>n)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(calib, <span class="fu">aes</span>(<span class="at">x =</span> predicted, <span class="at">y =</span> observed)) <span class="sc">+</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> observed <span class="sc">-</span> <span class="dv">2</span> <span class="sc">*</span> se, <span class="at">ymax =</span> observed <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> se)) <span class="sc">+</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Predicted probability fatal"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Observed proportion fatal"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lgcp-marked_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Points (with approximate 95% intervals) close to the dashed line indicate that the predicted probabilities are consistent with what was observed. Note that this is a fairly weak check, since the same data were used to fit the model; a more stringent check is to fit the model to part of the data (e.g., some years) and compare the predictions with the rest. The point process part of the model should also be checked using simulation envelopes (<a href="lgcp.html#sec-lgcp-gof" class="quarto-xref"><span>Section 6.4</span></a>).</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-inlabru" class="csl-entry" role="listitem">
+Bachl, Fabian E., Finn Lindgren, David L. Borchers, and Janine B. Illian. 2019. <span>“<span class="nocase">inlabru</span>: An <span>R</span> Package for <span>Bayesian</span> Spatial Modelling from Ecological Survey Data.”</span> <em>Methods in Ecology and Evolution</em> 10: 760–66. <a href="https://doi.org/10.1111/2041-210X.13168">https://doi.org/10.1111/2041-210X.13168</a>.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./lgcp.html" class="pagination-link" aria-label="Spatial and spatiotemporal log-Gaussian Cox processes">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Spatial and spatiotemporal log-Gaussian Cox processes</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./stelfi.html" class="pagination-link" aria-label="Spatiotemporal self-exciting models">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Spatiotemporal self-exciting models</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

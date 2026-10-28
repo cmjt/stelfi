@@ -1,21 +1,84 @@
-# Introduction
+# Introduction {#sec-intro}
 
-::: {.callout-warning}
+`stelfi` fits Hawkes processes, log-Gaussian Cox processes (LGCPs), and spatiotemporal self-exciting models to point pattern data. All models are fitted by maximum likelihood using Template Model Builder (`TMB`, @tmb), which makes fitting fast even for fairly large datasets. Where a model includes a spatial random field, the field is assumed to be Gaussian, it is built using the stochastic partial differential equation (SPDE) approach of @spde, and it is integrated out of the likelihood using the Laplace approximation.
 
-This book is a **work in progress**, please bear with me as I update and fix the issues.
+This book is written for people who have point pattern data of their own and want to know (1) which `stelfi` model suits their data, (2) what shape the data need to be in, (3) how to fit and interpret the model, and (4) how to check whether the model is any good. The emphasis is on *using* the models rather than on the theory behind them.
 
-If you have any particular examples you'd like to be included please let me know @ c.jonestodd@auckland.ac.nz
+## What is a point pattern?
 
-:::
+A point pattern is a record of *when* and/or *where* events happened. Examples are the times of retweets of a tweet, the locations of sasquatch sightings, or the times, locations, and magnitudes of earthquakes. The thing being modelled is the **intensity**, the expected rate of events per unit time (or per unit area, or per unit area per unit time). A high intensity means events are likely, a low intensity means events are unlikely.
 
-The `stelfi` package fits Hawkes and log-Gaussian Cox Point Process models, with extensions, using Template Model Builder (@tmb).
+The models in `stelfi` differ in *why* the intensity varies:
 
-**Overview**
+- In a **Hawkes process** events *cause* more events. Each event temporarily increases the chance of another event occurring soon afterwards (self-excitement). Think of aftershocks following an earthquake or retweets following a tweet.
+- In a **log-Gaussian Cox process** the intensity varies smoothly over space (and time) because of some underlying, unobserved, environment. Events do not cause other events, they are just more common in some places than others. Think of where species are found or where crimes tend to occur.
+- A **spatiotemporal self-exciting model** combines the two: there is a background intensity over space and events trigger further events nearby in both space and time.
 
-A Hawkes process is a self-exciting temporal point process where the occurrence of an event immediately increases the chance of another (see @hawkes). `stelfi` also offers functionality to fit self-inhibiting process and a non-homogeneous background rate.
+## Which chapter do I need?
 
+The table below summarises which model suits which type of data, and in which chapter it is covered.
 
-A log-Gaussian Cox process is a Poisson point process where the log-intensity is given by a Gaussian random field. `stelfi` also offers functionality to extend this to a joint likelihood formulation fitting a marked log-Gaussian Cox model.
+| Your data                                                                  | Model                                          | `stelfi` function  | Chapter                    |
+|:---------------------------------------------------------------------------|:-----------------------------------------------|:-------------------|:---------------------------|
+| Event times only, events seem to trigger further events                    | Univariate Hawkes process                      | `fit_hawkes()`     | @sec-hawkes                |
+| As above, but with a background rate that changes over time (e.g., yearly cycles) | Hawkes with a custom background function | `fit_hawkes_cbf()` | @sec-hawkes-cbf            |
+| Event times plus a numeric value for each event that might change how much it triggers (e.g., magnitude) | Marked Hawkes process | `fit_hawkes()` with `marks` | @sec-marked-hawkes |
+| Event times for two or more types of event that might trigger each other    | Multivariate Hawkes process                    | `fit_mhawkes()`    | @sec-mhawkes               |
+| Event locations within a study region                                      | Spatial LGCP                                   | `fit_lgcp()`       | @sec-lgcp                  |
+| Event locations and times (e.g., year), spatial pattern changes over time  | Spatiotemporal LGCP                            | `fit_lgcp()` with `tmesh` | @sec-lgcpst         |
+| Event locations plus one or more measurements on each event                | Marked LGCP                                    | `fit_mlgcp()`      | @sec-mlgcp                 |
+| Event locations and times, events trigger further events nearby            | Spatiotemporal self-exciting (Hawkes) model    | `fit_stelfi()`     | @sec-stelfi                |
+| You want to write and modify the likelihood yourself                       | `RTMB` templates                               | --                 | @sec-rtmb                  |
 
+## How the model chapters are organised
 
-In addition, the `stelfi` offers functionality to fit self-exciting  spatiotemporal point processes. Models are fitted via maximum likelihood  using 'TMB' (Template Model Builder) (@tmb). Where included 1) random fields are assumed to be Gaussian and are integrated over using the Laplace approximation and  2) a stochastic partial differential equation model, introduced by @spde, is defined for the field(s).
+Each of the model fitting chapters (@sec-hawkes to @sec-stelfi, other than @sec-mesh on meshes) follows the same structure:
+
+1. **The model and your data**: a short description of the model, what the parameters mean, and what your data need to look like (including common problems and limitations).
+2. **A simulated example**: data are simulated from the model with *known* parameter values. The model is then fitted using `stelfi` and, where one exists, a competing `R` package, and the estimates from both are compared with each other and with the truth. The code used to simulate the data is shown, so that every chapter is fully reproducible, and so that you can change the parameter values (or the amount of data) and see how well the model is estimated.
+3. **An applied example**: the model is fitted to one of the datasets that come with `stelfi` (see @sec-data) and the estimates are interpreted.
+4. **Goodness-of-fit**: some procedures to check whether the fitted model adequately describes the data.
+
+The chapters build on one another: the univariate Hawkes chapter (@sec-hawkes) introduces ideas used in all of the Hawkes-type chapters, and the chapter on meshes (@sec-mesh) and the spatial LGCP chapter (@sec-lgcp) introduce ideas used in all of the spatial chapters. If you are new to these models, start there.
+
+## A typical `stelfi` workflow
+
+Whatever the model, using `stelfi` involves the same steps:
+
+1. **Prepare the data**. Times must be numeric (e.g., days since the first event) and sorted. Locations must be in a *projected* (planar) coordinate system, such as UTM, ideally in sensible units (e.g., km).
+2. **For spatial models, define the study region and build a mesh**. The study region is an `sf` polygon and the mesh is a triangulation of it built with `fmesher::fm_mesh_2d()` (see @sec-mesh).
+3. **Choose starting values** for the parameters and fit the model with one of the `fit_*()` functions.
+4. **Extract the estimates** using `get_coefs()` (and, for spatial models, the estimated random field using `get_fields()`).
+5. **Visualise** the fitted model using `show_hawkes()`, `show_multivariate_hawkes()`, `show_field()` or `show_lambda()`.
+6. **Check the fit** using `show_hawkes_GOF()` (temporal models) or simulation-based checks (spatial models).
+
+## Key `stelfi` functions {#sec-key-functions}
+
+### Model fitting functions {.unnumbered}
+
+| Function           | Key arguments |
+|:-------------------|:--------------|
+| `fit_hawkes()`     | `times`, a sorted numeric vector of event times with no ties; `parameters`, named starting values for $\mu$ (`mu`), $\alpha$ (`alpha`), and $\beta$ (`beta`); `marks`, optional, a numeric vector of marks (one per event). |
+| `fit_hawkes_cbf()` | As `fit_hawkes()` plus `background`, a function giving the background rate $\mu(t)$; `background_integral`, its integral; and `background_parameters`, starting values for the parameters of $\mu(t)$. (`mu` in `parameters` is ignored.) |
+| `fit_mhawkes()`    | `times`, a sorted numeric vector of event times (all streams together); `stream`, a character vector giving the stream (type) of each event; `parameters`, a list with `mu` (vector, one per stream), `alpha` (matrix, streams $\times$ streams), and `beta` (vector, one per stream), with `alpha[j, k]` the effect of stream $k$ on stream $j$ and `beta[j]` the decay rate of stream $j$. |
+| `fit_lgcp()`       | `locs`, a data frame of event locations with columns `x`, `y` (and `t` for a spatiotemporal model); `sf`, an `sf` polygon of the study region; `smesh`, a spatial mesh from `fmesher::fm_mesh_2d()`; `tmesh`, optional, a temporal mesh from `fmesher::fm_mesh_1d()`; `parameters`, starting values for `beta` (intercept and any covariate coefficients), `log_tau`, `log_kappa`, and (spatiotemporal only) `atanh_rho`; `covariates`, optional, a matrix with one row per mesh node. |
+| `fit_mlgcp()`      | `locs`, `sf`, and `smesh` as `fit_lgcp()`; `marks`, a matrix of marks with one column per mark; `methods`, the distribution of each mark (`0` Gaussian, `1` Poisson, `2` binomial, `3` gamma); `fields`, whether each mark has its own random field; `strfixed`, fixed structural parameters (e.g., the log standard deviation of a Gaussian mark); `parameters`, a list of starting values (`betapp`, `betamarks`, `marks_coefs_pp`, `log_tau`, `log_kappa`). |
+| `fit_stelfi()`     | `times`, as `fit_hawkes()`; `locs`, `sf`, and `smesh`, as `fit_lgcp()`; `parameters`, a list of starting values for `coefs` (log background rate, or `mu`), `alpha`, `beta`, `xsigma`, `ysigma`, `rho`, and, if `GMRF = TRUE`, `kappa` and `tau`; `GMRF`, logical, include a spatial random field in the background; `time_independent`, logical, whether the spatial spread of the triggering kernel is fixed over time. |
+
+### Utility and plotting functions {.unnumbered}
+
+| Function                      | Purpose |
+|:------------------------------|:--------|
+| `get_coefs()`                 | Estimated parameters and standard errors from any fitted model. |
+| `get_fields()`                | Estimated values (or standard errors, `sd = TRUE`) of the random field(s) at each mesh node. |
+| `get_weights()`               | The area of the study region associated with each mesh node. |
+| `mesh_2_sf()`                 | Converts a mesh to an `sf` object (e.g., for plotting with `ggplot2`). |
+| `meshmetrics()`               | Geometric summaries of each triangle in a mesh (see @sec-meshmetrics). |
+| `show_hawkes()`               | Plots the fitted conditional intensity of a Hawkes model (and/or the data). |
+| `show_multivariate_hawkes()`  | As `show_hawkes()` for a multivariate Hawkes model. |
+| `show_hawkes_GOF()`           | Goodness-of-fit plots and tests for a Hawkes model. |
+| `compensator_differences()`   | The transformed inter-event times (compensator differences) of a fitted Hawkes model. |
+| `show_field()`                | Plots values at the mesh nodes (e.g., an estimated random field) as a surface. |
+| `show_lambda()`               | Plots the estimated intensity surface of a fitted LGCP. |
+| `sim_hawkes()`                | Simulates from a univariate Hawkes process. |
+| `sim_lgcp()`                  | Simulates a random field and event counts from a spatial LGCP. |

@@ -318,7 +318,8 @@ fit_hawkes_cbf <- function(times, parameters = list(),
 }
 #' @details A multivariate Hawkes process that allows for between- and within-stream self-excitement.
 #' The conditional intensity for the \eqn{j^{th}} (\eqn{j = 1, ..., N}) stream is given by
-#' \eqn{\lambda(t)^{j*} = \mu_j + \Sigma_{k = 1}^N\Sigma_{i:\tau_i<t} \alpha_{jk} e^{(-\beta_j * (t-\tau_i))}}, where
+#' \eqn{\lambda(t)^{j*} = \mu_j + \Sigma_{k = 1}^N\Sigma_{i:\tau_i<t, s_i = k} \alpha_{jk} e^{(-\beta_j * (t-\tau_i))}}, where
+#' \eqn{s_i} is the stream of the event at time \eqn{\tau_i} and
 #' \eqn{j, k  \in (1, ..., N)}. Here, \eqn{\alpha_{jk}} is the excitement caused by the
 #' \eqn{k^{th}} stream on the \eqn{j^{th}}. Therefore, \eqn{\boldsymbol{\alpha}} is an \eqn{N x N}
 #' matrix where the diagonals represent the within-stream excitement and the off-diagonals
@@ -331,7 +332,8 @@ fit_hawkes_cbf <- function(times, parameters = list(),
 #' \item \code{alpha}, a matrix of the between- and within-stream self-excitement: the diagonal
 #' elements represent the within-stream excitement and the off-diagonals the excitement between streams,
 #' \item \code{beta}, a vector of the exponential intensity decay for each stream of the multivariate
-#' Hawkes process,
+#' Hawkes process (\eqn{\beta_j} is the rate at which the excitement of stream \eqn{j} decays),
+#' with \code{alpha[j, k]} \eqn{\le} \code{beta[j]},
 #' }
 #' @examples
 #' \donttest{
@@ -364,12 +366,16 @@ fit_mhawkes <- function(times, stream,
     ## error checks
     if (n_streams != nrow(parameters$alpha) | n_streams != ncol(parameters$alpha))
         stop("dimensions of alpha must match the number of streams")
+    ## alpha[j, k] / beta[j] (beta is recycled down the columns of alpha)
     if (sum(alpha > beta) > 0)
-        stop("alpha(s) must be smaller than or equal to beta")
+        stop("alpha[j, k] must be smaller than or equal to beta[j]")
     if (sum(alpha < 0) > 0)
         stop("alpha(s) must be non-negative")
     events <- as.numeric(factor((stream))) - 1
-    events_per_stream <-  as.numeric(table(stream)) - 1
+    ## events per stream excluding the very last event
+    events_per_stream <-  as.numeric(table(stream))
+    last_stream <- events[length(events)] + 1
+    events_per_stream[last_stream] <- events_per_stream[last_stream] - 1
     obj <- TMB::MakeADFun(data = list(times = times, events = events,
                                       N = n_streams,
                                       EPS = events_per_stream,
