@@ -122,7 +122,9 @@ test_that("Marked LGCP: mark linked to the point process log intensity", {
     ## mark = 5 + 0.5 * log intensity of the point process + noise (no mark field)
     m <- 5 + 0.5 * (4 + sim$x[node]) + rnorm(length(node), 0, 0.2)
     fit <- fit_mlgcp(locs = locs, marks = cbind(m = m), sf = domain, smesh = smesh,
-                     parameters = list(betapp = 4, betamarks = matrix(0, 1, 1), marks_coefs_pp = 0,
+                     ## start the mark intercept at the mean mark: starting at 0 lets nlminb stall on a
+                     ## near-flat ridge (large marks_coefs_pp, near-zero field) on some platforms
+                     parameters = list(betapp = 4, betamarks = matrix(mean(m), 1, 1), marks_coefs_pp = 0,
                                        log_tau = 0, log_kappa = 0),
                      methods = 0, fields = 0,
                      strfixed = matrix(log(0.2), nrow = nrow(locs), ncol = 1))
