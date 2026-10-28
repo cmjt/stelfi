@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.262">
+<meta name="generator" content="quarto-1.8.27">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="description" content="Using stelfi">
 
-<title>The R package stelfi - 4&nbsp; Multivariate Hawkes</title>
+<title>4&nbsp; Multivariate Hawkes process – The `R` package `stelfi`</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -18,9 +18,11 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -47,48 +49,20 @@ pre.numberSource code > span > a:first-child::before
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
     padding: 0 4px; width: 4em;
-    color: #aaaaaa;
   }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
 div.sourceCode
   {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+/* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
-.hanging div.csl-entry {
+.hanging-indent div.csl-entry {
   margin-left:2em;
   text-indent:-2em;
 }
@@ -102,8 +76,7 @@ div.csl-right-inline {
 }
 div.csl-indent {
   margin-left: 2em;
-}
-</style>
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -113,24 +86,32 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./lgcp.html" rel="next">
+<link href="./mesh.html" rel="next">
 <link href="./marked-hawkes.html" rel="prev">
-<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-0346a4669161aa0b1fb4455b7891709f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -139,113 +120,176 @@ div.csl-indent {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
-<body class="nav-sidebar floating nav-fixed">
+<body class="nav-sidebar floating nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">The <code>R</code> package <code>stelfi</code></span>
     </a>
   </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
           <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
-  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-    <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes</span></h1>
-      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
-        <i class="bi bi-chevron-right"></i>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./multi-hawkes.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes process</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
     </div>
   </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
-      <div class="mt-2 flex-shrink-0 align-items-center">
-        <div class="sidebar-search">
-        <div id="quarto-search" class="" title="Search"></div>
-        </div>
-        <div class="sidebar-tools-collapse">
-    <a href="https://github.com/cmjt/stelfi" title="" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
-    <a href="mailto:c.jonestodd@auckland.ac.nz" title="" class="sidebar-tool px-1"><i class="bi bi-envelope"></i></a>
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/cmjt/stelfi" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:c.jonestodd@auckland.ac.nz" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope"></i></a>
 </div>
-      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">Preface</a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./intro.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></a>
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./univariate-hawkes.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes</span></a>
+  <a href="./univariate-hawkes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./marked-hawkes.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes</span></a>
+  <a href="./marked-hawkes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./multi-hawkes.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes</span></a>
+  <a href="./multi-hawkes.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lgcp.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Spatial log-Gaussian Cox process</span></a>
+  <a href="./mesh.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Meshes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./stelfi.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Spatiotemporal self-exciting models</span></a>
+  <a href="./lgcp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Spatial and spatiotemporal log-Gaussian Cox processes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./summary.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></a>
+  <a href="./lgcp-marked.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Marked log-Gaussian Cox process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./data.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></a>
+  <a href="./stelfi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Spatiotemporal self-exciting models</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./references.html" class="sidebar-item-text sidebar-link">References</a>
+  <a href="./rtmb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Simple <code>RTMB</code> templates</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
   </div>
 </li>
     </ul>
     </div>
 </nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#a-simulated-example" id="toc-a-simulated-example" class="nav-link active" data-scroll-target="#a-simulated-example"><span class="toc-section-number">4.1</span>  A simulated example</a></li>
+  <li><a href="#the-model-and-your-data" id="toc-the-model-and-your-data" class="nav-link active" data-scroll-target="#the-model-and-your-data"><span class="header-section-number">4.1</span> The model and your data</a>
+  <ul class="collapse">
+  <li><a href="#sec-mhawkes-data" id="toc-sec-mhawkes-data" class="nav-link" data-scroll-target="#sec-mhawkes-data"><span class="header-section-number">4.1.1</span> What your data need to look like</a></li>
+  </ul></li>
+  <li><a href="#sec-mhawkes-sim" id="toc-sec-mhawkes-sim" class="nav-link" data-scroll-target="#sec-mhawkes-sim"><span class="header-section-number">4.2</span> A simulated example</a>
+  <ul class="collapse">
+  <li><a href="#fitting-the-model-using-stelfi" id="toc-fitting-the-model-using-stelfi" class="nav-link" data-scroll-target="#fitting-the-model-using-stelfi"><span class="header-section-number">4.2.1</span> Fitting the model using <code>stelfi</code></a></li>
+  <li><a href="#comparison-with-the-hawkes-package" id="toc-comparison-with-the-hawkes-package" class="nav-link" data-scroll-target="#comparison-with-the-hawkes-package"><span class="header-section-number">4.2.2</span> Comparison with the <code>hawkes</code> package</a></li>
+  <li><a href="#plotting-the-fitted-model" id="toc-plotting-the-fitted-model" class="nav-link" data-scroll-target="#plotting-the-fitted-model"><span class="header-section-number">4.2.3</span> Plotting the fitted model</a></li>
+  </ul></li>
+  <li><a href="#sec-mhawkes-applied" id="toc-sec-mhawkes-applied" class="nav-link" data-scroll-target="#sec-mhawkes-applied"><span class="header-section-number">4.3</span> An applied example: large and small earthquakes</a></li>
+  <li><a href="#sec-mhawkes-gof" id="toc-sec-mhawkes-gof" class="nav-link" data-scroll-target="#sec-mhawkes-gof"><span class="header-section-number">4.4</span> Goodness-of-fit</a></li>
   </ul>
 </nav>
     </div>
@@ -254,7 +298,7 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes</span></h1>
+<h1 class="title"><span id="sec-mhawkes" class="quarto-section-identifier"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes process</span></span></h1>
 </div>
 
 
@@ -267,64 +311,394 @@ div.csl-indent {
   </div>
   
 
+
 </header>
 
-<div class="cell">
 
-</div>
-<p>A multivariate Hawkes process allows for between- and within-stream self-excitement. In <code>stelfi</code> the conditional intensity for the <span class="math inline">\(j^{th}\)</span> (<span class="math inline">\(j = 1, ..., N\)</span>) stream is given by</p>
-<p><span class="math display">\[\lambda(t)^{j*} = \mu_j + \Sigma_{k = 1}^N\Sigma_{i:\tau_i&lt;t} \alpha_{jk} e^{(-\beta_j * (t-\tau_i))},\]</span> where <span class="math inline">\(j, k \in (1, ..., N)\)</span>. Here, <span class="math inline">\(\alpha_{jk}\)</span> is the excitement caused by the <span class="math inline">\(k^{th}\)</span> stream on the <span class="math inline">\(j^{th}\)</span>. Therefore, <span class="math inline">\(\boldsymbol{\alpha}\)</span> is an <span class="math inline">\(N \times N\)</span> matrix where the diagonals represent the within-stream excitement and the off-diagonals represent the excitement between streams.</p>
-<p>Plotted below are the conditional intensities (<span class="math inline">\(\lambda_{.}(t), t \in [0,T]\)</span>) of a bivariate Hawkes process with <span class="math inline">\(\mu = (0.5, 0.9)\)</span>, <span class="math inline">\(\boldsymbol{\alpha}\)</span> = <span class="math inline">\(\begin{bmatrix}0.2&amp;0.1 \\0.6&amp;0.5 \\\end{bmatrix}\)</span>, and <span class="math inline">\(\beta = (0.7, 0.9)\)</span>. Observed events (n = 33) are shown by the vertical dashes along the x-axis. The intensity of any stream increases immediately after any event occurs (i.e., irrespective of stream) and decays exponentially over time if no event is observed for some period. Typically, herem a jump in intensity due to the occurence of an event in the same stream is called self-excitation (diagonal elements of <span class="math inline">\(\boldsymbol{\alpha}\)</span>) and a jump in intensity due to the occurence of an event in a different stream is called cross-excitation (off-diagonal elements of <span class="math inline">\(\boldsymbol{\alpha}\)</span>).</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Packages used in this chapter</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stelfi)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>write_matrix <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  X <span class="ot">&lt;-</span> <span class="fu">apply</span>(x, <span class="dv">1</span>, <span class="cf">function</span>(r) <span class="fu">paste</span>(<span class="fu">paste</span>(r, <span class="at">collapse =</span> <span class="st">"&amp;"</span>), <span class="st">"</span><span class="sc">\\\\</span><span class="st">"</span>))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(<span class="fu">c</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">begin{bmatrix}"</span>, X, <span class="st">"</span><span class="sc">\\</span><span class="st">end{bmatrix}"</span>), <span class="at">collapse =</span> <span class="st">""</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="the-model-and-your-data" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="the-model-and-your-data"><span class="header-section-number">4.1</span> The model and your data</h2>
+<p>Often events come in different types, or <strong>streams</strong>, and events of one type can trigger events of another. For example, large earthquakes trigger small ones, attacks by one group might provoke attacks by another, and buy orders on a stock exchange can trigger sell orders. A multivariate Hawkes process extends the univariate Hawkes process (<a href="univariate-hawkes.html" class="quarto-xref"><span>Chapter 2</span></a>) so that each stream has its own intensity, and every event can increase the intensity of <em>every</em> stream. In <code>stelfi</code> the conditional intensity of stream <span class="math inline">\(j\)</span> (<span class="math inline">\(j = 1, ..., N\)</span>) is</p>
+<p><span id="eq-mhawkes"><span class="math display">\[\lambda_j(t) = \mu_j + \sum_{k = 1}^N \alpha_{jk} \sum_{i:\tau_i&lt;t,\ s_i = k} \text{exp}(-\beta_j (t-\tau_i)), \tag{4.1}\]</span></span></p>
+<p>where <span class="math inline">\(s_i\)</span> is the stream of the event at time <span class="math inline">\(\tau_i\)</span>. The parameters are</p>
+<ul>
+<li><span class="math inline">\(\mu_j\)</span>, the background rate of stream <span class="math inline">\(j\)</span>;</li>
+<li><span class="math inline">\(\alpha_{jk}\)</span>, the jump in the intensity of stream <span class="math inline">\(j\)</span> caused by an event in stream <span class="math inline">\(k\)</span>. These form an <span class="math inline">\(N \times N\)</span> matrix <span class="math inline">\(\boldsymbol{\alpha}\)</span>: the diagonal elements (<span class="math inline">\(\alpha_{jj}\)</span>) describe <strong>self-excitation</strong> (events triggering events of the same type) and the off-diagonal elements describe <strong>cross-excitation</strong> (events of one type triggering events of another type); and</li>
+<li><span class="math inline">\(\beta_j\)</span>, the rate at which excitement of stream <span class="math inline">\(j\)</span> decays, i.e., how quickly the intensity of stream <span class="math inline">\(j\)</span> returns to its background rate after an event in any stream.</li>
+</ul>
+<p>The expected number of stream <span class="math inline">\(j\)</span> events directly triggered by a single stream <span class="math inline">\(k\)</span> event is <span class="math inline">\(\alpha_{jk}/\beta_j\)</span>. <code>stelfi</code> constrains each of these to be at most 1 (i.e., <span class="math inline">\(\alpha_{jk} \leq \beta_j\)</span>).</p>
+<p>Plotted below are the conditional intensities of a bivariate (two stream) Hawkes process with <span class="math inline">\(\boldsymbol{\mu} = (0.5, 0.9)\)</span>, <span class="math inline">\(\boldsymbol{\alpha}\)</span> = <span class="math inline">\(\begin{bmatrix}0.2&amp;0.1 \\0.6&amp;0.5 \\\end{bmatrix}\)</span>, and <span class="math inline">\(\boldsymbol{\beta} = (0.7, 0.9)\)</span>. Events are shown by the vertical dashes along the x-axis. An event in either stream increases the intensity of both streams, but an event in stream 1 has a much bigger effect on stream 2 (<span class="math inline">\(\alpha_{21} = 0.6\)</span>) than an event in stream 2 has on stream 1 (<span class="math inline">\(\alpha_{12} = 0.1\)</span>).</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code for this figure</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.9</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.1</span> ,<span class="fl">0.6</span>, <span class="fl">0.5</span>), <span class="at">byrow =</span> <span class="cn">TRUE</span>, <span class="at">nrow =</span> <span class="dv">2</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.9</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> hawkes<span class="sc">::</span><span class="fu">simulateHawkes</span>(mu, alpha, beta, <span class="dv">10</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">times =</span> <span class="fu">unlist</span>(tmp), <span class="at">stream =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"Stream 1"</span>, <span class="st">"Stream 2"</span>), <span class="at">times =</span> <span class="fu">lengths</span>(tmp)))</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data[<span class="fu">order</span>(data<span class="sc">$</span>times), ]</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>dat_2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="fu">seq</span>(<span class="fu">min</span>(data<span class="sc">$</span>times), <span class="fu">max</span>(data<span class="sc">$</span>times), <span class="at">length.out =</span> <span class="dv">500</span>))</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>tst <span class="ot">&lt;-</span> stelfi<span class="sc">:::</span><span class="fu">multi_hawkes_intensity</span>(<span class="at">times =</span> data<span class="sc">$</span>times, <span class="at">alpha =</span> alpha, <span class="at">mu =</span> mu, <span class="at">beta =</span> beta,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">p =</span> dat_2<span class="sc">$</span>x, <span class="at">stream =</span> data<span class="sc">$</span>stream)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>dat_2<span class="sc">$</span><span class="st">`</span><span class="at">Stream 1</span><span class="st">`</span> <span class="ot">&lt;-</span> tst[[<span class="dv">1</span>]]</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>dat_2<span class="sc">$</span><span class="st">`</span><span class="at">Stream 2</span><span class="st">`</span> <span class="ot">&lt;-</span> tst[[<span class="dv">2</span>]]</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>data_2 <span class="ot">&lt;-</span> tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(dat_2, <span class="at">cols =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">names_to =</span> <span class="st">"stream"</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_2, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> value, <span class="at">col =</span> stream, <span class="at">group =</span> stream)) <span class="sc">+</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">data =</span> data, <span class="fu">aes</span>(<span class="at">x =</span> times, <span class="at">y =</span> <span class="dv">0</span>, <span class="at">col =</span> stream, <span class="at">group =</span> stream),</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>               <span class="at">pch =</span> <span class="st">"|"</span>, <span class="at">size =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_classic</span>(<span class="at">base_size =</span> <span class="dv">10</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="fu">expression</span>(lambda[j]<span class="sc">~</span><span class="st">"(t)"</span>)) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>, <span class="at">legend.title =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"grey"</span>)) <span class="sc">+</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"t = 0"</span>,<span class="st">"t = T"</span>),</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>                       <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fu">min</span>(data<span class="sc">$</span>times), <span class="fu">max</span>(data<span class="sc">$</span>times), <span class="at">length.out =</span> <span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
-<p><img src="multi-hawkes_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="multi-hawkes_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
 </div>
 </div>
-<section id="a-simulated-example" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="a-simulated-example"><span class="header-section-number">4.1</span> A simulated example</h2>
-<p>Simulating data from the <code>hawkes</code> package <span class="citation" data-cites="hawkes_pkg">Zaatour (<a href="references.html#ref-hawkes_pkg" role="doc-biblioref">2014</a>)</span> with <span class="math inline">\(\mu = (0.5, 0.9)\)</span>, <span class="math inline">\(\boldsymbol{\alpha}\)</span> = <span class="math inline">\(\begin{bmatrix}0.2&amp;0.1 \\0.6&amp;0.5 \\\end{bmatrix}\)</span>, and <span class="math inline">\(\beta = (0.7, 0.9)\)</span> over the time period <span class="math inline">\(t\in [0,50)\)</span>.</p>
+</div>
+<section id="sec-mhawkes-data" class="level3" data-number="4.1.1">
+<h3 data-number="4.1.1" class="anchored" data-anchor-id="sec-mhawkes-data"><span class="header-section-number">4.1.1</span> What your data need to look like</h3>
+<p><code>fit_mhawkes()</code> needs two vectors of the same length:</p>
+<ul>
+<li><code>times</code>, the event times of <strong>all streams combined</strong>, sorted in ascending order with no ties (see <a href="univariate-hawkes.html#sec-hawkes-data" class="quarto-xref"><span>Section 2.1.1</span></a>; ties <em>between</em> streams are not allowed either); and</li>
+<li><code>stream</code>, a character vector giving the stream of each event, so <code>stream[i]</code> is the type of the event at <code>times[i]</code>.</li>
+</ul>
+<p>In addition:</p>
+<ul>
+<li><strong>Streams are ordered alphabetically.</strong> Parameters for “stream 1” refer to the first stream name in alphabetical order. Choose stream names so that this order is the one you want (e.g., <code>"A_small"</code> and <code>"B_large"</code>).</li>
+<li><strong>The number of parameters grows quickly.</strong> With <span class="math inline">\(N\)</span> streams there are <span class="math inline">\(N + N^2 + N\)</span> parameters (8 for two streams, 15 for three). Each stream needs a reasonable number of events, and in particular there need to be enough events in each stream to estimate the cross-excitation parameters. Two or three streams is usually plenty.</li>
+<li><strong>Every event must belong to exactly one stream.</strong> If your event types overlap, or the type is unknown for some events, these need to be dealt with before fitting.</li>
+<li>The limitations of the univariate model apply to each stream: constant background rates, exponential decay, and an observation period from <span class="math inline">\(0\)</span> to the last event.</li>
+</ul>
+</section>
+</section>
+<section id="sec-mhawkes-sim" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="sec-mhawkes-sim"><span class="header-section-number">4.2</span> A simulated example</h2>
+<p>Data were simulated (using the <code>hawkes</code> package, <span class="citation" data-cites="hawkes_pkg">Zaatour (<a href="references.html#ref-hawkes_pkg" role="doc-biblioref">2014</a>)</span>) from a bivariate Hawkes process with the parameters given above over the time period <span class="math inline">\(t \in [0, 500]\)</span>. <code>hawkes::simulateHawkes()</code> returns a list with the event times of each stream, which are combined into a single data frame with one row per event, sorted by time.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.9</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.1</span> ,<span class="fl">0.6</span>, <span class="fl">0.5</span>), <span class="at">byrow =</span> <span class="cn">TRUE</span>, <span class="at">nrow =</span> <span class="dv">2</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.9</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> hawkes<span class="sc">::</span><span class="fu">simulateHawkes</span>(mu, alpha, beta, <span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.9</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.1</span> ,<span class="fl">0.6</span>, <span class="fl">0.5</span>), <span class="at">byrow =</span> <span class="cn">TRUE</span>, <span class="at">nrow =</span> <span class="dv">2</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.9</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> hawkes<span class="sc">::</span><span class="fu">simulateHawkes</span>(mu, alpha, beta, <span class="dv">500</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">times =</span> <span class="fu">unlist</span>(sim), <span class="at">stream =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"Stream 1"</span>, <span class="st">"Stream 2"</span>), <span class="at">times =</span> <span class="fu">lengths</span>(sim)))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data[<span class="fu">order</span>(data<span class="sc">$</span>times), ]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(data) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>To fit the model in <code>stelfi</code> the <code>fit_mhawkes()</code> function is used with the arguments <code>times</code> (a numeric vector of event times), <code>stream</code> (a character vector specifying the stream ID of each observation in <code>times</code>), and a lit of starting value for the parameters (<code>parameters</code>).</p>
+<p>The data are:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">## reformat data for fitting</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">times =</span> <span class="fu">unlist</span>(sim), <span class="at">stream =</span>  <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"Stream 1"</span>, <span class="st">"Stream 2"</span>),</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                                                      <span class="at">times =</span> <span class="fu">sapply</span>(sim, length)))</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data[<span class="fu">order</span>(data<span class="sc">$</span>times),]</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="do">## list of starting values</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>sv <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">mu =</span>  mu,<span class="at">alpha =</span> alpha, <span class="at">beta =</span> beta)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> stelfi<span class="sc">::</span><span class="fu">fit_mhawkes</span>(<span class="at">times =</span> data<span class="sc">$</span>times, <span class="at">stream =</span> data<span class="sc">$</span>stream, <span class="at">parameters =</span> sv)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>       Estimate Std. Error
-mu    0.7499955 0.10506748
-mu    0.9852693 0.18009767
-alpha 0.1617181 0.07753682
-alpha 0.5438258 0.20395221
-alpha 0.1225411 0.02940381
-alpha 0.6091406 0.08140212
-beta  1.0979208 0.63608232
-beta  1.0725560 0.17178757</code></pre>
+<pre><code>      times   stream
+1 0.9472199 Stream 2
+2 1.2257826 Stream 2
+3 1.9019023 Stream 2
+4 2.0803291 Stream 1
+5 2.5700467 Stream 1
+6 2.6804196 Stream 2</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(data<span class="sc">$</span>stream)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Stream 1 Stream 2 
+     696     1929 </code></pre>
 </div>
 </div>
-<p>The fitted model is plotted using <code>show_multivariate_hawkes()</code> (default <code>type = "fitted"</code>)</p>
+<section id="fitting-the-model-using-stelfi" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="fitting-the-model-using-stelfi"><span class="header-section-number">4.2.1</span> Fitting the model using <code>stelfi</code></h3>
+<p>The model is fitted using <code>fit_mhawkes()</code> with the <code>times</code>, the <code>stream</code> of each event, and a list of starting values: a vector <code>mu</code>, a matrix <code>alpha</code>, and a vector <code>beta</code>. Because there are many parameters it is a good idea to ask the optimiser (<code>optim()</code>) to use the <code>"BFGS"</code> method, which uses the gradient that <code>TMB</code> calculates, rather than the default (Nelder-Mead), which can stop before reaching the maximum.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_multivariate_hawkes</span>(fit, <span class="at">type =</span> <span class="st">"both"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sv <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>),</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">alpha =</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">0.3</span>), <span class="at">nrow =</span> <span class="dv">2</span>),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">beta =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_mhawkes</span>(<span class="at">times =</span> data<span class="sc">$</span>times, <span class="at">stream =</span> data<span class="sc">$</span>stream, <span class="at">parameters =</span> sv,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">method =</span> <span class="st">"BFGS"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>stelfi <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>stelfi</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          Estimate Std. Error
+mu_1     0.6852590 0.12847503
+mu_2     1.0231174 0.17303708
+alpha_11 0.1194825 0.06297638
+alpha_21 0.5568450 0.11822922
+alpha_12 0.0886687 0.03478703
+alpha_22 0.6257174 0.08045059
+beta_1   0.7165866 0.29083398
+beta_2   1.1221705 0.14575108</code></pre>
+</div>
+</div>
+<p>The rows labelled <code>alpha_jk</code> are <span class="math inline">\(\alpha_{jk}\)</span>, the effect of stream <span class="math inline">\(k\)</span> on stream <span class="math inline">\(j\)</span>.</p>
+</section>
+<section id="comparison-with-the-hawkes-package" class="level3" data-number="4.2.2">
+<h3 data-number="4.2.2" class="anchored" data-anchor-id="comparison-with-the-hawkes-package"><span class="header-section-number">4.2.2</span> Comparison with the <code>hawkes</code> package</h3>
+<p>The <code>hawkes</code> package (<span class="citation" data-cites="hawkes_pkg">Zaatour (<a href="references.html#ref-hawkes_pkg" role="doc-biblioref">2014</a>)</span>) does not have a fitting function, but it does provide the negative log-likelihood (<code>likelihoodHawkes()</code>), which can be minimised using <code>optim()</code>. The parameters are estimated on the log scale (to keep them positive) and the standard errors are obtained from the Hessian using the delta method.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>nll <span class="ot">&lt;-</span> <span class="cf">function</span>(p) {</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    hawkes<span class="sc">::</span><span class="fu">likelihoodHawkes</span>(<span class="at">lambda0 =</span> <span class="fu">exp</span>(p[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]),</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                             <span class="at">alpha =</span> <span class="fu">matrix</span>(<span class="fu">exp</span>(p[<span class="dv">3</span><span class="sc">:</span><span class="dv">6</span>]), <span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                             <span class="at">beta =</span> <span class="fu">exp</span>(p[<span class="dv">7</span><span class="sc">:</span><span class="dv">8</span>]), <span class="at">history =</span> sim)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>start <span class="ot">&lt;-</span> <span class="fu">log</span>(<span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>opt <span class="ot">&lt;-</span> <span class="fu">optim</span>(start, nll, <span class="at">method =</span> <span class="st">"BFGS"</span>, <span class="at">hessian =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>est <span class="ot">&lt;-</span> <span class="fu">exp</span>(opt<span class="sc">$</span>par)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>se <span class="ot">&lt;-</span> est <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">solve</span>(opt<span class="sc">$</span>hessian))) <span class="do">## delta method</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="do">## order: mu_1, mu_2, alpha_11, alpha_12, alpha_21, alpha_22, beta_1, beta_2</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>hk <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="at">Estimate =</span> est, <span class="st">"Std. Error"</span> <span class="ot">=</span> se)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code for this table</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fmt <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">paste0</span>(<span class="fu">round</span>(x[<span class="dv">1</span>], <span class="dv">3</span>), <span class="st">" ("</span>, <span class="fu">round</span>(x[<span class="dv">2</span>], <span class="dv">3</span>), <span class="st">")"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="do">## put the hawkes estimates in the same (column-major) order as stelfi</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>hk <span class="ot">&lt;-</span> hk[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>), ]</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Truth =</span> <span class="fu">c</span>(mu, <span class="fu">as.vector</span>(alpha), beta),</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">stelfi =</span> <span class="fu">apply</span>(stelfi, <span class="dv">1</span>, fmt),</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">hawkes =</span> <span class="fu">apply</span>(hk, <span class="dv">1</span>, fmt))</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">t</span>(params), <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">mu_1$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">mu_2$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">alpha_{11}$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">alpha_{21}$"</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>                                      <span class="st">"$</span><span class="sc">\\</span><span class="st">alpha_{12}$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">alpha_{22}$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">beta_1$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">beta_2$"</span>),</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">escape =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
-<p><img src="multi-hawkes_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="864"></p>
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><span class="math inline">\(\mu_1\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\mu_2\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\alpha_{11}\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\alpha_{21}\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\alpha_{12}\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\alpha_{22}\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\beta_1\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\beta_2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Truth</td>
+<td style="text-align: left;">0.5</td>
+<td style="text-align: left;">0.9</td>
+<td style="text-align: left;">0.2</td>
+<td style="text-align: left;">0.6</td>
+<td style="text-align: left;">0.1</td>
+<td style="text-align: left;">0.5</td>
+<td style="text-align: left;">0.7</td>
+<td style="text-align: left;">0.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stelfi</td>
+<td style="text-align: left;">0.685 (0.128)</td>
+<td style="text-align: left;">1.023 (0.173)</td>
+<td style="text-align: left;">0.119 (0.063)</td>
+<td style="text-align: left;">0.557 (0.118)</td>
+<td style="text-align: left;">0.089 (0.035)</td>
+<td style="text-align: left;">0.626 (0.08)</td>
+<td style="text-align: left;">0.717 (0.291)</td>
+<td style="text-align: left;">1.122 (0.146)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">hawkes</td>
+<td style="text-align: left;">0.704 (0.127)</td>
+<td style="text-align: left;">1.023 (0.173)</td>
+<td style="text-align: left;">0.125 (0.065)</td>
+<td style="text-align: left;">0.557 (0.118)</td>
+<td style="text-align: left;">0.088 (0.037)</td>
+<td style="text-align: left;">0.626 (0.08)</td>
+<td style="text-align: left;">0.746 (0.316)</td>
+<td style="text-align: left;">1.122 (0.146)</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
+<p>The two approaches give very similar estimates, and both recover the true values well. In particular both correctly identify that events in stream 1 strongly excite stream 2 (<span class="math inline">\(\alpha_{21}\)</span>) but not the other way around (<span class="math inline">\(\alpha_{12}\)</span>).</p>
+</section>
+<section id="plotting-the-fitted-model" class="level3" data-number="4.2.3">
+<h3 data-number="4.2.3" class="anchored" data-anchor-id="plotting-the-fitted-model"><span class="header-section-number">4.2.3</span> Plotting the fitted model</h3>
+<p>The fitted intensities (top) and the data (bottom) are plotted using <code>show_multivariate_hawkes()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_multivariate_hawkes</span>(fit, <span class="at">type =</span> <span class="st">"both"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="multi-hawkes_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-mhawkes-applied" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="sec-mhawkes-applied"><span class="header-section-number">4.3</span> An applied example: large and small earthquakes</h2>
+<p>In <a href="marked-hawkes.html#sec-marked-hawkes-applied" class="quarto-xref"><span>Section 3.3</span></a> the magnitude of each Canterbury earthquake was used as a mark. An alternative is to split the earthquakes into two streams, small (magnitude 3 to 4) and large (magnitude 4 and above), and ask how much each type triggers the other. The data are prepared exactly as before (times in days, jittered to remove ties).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(nz_earthquakes, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>eq <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">time =</span> nz_earthquakes<span class="sc">$</span>origintime, <span class="at">magnitude =</span> nz_earthquakes<span class="sc">$</span>magnitude)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>eq<span class="sc">$</span>days <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">difftime</span>(eq<span class="sc">$</span>time, <span class="fu">min</span>(eq<span class="sc">$</span>time), <span class="at">units =</span> <span class="st">"days"</span>))</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>eq<span class="sc">$</span>days <span class="ot">&lt;-</span> eq<span class="sc">$</span>days <span class="sc">+</span> <span class="fu">runif</span>(<span class="fu">nrow</span>(eq), <span class="dv">0</span>, <span class="dv">1</span> <span class="sc">/</span> (<span class="dv">24</span> <span class="sc">*</span> <span class="dv">60</span>))</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>eq <span class="ot">&lt;-</span> eq[<span class="fu">order</span>(eq<span class="sc">$</span>days), ]</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>eq<span class="sc">$</span>days <span class="ot">&lt;-</span> eq<span class="sc">$</span>days <span class="sc">-</span> eq<span class="sc">$</span>days[<span class="dv">1</span>]</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="do">## streams (alphabetical order: "M3-4" is stream 1, "M4+" is stream 2)</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>eq<span class="sc">$</span>size <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(eq<span class="sc">$</span>magnitude <span class="sc">&gt;=</span> <span class="dv">4</span>, <span class="st">"M4+"</span>, <span class="st">"M3-4"</span>)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(eq<span class="sc">$</span>size)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+M3-4  M4+ 
+3445  379 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>sv <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.05</span>),</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">alpha =</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>), <span class="at">nrow =</span> <span class="dv">2</span>),</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">beta =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>fit_eq <span class="ot">&lt;-</span> <span class="fu">fit_mhawkes</span>(<span class="at">times =</span> eq<span class="sc">$</span>days, <span class="at">stream =</span> eq<span class="sc">$</span>size, <span class="at">parameters =</span> sv, <span class="at">method =</span> <span class="st">"BFGS"</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>pars_eq <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit_eq)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>pars_eq</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            Estimate Std. Error
+mu_1      0.25435100 0.01649999
+mu_2      0.06004952 0.00622599
+alpha_11  1.97197679 0.11827898
+alpha_21  1.58893270 0.26960421
+alpha_12  2.67626685 0.15977508
+alpha_22 30.92092543 4.43169151
+beta_1    2.67634736 0.15977362
+beta_2   63.48313426 8.11099746</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="do">## estimated parameters as a vector mu, a matrix alpha, and a vector beta</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>mhawkes_pars <span class="ot">&lt;-</span> <span class="cf">function</span>(fit) {</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    cf <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit)[, <span class="dv">1</span>]</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    N <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">table</span>(fit<span class="sc">$</span>env<span class="sc">$</span>data<span class="sc">$</span>stream))</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(<span class="at">mu =</span> cf[<span class="dv">1</span><span class="sc">:</span>N],</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">alpha =</span> <span class="fu">matrix</span>(cf[(N <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>(N <span class="sc">+</span> N<span class="sc">^</span><span class="dv">2</span>)], <span class="at">nrow =</span> N), <span class="do">## column-major order</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">beta =</span> cf[(N <span class="sc">+</span> N<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>(<span class="dv">2</span> <span class="sc">*</span> N <span class="sc">+</span> N<span class="sc">^</span><span class="dv">2</span>)])</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">mhawkes_pars</span>(fit_eq)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>br <span class="ot">&lt;-</span> <span class="fu">sweep</span>(pe<span class="sc">$</span>alpha, <span class="dv">1</span>, pe<span class="sc">$</span>beta, <span class="st">"/"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Here stream 1 is small earthquakes and stream 2 is large earthquakes. It is easiest to interpret the estimates as the expected number of events of each type directly triggered by one event, <span class="math inline">\(\alpha_{jk}/\beta_j\)</span>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">mhawkes_pars</span>(fit_eq)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>branching <span class="ot">&lt;-</span> <span class="fu">sweep</span>(pe<span class="sc">$</span>alpha, <span class="dv">1</span>, pe<span class="sc">$</span>beta, <span class="st">"/"</span>) <span class="do">## alpha_jk / beta_j</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dimnames</span>(branching) <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">triggered =</span> <span class="fu">c</span>(<span class="st">"small"</span>, <span class="st">"large"</span>), <span class="at">trigger =</span> <span class="fu">c</span>(<span class="st">"small"</span>, <span class="st">"large"</span>))</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(branching, <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         trigger
+triggered small large
+    small 0.737 1.000
+    large 0.025 0.487</code></pre>
+</div>
+</div>
+<ul>
+<li>A small earthquake triggers on average 0.74 further small earthquakes and only 0.025 large ones.</li>
+<li>A large earthquake triggers on average 1 small earthquake(s) (see the note below) and 0.49 large ones.</li>
+<li>After an earthquake, the rate of large earthquakes returns to its background level very quickly (<span class="math inline">\(1/\hat{\beta}_2 =\)</span> 23 minutes), whereas the rate of small earthquakes stays raised for longer (<span class="math inline">\(1/\hat{\beta}_1 =\)</span> 9 hours).</li>
+</ul>
+<p>Notice that the estimate of <span class="math inline">\(\alpha_{12}/\beta_1\)</span> (small earthquakes triggered by a large one) is 1, the maximum allowed by <code>stelfi</code>. In reality large earthquakes trigger many more than one aftershock each, so this constraint is limiting the model here, and the estimate should be read as “at least one”. The marked model (<a href="marked-hawkes.html#sec-marked-hawkes-applied" class="quarto-xref"><span>Section 3.3</span></a>), where the effect of an earthquake grows continuously with its magnitude, does not have this limitation, and is probably a more natural model for these data.</p>
+</section>
+<section id="sec-mhawkes-gof" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="sec-mhawkes-gof"><span class="header-section-number">4.4</span> Goodness-of-fit</h2>
+<p>The ideas of <a href="univariate-hawkes.html#sec-gof-hawkes" class="quarto-xref"><span>Section 2.4</span></a> apply to each stream separately: if the model is correct then, for each stream <span class="math inline">\(j\)</span>, the compensator <span class="math inline">\(\Lambda_j(t) = \int_0^t \lambda_j(s) ds\)</span> evaluated at the times of the stream <span class="math inline">\(j\)</span> events transforms them into a unit rate Poisson process, so the differences between consecutive values should be <span class="math inline">\(\text{Exp}(1)\)</span>. Note that <span class="math inline">\(\lambda_j(t)\)</span> depends on the events in <em>all</em> streams. For <a href="#eq-mhawkes" class="quarto-xref">Equation&nbsp;<span>4.1</span></a> the compensator is</p>
+<p><span class="math display">\[\Lambda_j(t) = \mu_j t + \sum_{k=1}^N \frac{\alpha_{jk}}{\beta_j} \sum_{i:\tau_i &lt; t,\ s_i = k} \left(1 - \text{exp}(-\beta_j (t - \tau_i))\right).\]</span></p>
+<p><code>show_hawkes_GOF()</code> does not (yet) work for multivariate models, but the compensator differences are easily calculated with the function below (which uses the helper <code>mhawkes_pars()</code> defined in <a href="#sec-mhawkes-applied" class="quarto-xref"><span>Section 4.3</span></a>), and the tests from <a href="univariate-hawkes.html#sec-gof-hawkes" class="quarto-xref"><span>Section 2.4</span></a> applied to each stream.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>mhawkes_compensator_differences <span class="ot">&lt;-</span> <span class="cf">function</span>(fit) {</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    times <span class="ot">&lt;-</span> fit<span class="sc">$</span>env<span class="sc">$</span>data<span class="sc">$</span>times</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    stream <span class="ot">&lt;-</span> fit<span class="sc">$</span>env<span class="sc">$</span>data<span class="sc">$</span>stream</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    pars <span class="ot">&lt;-</span> <span class="fu">mhawkes_pars</span>(fit)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">factor</span>(stream))</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    out <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">seq_along</span>(pars<span class="sc">$</span>mu), <span class="cf">function</span>(j) {</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>        comp <span class="ot">&lt;-</span> <span class="fu">sapply</span>(times[s <span class="sc">==</span> j], <span class="cf">function</span>(t) {</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>            prev <span class="ot">&lt;-</span> times <span class="sc">&lt;</span> t</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>            pars<span class="sc">$</span>mu[j] <span class="sc">*</span> t <span class="sc">+</span> <span class="fu">sum</span>(pars<span class="sc">$</span>alpha[j, s[prev]] <span class="sc">/</span> pars<span class="sc">$</span>beta[j] <span class="sc">*</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>                                 (<span class="dv">1</span> <span class="sc">-</span> <span class="fu">exp</span>(<span class="sc">-</span>pars<span class="sc">$</span>beta[j] <span class="sc">*</span> (t <span class="sc">-</span> times[prev]))))</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>        })</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">diff</span>(<span class="fu">c</span>(<span class="dv">0</span>, comp))</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">names</span>(out) <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(stream))</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    out</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>For the simulated example (where the model is correct) there is no evidence of lack of fit in either stream:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>cd <span class="ot">&lt;-</span> <span class="fu">mhawkes_compensator_differences</span>(fit)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(cd, <span class="cf">function</span>(x) <span class="fu">c</span>(<span class="at">KS =</span> <span class="fu">ks.test</span>(x, <span class="st">"pexp"</span>)<span class="sc">$</span>p.value,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">Ljung_Box =</span> <span class="fu">Box.test</span>(x, <span class="at">type =</span> <span class="st">"Ljung"</span>)<span class="sc">$</span>p.value))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           Stream 1  Stream 2
+KS        0.8882235 0.5665953
+Ljung_Box 0.1629018 0.1751817</code></pre>
+</div>
+</div>
+<p>For the earthquake model:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>cd_eq <span class="ot">&lt;-</span> <span class="fu">mhawkes_compensator_differences</span>(fit_eq)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(cd_eq, <span class="cf">function</span>(x) <span class="fu">c</span>(<span class="at">KS =</span> <span class="fu">ks.test</span>(x, <span class="st">"pexp"</span>)<span class="sc">$</span>p.value,</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">Ljung_Box =</span> <span class="fu">Box.test</span>(x, <span class="at">type =</span> <span class="st">"Ljung"</span>)<span class="sc">$</span>p.value))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  M3-4          M4+
+KS        0.0002077805 1.533784e-02
+Ljung_Box 0.0000000000 5.157212e-10</code></pre>
+</div>
+</div>
+<p>QQ plots of the compensator differences for each stream against the <span class="math inline">\(\text{Exp}(1)\)</span> distribution are shown below.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>qq <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, <span class="fu">lapply</span>(<span class="fu">names</span>(cd_eq), <span class="cf">function</span>(nm) {</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    pp <span class="ot">&lt;-</span> <span class="fu">ppoints</span>(<span class="dv">200</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>(<span class="at">stream =</span> nm, <span class="at">theoretical =</span> <span class="fu">qexp</span>(pp), <span class="at">observed =</span> <span class="fu">quantile</span>(cd_eq[[nm]], pp))</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>}))</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(qq, <span class="fu">aes</span>(<span class="at">x =</span> theoretical, <span class="at">y =</span> observed)) <span class="sc">+</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span>stream, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="st">"Theoretical quantiles, Exp(1)"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Observed quantiles"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="multi-hawkes_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The QQ plots show that the <em>distribution</em> of the compensator differences is reasonably close to <span class="math inline">\(\text{Exp}(1)\)</span> for both streams (apart from the longest gaps between small earthquakes), so the KS tests reject the model mainly because there are a lot of data. The Ljung-Box tests, however, give very small p-values: short gaps tend to follow short gaps, so the model is not fully capturing the clustering of earthquakes. As for the univariate and marked models (<a href="marked-hawkes.html#sec-marked-hawkes-gof" class="quarto-xref"><span>Section 3.4</span></a>), the likely reasons are that exponential decay is too simple to describe aftershock sequences and that (as discussed above) the constraint on <span class="math inline">\(\alpha_{12}\)</span> prevents a large earthquake from triggering many small ones.</p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
-<div id="ref-hawkes_pkg" class="csl-entry" role="doc-biblioentry">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-hawkes_pkg" class="csl-entry" role="listitem">
 Zaatour, Riadh. 2014. <em><span class="nocase">hawkes</span>: Hawkes Process Simulation and Calibration Toolkit</em>. <a href="https://CRAN.R-project.org/package=hawkes">https://CRAN.R-project.org/package=hawkes</a>.
 </div>
 </div>
@@ -332,151 +706,419 @@ Zaatour, Riadh. 2014. <em><span class="nocase">hawkes</span>: Hawkes Process Sim
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  const toggleBodyColorMode = (bsSheetEl) => {
-    const mode = bsSheetEl.getAttribute("data-mode");
-    const bodyEl = window.document.querySelector("body");
-    if (mode === "dark") {
-      bodyEl.classList.add("quarto-dark");
-      bodyEl.classList.remove("quarto-light");
-    } else {
-      bodyEl.classList.add("quarto-light");
-      bodyEl.classList.remove("quarto-dark");
-    }
-  }
-  const toggleBodyColorPrimary = () => {
-    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-    if (bsSheetEl) {
-      toggleBodyColorMode(bsSheetEl);
-    }
-  }
-  toggleBodyColorPrimary();  
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
-    }
-  });
-  clipboard.on('success', function(e) {
-    // button target
-    const button = e.trigger;
-    // don't keep focus
-    button.blur();
-    // flash "checked"
-    button.classList.add('code-copy-button-checked');
-    var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "Copied!");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "Copied!");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
-    setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
-      }
-      button.setAttribute("title", currentTitle);
-      button.classList.remove('code-copy-button-checked');
-    }, 1000);
-    // clear code selection
-    e.clearSelection();
-  });
-  function tippyHover(el, contentFn) {
-    const config = {
-      allowHTML: true,
-      content: contentFn,
-      maxWidth: 500,
-      delay: 100,
-      arrow: false,
-      appendTo: function(el) {
-          return el.parentElement;
-      },
-      interactive: true,
-      interactiveBorder: 10,
-      theme: 'quarto',
-      placement: 'bottom-start'
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
     };
-    window.tippy(el, config); 
-  }
-  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-  for (var i=0; i<noterefs.length; i++) {
-    const ref = noterefs[i];
-    tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      return note.innerHTML;
-    });
-  }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
       }
-    } else {
-      return undefined;
+      return false;
     }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
           }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
       });
     }
-  }
-});
-</script>
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./marked-hawkes.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes</span></span>
+      <a href="./marked-hawkes.html" class="pagination-link" aria-label="Marked Hawkes process">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes process</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./lgcp.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Spatial log-Gaussian Cox process</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./mesh.html" class="pagination-link" aria-label="Meshes">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Meshes</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
+
 
 
 

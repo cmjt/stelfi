@@ -162,37 +162,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./univariate-hawkes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./marked-hawkes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./multi-hawkes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes process</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mesh.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Meshes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./lgcp.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Spatial log-Gaussian Cox process</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Spatial and spatiotemporal log-Gaussian Cox processes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lgcp-recovery.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Parameter recovery: <code>stelfi</code> vs <code>inlabru</code></span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./lgcp-spatiotemporal.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatiotemporal LGCP</span></span></a>
+  <a href="./lgcp-marked.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Marked log-Gaussian Cox process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -203,8 +203,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></span></a>
+  <a href="./rtmb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Simple <code>RTMB</code> templates</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -232,6 +232,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a>
   <ul class="collapse">
   <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a></li>
+  <li><a href="#citing-stelfi" id="toc-citing-stelfi" class="nav-link" data-scroll-target="#citing-stelfi">Citing <code>stelfi</code></a></li>
   </ul></li>
   </ul>
 </nav>
@@ -281,10 +282,22 @@ Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This book is a <strong>work in progress</strong>, please bear with me as I update and fix the issues.</p>
-<p>If you have any particular examples you’d like to be included please let me know @ <a href="mailto:cmjt@st-andrews.ac.uk">cmjt@st-andrews.ac.uk</a></p>
+<p>This book is a <strong>work in progress</strong>. If you have any particular examples you’d like to be included please let me know @ <a href="mailto:cmjt@st-andrews.ac.uk">cmjt@st-andrews.ac.uk</a></p>
 </div>
 </div>
+<p>Contributors to this ebook include:</p>
+<ul>
+<li>Charlotte M. Jones-Todd
+<ul>
+<li>maintainer and main contributor</li>
+</ul></li>
+<li>André Leader
+<ul>
+<li>case studies in <a href="lgcp.html#sec-iraq" class="quarto-xref"><span>Terrorism events in Iraq</span></a> &amp; <a href="lgcp.html#sec-lgcp-iraq-st" class="quarto-xref"><span>An applied example: terrorism events in Iraq by year</span></a></li>
+</ul></li>
+<li>Claude</li>
+</ul>
+<p>See <a href="intro.html" class="quarto-xref"><span>1&nbsp; Introduction</span></a> for an overview of the models in <code>stelfi</code>, a guide to which chapter suits your data, and a summary of the key functions.</p>
 <section id="installation" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="installation">Installation</h2>
 <p><strong>Option 1</strong>: <code>stelfi</code> is on CRAN</p>
@@ -295,16 +308,9 @@ Warning
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"cmjt/stelfi"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
+</section>
+<section id="citing-stelfi" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="citing-stelfi">Citing <code>stelfi</code></h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">citation</span>(<span class="st">"stelfi"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -325,8 +331,6 @@ A BibTeX entry for LaTeX users is
     pages = {e11005},
     doi = {10.1002/ece3.11005},
   }</code></pre>
-</div>
-</div>
 </div>
 </div>
 

@@ -92,6 +92,35 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -147,37 +176,37 @@ div.csl-indent {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./univariate-hawkes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./marked-hawkes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./multi-hawkes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes process</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mesh.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Meshes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./lgcp.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Spatial log-Gaussian Cox process</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Spatial and spatiotemporal log-Gaussian Cox processes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lgcp-recovery.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Parameter recovery: <code>stelfi</code> vs <code>inlabru</code></span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./lgcp-spatiotemporal.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatiotemporal LGCP</span></span></a>
+  <a href="./lgcp-marked.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Marked log-Gaussian Cox process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -188,8 +217,8 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></span></a>
+  <a href="./rtmb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Simple <code>RTMB</code> templates</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -209,15 +238,29 @@ div.csl-indent {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#what-is-a-point-pattern" id="toc-what-is-a-point-pattern" class="nav-link active" data-scroll-target="#what-is-a-point-pattern"><span class="header-section-number">1.1</span> What is a point pattern?</a></li>
+  <li><a href="#which-chapter-do-i-need" id="toc-which-chapter-do-i-need" class="nav-link" data-scroll-target="#which-chapter-do-i-need"><span class="header-section-number">1.2</span> Which chapter do I need?</a></li>
+  <li><a href="#how-the-model-chapters-are-organised" id="toc-how-the-model-chapters-are-organised" class="nav-link" data-scroll-target="#how-the-model-chapters-are-organised"><span class="header-section-number">1.3</span> How the model chapters are organised</a></li>
+  <li><a href="#a-typical-stelfi-workflow" id="toc-a-typical-stelfi-workflow" class="nav-link" data-scroll-target="#a-typical-stelfi-workflow"><span class="header-section-number">1.4</span> A typical <code>stelfi</code> workflow</a></li>
+  <li><a href="#sec-key-functions" id="toc-sec-key-functions" class="nav-link" data-scroll-target="#sec-key-functions"><span class="header-section-number">1.5</span> Key <code>stelfi</code> functions</a>
+  <ul class="collapse">
+  <li><a href="#model-fitting-functions" id="toc-model-fitting-functions" class="nav-link" data-scroll-target="#model-fitting-functions">Model fitting functions</a></li>
+  <li><a href="#utility-and-plotting-functions" id="toc-utility-and-plotting-functions" class="nav-link" data-scroll-target="#utility-and-plotting-functions">Utility and plotting functions</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></h1>
+<h1 class="title"><span id="sec-intro" class="quarto-section-identifier"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></h1>
 </div>
 
 
@@ -234,17 +277,231 @@ div.csl-indent {
 </header>
 
 
-<p>The <code>stelfi</code> package fits Hawkes and log-Gaussian Cox Point Process models, with extensions, using Template Model Builder (<span class="citation" data-cites="tmb">Kristensen et al. (<a href="references.html#ref-tmb" role="doc-biblioref">2016</a>)</span>).</p>
-<p><strong>Overview</strong></p>
-<p>A Hawkes process is a self-exciting temporal point process where the occurrence of an event immediately increases the chance of another (see <span class="citation" data-cites="hawkes">Hawkes (<a href="references.html#ref-hawkes" role="doc-biblioref">1971</a>)</span>). <code>stelfi</code> also offers functionality to fit self-inhibiting process and a non-homogeneous background rate.</p>
-<p>A log-Gaussian Cox process is a Poisson point process where the log-intensity is given by a Gaussian random field. <code>stelfi</code> also offers functionality to extend this to a joint likelihood formulation fitting a marked log-Gaussian Cox model.</p>
-<p>In addition, the <code>stelfi</code> offers functionality to fit self-exciting spatiotemporal point processes. Models are fitted via maximum likelihood using ‘TMB’ (Template Model Builder) (<span class="citation" data-cites="tmb">Kristensen et al. (<a href="references.html#ref-tmb" role="doc-biblioref">2016</a>)</span>). Where included 1) random fields are assumed to be Gaussian and are integrated over using the Laplace approximation and 2) a stochastic partial differential equation model, introduced by <span class="citation" data-cites="spde">Lindgren, Rue, and Lindström (<a href="references.html#ref-spde" role="doc-biblioref">2011</a>)</span>, is defined for the field(s).</p>
+<p><code>stelfi</code> fits Hawkes processes, log-Gaussian Cox processes (LGCPs), and spatiotemporal self-exciting models to point pattern data. All models are fitted by maximum likelihood using Template Model Builder (<code>TMB</code>, <span class="citation" data-cites="tmb">Kristensen et al. (<a href="references.html#ref-tmb" role="doc-biblioref">2016</a>)</span>), which makes fitting fast even for fairly large datasets. Where a model includes a spatial random field, the field is assumed to be Gaussian, it is built using the stochastic partial differential equation (SPDE) approach of <span class="citation" data-cites="spde">Lindgren, Rue, and Lindström (<a href="references.html#ref-spde" role="doc-biblioref">2011</a>)</span>, and it is integrated out of the likelihood using the Laplace approximation.</p>
+<p>This book is written for people who have point pattern data of their own and want to know (1) which <code>stelfi</code> model suits their data, (2) what shape the data need to be in, (3) how to fit and interpret the model, and (4) how to check whether the model is any good. The emphasis is on <em>using</em> the models rather than on the theory behind them.</p>
+<section id="what-is-a-point-pattern" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="what-is-a-point-pattern"><span class="header-section-number">1.1</span> What is a point pattern?</h2>
+<p>A point pattern is a record of <em>when</em> and/or <em>where</em> events happened. Examples are the times of retweets of a tweet, the locations of sasquatch sightings, or the times, locations, and magnitudes of earthquakes. The thing being modelled is the <strong>intensity</strong>, the expected rate of events per unit time (or per unit area, or per unit area per unit time). A high intensity means events are likely, a low intensity means events are unlikely.</p>
+<p>The models in <code>stelfi</code> differ in <em>why</em> the intensity varies:</p>
+<ul>
+<li>In a <strong>Hawkes process</strong> events <em>cause</em> more events. Each event temporarily increases the chance of another event occurring soon afterwards (self-excitement). Think of aftershocks following an earthquake or retweets following a tweet.</li>
+<li>In a <strong>log-Gaussian Cox process</strong> the intensity varies smoothly over space (and time) because of some underlying, unobserved, environment. Events do not cause other events, they are just more common in some places than others. Think of where species are found or where crimes tend to occur.</li>
+<li>A <strong>spatiotemporal self-exciting model</strong> combines the two: there is a background intensity over space and events trigger further events nearby in both space and time.</li>
+</ul>
+</section>
+<section id="which-chapter-do-i-need" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="which-chapter-do-i-need"><span class="header-section-number">1.2</span> Which chapter do I need?</h2>
+<p>The table below summarises which model suits which type of data, and in which chapter it is covered.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 44%">
+<col style="width: 27%">
+<col style="width: 11%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Your data</th>
+<th style="text-align: left;">Model</th>
+<th style="text-align: left;"><code>stelfi</code> function</th>
+<th style="text-align: left;">Chapter</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Event times only, events seem to trigger further events</td>
+<td style="text-align: left;">Univariate Hawkes process</td>
+<td style="text-align: left;"><code>fit_hawkes()</code></td>
+<td style="text-align: left;"><a href="univariate-hawkes.html" class="quarto-xref"><span>Chapter 2</span></a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">As above, but with a background rate that changes over time (e.g., yearly cycles)</td>
+<td style="text-align: left;">Hawkes with a custom background function</td>
+<td style="text-align: left;"><code>fit_hawkes_cbf()</code></td>
+<td style="text-align: left;"><a href="univariate-hawkes.html#sec-hawkes-cbf" class="quarto-xref"><span>Section 2.5</span></a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Event times plus a numeric value for each event that might change how much it triggers (e.g., magnitude)</td>
+<td style="text-align: left;">Marked Hawkes process</td>
+<td style="text-align: left;"><code>fit_hawkes()</code> with <code>marks</code></td>
+<td style="text-align: left;"><a href="marked-hawkes.html" class="quarto-xref"><span>Chapter 3</span></a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Event times for two or more types of event that might trigger each other</td>
+<td style="text-align: left;">Multivariate Hawkes process</td>
+<td style="text-align: left;"><code>fit_mhawkes()</code></td>
+<td style="text-align: left;"><a href="multi-hawkes.html" class="quarto-xref"><span>Chapter 4</span></a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Event locations within a study region</td>
+<td style="text-align: left;">Spatial LGCP</td>
+<td style="text-align: left;"><code>fit_lgcp()</code></td>
+<td style="text-align: left;"><a href="lgcp.html" class="quarto-xref"><span>Chapter 6</span></a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Event locations and times (e.g., year), spatial pattern changes over time</td>
+<td style="text-align: left;">Spatiotemporal LGCP</td>
+<td style="text-align: left;"><code>fit_lgcp()</code> with <code>tmesh</code></td>
+<td style="text-align: left;"><a href="lgcp.html#sec-lgcpst" class="quarto-xref"><span>Section 6.5</span></a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Event locations plus one or more measurements on each event</td>
+<td style="text-align: left;">Marked LGCP</td>
+<td style="text-align: left;"><code>fit_mlgcp()</code></td>
+<td style="text-align: left;"><a href="lgcp-marked.html" class="quarto-xref"><span>Chapter 7</span></a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Event locations and times, events trigger further events nearby</td>
+<td style="text-align: left;">Spatiotemporal self-exciting (Hawkes) model</td>
+<td style="text-align: left;"><code>fit_stelfi()</code></td>
+<td style="text-align: left;"><a href="stelfi.html" class="quarto-xref"><span>Chapter 8</span></a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">You want to write and modify the likelihood yourself</td>
+<td style="text-align: left;"><code>RTMB</code> templates</td>
+<td style="text-align: left;">–</td>
+<td style="text-align: left;"><a href="rtmb.html" class="quarto-xref"><span>Chapter 9</span></a></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="how-the-model-chapters-are-organised" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="how-the-model-chapters-are-organised"><span class="header-section-number">1.3</span> How the model chapters are organised</h2>
+<p>Each of the model fitting chapters (<a href="univariate-hawkes.html" class="quarto-xref"><span>Chapter 2</span></a> to <a href="stelfi.html" class="quarto-xref"><span>Chapter 8</span></a>, other than <a href="mesh.html" class="quarto-xref"><span>Chapter 5</span></a> on meshes) follows the same structure:</p>
+<ol type="1">
+<li><strong>The model and your data</strong>: a short description of the model, what the parameters mean, and what your data need to look like (including common problems and limitations).</li>
+<li><strong>A simulated example</strong>: data are simulated from the model with <em>known</em> parameter values. The model is then fitted using <code>stelfi</code> and, where one exists, a competing <code>R</code> package, and the estimates from both are compared with each other and with the truth. The code used to simulate the data is shown, so that every chapter is fully reproducible, and so that you can change the parameter values (or the amount of data) and see how well the model is estimated.</li>
+<li><strong>An applied example</strong>: the model is fitted to one of the datasets that come with <code>stelfi</code> (see <a href="data.html" class="quarto-xref"><span>Chapter 10</span></a>) and the estimates are interpreted.</li>
+<li><strong>Goodness-of-fit</strong>: some procedures to check whether the fitted model adequately describes the data.</li>
+</ol>
+<p>The chapters build on one another: the univariate Hawkes chapter (<a href="univariate-hawkes.html" class="quarto-xref"><span>Chapter 2</span></a>) introduces ideas used in all of the Hawkes-type chapters, and the chapter on meshes (<a href="mesh.html" class="quarto-xref"><span>Chapter 5</span></a>) and the spatial LGCP chapter (<a href="lgcp.html" class="quarto-xref"><span>Chapter 6</span></a>) introduce ideas used in all of the spatial chapters. If you are new to these models, start there.</p>
+</section>
+<section id="a-typical-stelfi-workflow" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="a-typical-stelfi-workflow"><span class="header-section-number">1.4</span> A typical <code>stelfi</code> workflow</h2>
+<p>Whatever the model, using <code>stelfi</code> involves the same steps:</p>
+<ol type="1">
+<li><strong>Prepare the data</strong>. Times must be numeric (e.g., days since the first event) and sorted. Locations must be in a <em>projected</em> (planar) coordinate system, such as UTM, ideally in sensible units (e.g., km).</li>
+<li><strong>For spatial models, define the study region and build a mesh</strong>. The study region is an <code>sf</code> polygon and the mesh is a triangulation of it built with <code>fmesher::fm_mesh_2d()</code> (see <a href="mesh.html" class="quarto-xref"><span>Chapter 5</span></a>).</li>
+<li><strong>Choose starting values</strong> for the parameters and fit the model with one of the <code>fit_*()</code> functions.</li>
+<li><strong>Extract the estimates</strong> using <code>get_coefs()</code> (and, for spatial models, the estimated random field using <code>get_fields()</code>).</li>
+<li><strong>Visualise</strong> the fitted model using <code>show_hawkes()</code>, <code>show_multivariate_hawkes()</code>, <code>show_field()</code> or <code>show_lambda()</code>.</li>
+<li><strong>Check the fit</strong> using <code>show_hawkes_GOF()</code> (temporal models) or simulation-based checks (spatial models).</li>
+</ol>
+</section>
+<section id="sec-key-functions" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="sec-key-functions"><span class="header-section-number">1.5</span> Key <code>stelfi</code> functions</h2>
+<section id="model-fitting-functions" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="model-fitting-functions">Model fitting functions</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 57%">
+<col style="width: 42%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Function</th>
+<th style="text-align: left;">Key arguments</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>fit_hawkes()</code></td>
+<td style="text-align: left;"><code>times</code>, a sorted numeric vector of event times with no ties; <code>parameters</code>, named starting values for <span class="math inline">\(\mu\)</span> (<code>mu</code>), <span class="math inline">\(\alpha\)</span> (<code>alpha</code>), and <span class="math inline">\(\beta\)</span> (<code>beta</code>); <code>marks</code>, optional, a numeric vector of marks (one per event).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>fit_hawkes_cbf()</code></td>
+<td style="text-align: left;">As <code>fit_hawkes()</code> plus <code>background</code>, a function giving the background rate <span class="math inline">\(\mu(t)\)</span>; <code>background_integral</code>, its integral; and <code>background_parameters</code>, starting values for the parameters of <span class="math inline">\(\mu(t)\)</span>. (<code>mu</code> in <code>parameters</code> is ignored.)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>fit_mhawkes()</code></td>
+<td style="text-align: left;"><code>times</code>, a sorted numeric vector of event times (all streams together); <code>stream</code>, a character vector giving the stream (type) of each event; <code>parameters</code>, a list with <code>mu</code> (vector, one per stream), <code>alpha</code> (matrix, streams <span class="math inline">\(\times\)</span> streams), and <code>beta</code> (vector, one per stream), with <code>alpha[j, k]</code> the effect of stream <span class="math inline">\(k\)</span> on stream <span class="math inline">\(j\)</span> and <code>beta[j]</code> the decay rate of stream <span class="math inline">\(j\)</span>.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>fit_lgcp()</code></td>
+<td style="text-align: left;"><code>locs</code>, a data frame of event locations with columns <code>x</code>, <code>y</code> (and <code>t</code> for a spatiotemporal model); <code>sf</code>, an <code>sf</code> polygon of the study region; <code>smesh</code>, a spatial mesh from <code>fmesher::fm_mesh_2d()</code>; <code>tmesh</code>, optional, a temporal mesh from <code>fmesher::fm_mesh_1d()</code>; <code>parameters</code>, starting values for <code>beta</code> (intercept and any covariate coefficients), <code>log_tau</code>, <code>log_kappa</code>, and (spatiotemporal only) <code>atanh_rho</code>; <code>covariates</code>, optional, a matrix with one row per mesh node.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>fit_mlgcp()</code></td>
+<td style="text-align: left;"><code>locs</code>, <code>sf</code>, and <code>smesh</code> as <code>fit_lgcp()</code>; <code>marks</code>, a matrix of marks with one column per mark; <code>methods</code>, the distribution of each mark (<code>0</code> Gaussian, <code>1</code> Poisson, <code>2</code> binomial, <code>3</code> gamma); <code>fields</code>, whether each mark has its own random field; <code>strfixed</code>, fixed structural parameters (e.g., the log standard deviation of a Gaussian mark); <code>parameters</code>, a list of starting values (<code>betapp</code>, <code>betamarks</code>, <code>marks_coefs_pp</code>, <code>log_tau</code>, <code>log_kappa</code>).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>fit_stelfi()</code></td>
+<td style="text-align: left;"><code>times</code>, as <code>fit_hawkes()</code>; <code>locs</code>, <code>sf</code>, and <code>smesh</code>, as <code>fit_lgcp()</code>; <code>parameters</code>, a list of starting values for <code>coefs</code> (log background rate, or <code>mu</code>), <code>alpha</code>, <code>beta</code>, <code>xsigma</code>, <code>ysigma</code>, <code>rho</code>, and, if <code>GMRF = TRUE</code>, <code>kappa</code> and <code>tau</code>; <code>GMRF</code>, logical, include a spatial random field in the background; <code>time_independent</code>, logical, whether the spatial spread of the triggering kernel is fixed over time.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="utility-and-plotting-functions" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="utility-and-plotting-functions">Utility and plotting functions</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 77%">
+<col style="width: 22%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Function</th>
+<th style="text-align: left;">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>get_coefs()</code></td>
+<td style="text-align: left;">Estimated parameters and standard errors from any fitted model.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>get_fields()</code></td>
+<td style="text-align: left;">Estimated values (or standard errors, <code>sd = TRUE</code>) of the random field(s) at each mesh node.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>get_weights()</code></td>
+<td style="text-align: left;">The area of the study region associated with each mesh node.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>mesh_2_sf()</code></td>
+<td style="text-align: left;">Converts a mesh to an <code>sf</code> object (e.g., for plotting with <code>ggplot2</code>).</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>meshmetrics()</code></td>
+<td style="text-align: left;">Geometric summaries of each triangle in a mesh (see <a href="mesh.html#sec-meshmetrics" class="quarto-xref"><span>Section 5.3</span></a>).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>show_hawkes()</code></td>
+<td style="text-align: left;">Plots the fitted conditional intensity of a Hawkes model (and/or the data).</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>show_multivariate_hawkes()</code></td>
+<td style="text-align: left;">As <code>show_hawkes()</code> for a multivariate Hawkes model.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>show_hawkes_GOF()</code></td>
+<td style="text-align: left;">Goodness-of-fit plots and tests for a Hawkes model.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>compensator_differences()</code></td>
+<td style="text-align: left;">The transformed inter-event times (compensator differences) of a fitted Hawkes model.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>show_field()</code></td>
+<td style="text-align: left;">Plots values at the mesh nodes (e.g., an estimated random field) as a surface.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>show_lambda()</code></td>
+<td style="text-align: left;">Plots the estimated intensity surface of a fitted LGCP.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>sim_hawkes()</code></td>
+<td style="text-align: left;">Simulates from a univariate Hawkes process.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>sim_lgcp()</code></td>
+<td style="text-align: left;">Simulates a random field and event counts from a spatial LGCP.</td>
+</tr>
+</tbody>
+</table>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
-<div id="ref-hawkes" class="csl-entry" role="listitem">
-Hawkes, AG. 1971. <span>“Spectra of Some Self-Exciting and Mutually Exciting Point Processes.”</span> <em>Biometrika</em>.
-</div>
 <div id="ref-tmb" class="csl-entry" role="listitem">
 Kristensen, Kasper, Anders Nielsen, Casper W. Berg, Hans Skaug, and Bradley M. Bell. 2016. <span>“<span>TMB</span>: Automatic Differentiation and <span>L</span>aplace Approximation.”</span> <em>Journal of Statistical Software</em>. <a href="https://doi.org/10.18637/jss.v070.i05">https://doi.org/10.18637/jss.v070.i05</a>.
 </div>
@@ -252,6 +509,8 @@ Kristensen, Kasper, Anders Nielsen, Casper W. Berg, Hans Skaug, and Bradley M. B
 Lindgren, Finn, Håvard Rue, and Johan Lindström. 2011. <span>“An Explicit Link Between <span>Gaussian</span> Fields and <span>Gaussian</span> <span>Markov</span> Random Fields: The Stochastic Partial Differential Equation Approach (with Discussion).”</span> <em>Journal of the Royal Statistical Society B</em> 73 (4): 423–98.
 </div>
 </div>
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -661,8 +920,8 @@ Lindgren, Finn, Håvard Rue, and Johan Lindström. 2011. <span>“An Explicit Li
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./univariate-hawkes.html" class="pagination-link" aria-label="Univariate Hawkes">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./univariate-hawkes.html" class="pagination-link" aria-label="Univariate Hawkes process">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes process</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

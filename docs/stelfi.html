@@ -86,8 +86,8 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./summary.html" rel="next">
-<link href="./lgcp-spatiotemporal.html" rel="prev">
+<link href="./rtmb.html" rel="next">
+<link href="./lgcp-marked.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -211,37 +211,37 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./univariate-hawkes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./marked-hawkes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./multi-hawkes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes process</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mesh.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Meshes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./lgcp.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Spatial log-Gaussian Cox process</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Spatial and spatiotemporal log-Gaussian Cox processes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lgcp-recovery.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Parameter recovery: <code>stelfi</code> vs <code>inlabru</code></span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./lgcp-spatiotemporal.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatiotemporal LGCP</span></span></a>
+  <a href="./lgcp-marked.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Marked log-Gaussian Cox process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -252,8 +252,8 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></span></a>
+  <a href="./rtmb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Simple <code>RTMB</code> templates</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -278,9 +278,25 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#fitting-a-spatiotemporal-hawkes-process" id="toc-fitting-a-spatiotemporal-hawkes-process" class="nav-link active" data-scroll-target="#fitting-a-spatiotemporal-hawkes-process"><span class="header-section-number">8.1</span> Fitting a spatiotemporal Hawkes process</a></li>
-  <li><a href="#simulating-from-a-spatiotemporal-hawkes-process" id="toc-simulating-from-a-spatiotemporal-hawkes-process" class="nav-link" data-scroll-target="#simulating-from-a-spatiotemporal-hawkes-process"><span class="header-section-number">8.2</span> Simulating from a spatiotemporal Hawkes process</a></li>
-  <li><a href="#including-a-gmrf" id="toc-including-a-gmrf" class="nav-link" data-scroll-target="#including-a-gmrf"><span class="header-section-number">8.3</span> Including a GMRF</a></li>
+  <li><a href="#the-model-and-your-data" id="toc-the-model-and-your-data" class="nav-link active" data-scroll-target="#the-model-and-your-data"><span class="header-section-number">8.1</span> The model and your data</a>
+  <ul class="collapse">
+  <li><a href="#sec-stelfi-data" id="toc-sec-stelfi-data" class="nav-link" data-scroll-target="#sec-stelfi-data"><span class="header-section-number">8.1.1</span> What your data need to look like</a></li>
+  </ul></li>
+  <li><a href="#sec-stelfi-sim" id="toc-sec-stelfi-sim" class="nav-link" data-scroll-target="#sec-stelfi-sim"><span class="header-section-number">8.2</span> A simulated example</a>
+  <ul class="collapse">
+  <li><a href="#fitting-the-model-using-stelfi" id="toc-fitting-the-model-using-stelfi" class="nav-link" data-scroll-target="#fitting-the-model-using-stelfi"><span class="header-section-number">8.2.1</span> Fitting the model using <code>stelfi</code></a></li>
+  <li><a href="#comparison" id="toc-comparison" class="nav-link" data-scroll-target="#comparison"><span class="header-section-number">8.2.2</span> Comparison</a></li>
+  </ul></li>
+  <li><a href="#sec-stelfi-applied" id="toc-sec-stelfi-applied" class="nav-link" data-scroll-target="#sec-stelfi-applied"><span class="header-section-number">8.3</span> An applied example: Canterbury earthquakes</a>
+  <ul class="collapse">
+  <li><a href="#preparing-the-data" id="toc-preparing-the-data" class="nav-link" data-scroll-target="#preparing-the-data"><span class="header-section-number">8.3.1</span> Preparing the data</a></li>
+  <li><a href="#fitting-the-model" id="toc-fitting-the-model" class="nav-link" data-scroll-target="#fitting-the-model"><span class="header-section-number">8.3.2</span> Fitting the model</a></li>
+  </ul></li>
+  <li><a href="#sec-stelfi-gof" id="toc-sec-stelfi-gof" class="nav-link" data-scroll-target="#sec-stelfi-gof"><span class="header-section-number">8.4</span> Goodness-of-fit</a>
+  <ul class="collapse">
+  <li><a href="#checking-the-mesh" id="toc-checking-the-mesh" class="nav-link" data-scroll-target="#checking-the-mesh"><span class="header-section-number">8.4.1</span> Checking the mesh</a></li>
+  <li><a href="#checking-the-temporal-pattern" id="toc-checking-the-temporal-pattern" class="nav-link" data-scroll-target="#checking-the-temporal-pattern"><span class="header-section-number">8.4.2</span> Checking the temporal pattern</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -306,162 +322,443 @@ window.Quarto = {
 </header>
 
 
-<p>For the spatiotemporal Hawkes processes fitted by <code>stelfi</code>, temporal self-excitement follows an exponential decay function (see <span class="citation" data-cites="reinhart">Reinhart (<a href="references.html#ref-reinhart" role="doc-biblioref">2018</a>)</span>). The self-excitement over space follows a Gaussian distribution centered at the triggering event. The default is that the Gaussian function has a fixed covariance matrix, independent of time. Alternatively, covariance can be directly proportional to time, meaning that the self-excitement radiates out from the center over time. This can be appropriate when the mechanism causing self-excitement travels at a finite speed, but is very memory-intensive.</p>
-<p>The intensity function used by <code>stelfi</code> is</p>
-<p><span class="math display">\[\lambda(s,t) = \mu + \alpha \Sigma_{i:\tau_i&lt;t}(\text{exp}(-\beta * (t-\tau_i)) G_i(s-x_i, t - \tau_i)).\]</span></p>
-<p>Here <span class="math inline">\(\mu\)</span> is the background rate, <span class="math inline">\(\beta\)</span> is the rate of temporal decay, <span class="math inline">\(\alpha\)</span> is the increase in intensity after an event, <span class="math inline">\(\tau_i\)</span> are the event times, <span class="math inline">\(x_i\)</span> are the event locations (in 2D Euclidean space) and <span class="math inline">\(G_i(s-x_i, t - \tau_i)\)</span> is the spatial self-excitement kernel.</p>
-<p>For the version with time-independent spatial excitement: <span class="math inline">\(G_i(s-x_i, t - \tau_i) = f_X(s - x_i)\)</span> where <span class="math inline">\(f_X\)</span> is the density function of <span class="math inline">\(X \sim \text{N}(0, \Sigma)\)</span>, (<span class="math inline">\(\Sigma = \begin{pmatrix} \sigma_x^2 &amp; \rho  \\ \rho  &amp; \sigma_y^2  \end{pmatrix}\)</span>).</p>
-<p>For the version with time-dependent spatial excitement: <span class="math inline">\(G_i(s-x_i, t - \tau_i) = f_X(s - x_i)\)</span> where <span class="math inline">\(f_X\)</span> is the density function of <span class="math inline">\(X \sim \text{N}(0, (t-\tau_i)\Sigma)\)</span></p>
-<section id="fitting-a-spatiotemporal-hawkes-process" class="level2" data-number="8.1">
-<h2 data-number="8.1" class="anchored" data-anchor-id="fitting-a-spatiotemporal-hawkes-process"><span class="header-section-number">8.1</span> Fitting a spatiotemporal Hawkes process</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(xyt, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>locs <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> xyt<span class="sc">$</span>x, <span class="at">y =</span> xyt<span class="sc">$</span>y)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> xyt<span class="sc">$</span>t</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>domain <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(xyt<span class="sc">$</span>window)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold">
+<summary>Packages used in this chapter</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stelfi)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
+<section id="the-model-and-your-data" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="the-model-and-your-data"><span class="header-section-number">8.1</span> The model and your data</h2>
+<p>A spatiotemporal self-exciting model combines ideas from the Hawkes process (<a href="univariate-hawkes.html" class="quarto-xref"><span>Chapter 2</span></a>) and the LGCP (<a href="lgcp.html" class="quarto-xref"><span>Chapter 6</span></a>). Events have a time <em>and</em> a location, and each event temporarily increases the chance of further events <em>nearby</em>, in both time and space. Earthquake aftershocks, the spread of crime (“near repeat” burglaries), and outbreaks of disease are typical examples. The intensity used by <code>stelfi</code> (see <span class="citation" data-cites="reinhart">Reinhart (<a href="references.html#ref-reinhart" role="doc-biblioref">2018</a>)</span>) is</p>
+<p><span id="eq-stelfi"><span class="math display">\[\lambda(s,t) = \mu + \alpha \sum_{i:\tau_i&lt;t} \text{exp}(-\beta (t-\tau_i))\, f(s - x_i), \tag{8.1}\]</span></span></p>
+<p>where <span class="math inline">\(\tau_i\)</span> and <span class="math inline">\(x_i\)</span> are the time and location of event <span class="math inline">\(i\)</span>, and</p>
+<ul>
+<li><span class="math inline">\(\mu\)</span> is the <strong>background rate</strong>, the expected number of spontaneous events per unit area per unit time;</li>
+<li><span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> describe the <strong>temporal</strong> self-excitement, exactly as for a Hawkes process: each event triggers on average <span class="math inline">\(\alpha/\beta\)</span> further events (if all of its spatial influence falls within the study region), and its influence decays with time scale <span class="math inline">\(1/\beta\)</span>; and</li>
+<li><span class="math inline">\(f(\cdot)\)</span> is the <strong>spatial triggering kernel</strong>, a bivariate normal density centred on the triggering event with standard deviations <span class="math inline">\(\sigma_x\)</span> and <span class="math inline">\(\sigma_y\)</span> (in the x and y directions) and correlation <span class="math inline">\(\rho\)</span>. So triggered events tend to occur within a couple of standard deviations of the event that triggered them, and <span class="math inline">\(\rho \neq 0\)</span> means triggering is stronger along one diagonal direction than the other.</li>
+</ul>
+<p>Two extensions are available:</p>
+<ul>
+<li><strong>A spatially varying background.</strong> Setting <code>GMRF = TRUE</code> replaces <span class="math inline">\(\mu\)</span> with <span class="math inline">\(\mu(s) = \text{exp}(\beta_0 + G(s))\)</span>, where <span class="math inline">\(G(s)\)</span> is a Gaussian random field as in an LGCP. Spatial covariates can also be included in the background via the <code>covariates</code> argument (one row per mesh node). This is important if some areas simply have more events than others, as otherwise this will be mistaken for self-excitement.</li>
+<li><strong>A spreading kernel.</strong> Setting <code>time_independent = FALSE</code> makes the spread of the kernel grow with time since the triggering event (its covariance is proportional to <span class="math inline">\(t - \tau_i\)</span>), appropriate when the triggering mechanism travels at a finite speed. This is very memory intensive.</li>
+</ul>
+<p><code>get_coefs()</code> reports <code>mu</code> and <code>coefs</code> (the log of the background rate, followed by any covariate coefficients), <code>alpha</code>, <code>beta</code>, <code>xsigma</code>, <code>ysigma</code>, <code>rho</code>, and, with <code>GMRF = TRUE</code>, the field parameters <code>kappa</code> and <code>tau</code>.</p>
+<section id="sec-stelfi-data" class="level3" data-number="8.1.1">
+<h3 data-number="8.1.1" class="anchored" data-anchor-id="sec-stelfi-data"><span class="header-section-number">8.1.1</span> What your data need to look like</h3>
+<p><code>fit_stelfi()</code> needs</p>
+<ul>
+<li><code>times</code>, a numeric vector of event times, sorted with no ties (exactly as for a Hawkes process, <a href="univariate-hawkes.html#sec-hawkes-data" class="quarto-xref"><span>Section 2.1.1</span></a>);</li>
+<li><code>locs</code>, a data frame with columns <code>x</code> and <code>y</code> giving the location of each event, in the same order as <code>times</code>;</li>
+<li><code>sf</code>, an <code>sf</code> polygon of the study region; and</li>
+<li><code>smesh</code>, a mesh of the study region (<a href="mesh.html" class="quarto-xref"><span>Chapter 5</span></a>).</li>
+</ul>
+<p>Things to be aware of:</p>
+<ul>
+<li><strong>Use projected coordinates in sensible units</strong> (e.g., km), as for an LGCP (<a href="lgcp.html#sec-lgcp-data" class="quarto-xref"><span>Section 6.1.1</span></a>). The units of time and distance set the units of the parameters: <span class="math inline">\(\mu\)</span> is then events per km<span class="math inline">\(^2\)</span> per day (say) and <span class="math inline">\(\sigma_x\)</span>, <span class="math inline">\(\sigma_y\)</span> are in km.</li>
+<li><strong>The mesh is used to integrate the intensity over the study region</strong>, both the background and the spatial kernel of every event. The mesh therefore needs to be fine <em>relative to the spread of the kernel</em> (<span class="math inline">\(\sigma_x\)</span>, <span class="math inline">\(\sigma_y\)</span>) where there are events, otherwise the integral of the kernel is inaccurate and so are the estimates. A good approach is to build the mesh around the events (<code>loc = locs</code>) with a small <code>cutoff</code>, which gives small triangles where events are and larger ones elsewhere. <code>fit_stelfi()</code> gives a warning if the mesh looks too coarse for the estimated kernel, and the accuracy can be checked in more detail after fitting (<a href="#sec-stelfi-gof" class="quarto-xref"><span>Section 8.4</span></a>).</li>
+<li><strong>Edge effects.</strong> Events near the edge of the study region trigger events that may fall outside it, and are therefore unobserved. The model accounts for this (the integral of the kernel only covers the study region), but the study region should be the region where events could have been observed.</li>
+<li><strong>Computation.</strong> The likelihood involves every pair of events, so the cost grows with the square of the number of events. A few hundred to a few thousand events is feasible; for more, consider a subset (e.g., a time window or the larger events).</li>
+<li><strong>Starting values.</strong> <code>parameters</code> is a list with <code>coefs</code> (the log of the background rate, or alternatively <code>mu</code>, the background rate itself; if neither is given a crude default is used), <code>alpha</code>, <code>beta</code>, <code>xsigma</code>, <code>ysigma</code>, <code>rho</code>, and, with <code>GMRF = TRUE</code>, <code>kappa</code> and <code>tau</code>. Choose <code>xsigma</code> and <code>ysigma</code> to be roughly the distance over which you expect triggering to occur, and <span class="math inline">\(\alpha &lt; \beta\)</span>. The model can be sensitive to starting values, particularly with <code>GMRF = TRUE</code>, so it is worth trying a few.</li>
+</ul>
+</section>
+</section>
+<section id="sec-stelfi-sim" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="sec-stelfi-sim"><span class="header-section-number">8.2</span> A simulated example</h2>
+<p>Data were simulated from <a href="#eq-stelfi" class="quarto-xref">Equation&nbsp;<span>8.1</span></a> within the (elliptical) study region of the <code>xyt</code> dataset (see <a href="data.html" class="quarto-xref"><span>Chapter 10</span></a>), with background rate <span class="math inline">\(\mu = 1\)</span>, <span class="math inline">\(\alpha = 2\)</span> and <span class="math inline">\(\beta = 4\)</span> (so each event triggers on average <span class="math inline">\(2/4 = 0.5\)</span> events), and a kernel with <span class="math inline">\(\sigma_x = 0.5\)</span>, <span class="math inline">\(\sigma_y = 0.25\)</span> and <span class="math inline">\(\rho = 0\)</span> (so triggering spreads twice as far in the x direction as in the y direction).</p>
+<p><code>stelfi</code> does not have a separate simulation function for this model. Instead, the fitted model object returned by <code>fit_stelfi()</code> has a <code>simulate()</code> method that simulates a new point pattern, over the same study region and time period, from the model with any given parameter values. So below the model is first fitted to the <code>xyt</code> data (the estimates themselves are not used), and the <code>simulate()</code> method is then called with the true parameter values. These must be given on the scale used internally by <code>stelfi</code>: the log of <span class="math inline">\(\mu\)</span> (<code>coefs</code>), the logit of <span class="math inline">\(\alpha/\beta\)</span>, the logs of <span class="math inline">\(\beta\)</span>, <span class="math inline">\(\sigma_x\)</span> and <span class="math inline">\(\sigma_y\)</span>, and <span class="math inline">\(\text{atanh}(\rho)\)</span>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> locs, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">size =</span> times)) <span class="sc">+</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_sf</span>(<span class="at">data =</span> domain, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(xyt, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>domain <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(xyt<span class="sc">$</span>window)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>bnd <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_as_segm</span>(<span class="fu">as.matrix</span>(sf<span class="sc">::</span><span class="fu">st_coordinates</span>(domain)[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]))</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>smesh <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_mesh_2d</span>(<span class="at">boundary =</span> bnd, <span class="at">max.edge =</span> <span class="fl">0.75</span>, <span class="at">cutoff =</span> <span class="fl">0.3</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>fit0 <span class="ot">&lt;-</span> <span class="fu">fit_stelfi</span>(<span class="at">times =</span> xyt<span class="sc">$</span>t, <span class="at">locs =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> xyt<span class="sc">$</span>x, <span class="at">y =</span> xyt<span class="sc">$</span>y), <span class="at">sf =</span> domain,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">smesh =</span> smesh, <span class="at">parameters =</span> <span class="fu">list</span>(<span class="at">alpha =</span> <span class="dv">1</span>, <span class="at">beta =</span> <span class="dv">3</span>, <span class="at">xsigma =</span> <span class="fl">0.3</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                                                    <span class="at">ysigma =</span> <span class="fl">0.3</span>, <span class="at">rho =</span> <span class="dv">0</span>))</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>truth <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">mu =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="dv">2</span>, <span class="at">beta =</span> <span class="dv">4</span>, <span class="at">xsigma =</span> <span class="fl">0.5</span>, <span class="at">ysigma =</span> <span class="fl">0.25</span>, <span class="at">rho =</span> <span class="dv">0</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> fit0<span class="sc">$</span><span class="fu">simulate</span>(<span class="at">par =</span> <span class="fu">c</span>(<span class="at">coefs =</span> <span class="fu">log</span>(<span class="dv">1</span>), <span class="at">logit_abratio =</span> <span class="fu">qlogis</span>(<span class="dv">2</span> <span class="sc">/</span> <span class="dv">4</span>), <span class="at">log_beta =</span> <span class="fu">log</span>(<span class="dv">4</span>),</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                             <span class="at">log_xsigma =</span> <span class="fu">log</span>(<span class="fl">0.5</span>), <span class="at">log_ysigma =</span> <span class="fu">log</span>(<span class="fl">0.25</span>), <span class="at">atanh_rho =</span> <span class="dv">0</span>))</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="do">## sort the events by time</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>ord <span class="ot">&lt;-</span> <span class="fu">order</span>(sim<span class="sc">$</span>times)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>locs <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> sim<span class="sc">$</span>locs[ord, <span class="dv">1</span>], <span class="at">y =</span> sim<span class="sc">$</span>locs[ord, <span class="dv">2</span>])</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> sim<span class="sc">$</span>times[ord]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The data are a vector of 653 sorted event times and a data frame of the corresponding locations:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(times)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.03358241 0.06772843 0.08181107 0.11251337 0.12686070 0.15946748</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(locs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          x          y
+1  8.826292  0.4362811
+2  1.623060  1.9839724
+3  3.002040  1.5500167
+4 12.269785 -1.6312990
+5  4.870091  2.0044420
+6  1.875491 -0.8504570</code></pre>
+</div>
+</div>
+<p>In the plot below the size of each point shows its time.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(locs, times), <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">size =</span> times)) <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_sf</span>(<span class="at">data =</span> domain, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="stelfi_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stelfi_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="768"></p>
 </figure>
 </div>
 </div>
 </div>
+<section id="fitting-the-model-using-stelfi" class="level3" data-number="8.2.1">
+<h3 data-number="8.2.1" class="anchored" data-anchor-id="fitting-the-model-using-stelfi"><span class="header-section-number">8.2.1</span> Fitting the model using <code>stelfi</code></h3>
+<p>The study region is an <code>sf</code> polygon (here taken from the <code>xyt</code> data) and the mesh follows its boundary. These are the same as those used to simulate the data, but are repeated below so that the code needed to fit the model is all in one place.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>bnd <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_as_segm</span>(<span class="fu">as.matrix</span>(sf<span class="sc">::</span><span class="fu">st_coordinates</span>(domain)[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]))</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>smesh <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_mesh_2d</span>(<span class="at">boundary =</span> bnd, </span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">max.edge =</span> <span class="fl">0.75</span>, <span class="at">cutoff =</span> <span class="fl">0.3</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>param <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="dv">3</span>, <span class="at">beta =</span> <span class="dv">6</span>, <span class="at">xsigma =</span> <span class="fl">0.2</span>,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">ysigma =</span> <span class="fl">0.2</span>, <span class="at">rho =</span> <span class="dv">0</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_stelfi</span>(<span class="at">times =</span> times, <span class="at">locs =</span> locs, <span class="at">sf =</span> domain, <span class="at">smesh =</span> smesh, <span class="at">parameters =</span> param)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>domain <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(xyt<span class="sc">$</span>window)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>bnd <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_as_segm</span>(<span class="fu">as.matrix</span>(sf<span class="sc">::</span><span class="fu">st_coordinates</span>(domain)[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>smesh <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_mesh_2d</span>(<span class="at">boundary =</span> bnd, <span class="at">max.edge =</span> <span class="fl">0.75</span>, <span class="at">cutoff =</span> <span class="fl">0.3</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>area <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(sf<span class="sc">::</span><span class="fu">st_area</span>(domain))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>param <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">coefs =</span> <span class="fu">log</span>(<span class="fu">length</span>(times) <span class="sc">/</span> (area <span class="sc">*</span> <span class="fu">max</span>(times))), <span class="do">## log events per area per time</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">alpha =</span> <span class="dv">1</span>, <span class="at">beta =</span> <span class="dv">3</span>, <span class="at">xsigma =</span> <span class="fl">0.3</span>, <span class="at">ysigma =</span> <span class="fl">0.3</span>, <span class="at">rho =</span> <span class="dv">0</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_stelfi</span>(<span class="at">times =</span> times, <span class="at">locs =</span> locs, <span class="at">sf =</span> domain, <span class="at">smesh =</span> smesh, <span class="at">parameters =</span> param)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>stelfi <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>stelfi</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          Estimate Std. Error
+mu      0.87003898 0.11358260
+coefs  -0.13921726 0.13054886
+alpha   2.07847587 0.32230551
+beta    3.23540777 0.49878254
+xsigma  0.51336661 0.06922223
+ysigma  0.27980110 0.03667293
+rho    -0.06769801 0.17842889</code></pre>
 </div>
-<p>Note that the <code>coefs</code> estimates are the vector of coefficients (on the log scale) of any supplied covariates, the first element related to the intercept (here the log of <span class="math inline">\(\mu\)</span>). The estimate temporal self-excitement (ignoring and spatial influence) can be shown using <code>show_hawkes()</code> as in <a href="univariate-hawkes.html" class="quarto-xref"><span>Chapter 2</span></a>.</p>
+</div>
+</section>
+<section id="comparison" class="level3" data-number="8.2.2">
+<h3 data-number="8.2.2" class="anchored" data-anchor-id="comparison"><span class="header-section-number">8.2.2</span> Comparison</h3>
+<p>To our knowledge no other <code>R</code> package fits exactly this model, so the estimates are compared with the true values and with a purely <em>temporal</em> Hawkes process fitted to the event times alone using <code>hawkesbow</code> (<span class="citation" data-cites="hawkesbow">Cheysson (<a href="references.html#ref-hawkesbow" role="doc-biblioref">2021</a>)</span>). Ignoring space, the times follow (approximately) a Hawkes process with background rate <span class="math inline">\(\mu \times\)</span> area, and the same <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_hawkes</span>(<span class="fu">list</span>(<span class="at">times =</span> times, <span class="at">params =</span> <span class="fu">c</span>(<span class="at">mu =</span> pars[<span class="dv">1</span>, <span class="dv">1</span>], <span class="at">alpha =</span> pars[<span class="dv">3</span>,<span class="dv">1</span>], <span class="at">beta =</span> pars[<span class="dv">4</span>, <span class="dv">1</span>])))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fit_bow <span class="ot">&lt;-</span> hawkesbow<span class="sc">::</span><span class="fu">mle</span>(<span class="at">events =</span> times, <span class="at">kern =</span> <span class="st">"Exponential"</span>, <span class="at">end =</span> <span class="fu">max</span>(times))</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>bow <span class="ot">&lt;-</span> fit_bow<span class="sc">$</span>par <span class="do">## background, branching ratio (alpha/beta), beta</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>bow</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 58.4609713  0.4361491  2.6692819</code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code for this table</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>fmt <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">paste0</span>(<span class="fu">round</span>(x[<span class="dv">1</span>], <span class="dv">3</span>), <span class="st">" ("</span>, <span class="fu">round</span>(x[<span class="dv">2</span>], <span class="dv">3</span>), <span class="st">")"</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Truth =</span> <span class="fu">c</span>(truth, truth[<span class="st">"alpha"</span>] <span class="sc">/</span> truth[<span class="st">"beta"</span>]),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">stelfi =</span> <span class="fu">c</span>(<span class="fu">apply</span>(stelfi[<span class="fu">c</span>(<span class="st">"mu"</span>, <span class="st">"alpha"</span>, <span class="st">"beta"</span>, <span class="st">"xsigma"</span>, <span class="st">"ysigma"</span>, <span class="st">"rho"</span>), ], <span class="dv">1</span>, fmt),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>               <span class="fu">round</span>(stelfi[<span class="st">"alpha"</span>, <span class="dv">1</span>] <span class="sc">/</span> stelfi[<span class="st">"beta"</span>, <span class="dv">1</span>], <span class="dv">3</span>)),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">hawkesbow =</span> <span class="fu">c</span>(<span class="fu">round</span>(bow[<span class="dv">1</span>] <span class="sc">/</span> area, <span class="dv">3</span>), <span class="fu">round</span>(bow[<span class="dv">2</span>] <span class="sc">*</span> bow[<span class="dv">3</span>], <span class="dv">3</span>), <span class="fu">round</span>(bow[<span class="dv">3</span>], <span class="dv">3</span>),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"-"</span>, <span class="st">"-"</span>, <span class="st">"-"</span>, <span class="fu">round</span>(bow[<span class="dv">2</span>], <span class="dv">3</span>)))</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">t</span>(params), <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">mu$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">alpha$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">beta$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">sigma_x$"</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>                                      <span class="st">"$</span><span class="sc">\\</span><span class="st">sigma_y$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">rho$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">alpha/</span><span class="sc">\\</span><span class="st">beta$"</span>),</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">escape =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 13%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><span class="math inline">\(\mu\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\alpha\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\beta\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\sigma_x\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\sigma_y\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\rho\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\alpha/\beta\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Truth</td>
+<td style="text-align: left;">1.00</td>
+<td style="text-align: left;">2.00</td>
+<td style="text-align: left;">4.00</td>
+<td style="text-align: left;">0.50</td>
+<td style="text-align: left;">0.25</td>
+<td style="text-align: left;">0.00</td>
+<td style="text-align: left;">0.50</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stelfi</td>
+<td style="text-align: left;">0.87 (0.114)</td>
+<td style="text-align: left;">2.078 (0.322)</td>
+<td style="text-align: left;">3.235 (0.499)</td>
+<td style="text-align: left;">0.513 (0.069)</td>
+<td style="text-align: left;">0.28 (0.037)</td>
+<td style="text-align: left;">-0.068 (0.178)</td>
+<td style="text-align: left;">0.642</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">hawkesbow</td>
+<td style="text-align: left;">1.163</td>
+<td style="text-align: left;">1.164</td>
+<td style="text-align: left;">2.669</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">0.436</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><code>stelfi</code> recovers the true values reasonably well, including the shape of the spatial kernel. The purely temporal model gets the overall rate about right but is much less able to separate background events from triggered ones, since without locations it cannot tell whether two events close together in time were also close together in space.</p>
+<p>The estimated spatial kernel is plotted below: triggered events are expected within the contours around a triggering event (at the centre).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>plot_kernel <span class="ot">&lt;-</span> <span class="cf">function</span>(pars, <span class="at">lim =</span> <span class="dv">2</span>) {</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    sigma <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(pars[<span class="st">"xsigma"</span>, <span class="dv">1</span>]<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">rep</span>(pars[<span class="st">"rho"</span>, <span class="dv">1</span>] <span class="sc">*</span> pars[<span class="st">"xsigma"</span>, <span class="dv">1</span>] <span class="sc">*</span> pars[<span class="st">"ysigma"</span>, <span class="dv">1</span>], <span class="dv">2</span>),</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                      pars[<span class="st">"ysigma"</span>, <span class="dv">1</span>]<span class="sc">^</span><span class="dv">2</span>), <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">x =</span> <span class="fu">seq</span>(<span class="sc">-</span>lim, lim, <span class="at">length.out =</span> <span class="dv">200</span>), <span class="at">y =</span> <span class="fu">seq</span>(<span class="sc">-</span>lim, lim, <span class="at">length.out =</span> <span class="dv">200</span>))</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    grid<span class="sc">$</span>density <span class="ot">&lt;-</span> mvtnorm<span class="sc">::</span><span class="fu">dmvnorm</span>(<span class="fu">as.matrix</span>(grid), <span class="at">sigma =</span> sigma)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(grid, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">z =</span> density)) <span class="sc">+</span> <span class="fu">geom_contour</span>(<span class="at">col =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">coord_equal</span>() <span class="sc">+</span> <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Distance in x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Distance in y"</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_kernel</span>(stelfi, <span class="at">lim =</span> <span class="fl">1.5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="stelfi_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>The bivariate Gaussian component of the diffusion kernel</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">## bivariate Gaussian kernel</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>sigma_x <span class="ot">&lt;-</span> pars[<span class="dv">5</span>,<span class="dv">1</span>]</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>sigma_y <span class="ot">&lt;-</span> pars[<span class="dv">6</span>,<span class="dv">1</span>]</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>rho <span class="ot">&lt;-</span> pars[<span class="dv">7</span>,<span class="dv">1</span>]</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> y <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>, <span class="fl">0.1</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>sigma <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(sigma_x, rho, rho, sigma_y), </span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ncol =</span> <span class="dv">2</span>)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y) mvtnorm<span class="sc">::</span><span class="fu">dmvnorm</span>(<span class="fu">cbind</span>(x, y), <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>), sigma)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">outer</span>(x,y,f)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">contour</span>(x, y, z, <span class="at">nlevels =</span> <span class="dv">10</span>,  <span class="at">asp =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="stelfi_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stelfi_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="480"></p>
 </figure>
 </div>
 </div>
 </div>
 </section>
-<section id="simulating-from-a-spatiotemporal-hawkes-process" class="level2" data-number="8.2">
-<h2 data-number="8.2" class="anchored" data-anchor-id="simulating-from-a-spatiotemporal-hawkes-process"><span class="header-section-number">8.2</span> Simulating from a spatiotemporal Hawkes process</h2>
+</section>
+<section id="sec-stelfi-applied" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="sec-stelfi-applied"><span class="header-section-number">8.3</span> An applied example: Canterbury earthquakes</h2>
+<p>The Canterbury earthquakes were modelled in time only in <a href="marked-hawkes.html#sec-marked-hawkes-applied" class="quarto-xref"><span>Section 3.3</span></a> and <a href="multi-hawkes.html#sec-mhawkes-applied" class="quarto-xref"><span>Section 4.3</span></a>. Here their locations are included. To keep computation manageable, only the 379 earthquakes of magnitude 4 and above are used.</p>
+<section id="preparing-the-data" class="level3" data-number="8.3.1">
+<h3 data-number="8.3.1" class="anchored" data-anchor-id="preparing-the-data"><span class="header-section-number">8.3.1</span> Preparing the data</h3>
+<p>The earthquakes are projected to New Zealand Transverse Mercator (EPSG:2193) and converted to km. Times are in days since the first earthquake, jittered to remove ties (<a href="marked-hawkes.html#sec-marked-hawkes-applied" class="quarto-xref"><span>Section 3.3</span></a>), and the data are sorted by time.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>param <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="dv">10</span>, <span class="at">alpha =</span> <span class="dv">30</span>, <span class="at">beta =</span> <span class="dv">60</span>, <span class="at">xsigma =</span> <span class="dv">1</span>,</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">ysigma =</span> <span class="fl">0.2</span>, <span class="at">rho =</span> <span class="dv">0</span>)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> fit<span class="sc">$</span><span class="fu">simulate</span>(<span class="at">par =</span> param)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(nz_earthquakes, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>eq <span class="ot">&lt;-</span> nz_earthquakes[nz_earthquakes<span class="sc">$</span>magnitude <span class="sc">&gt;=</span> <span class="dv">4</span>, ]</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>xy <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_coordinates</span>(sf<span class="sc">::</span><span class="fu">st_transform</span>(eq, <span class="at">crs =</span> <span class="dv">2193</span>)) <span class="sc">/</span> <span class="dv">1000</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>days <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">difftime</span>(eq<span class="sc">$</span>origintime, <span class="fu">min</span>(eq<span class="sc">$</span>origintime), <span class="at">units =</span> <span class="st">"days"</span>)) <span class="sc">+</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">runif</span>(<span class="fu">nrow</span>(eq), <span class="dv">0</span>, <span class="dv">1</span> <span class="sc">/</span> (<span class="dv">24</span> <span class="sc">*</span> <span class="dv">60</span>))</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>ord <span class="ot">&lt;-</span> <span class="fu">order</span>(days)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> days[ord] <span class="sc">-</span> <span class="fu">min</span>(days)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>locs <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> xy[ord, <span class="dv">1</span>], <span class="at">y =</span> xy[ord, <span class="dv">2</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p>The catalogue does not come with a study region, so here the region is taken to be the convex hull of the earthquakes, extended by 20 km. In your own application the study region should reflect where events could have been recorded.</p>
 <div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>domain <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(locs, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_union</span>() <span class="sc">|&gt;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_convex_hull</span>() <span class="sc">|&gt;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_buffer</span>(<span class="dv">20</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>domain <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_sf</span>(<span class="at">geometry =</span> domain)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The mesh is built around the earthquakes with a small <code>cutoff</code> (1 km), so that triangles are small where earthquakes are (much smaller than the few km over which aftershocks are expected) and larger elsewhere.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>smesh <span class="ot">&lt;-</span> fmesher<span class="sc">::</span><span class="fu">fm_mesh_2d</span>(<span class="at">loc =</span> locs, <span class="at">boundary =</span> fmesher<span class="sc">::</span><span class="fu">fm_as_segm</span>(domain),</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">max.edge =</span> <span class="fu">c</span>(<span class="dv">30</span>, <span class="dv">100</span>), <span class="at">cutoff =</span> <span class="dv">1</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>smesh<span class="sc">$</span>n</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1058</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_sf</span>(<span class="at">data =</span> <span class="fu">mesh_2_sf</span>(smesh), <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">linewidth =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_sf</span>(<span class="at">data =</span> domain, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">col =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">data =</span> locs, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="fl">0.5</span>, <span class="at">col =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="stelfi_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stelfi_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="576"></p>
 </figure>
 </div>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_stelfi</span>(<span class="at">times =</span> sim<span class="sc">$</span>times, <span class="at">locs =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> sim<span class="sc">$</span>locs[,<span class="dv">1</span>], <span class="at">y =</span> sim<span class="sc">$</span>locs[,<span class="dv">2</span>]), </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">sf =</span> domain, <span class="at">smesh =</span> smesh, <span class="at">parameters =</span> param)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>            Estimate   Std. Error
-mu     17763.9619405 1.017739e+03
-coefs      9.7849271 5.729233e-02
-alpha    624.4925923 1.853869e+02
-beta     624.4931485 1.853888e+02
-xsigma     0.6994250 1.526326e-01
-ysigma     0.1461850 3.244999e-02
-rho       -0.9948455 4.130326e-03</code></pre>
 </div>
 </div>
 </section>
-<section id="including-a-gmrf" class="level2" data-number="8.3">
-<h2 data-number="8.3" class="anchored" data-anchor-id="including-a-gmrf"><span class="header-section-number">8.3</span> Including a GMRF</h2>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Sensitive to starting values. TODO</p>
-</div>
-</div>
+<section id="fitting-the-model" class="level3" data-number="8.3.2">
+<h3 data-number="8.3.2" class="anchored" data-anchor-id="fitting-the-model"><span class="header-section-number">8.3.2</span> Fitting the model</h3>
+<p>Two models are fitted: one with a constant background, and one with a spatially varying background (<code>GMRF = TRUE</code>). For the latter, starting values for the field are needed: here a range of about 40 km (<span class="math inline">\(\kappa = \sqrt{8}/40\)</span>).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>param <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="dv">3</span>, <span class="at">beta =</span> <span class="dv">6</span>, <span class="at">kappa =</span> <span class="fl">0.9</span>, <span class="at">tau =</span> <span class="dv">1</span>, <span class="at">xsigma =</span> <span class="fl">0.2</span>,</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">ysigma =</span> <span class="fl">0.2</span>, <span class="at">rho =</span> <span class="dv">0</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_stelfi</span>(<span class="at">times =</span> times, <span class="at">locs =</span> locs, <span class="at">sf =</span> domain, <span class="at">smesh =</span> smesh, <span class="at">parameters =</span> param,</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">GMRF =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>pars</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>area <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(sf<span class="sc">::</span><span class="fu">st_area</span>(domain))</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>param <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">coefs =</span> <span class="fu">log</span>(<span class="fu">length</span>(times) <span class="sc">/</span> (area <span class="sc">*</span> <span class="fu">max</span>(times))),</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">alpha =</span> <span class="dv">1</span>, <span class="at">beta =</span> <span class="dv">2</span>, <span class="at">xsigma =</span> <span class="dv">5</span>, <span class="at">ysigma =</span> <span class="dv">5</span>, <span class="at">rho =</span> <span class="dv">0</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>fit_eq <span class="ot">&lt;-</span> <span class="fu">fit_stelfi</span>(<span class="at">times =</span> times, <span class="at">locs =</span> locs, <span class="at">sf =</span> domain, <span class="at">smesh =</span> smesh, <span class="at">parameters =</span> param)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit_eq)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>            Estimate   Std. Error
-mu       0.003432117  0.004005179
-coefs   -5.674577943  1.166970324
-alpha  259.065220315 15.626889395
-beta   259.065221508 15.626889256
-xsigma   0.548451271  0.021614776
-ysigma   0.296732652  0.014288624
-rho      0.024276057  0.056616034
-kappa    9.040797872 10.518462251
-tau      0.004644464  0.009560527</code></pre>
+mu      7.964006e-07 8.271952e-08
+coefs  -1.404316e+01 1.038667e-01
+alpha   2.011140e+00 2.346604e-01
+beta    3.151287e+00 3.267650e-01
+xsigma  4.331046e+00 2.836818e-01
+ysigma  4.136255e+00 2.196112e-01
+rho     1.404907e-01 8.753023e-02</code></pre>
 </div>
 </div>
-<p>The estimated GMRF can be plotted using the <code>show_field()</code> function once the values have been extracted using <code>get_fields()</code> (<a href="lgcp.html" class="quarto-xref"><span>Chapter 5</span></a>).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_fields</span>(fit, smesh) <span class="sc">|&gt;</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show_field</span>(<span class="at">smesh =</span> smesh, <span class="at">sf =</span> domain, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_classic</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>param_gmrf <span class="ot">&lt;-</span> <span class="fu">c</span>(param, <span class="at">kappa =</span> <span class="fu">sqrt</span>(<span class="dv">8</span>) <span class="sc">/</span> <span class="dv">40</span>, <span class="at">tau =</span> <span class="fl">0.1</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>fit_eq_gmrf <span class="ot">&lt;-</span> <span class="fu">fit_stelfi</span>(<span class="at">times =</span> times, <span class="at">locs =</span> locs, <span class="at">sf =</span> domain, <span class="at">smesh =</span> smesh,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>                          <span class="at">parameters =</span> param_gmrf, <span class="at">GMRF =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>pars_eq <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit_eq_gmrf)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>pars_eq</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            Estimate   Std. Error
+mu      2.647461e-08 1.853138e-08
+coefs  -1.744708e+01 6.999680e-01
+alpha   1.165141e+01 1.778824e+00
+beta    2.382339e+01 3.526382e+00
+xsigma  4.272094e+00 3.368492e-01
+ysigma  3.712883e+00 2.542167e-01
+rho     9.271387e-02 1.292039e-01
+kappa   1.045373e-01 2.282845e-02
+tau     1.027029e+00 2.077978e-01</code></pre>
+</div>
+</div>
+<p>The two models are compared using AIC (the negative log-likelihood is stored in <code>fit$objective</code>; the models have 6 and 8 parameters).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">constant =</span> <span class="dv">2</span> <span class="sc">*</span> fit_eq<span class="sc">$</span>objective <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> <span class="dv">6</span>, <span class="at">GMRF =</span> <span class="dv">2</span> <span class="sc">*</span> fit_eq_gmrf<span class="sc">$</span>objective <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> <span class="dv">8</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>constant     GMRF 
+5809.910 5203.447 </code></pre>
+</div>
+</div>
+<p>The model with a spatially varying background has a much lower AIC: some parts of the region have more earthquakes than others regardless of self-excitement, and without the field this is mistaken for triggering (compare the estimates of <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> for the two models). The estimated background field is shown below.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_fields</span>(fit_eq_gmrf, smesh) <span class="sc">|&gt;</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">show_field</span>(<span class="at">smesh =</span> smesh, <span class="at">sf =</span> domain, <span class="at">clip =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">data =</span> locs, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="fl">0.3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="stelfi_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stelfi_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="576"></p>
 </figure>
 </div>
 </div>
 </div>
+<p>From the model with the spatially varying background:</p>
+<ul>
+<li>each earthquake of magnitude 4 or more directly triggers on average <span class="math inline">\(\hat{\alpha}/\hat{\beta} =\)</span> 0.49 further such earthquakes;</li>
+<li>the triggering decays with a time scale of <span class="math inline">\(1/\hat{\beta} =\)</span> 1 hours; and</li>
+<li>triggered earthquakes typically occur within a few km of the triggering earthquake (<span class="math inline">\(\hat{\sigma}_x =\)</span> 4.3 km, <span class="math inline">\(\hat{\sigma}_y =\)</span> 3.7 km, <span class="math inline">\(\hat{\rho} =\)</span> 0.09), see the kernel below.</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_kernel</span>(pars_eq, <span class="at">lim =</span> <span class="dv">15</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="stelfi_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-stelfi-gof" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="sec-stelfi-gof"><span class="header-section-number">8.4</span> Goodness-of-fit</h2>
+<section id="checking-the-mesh" class="level3" data-number="8.4.1">
+<h3 data-number="8.4.1" class="anchored" data-anchor-id="checking-the-mesh"><span class="header-section-number">8.4.1</span> Checking the mesh</h3>
+<p><code>stelfi</code> integrates the spatial kernel of each event over the study region using the mesh. For an event well inside the region the integral should be close to 1 (and less than 1 for an event near the edge). This can be checked by comparing the mesh-based integral with an accurate Monte Carlo estimate (the proportion of points simulated from the kernel that fall inside the study region).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>kernel_volume <span class="ot">&lt;-</span> <span class="cf">function</span>(pars, locs, sf, smesh, <span class="at">n_mc =</span> <span class="dv">2000</span>) {</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    sigma <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(pars[<span class="st">"xsigma"</span>, <span class="dv">1</span>]<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">rep</span>(pars[<span class="st">"rho"</span>, <span class="dv">1</span>] <span class="sc">*</span> pars[<span class="st">"xsigma"</span>, <span class="dv">1</span>] <span class="sc">*</span> pars[<span class="st">"ysigma"</span>, <span class="dv">1</span>], <span class="dv">2</span>),</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>                      pars[<span class="st">"ysigma"</span>, <span class="dv">1</span>]<span class="sc">^</span><span class="dv">2</span>), <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    w <span class="ot">&lt;-</span> <span class="fu">get_weights</span>(smesh, sf)<span class="sc">$</span>weights</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    window <span class="ot">&lt;-</span> spatstat.geom<span class="sc">::</span><span class="fu">as.owin</span>(sf)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">t</span>(<span class="fu">sapply</span>(<span class="fu">seq_len</span>(<span class="fu">nrow</span>(locs)), <span class="cf">function</span>(i) {</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>        centre <span class="ot">&lt;-</span> <span class="fu">unlist</span>(locs[i, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)])</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>        mesh <span class="ot">&lt;-</span> <span class="fu">sum</span>(w <span class="sc">*</span> mvtnorm<span class="sc">::</span><span class="fu">dmvnorm</span>(smesh<span class="sc">$</span>loc[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], <span class="at">mean =</span> centre, <span class="at">sigma =</span> sigma))</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>        draws <span class="ot">&lt;-</span> mvtnorm<span class="sc">::</span><span class="fu">rmvnorm</span>(n_mc, <span class="at">mean =</span> centre, <span class="at">sigma =</span> sigma)</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>        mc <span class="ot">&lt;-</span> <span class="fu">mean</span>(spatstat.geom<span class="sc">::</span><span class="fu">inside.owin</span>(draws[, <span class="dv">1</span>], draws[, <span class="dv">2</span>], window))</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(<span class="at">mesh =</span> mesh, <span class="at">monte_carlo =</span> mc)</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>    }))</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>vol <span class="ot">&lt;-</span> <span class="fu">kernel_volume</span>(pars_eq, locs, domain, smesh)</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(vol)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      mesh         monte_carlo
+ Min.   :0.9533   Min.   :1   
+ 1st Qu.:1.0395   1st Qu.:1   
+ Median :1.0552   Median :1   
+ Mean   :1.1871   Mean   :1   
+ 3rd Qu.:1.0958   3rd Qu.:1   
+ Max.   :4.3112   Max.   :1   </code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>mesh_ok <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(vol[, <span class="st">"mesh"</span>] <span class="sc">-</span> vol[, <span class="st">"monte_carlo"</span>]) <span class="sc">&lt;</span> <span class="fl">0.1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>For 77% of the earthquakes the mesh-based integral is within 0.1 of the Monte Carlo value. Where they differ a lot (typically isolated earthquakes in parts of the region where the mesh is coarse) the mesh should be refined.</p>
+</section>
+<section id="checking-the-temporal-pattern" class="level3" data-number="8.4.2">
+<h3 data-number="8.4.2" class="anchored" data-anchor-id="checking-the-temporal-pattern"><span class="header-section-number">8.4.2</span> Checking the temporal pattern</h3>
+<p>Integrating <a href="#eq-stelfi" class="quarto-xref">Equation&nbsp;<span>8.1</span></a> over the study region gives the intensity of the event <em>times</em>, which is a marked Hawkes process (<a href="marked-hawkes.html" class="quarto-xref"><span>Chapter 3</span></a>) with background rate <span class="math inline">\(\int \mu(s) ds\)</span> (the background integrated over the region) and with the mark of each event being the integral of its kernel over the study region (the Monte Carlo values above). The goodness-of-fit checks of <a href="univariate-hawkes.html#sec-gof-hawkes" class="quarto-xref"><span>Section 2.4</span></a> can therefore be applied to the times, using <code>show_hawkes_GOF()</code> with a list containing the times, the parameters, and the marks.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">get_weights</span>(smesh, domain)<span class="sc">$</span>weights</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>mu_total <span class="ot">&lt;-</span> <span class="fu">sum</span>(w <span class="sc">*</span> <span class="fu">exp</span>(pars_eq[<span class="st">"coefs"</span>, <span class="dv">1</span>] <span class="sc">+</span> <span class="fu">as.vector</span>(<span class="fu">get_fields</span>(fit_eq_gmrf, smesh))))</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>temporal <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">times =</span> times, <span class="at">marks =</span> vol[, <span class="st">"monte_carlo"</span>],</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">params =</span> <span class="fu">c</span>(<span class="at">mu =</span> mu_total, <span class="at">alpha =</span> pars_eq[<span class="st">"alpha"</span>, <span class="dv">1</span>], <span class="at">beta =</span> pars_eq[<span class="st">"beta"</span>, <span class="dv">1</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_hawkes_GOF</span>(temporal)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Asymptotic one-sample Kolmogorov-Smirnov test
+
+data:  interarrivals
+D = 0.13831, p-value = 1.047e-06
+alternative hypothesis: two-sided
+
+
+    Box-Ljung test
+
+data:  interarrivals
+X-squared = 70.598, df = 1, p-value &lt; 2.2e-16</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="stelfi_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As for the purely temporal models of the earthquakes (<a href="marked-hawkes.html#sec-marked-hawkes-gof" class="quarto-xref"><span>Section 3.4</span></a>), the tests reject the model and the plots show the same features: the exponential decay in time cannot describe both the burst of activity immediately after a large earthquake and the long tail of aftershocks that follows, and every earthquake is assumed to trigger equally regardless of its magnitude. Adding space improves the description of <em>where</em> aftershocks occur, but does not fix these temporal limitations.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-hawkesbow" class="csl-entry" role="listitem">
+Cheysson, Felix. 2021. <em><span class="nocase">hawkesbow</span>: Estimation of Hawkes Processes from Binned Observations</em>. <a href="https://CRAN.R-project.org/package=hawkesbow">https://CRAN.R-project.org/package=hawkesbow</a>.
+</div>
 <div id="ref-reinhart" class="csl-entry" role="listitem">
 Reinhart, Alex. 2018. <span>“<span class="nocase">A Review of Self-Exciting Spatio-Temporal Point Processes and Their Applications</span>.”</span> <em>Statistical Science</em> 33 (3): 299–318. <a href="https://doi.org/10.1214/17-STS629">https://doi.org/10.1214/17-STS629</a>.
 </div>
 </div>
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -867,13 +1164,13 @@ Reinhart, Alex. 2018. <span>“<span class="nocase">A Review of Self-Exciting Sp
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./lgcp-spatiotemporal.html" class="pagination-link" aria-label="Spatiotemporal LGCP">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatiotemporal LGCP</span></span>
+      <a href="./lgcp-marked.html" class="pagination-link" aria-label="Marked log-Gaussian Cox process">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Marked log-Gaussian Cox process</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./summary.html" class="pagination-link" aria-label="Key `stelfi` functions">
-        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./rtmb.html" class="pagination-link" aria-label="Simple `RTMB` templates">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Simple <code>RTMB</code> templates</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

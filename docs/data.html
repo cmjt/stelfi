@@ -67,7 +67,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./references.html" rel="next">
-<link href="./summary.html" rel="prev">
+<link href="./rtmb.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -106,8 +106,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<script src="site_libs/twitter-widget-0.0.1/widgets.js"></script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -163,37 +191,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./univariate-hawkes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./marked-hawkes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./multi-hawkes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes process</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mesh.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Meshes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./lgcp.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Spatial log-Gaussian Cox process</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Spatial and spatiotemporal log-Gaussian Cox processes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lgcp-recovery.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Parameter recovery: <code>stelfi</code> vs <code>inlabru</code></span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./lgcp-spatiotemporal.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatiotemporal LGCP</span></span></a>
+  <a href="./lgcp-marked.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Marked log-Gaussian Cox process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -204,8 +232,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></span></a>
+  <a href="./rtmb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Simple <code>RTMB</code> templates</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -230,23 +258,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#temporal-point-pattern-data" id="toc-temporal-point-pattern-data" class="nav-link active" data-scroll-target="#temporal-point-pattern-data"><span class="header-section-number">10.1</span> Temporal point pattern data</a>
+  <li><a href="#temporal-data" id="toc-temporal-data" class="nav-link active" data-scroll-target="#temporal-data"><span class="header-section-number">10.1</span> Temporal data</a>
   <ul class="collapse">
   <li><a href="#retweets_niwa" id="toc-retweets_niwa" class="nav-link" data-scroll-target="#retweets_niwa"><code>retweets_niwa</code></a></li>
   <li><a href="#uk_serial" id="toc-uk_serial" class="nav-link" data-scroll-target="#uk_serial"><code>uk_serial</code></a></li>
+  <li><a href="#multi_hawkes" id="toc-multi_hawkes" class="nav-link" data-scroll-target="#multi_hawkes"><code>multi_hawkes</code></a></li>
   </ul></li>
-  <li><a href="#spatiotemporal-point-pattern-data" id="toc-spatiotemporal-point-pattern-data" class="nav-link" data-scroll-target="#spatiotemporal-point-pattern-data"><span class="header-section-number">10.2</span> Spatiotemporal point pattern data</a>
+  <li><a href="#spatial-and-spatiotemporal-data" id="toc-spatial-and-spatiotemporal-data" class="nav-link" data-scroll-target="#spatial-and-spatiotemporal-data"><span class="header-section-number">10.2</span> Spatial and spatiotemporal data</a>
   <ul class="collapse">
-  <li><a href="#sasquatch" id="toc-sasquatch" class="nav-link" data-scroll-target="#sasquatch"><code>sasquatch</code></a></li>
   <li><a href="#nz_earthquakes" id="toc-nz_earthquakes" class="nav-link" data-scroll-target="#nz_earthquakes"><code>nz_earthquakes</code></a></li>
   <li><a href="#nz_murders" id="toc-nz_murders" class="nav-link" data-scroll-target="#nz_murders"><code>nz_murders</code></a></li>
+  <li><a href="#sasquatch" id="toc-sasquatch" class="nav-link" data-scroll-target="#sasquatch"><code>sasquatch</code></a></li>
   <li><a href="#iraq_terrorism" id="toc-iraq_terrorism" class="nav-link" data-scroll-target="#iraq_terrorism"><code>iraq_terrorism</code></a></li>
   </ul></li>
   <li><a href="#simulated-data" id="toc-simulated-data" class="nav-link" data-scroll-target="#simulated-data"><span class="header-section-number">10.3</span> Simulated data</a>
   <ul class="collapse">
   <li><a href="#xyt" id="toc-xyt" class="nav-link" data-scroll-target="#xyt"><code>xyt</code></a></li>
   <li><a href="#marked" id="toc-marked" class="nav-link" data-scroll-target="#marked"><code>marked</code></a></li>
-  <li><a href="#horse_mesh" id="toc-horse_mesh" class="nav-link" data-scroll-target="#horse_mesh"><code>horse_mesh</code></a></li>
+  <li><a href="#horse_mesh-and-horse_sf" id="toc-horse_mesh-and-horse_sf" class="nav-link" data-scroll-target="#horse_mesh-and-horse_sf"><code>horse_mesh</code> and <code>horse_sf</code></a></li>
   </ul></li>
   </ul>
 </nav>
@@ -256,7 +285,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="data" class="quarto-section-identifier"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></span></h1>
+<h1 class="title"><span id="sec-data" class="quarto-section-identifier"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></span></h1>
 </div>
 
 
@@ -273,31 +302,102 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Below are the data packaged within <code>stelfi</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="at">package =</span> <span class="st">"stelfi"</span>)<span class="sc">$</span>result[, <span class="st">"Item"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold">
+<summary>Packages used in this chapter</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stelfi)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p><code>stelfi</code> comes with a number of datasets, listed below. For each one this chapter describes its structure (which is a useful template for preparing your own data) and where it is used in this book. Full details are given in the help files, e.g., <code>?retweets_niwa</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="at">package =</span> <span class="st">"stelfi"</span>)<span class="sc">$</span>results[, <span class="fu">c</span>(<span class="st">"Item"</span>, <span class="st">"Title"</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1] "horse_mesh"     "horse_sf"       "iraq_terrorism" "marked"        
- [5] "multi_hawkes"   "nz_earthquakes" "nz_murders"     "retweets_niwa" 
- [9] "sasquatch"      "uk_serial"      "xyt"           </code></pre>
+<pre><code>      Item             Title                                                  
+ [1,] "horse_mesh"     "Example Delaunay triangulation"                       
+ [2,] "horse_sf"       "Example 'sf' 'POLYGON'"                               
+ [3,] "iraq_terrorism" "Terrorism in Iraq, 2013 - 2017"                       
+ [4,] "marked"         "Example marked point pattern data set"                
+ [5,] "multi_hawkes"   "Example multivariate Hawkes dataset"                  
+ [6,] "nz_earthquakes" "Earthquakes in Canterbury, NZ, 2010 - 2014"           
+ [7,] "nz_murders"     "Murders of NZ, 2004 - 2019"                           
+ [8,] "retweets_niwa"  "Retweets of NIWA's viral leopard seal Tweet"          
+ [9,] "sasquatch"      "Sasquatch (bigfoot) sightings in the USA, 2000 - 2005"
+[10,] "uk_serial"      "Serial killers of the UK, 1828 - 2015"                
+[11,] "xyt"            "Self-exciting point pattern"                          </code></pre>
 </div>
 </div>
-<section id="temporal-point-pattern-data" class="level2" data-number="10.1">
-<h2 data-number="10.1" class="anchored" data-anchor-id="temporal-point-pattern-data"><span class="header-section-number">10.1</span> Temporal point pattern data</h2>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">## load the tidyverse packages</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 61%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Dataset</th>
+<th style="text-align: left;">Type of data</th>
+<th style="text-align: left;">Used in</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>retweets_niwa</code></td>
+<td style="text-align: left;">Event times</td>
+<td style="text-align: left;"><a href="univariate-hawkes.html#sec-hawkes-applied" class="quarto-xref"><span>Section 2.3</span></a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>uk_serial</code></td>
+<td style="text-align: left;">Summary table (approximate dates)</td>
+<td style="text-align: left;">–</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>multi_hawkes</code></td>
+<td style="text-align: left;">Event times with a stream label (simulated)</td>
+<td style="text-align: left;">–</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>nz_earthquakes</code></td>
+<td style="text-align: left;">Times, locations, and magnitudes</td>
+<td style="text-align: left;"><a href="marked-hawkes.html#sec-marked-hawkes-applied" class="quarto-xref"><span>Section 3.3</span></a>, <a href="multi-hawkes.html#sec-mhawkes-applied" class="quarto-xref"><span>Section 4.3</span></a>, <a href="stelfi.html#sec-stelfi-applied" class="quarto-xref"><span>Section 8.3</span></a>, <a href="rtmb.html" class="quarto-xref"><span>Chapter 9</span></a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>nz_murders</code></td>
+<td style="text-align: left;">Dates and locations</td>
+<td style="text-align: left;">–</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>sasquatch</code></td>
+<td style="text-align: left;">Dates and locations</td>
+<td style="text-align: left;"><a href="lgcp.html#sec-sasquatch" class="quarto-xref"><span>Section 6.3.1</span></a>, <a href="lgcp.html#sec-lgcp-gof" class="quarto-xref"><span>Section 6.4</span></a>, <a href="rtmb.html" class="quarto-xref"><span>Chapter 9</span></a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>iraq_terrorism</code></td>
+<td style="text-align: left;">Dates, locations, and event information</td>
+<td style="text-align: left;"><a href="lgcp.html#sec-iraq" class="quarto-xref"><span>Section 6.3.2</span></a>, <a href="lgcp.html#sec-lgcp-iraq-st" class="quarto-xref"><span>Section 6.5.3</span></a>, <a href="lgcp-marked.html#sec-mlgcp-applied" class="quarto-xref"><span>Section 7.3</span></a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>xyt</code></td>
+<td style="text-align: left;">Times and locations (simulated)</td>
+<td style="text-align: left;"><a href="stelfi.html#sec-stelfi-sim" class="quarto-xref"><span>Section 8.2</span></a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>marked</code></td>
+<td style="text-align: left;">Locations with three marks (simulated)</td>
+<td style="text-align: left;">–</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>horse_mesh</code>, <code>horse_sf</code></td>
+<td style="text-align: left;">An example mesh and polygon</td>
+<td style="text-align: left;"><a href="mesh.html#sec-meshmetrics" class="quarto-xref"><span>Section 5.3</span></a></td>
+</tr>
+</tbody>
+</table>
+<section id="temporal-data" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="temporal-data"><span class="header-section-number">10.1</span> Temporal data</h2>
 <section id="retweets_niwa" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="retweets_niwa"><code>retweets_niwa</code></h3>
-<p>In 2019 a <a href="https://niwa.co.nz/">NIWA</a> scientist <a href="https://www.nzherald.co.nz/nz/news/article.cfm?c_id=1&amp;objectid=12201147">found a working USB in the scat of a leopard seal</a>, they then <a href="https://twitter.com/niwa_nz/status/1092610541401587712">tweeted about it</a> in the hopes of finding its owner. In <a href="#hawkes">this chapter</a> a Hawkes process is fitted to these data.</p>
-<div class="cell">
-<div class="cell-output-display">
-<blockquote class="twitter-tweet blockquote" data-width="550" data-lang="en" data-dnt="true" data-theme="light"><p lang="en" dir="ltr">NIWA is searching for the owner of a USB stick found in the poo of a leopard seal… <br>Recognise this video? Scientists analysing the scat of leopard seals have come across an unexpected discovery – a USB stick full of photos &amp; still in working order!  <a href="https://t.co/2SZVkm5az4">https://t.co/2SZVkm5az4</a> <a href="https://t.co/JLEC8vuHH0">pic.twitter.com/JLEC8vuHH0</a></p>— Earth Sciences New Zealand (@earthsciencesnz) <a href="https://x.com/earthsciencesnz/status/1092610541401587712?ref_src=twsrc%5Etfw">February 5, 2019</a></blockquote>
-
-</div>
-</div>
-<p>The <code>retweets_niwa</code> dataset contains the retweet timestamps for this tweet.</p>
+<p>The times (<code>POSIXct</code>, UTC) of the 4890 retweets of NIWA’s tweet about a USB stick found in leopard seal scat (<a href="https://twitter.com/niwa_nz/status/1092610541401587712">the tweet</a>). This is a plain vector of date-times, which needs to be converted to numeric times and sorted before fitting (<a href="univariate-hawkes.html#sec-hawkes-applied" class="quarto-xref"><span>Section 2.3</span></a>). Retweets are recorded to the nearest second and some share the same second.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(retweets_niwa, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(retweets_niwa)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -308,16 +408,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(<span class="at">time =</span> retweets_niwa), <span class="fu">aes</span>(<span class="at">x =</span> time)) <span class="sc">+</span> </span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Retweet frequency"</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>`stat_bin()` using `bins = 30`. Pick better value `binwidth`.</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(<span class="at">time =</span> retweets_niwa), <span class="fu">aes</span>(<span class="at">x =</span> time)) <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">50</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Number of retweets"</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="data_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="data_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="768"></p>
 </figure>
 </div>
 </div>
@@ -325,10 +421,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="uk_serial" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="uk_serial"><code>uk_serial</code></h3>
-<p><a href="http://www.murderuk.com/">Murder UK</a> documents some of the UKs most infamous multiple murderer cases. The <code>uk_serial</code> dataset contains summary information about the documented cases along with approximate timeframes.</p>
+<p>A summary table of 62 UK serial killers (1828–2015) from <a href="http://www.murderuk.com/">Murder UK</a>, with the approximate number of murders, the years they were active, and (where known) the month and year of the first murder. The dates are approximate (to the month or year), so a Hawkes model would need the times to be jittered within the recorded month or year (<a href="univariate-hawkes.html#sec-hawkes-data" class="quarto-xref"><span>Section 2.1.1</span></a>), and with only 62 events there is little information to estimate self-excitement.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"uk_serial"</span>, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(uk_serial)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(uk_serial, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(uk_serial)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  number_of_kills       years                           name                aka
 1             300 1995 - 1998             Dr. Harold Shipman          Dr. Death
@@ -346,112 +442,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 6       1944     1948            09/1944              49.02</code></pre>
 </div>
 </div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>uk_serial <span class="sc">%&gt;%</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span>  <span class="fu">paste</span>(date_of_first_kill, <span class="st">"/01"</span>, <span class="at">sep=</span><span class="st">''</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.Date</span>(time, <span class="st">"%m/%Y/%d"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> time)) <span class="sc">+</span> </span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span> </span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Frequency of known first kill"</span>) <span class="sc">+</span> </span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>`stat_bin()` using `bins = 30`. Pick better value `binwidth`.</code></pre>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="data_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
 </section>
-</section>
-<section id="spatiotemporal-point-pattern-data" class="level2" data-number="10.2">
-<h2 data-number="10.2" class="anchored" data-anchor-id="spatiotemporal-point-pattern-data"><span class="header-section-number">10.2</span> Spatiotemporal point pattern data</h2>
-<p>Using <code>maps</code> to create <code>sf</code> objects of country boundaries:</p>
+<section id="multi_hawkes" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="multi_hawkes"><code>multi_hawkes</code></h3>
+<p>A simulated two stream Hawkes process with <span class="math inline">\(\mu_1 = \mu_2 = 0.2\)</span>, <span class="math inline">\(\beta_1 = \beta_2 = 0.7\)</span>, and <span class="math inline">\(\boldsymbol{\alpha}\)</span> with diagonal elements 0.5 and off-diagonal elements 0.1 (see <a href="multi-hawkes.html" class="quarto-xref"><span>Chapter 4</span></a>). It is a data frame with the sorted event <code>times</code> and the <code>stream</code> of each event, exactly the format needed by <code>fit_mhawkes()</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>us <span class="ot">&lt;-</span> maps<span class="sc">::</span><span class="fu">map</span>(<span class="st">"usa"</span>, <span class="at">fill =</span> <span class="cn">TRUE</span>, <span class="at">plot =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_as_sf</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_make_valid</span>()</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>nz <span class="ot">&lt;-</span> maps<span class="sc">::</span><span class="fu">map</span>(<span class="st">"nz"</span>, <span class="at">fill =</span> <span class="cn">TRUE</span>, <span class="at">plot =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_as_sf</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_make_valid</span>()</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>iraq <span class="ot">&lt;-</span> maps<span class="sc">::</span><span class="fu">map</span>(<span class="st">"world"</span>, <span class="st">"Iraq"</span>, <span class="at">fill =</span> <span class="cn">TRUE</span>, <span class="at">plot =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>     sf<span class="sc">::</span><span class="fu">st_as_sf</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_make_valid</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<section id="sasquatch" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="sasquatch"><code>sasquatch</code></h3>
-<p>The <a href="https://www.bfro.net/">Bigfoot Field Researchers Organization (BFRO)</a> documents Bigfoot (Sasquatch) sightings; some data have been <a href="https://data.world/timothyrenner/bfro-sightings-data">collated</a> and packaged in <code>stelfi</code> as<code>sasquatch</code>.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"sasquatch"</span>, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>sasquatch</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(multi_hawkes, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(multi_hawkes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Simple feature collection with 972 features and 27 fields
-Geometry type: POINT
-Dimension:     XY
-Bounding box:  xmin: -124.5301 ymin: 25.84875 xmax: -70.75587 ymax: 48.9058
-Geodetic CRS:  +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0
-# A tibble: 972 × 28
-   observed         location_details county state season title date       number
- * &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt; &lt;date&gt;      &lt;dbl&gt;
- 1 "For the past f… This location i… Shann… Sout… Fall   Repo… 2002-12-04   5173
- 2 "My family had … East on Route 1… Wayne… New … Fall   Repo… 2003-09-20  26566
- 3 "While this inc… Ward County, Ju… Ward … Nort… Spring Repo… 2000-04-21    751
- 4 "(Please see Mi… &lt;NA&gt;             Mount… Nort… Winter Repo… 2004-02-22   8165
- 5 "I was coming h… forested wetlan… Warre… New … Summer Repo… 2005-12-21  13276
- 6 "My summer ecol… We were on the … Taos … New … Spring Repo… 2000-05-17   4904
- 7 "On Aug 26 arou… From Garrison t… McLea… Nort… Summer Repo… 2005-08-27  12562
- 8 "Foot prints wh… The location wa… McKen… Nort… Winter Repo… 2004-02-26   8130
- 9 "The following … Georgia Ave. an… Sarpy… Nebr… Summer Repo… 2005-01-06   7809
-10 "We live near O… (Location withh… Dougl… Nebr… Summer Repo… 2005-08-13  12482
-# ℹ 962 more rows
-# ℹ 20 more variables: classification &lt;chr&gt;, geohash &lt;chr&gt;,
-#   temperature_high &lt;dbl&gt;, temperature_mid &lt;dbl&gt;, temperature_low &lt;dbl&gt;,
-#   dew_point &lt;dbl&gt;, humidity &lt;dbl&gt;, cloud_cover &lt;dbl&gt;, moon_phase &lt;dbl&gt;,
-#   precip_intensity &lt;dbl&gt;, precip_probability &lt;dbl&gt;, precip_type &lt;chr&gt;,
-#   pressure &lt;dbl&gt;, summary &lt;chr&gt;, uv_index &lt;dbl&gt;, visibility &lt;dbl&gt;,
-#   wind_bearing &lt;dbl&gt;, wind_speed &lt;dbl&gt;, year &lt;dbl&gt;, geometry &lt;POINT [°]&gt;</code></pre>
+<pre><code>       times   stream
+1 0.05500505  Stream2
+2 2.71659127 Stream 1
+3 4.03231702 Stream 1
+4 4.44972093 Stream 1
+5 5.30906071 Stream 1
+6 5.36745342 Stream 1</code></pre>
 </div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sasquatch, <span class="fu">aes</span>(<span class="at">x =</span> date)) <span class="sc">+</span> <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">150</span>) <span class="sc">+</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Frequency of Sasquatch sightings"</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="data_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sasquatch) <span class="sc">+</span>  </span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span> </span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>() <span class="sc">+</span> </span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> us, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span> </span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Coordinate system already present.
-ℹ Adding new coordinate system, which will replace the existing one.</code></pre>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="data_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(multi_hawkes<span class="sc">$</span>stream)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Stream 1  Stream2 
+      98      115 </code></pre>
 </div>
 </div>
 </section>
+</section>
+<section id="spatial-and-spatiotemporal-data" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="spatial-and-spatiotemporal-data"><span class="header-section-number">10.2</span> Spatial and spatiotemporal data</h2>
+<p>The following datasets are <code>sf</code> objects of type <code>POINT</code>, with the location of each event (longitude and latitude) in the <code>geometry</code> column and other information in the remaining columns. Before fitting a spatial model the locations should be projected (<a href="lgcp.html#sec-lgcp-data" class="quarto-xref"><span>Section 6.1.1</span></a>). Below, country boundaries for plotting are obtained from the <code>maps</code> package.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">sf_use_s2</span>(<span class="cn">FALSE</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>boundary <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">region =</span> <span class="st">"."</span>, <span class="at">database =</span> <span class="st">"world"</span>) {</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    maps<span class="sc">::</span><span class="fu">map</span>(database, region, <span class="at">fill =</span> <span class="cn">TRUE</span>, <span class="at">plot =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        sf<span class="sc">::</span><span class="fu">st_as_sf</span>() <span class="sc">|&gt;</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        sf<span class="sc">::</span><span class="fu">st_make_valid</span>()</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 <section id="nz_earthquakes" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="nz_earthquakes"><code>nz_earthquakes</code></h3>
-<p><a href="http://quakesearch.geonet.org.nz/">GeoNet Quake Search</a> catalogues New Zealand earthquake occurrence; some of these data have been and packaged in <code>stelfi</code> as <code>nz_earthquakes</code>. In <a href="#hawkes">this chapter</a> a Hawkes process is fitted to these data.</p>
+<p>The origin time (UTC, to the nearest minute), magnitude, and depth (km) of 3824 earthquakes of magnitude 3 and above in the Canterbury region of New Zealand, 2010–2014, from <a href="https://quakesearch.geonet.org.nz/">GeoNet</a>. The period includes the 2010 Darfield and 2011 Christchurch earthquakes and their aftershocks. Some earthquakes share the same recorded minute.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"nz_earthquakes"</span>, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>nz_earthquakes</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(nz_earthquakes, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>nz_earthquakes</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 3824 features and 3 fields
 Geometry type: POINT
@@ -473,31 +505,15 @@ First 10 features:
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(nz_earthquakes, <span class="fu">aes</span>(<span class="at">x =</span> origintime)) <span class="sc">+</span> <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">100</span>) <span class="sc">+</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Frequency of earthquakes"</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>patchwork<span class="sc">::</span><span class="fu">wrap_plots</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(nz_earthquakes, <span class="fu">aes</span>(<span class="at">x =</span> origintime)) <span class="sc">+</span> <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">100</span>) <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ylab</span>(<span class="st">"Number of earthquakes"</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>(),</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(nz_earthquakes) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">size =</span> magnitude), <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>(),</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">nrow =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="data_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(nz_earthquakes) <span class="sc">+</span>  </span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span> </span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>() <span class="sc">+</span> </span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> nz, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Coordinate system already present.
-ℹ Adding new coordinate system, which will replace the existing one.</code></pre>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="data_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="data_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="864"></p>
 </figure>
 </div>
 </div>
@@ -505,10 +521,10 @@ First 10 features:
 </section>
 <section id="nz_murders" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="nz_murders"><code>nz_murders</code></h3>
-<p><a href="https://interactives.stuff.co.nz/2019/the-homicide-report/">The Homicide Report</a> documents homicides in New Zealand. The <code>nz_murders</code> dataset contains summary information about the documented cases. In <a href="#hawkes">this chapter</a> a spatiotemporal self-exciting model is fitted to these data.</p>
+<p>967 recorded murders in New Zealand, 2004–2019, from <a href="https://interactives.stuff.co.nz/2019/the-homicide-report/">The Homicide Report</a>, with information on the victim, the cause of death and the region. Dates are recorded to the day, and locations are approximate.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"nz_murders"</span>, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>nz_murders</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(nz_murders, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>nz_murders</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 967 features and 11 fields
 Geometry type: POINT
@@ -552,17 +568,56 @@ First 10 features:
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(nz_murders, <span class="fu">aes</span>(<span class="at">x =</span> full_date)) <span class="sc">+</span> <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">100</span>) <span class="sc">+</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Frequency of murders"</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 8 rows containing non-finite outside the scale range
-(`stat_bin()`).</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>patchwork<span class="sc">::</span><span class="fu">wrap_plots</span>(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(nz_murders, <span class="fu">aes</span>(<span class="at">x =</span> full_date)) <span class="sc">+</span> <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">100</span>) <span class="sc">+</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ylab</span>(<span class="st">"Number of murders"</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>(),</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(nz_murders) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">data =</span> <span class="fu">boundary</span>(<span class="at">database =</span> <span class="st">"nz"</span>), <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_sf</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>() <span class="sc">+</span> <span class="fu">coord_sf</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">165</span>, <span class="dv">180</span>)),</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">nrow =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="data_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="data_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="sasquatch" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="sasquatch"><code>sasquatch</code></h3>
+<p>972 reported sasquatch (bigfoot) sightings in the contiguous USA, 2000–2005, collated by the <a href="https://www.bfro.net/">Bigfoot Field Researchers Organization</a> (<a href="https://data.world/timothyrenner/bfro-sightings-data">source</a>), with the date and a range of descriptive and weather information. Note that these are <em>reported</em> sightings, so their distribution reflects where people are as well as (possibly) where sasquatch are (<a href="lgcp.html#sec-lgcp-data" class="quarto-xref"><span>Section 6.1.1</span></a>). Some sightings share the same location.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(sasquatch, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>sasquatch[, <span class="fu">c</span>(<span class="st">"date"</span>, <span class="st">"state"</span>, <span class="st">"classification"</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 972 features and 3 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: -124.5301 ymin: 25.84875 xmax: -70.75587 ymax: 48.9058
+Geodetic CRS:  +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0
+# A tibble: 972 × 4
+   date       state        classification             geometry
+   &lt;date&gt;     &lt;chr&gt;        &lt;chr&gt;                   &lt;POINT [°]&gt;
+ 1 2002-12-04 South Dakota Class A        (-102.3971 43.35851)
+ 2 2003-09-20 New York     Class A        (-76.89331 43.27314)
+ 3 2000-04-21 North Dakota Class A        (-101.3166 48.25422)
+ 4 2004-02-22 North Dakota Class A         (-102.701 47.72964)
+ 5 2005-12-21 New Jersey   Class B        (-75.11044 40.76345)
+ 6 2000-05-17 New Mexico   Class B          (-105.4113 36.599)
+ 7 2005-08-27 North Dakota Class A        (-101.8886 47.71188)
+ 8 2004-02-26 North Dakota Class B        (-102.7291 47.63297)
+ 9 2005-01-06 Nebraska     Class A             (-95.88 41.134)
+10 2005-08-13 Nebraska     Class A             (-95.92 41.238)
+# ℹ 962 more rows</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sasquatch) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">data =</span> <span class="fu">boundary</span>(<span class="at">database =</span> <span class="st">"usa"</span>), <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_sf</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="768"></p>
 </figure>
 </div>
 </div>
@@ -570,92 +625,43 @@ First 10 features:
 </section>
 <section id="iraq_terrorism" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="iraq_terrorism"><code>iraq_terrorism</code></h3>
-<p><a href="http://www.start.umd.edu/gtd/">The Global Terrorism Database (GTD)</a> documents information on terrorism events worldwide; some of these data have been and packaged in <code>stelfi</code> as <code>iraq_terrorism</code>.</p>
+<p>4208 terrorism events carried out by ISIL in Iraq, 2013–2017, from the <a href="https://www.start.umd.edu/gtd/">Global Terrorism Database</a>. The date is recorded as separate year (<code>iyear</code>), month (<code>imonth</code>) and day (<code>iday</code>) columns, and there is information on each event including the number killed (<code>nkill</code>, missing for some events), the spatial accuracy of the recorded location (<code>specificity</code>), and the (scaled) population density, luminosity and travel time to the nearest city at the event location.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"iraq_terrorism"</span>, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>iraq_terrorism</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(iraq_terrorism, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>iraq_terrorism[, <span class="fu">c</span>(<span class="st">"iyear"</span>, <span class="st">"imonth"</span>, <span class="st">"iday"</span>, <span class="st">"nkill"</span>, <span class="st">"specificity"</span>, <span class="st">"popdensity"</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Simple feature collection with 4208 features and 16 fields
+<pre><code>Simple feature collection with 4208 features and 6 fields
 Geometry type: POINT
 Dimension:     XY
 Bounding box:  xmin: 38.92288 ymin: 30.51005 xmax: 47.7781 ymax: 36.92948
 Geodetic CRS:  +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0
 First 10 features:
-      iyear imonth iday country success nkill specificity
-18055  2013      4   18    Iraq    TRUE    28           1
-18109  2013      4   20    Iraq    TRUE     0           1
-18110  2013      4   20    Iraq    TRUE     0           1
-18111  2013      4   20    Iraq    TRUE     0           1
-18864  2013      5   16    Iraq    TRUE     3           1
-18865  2013      5   16    Iraq    TRUE     3           1
-18866  2013      5   16    Iraq    TRUE     2           1
-18867  2013      5   16    Iraq    TRUE     3           1
-19161  2013      5   27    Iraq    TRUE     6           1
-19166  2013      5   27    Iraq    TRUE     1           1
-                                            gname   x_coord   y_coord   z_coord
-18055 Islamic State of Iraq and the Levant (ISIL) 0.5974251 0.5844656 0.5490748
-18109 Islamic State of Iraq and the Levant (ISIL) 0.5997164 0.5864987 0.5443892
-18110 Islamic State of Iraq and the Levant (ISIL) 0.5992751 0.5859289 0.5454876
-18111 Islamic State of Iraq and the Levant (ISIL) 0.5959873 0.5733453 0.5622049
-18864 Islamic State of Iraq and the Levant (ISIL) 0.5974251 0.5844656 0.5490748
-18865 Islamic State of Iraq and the Levant (ISIL) 0.5974251 0.5844656 0.5490748
-18866 Islamic State of Iraq and the Levant (ISIL) 0.5974251 0.5844656 0.5490748
-18867 Islamic State of Iraq and the Levant (ISIL) 0.5876310 0.5507342 0.5927745
-19161 Islamic State of Iraq and the Levant (ISIL) 0.5974251 0.5844656 0.5490748
-19166 Islamic State of Iraq and the Levant (ISIL) 0.5974251 0.5844656 0.5490748
-      popdensity luminosity         tt    utm_x      utm_y
-18055  0.4065874  1.0924644 -0.3210921 333098.1 4007920.00
-18109 -0.3479151  0.2298066 -0.2726546 407264.8 5332968.87
-18110 -0.3479432  0.9717434 -0.3210921 401682.9 5252649.56
-18111 -0.3783331  1.0521158 -0.3210921 405272.2 5344797.97
-18864  0.4065874  1.0924644 -0.3210921 595450.3 4078540.46
-18865  0.4065874  1.0924644 -0.3210921 595450.3 4078540.46
-18866  0.4065874  1.0924644 -0.3210921 723492.7   45579.28
-18867 -0.3665068  1.0924644 -0.3210921 815931.5  435892.29
-19161  0.4065874  1.0924644 -0.3210921 252226.3 3703963.04
-19166  0.4065874  1.0924644 -0.3210921 756886.0 4023175.15
-                       geometry
-18055 POINT (44.37177 33.30357)
-18109  POINT (44.3616 32.98293)
-18110 POINT (44.35484 33.05799)
-18111 POINT (43.89071 34.20842)
-18864 POINT (44.37177 33.30357)
-18865 POINT (44.37177 33.30357)
-18866 POINT (44.37177 33.30357)
-18867 POINT (43.14357 36.35415)
-19161 POINT (44.37177 33.30357)
-19166 POINT (44.37177 33.30357)</code></pre>
+      iyear imonth iday nkill specificity popdensity                  geometry
+18055  2013      4   18    28           1  0.4065874 POINT (44.37177 33.30357)
+18109  2013      4   20     0           1 -0.3479151  POINT (44.3616 32.98293)
+18110  2013      4   20     0           1 -0.3479432 POINT (44.35484 33.05799)
+18111  2013      4   20     0           1 -0.3783331 POINT (43.89071 34.20842)
+18864  2013      5   16     3           1  0.4065874 POINT (44.37177 33.30357)
+18865  2013      5   16     3           1  0.4065874 POINT (44.37177 33.30357)
+18866  2013      5   16     2           1  0.4065874 POINT (44.37177 33.30357)
+18867  2013      5   16     3           1 -0.3665068 POINT (43.14357 36.35415)
+19161  2013      5   27     6           1  0.4065874 POINT (44.37177 33.30357)
+19166  2013      5   27     1           1  0.4065874 POINT (44.37177 33.30357)</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>iraq_terrorism <span class="sc">%&gt;%</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">paste</span>(iday, imonth, iyear, <span class="at">sep =</span> <span class="st">"/"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">as.Date</span>(date, <span class="st">"%d/%m/%Y"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(., <span class="fu">aes</span>(<span class="at">x =</span> date)) <span class="sc">+</span> <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">150</span>) <span class="sc">+</span></span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Frequency of attacks"</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span></span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>iraq_terrorism<span class="sc">$</span>date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="fu">paste</span>(iraq_terrorism<span class="sc">$</span>iyear, iraq_terrorism<span class="sc">$</span>imonth,</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>                                     iraq_terrorism<span class="sc">$</span>iday, <span class="at">sep =</span> <span class="st">"-"</span>))</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>patchwork<span class="sc">::</span><span class="fu">wrap_plots</span>(</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(iraq_terrorism, <span class="fu">aes</span>(<span class="at">x =</span> date)) <span class="sc">+</span> <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">100</span>) <span class="sc">+</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ylab</span>(<span class="st">"Number of attacks"</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>(),</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(iraq_terrorism) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">data =</span> <span class="fu">boundary</span>(<span class="st">"Iraq"</span>), <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_sf</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>(),</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">nrow =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="data_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(iraq_terrorism) <span class="sc">+</span>  </span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span> </span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>() <span class="sc">+</span> </span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> iraq, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Coordinate system already present.
-ℹ Adding new coordinate system, which will replace the existing one.</code></pre>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="data_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="data_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="864"></p>
 </figure>
 </div>
 </div>
@@ -666,38 +672,17 @@ First 10 features:
 <h2 data-number="10.3" class="anchored" data-anchor-id="simulated-data"><span class="header-section-number">10.3</span> Simulated data</h2>
 <section id="xyt" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="xyt"><code>xyt</code></h3>
-<p>In <a href="#lgcp">this chapter</a> a log-Gaussian Cox process is fitted to these data and in <a href="lgcp-recovery.html#stelfi">this chapter</a> a spatiotemporal selfexciting model is fitted.</p>
+<p>A simulated self-exciting spatiotemporal point pattern of 653 events, stored as a <code>stppp</code> object (from the <code>stpp</code> package): the locations are <code>xyt$x</code> and <code>xyt$y</code>, the times are <code>xyt$t</code> (in <span class="math inline">\([0, 2]\)</span>), and the study region is <code>xyt$window</code> (a <code>spatstat</code> <code>owin</code>, which can be converted to <code>sf</code> using <code>sf::st_as_sf(xyt$window)</code>). Its study region is used in <a href="stelfi.html#sec-stelfi-sim" class="quarto-xref"><span>Section 8.2</span></a>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"xyt"</span>, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>xyt_sf <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(xyt)</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>xyt_sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Simple feature collection with 654 features and 1 field
-Geometry type: GEOMETRY
-Dimension:     XY
-Bounding box:  xmin: 0 ymin: -2.974928 xmax: 12.56637 ymax: 2.974928
-CRS:           NA
-First 10 features:
-    label                           geom
-1  window POLYGON ((10.77117 -2.78183...
-2   point       POINT (6.8074 -2.034423)
-3   point     POINT (7.558362 -2.193865)
-4   point     POINT (8.085083 -2.080938)
-5   point     POINT (8.121308 -2.522357)
-6   point     POINT (8.362448 -2.303117)
-7   point     POINT (9.000749 -2.955328)
-8   point     POINT (9.147803 -2.243146)
-9   point     POINT (9.261744 -2.408326)
-10  point      POINT (8.532312 -2.48986)</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(xyt_sf) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(xyt, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(<span class="at">x =</span> xyt<span class="sc">$</span>x, <span class="at">y =</span> xyt<span class="sc">$</span>y, <span class="at">t =</span> xyt<span class="sc">$</span>t), <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">size =</span> t)) <span class="sc">+</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_sf</span>(<span class="at">data =</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(xyt<span class="sc">$</span>window), <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="data_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="data_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="768"></p>
 </figure>
 </div>
 </div>
@@ -705,84 +690,33 @@ First 10 features:
 </section>
 <section id="marked" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="marked"><code>marked</code></h3>
-<p>In <a href="#fit-marked">this chapter</a> a marked log-Gaussian Cox process is fitted to these data.</p>
+<p>A simulated marked point pattern of 159 events in the square <span class="math inline">\([0, 3] \times [0, 3]\)</span>: a data frame with the locations (<code>x</code>, <code>y</code>) and three marks, <code>m1</code> (Gaussian), <code>m2</code> (binary, 0/1) and <code>m3</code> (gamma). It is used in the examples of <code>fit_mlgcp()</code> (see <code>?fit_mlgcp</code>); the simulated example in <a href="lgcp-marked.html#sec-mlgcp-sim" class="quarto-xref"><span>Section 7.2</span></a> simulates its own data instead, so that the true parameter values are known.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(marked, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>marked_sf <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(<span class="at">x =</span> marked,</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>))</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>marked_sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(marked, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(marked)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Simple feature collection with 159 features and 3 fields
-Geometry type: POINT
-Dimension:     XY
-Bounding box:  xmin: 0.006606752 ymin: 0.006502493 xmax: 2.985087 ymax: 2.938558
-CRS:           NA
-First 10 features:
-          m1 m2        m3                     geometry
-1  10.008609  0  9.616468 POINT (0.08935799 0.5756269)
-2   8.730592  0  6.918024     POINT (2.177973 2.90455)
-3  11.330677  0 16.798212    POINT (2.250791 1.024792)
-4  11.338656  0  8.073566    POINT (2.033398 1.038773)
-5   9.395725  0  9.977866   POINT (2.777002 0.4685442)
-6  10.331965  0 10.615245   POINT (0.5988652 2.422233)
-7  10.069787  0 11.268171   POINT (1.541071 0.9307671)
-8   9.717775  0 13.306125    POINT (2.615062 1.064561)
-9  10.071326  0 18.300715   POINT (0.3882139 2.146845)
-10 10.147740  0 16.751740     POINT (1.501552 1.64466)</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>domain <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="dv">3</span> <span class="sc">*</span> <span class="fu">cbind</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))) <span class="sc">%&gt;%</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  sf<span class="sc">::</span><span class="fu">st_polygon</span>() <span class="sc">%&gt;%</span> sf<span class="sc">::</span><span class="fu">st_sfc</span>() <span class="sc">%&gt;%</span> sf<span class="sc">::</span><span class="fu">st_sf</span>(<span class="at">geometry =</span> .)</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(marked_sf, <span class="fu">aes</span>(<span class="at">col =</span> m1)) <span class="sc">+</span> </span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Mark"</span>) <span class="sc">+</span></span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_continuous</span>(<span class="at">type =</span> <span class="st">"viridis"</span>) <span class="sc">+</span></span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> domain, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="data_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
+<pre><code>           x         y        m1 m2        m3
+1 0.08935799 0.5756269 10.008609  0  9.616468
+2 2.17797293 2.9045499  8.730592  0  6.918024
+3 2.25079083 1.0247922 11.330677  0 16.798212
+4 2.03339823 1.0387728 11.338656  0  8.073566
+5 2.77700237 0.4685442  9.395725  0  9.977866
+6 0.59886520 2.4222335 10.331965  0 10.615245</code></pre>
 </div>
 </div>
 </section>
-<section id="horse_mesh" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="horse_mesh"><code>horse_mesh</code></h3>
-<p>In <a href="#meshmetrics">this chapter</a> we illustrate different geometric metrics of this triangulation.</p>
+<section id="horse_mesh-and-horse_sf" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="horse_mesh-and-horse_sf"><code>horse_mesh</code> and <code>horse_sf</code></h3>
+<p>An example mesh (created using <code>fmesher::fm_mesh_2d()</code>) and the <code>sf</code> polygon it is based on, in the shape of a horse. These are used to illustrate <code>meshmetrics()</code> (<a href="mesh.html#sec-meshmetrics" class="quarto-xref"><span>Section 5.3</span></a>) and <code>get_weights()</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"horse_mesh"</span>, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>horse_mesh_sf <span class="ot">&lt;-</span> stelfi<span class="sc">::</span><span class="fu">mesh_2_sf</span>(horse_mesh)</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>horse_mesh_sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Simple feature collection with 396 features and 4 fields
-Geometry type: POLYGON
-Dimension:     XY
-Bounding box:  xmin: -17.96875 ymin: -11.78261 xmax: 17.26563 ymax: 11.65217
-CRS:           NA
-First 10 features:
-    V1  V2  V3 ID                       geometry
-1  172  30 186  1 POLYGON ((8.441837 -2.16176...
-2   28 188 162  2 POLYGON ((10.43359 0.913043...
-3  168 186  42  3 POLYGON ((5.818232 -3.05894...
-4  117  57  63  4 POLYGON ((-3.660156 -8.0326...
-5  270 253 121  5 POLYGON ((-8.43636 2.023352...
-6   92 144 169  6 POLYGON ((-8.042969 4.47826...
-7  175 137 240  7 POLYGON ((5.689521 -1.13385...
-8  182 148 111  8 POLYGON ((10.50244 7.199319...
-9  253 169 121  9 POLYGON ((-7.850425 2.87106...
-10  14  15 116 10 POLYGON ((13.3125 11.56522,...</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(horse_mesh_sf) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">col =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(horse_mesh, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(horse_sf, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">data =</span> <span class="fu">mesh_2_sf</span>(horse_mesh), <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_sf</span>(<span class="at">data =</span> horse_sf, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span> <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="data_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="data_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="480"></p>
 </figure>
 </div>
 </div>
@@ -1195,8 +1129,8 @@ First 10 features:
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./summary.html" class="pagination-link" aria-label="Key `stelfi` functions">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></span>
+      <a href="./rtmb.html" class="pagination-link" aria-label="Simple `RTMB` templates">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Simple <code>RTMB</code> templates</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

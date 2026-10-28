@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.262">
+<meta name="generator" content="quarto-1.8.27">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="description" content="Using stelfi">
 
-<title>The R package stelfi - 3&nbsp; Marked Hawkes</title>
+<title>3&nbsp; Marked Hawkes process – The `R` package `stelfi`</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -18,9 +18,11 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -47,48 +49,20 @@ pre.numberSource code > span > a:first-child::before
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
     padding: 0 4px; width: 4em;
-    color: #aaaaaa;
   }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
 div.sourceCode
   {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+/* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
-.hanging div.csl-entry {
+.hanging-indent div.csl-entry {
   margin-left:2em;
   text-indent:-2em;
 }
@@ -102,8 +76,7 @@ div.csl-right-inline {
 }
 div.csl-indent {
   margin-left: 2em;
-}
-</style>
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -115,22 +88,30 @@ div.csl-indent {
 <meta name="quarto:offset" content="./">
 <link href="./multi-hawkes.html" rel="next">
 <link href="./univariate-hawkes.html" rel="prev">
-<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-0346a4669161aa0b1fb4455b7891709f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -139,118 +120,179 @@ div.csl-indent {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 
-<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
-<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
-
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
-<body class="nav-sidebar floating nav-fixed">
+<body class="nav-sidebar floating nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">The <code>R</code> package <code>stelfi</code></span>
     </a>
   </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
           <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
-  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-    <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes</span></h1>
-      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
-        <i class="bi bi-chevron-right"></i>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./marked-hawkes.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes process</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
     </div>
   </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
-      <div class="mt-2 flex-shrink-0 align-items-center">
-        <div class="sidebar-search">
-        <div id="quarto-search" class="" title="Search"></div>
-        </div>
-        <div class="sidebar-tools-collapse">
-    <a href="https://github.com/cmjt/stelfi" title="" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
-    <a href="mailto:c.jonestodd@auckland.ac.nz" title="" class="sidebar-tool px-1"><i class="bi bi-envelope"></i></a>
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/cmjt/stelfi" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:c.jonestodd@auckland.ac.nz" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope"></i></a>
 </div>
-      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">Preface</a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./intro.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></a>
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./univariate-hawkes.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes</span></a>
+  <a href="./univariate-hawkes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./marked-hawkes.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes</span></a>
+  <a href="./marked-hawkes.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./multi-hawkes.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes</span></a>
+  <a href="./multi-hawkes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lgcp.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Spatial log-Gaussian Cox process</span></a>
+  <a href="./mesh.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Meshes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./stelfi.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Spatiotemporal self-exciting models</span></a>
+  <a href="./lgcp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Spatial and spatiotemporal log-Gaussian Cox processes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./summary.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Key <code>stelfi</code> functions</span></a>
+  <a href="./lgcp-marked.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Marked log-Gaussian Cox process</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./data.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></a>
+  <a href="./stelfi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Spatiotemporal self-exciting models</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./references.html" class="sidebar-item-text sidebar-link">References</a>
+  <a href="./rtmb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Simple <code>RTMB</code> templates</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Datasets in <code>stelfi</code></span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
   </div>
 </li>
     </ul>
     </div>
 </nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#a-simulated-example" id="toc-a-simulated-example" class="nav-link active" data-scroll-target="#a-simulated-example"><span class="toc-section-number">3.1</span>  A simulated example</a></li>
-  <li><a href="#sec-simulate-marked-hawkes" id="toc-sec-simulate-marked-hawkes" class="nav-link" data-scroll-target="#sec-simulate-marked-hawkes"><span class="toc-section-number">3.2</span>  Simulating a marked process</a></li>
-  <li><a href="#sec-hawkesnll" id="toc-sec-hawkesnll" class="nav-link" data-scroll-target="#sec-hawkesnll"><span class="toc-section-number">3.3</span>  The negative log-likelihood</a></li>
+  <li><a href="#the-model-and-your-data" id="toc-the-model-and-your-data" class="nav-link active" data-scroll-target="#the-model-and-your-data"><span class="header-section-number">3.1</span> The model and your data</a>
+  <ul class="collapse">
+  <li><a href="#sec-marked-hawkes-data" id="toc-sec-marked-hawkes-data" class="nav-link" data-scroll-target="#sec-marked-hawkes-data"><span class="header-section-number">3.1.1</span> What your data need to look like</a></li>
+  </ul></li>
+  <li><a href="#sec-marked-hawkes-sim" id="toc-sec-marked-hawkes-sim" class="nav-link" data-scroll-target="#sec-marked-hawkes-sim"><span class="header-section-number">3.2</span> A simulated example</a>
+  <ul class="collapse">
+  <li><a href="#fitting-the-model-using-stelfi" id="toc-fitting-the-model-using-stelfi" class="nav-link" data-scroll-target="#fitting-the-model-using-stelfi"><span class="header-section-number">3.2.1</span> Fitting the model using <code>stelfi</code></a></li>
+  <li><a href="#comparison-with-emhawkes" id="toc-comparison-with-emhawkes" class="nav-link" data-scroll-target="#comparison-with-emhawkes"><span class="header-section-number">3.2.2</span> Comparison with <code>emhawkes</code></a></li>
+  </ul></li>
+  <li><a href="#sec-marked-hawkes-applied" id="toc-sec-marked-hawkes-applied" class="nav-link" data-scroll-target="#sec-marked-hawkes-applied"><span class="header-section-number">3.3</span> An applied example: Canterbury earthquakes</a>
+  <ul class="collapse">
+  <li><a href="#preparing-the-data" id="toc-preparing-the-data" class="nav-link" data-scroll-target="#preparing-the-data"><span class="header-section-number">3.3.1</span> Preparing the data</a></li>
+  <li><a href="#fitting-the-model" id="toc-fitting-the-model" class="nav-link" data-scroll-target="#fitting-the-model"><span class="header-section-number">3.3.2</span> Fitting the model</a></li>
+  </ul></li>
+  <li><a href="#sec-marked-hawkes-gof" id="toc-sec-marked-hawkes-gof" class="nav-link" data-scroll-target="#sec-marked-hawkes-gof"><span class="header-section-number">3.4</span> Goodness-of-fit</a></li>
   </ul>
 </nav>
     </div>
@@ -259,7 +301,7 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes</span></h1>
+<h1 class="title"><span id="sec-marked-hawkes" class="quarto-section-identifier"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Marked Hawkes process</span></span></h1>
 </div>
 
 
@@ -272,169 +314,341 @@ div.csl-indent {
   </div>
   
 
+
 </header>
 
-<p>The conditional intensity function for the marked Hawkes model implemented in <code>stelfi</code> is given by</p>
-<p><span class="math display">\[\lambda(t; m(t)) = \mu + \alpha \Sigma_{i:\tau_i&lt;t}m(\tau_i)\text{exp}(-\beta * (t-\tau_i)) \]</span> where <span class="math inline">\(\mu\)</span> is the background rate of the process and <span class="math inline">\(m(t)\)</span> is the temporal mark. The only difference to <a href="univariate-hawkes.html#eq-hawkes">Equation&nbsp;<span>2.1</span></a> is now that each event has an associated mark <span class="math inline">\(m(\tau_i)\)</span> that scales the jump sizes (<span class="math inline">\(\alpha\)</span>) of the self-exciting component of <span class="math inline">\(\lambda(.)\)</span>.</p>
-<section id="a-simulated-example" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="a-simulated-example"><span class="header-section-number">3.1</span> A simulated example</h2>
-<p>Below data are simulated using the <code>emhawkes</code> package <span class="citation" data-cites="emhawkes">(<a href="references.html#ref-emhawkes" role="doc-biblioref">Lee 2023</a>)</span> where the marks (a vector that scale the jump sizes, starting at 0) are integer values <span class="math inline">\(\in [1,4]\)</span> for <span class="math inline">\(t &gt; 0\)</span> and <span class="math inline">\(0\)</span> for <span class="math inline">\(t = 0\)</span> (see <a href="#sec-simulate-marked-hawkes"><span>Section&nbsp;3.2</span></a> for how to simulate using <code>stelfi</code>). The parameter values of the conditional intensity are <span class="math inline">\(\mu = 1.3\)</span>, <span class="math inline">\(\alpha = 0.4\)</span>, and <span class="math inline">\(\beta = 1.5\)</span>. The jump sizes for the possible mark values are shown below.</p>
-<div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: stelfi</code></pre>
-</div>
-<div class="cell-output-display">
 
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:right;"> mark </th>
-   <th style="text-align:right;"> jump </th>
-  </tr>
- </thead>
-<tbody>
-  <tr>
-   <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.4 </td>
-  </tr>
-  <tr>
-   <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.8 </td>
-  </tr>
-  <tr>
-   <td style="text-align:right;"> 3 </td>
-   <td style="text-align:right;"> 1.2 </td>
-  </tr>
-  <tr>
-   <td style="text-align:right;"> 4 </td>
-   <td style="text-align:right;"> 1.6 </td>
-  </tr>
-</tbody>
-</table>
-
-</div>
-</div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(emhawkes)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fl">1.3</span>; alpha <span class="ot">&lt;-</span> <span class="fl">0.4</span>; beta <span class="ot">&lt;-</span>  <span class="fl">1.5</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>fn_mark <span class="ot">&lt;-</span> <span class="cf">function</span>( ...){</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">1</span>)</span>
+<details class="code-fold">
+<summary>Packages used in this chapter</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stelfi)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="the-model-and-your-data" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="the-model-and-your-data"><span class="header-section-number">3.1</span> The model and your data</h2>
+<p>In the univariate Hawkes process (<a href="univariate-hawkes.html" class="quarto-xref"><span>Chapter 2</span></a>) every event triggers further events in exactly the same way. Often, though, some events are more “important” than others: a large earthquake triggers more aftershocks than a small one, and a tweet from an account with many followers is retweeted more than one from an account with few. If each event has a numeric value (a <strong>mark</strong>) that describes its importance, a marked Hawkes process lets the size of the jump in intensity after an event depend on that mark. In <code>stelfi</code> the conditional intensity is</p>
+<p><span id="eq-marked-hawkes"><span class="math display">\[\lambda(t) = \mu + \alpha \sum_{i:\tau_i&lt;t}m(\tau_i)\,\text{exp}(-\beta (t-\tau_i)), \tag{3.1}\]</span></span></p>
+<p>where <span class="math inline">\(m(\tau_i)\)</span> is the mark of the event at time <span class="math inline">\(\tau_i\)</span>. The only difference to <a href="univariate-hawkes.html#eq-hawkes" class="quarto-xref">Equation&nbsp;<span>2.1</span></a> is that the jump after event <span class="math inline">\(i\)</span> is <span class="math inline">\(\alpha m(\tau_i)\)</span> rather than <span class="math inline">\(\alpha\)</span>, so an event with mark 2 has twice the effect of an event with mark 1. The parameters <span class="math inline">\(\mu\)</span>, <span class="math inline">\(\alpha\)</span>, and <span class="math inline">\(\beta\)</span> are interpreted as in <a href="univariate-hawkes.html" class="quarto-xref"><span>Chapter 2</span></a>, except that the expected number of events triggered by an event with mark <span class="math inline">\(m\)</span> is <span class="math inline">\(\alpha m / \beta\)</span>, and the <em>average</em> branching ratio is <span class="math inline">\(\alpha \bar{m} / \beta\)</span>, where <span class="math inline">\(\bar{m}\)</span> is the average mark. <code>stelfi</code> constrains the average branching ratio to be less than 1.</p>
+<section id="sec-marked-hawkes-data" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="sec-marked-hawkes-data"><span class="header-section-number">3.1.1</span> What your data need to look like</h3>
+<p>You need two numeric vectors of the same length: the event <code>times</code> (exactly as in <a href="univariate-hawkes.html#sec-hawkes-data" class="quarto-xref"><span>Section 2.1.1</span></a>, sorted with no ties) and the <code>marks</code>, where <code>marks[i]</code> belongs to <code>times[i]</code>. In addition:</p>
+<ul>
+<li><strong>Marks must be non-negative</strong>, and an event with a mark of 0 triggers nothing.</li>
+<li><strong>The scale of the marks matters.</strong> Because the mark <em>multiplies</em> the jump, doubling all of the marks halves <span class="math inline">\(\alpha\)</span>, and adding a constant to all of the marks changes the model. You will usually want to transform your raw measurement into a mark that is proportional to how much you believe an event triggers. For example, in seismology the number of aftershocks is believed to grow <em>exponentially</em> with magnitude, so <span class="math inline">\(\text{exp}(\text{magnitude} - c)\)</span> is a more natural mark than the magnitude itself (see <a href="#sec-marked-hawkes-applied" class="quarto-xref"><span>Section 3.3</span></a>). Different transformations can be compared using the likelihood (e.g., AIC).</li>
+<li><strong>The marks are treated as known.</strong> The model describes how marks affect future events but does not model the marks themselves (e.g., it does not predict the magnitude of the next earthquake). Missing marks need to be dealt with before fitting.</li>
+<li><strong>Marks only affect triggering, not the background.</strong> If the marks are also related to the background rate (e.g., larger events are rarer) this is not captured.</li>
+</ul>
+</section>
+</section>
+<section id="sec-marked-hawkes-sim" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="sec-marked-hawkes-sim"><span class="header-section-number">3.2</span> A simulated example</h2>
+<p>Data were simulated (using <code>emhawkes</code>, <span class="citation" data-cites="emhawkes">Lee (<a href="references.html#ref-emhawkes" role="doc-biblioref">2023</a>)</span>) from a marked Hawkes process with <span class="math inline">\(\mu = 0.5\)</span>, <span class="math inline">\(\alpha = 0.3\)</span>, and <span class="math inline">\(\beta = 1.5\)</span>, where each event’s mark is equally likely to be 1, 2, 3, or 4. So an event with mark 4 increases the intensity by <span class="math inline">\(4 \times 0.3 = 1.2\)</span>, whereas an event with mark 1 increases it by only <span class="math inline">\(0.3\)</span>. In <code>emhawkes</code> the marks are generated by the function <code>rmark</code>, and the extra jump in the intensity caused by an event’s mark is given by the function <code>impact</code>: here <span class="math inline">\(0.3 \times (\text{mark} - 1)\)</span>, so that the total jump is <span class="math inline">\(0.3 \times \text{mark}\)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(emhawkes)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>fn_mark <span class="ot">&lt;-</span> <span class="cf">function</span>(...) <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">1</span>) <span class="do">## each mark is equally likely to be 1, 2, 3, or 4</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>impact <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">param =</span> <span class="fu">c</span>(<span class="at">eta1 =</span> <span class="fl">0.3</span>), alpha, n, mark, ...) {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">matrix</span>(param[<span class="st">"eta1"</span>] <span class="sc">*</span> (mark[n] <span class="sc">-</span> <span class="dv">1</span>), <span class="at">nrow =</span> <span class="dv">1</span>)</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>h1 <span class="ot">&lt;-</span> <span class="fu">new</span>(<span class="st">"hspec"</span>, <span class="at">mu =</span> mu, <span class="at">alpha =</span> alpha, <span class="at">beta =</span> beta,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">rmark =</span> fn_mark)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">hsim</span>(h1, <span class="at">size =</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>h_sim <span class="ot">&lt;-</span> <span class="fu">new</span>(<span class="st">"hspec"</span>, <span class="at">mu =</span> <span class="fl">0.5</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">beta =</span> <span class="fl">1.5</span>, <span class="at">rmark =</span> fn_mark, <span class="at">impact =</span> impact)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">hsim</span>(h_sim, <span class="at">size =</span> <span class="dv">1000</span>, <span class="at">lambda_component0 =</span> <span class="fu">matrix</span>(<span class="fl">0.5</span>))</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="do">## drop the dummy event at t = 0 that emhawkes adds</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">times =</span> res<span class="sc">$</span>arrival[<span class="sc">-</span><span class="dv">1</span>], <span class="at">marks =</span> res<span class="sc">$</span>mark[<span class="sc">-</span><span class="dv">1</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>To fit the model in <code>stelfi</code> the <code>fit_hawkes()</code> function is used and the additional optional argument <code>marks</code> supplied.</p>
+<p>The data are a data frame of 999 event times and the corresponding marks:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>sv <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">mu =</span> <span class="fl">1.3</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>, <span class="at">beta =</span> <span class="fl">1.5</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_hawkes</span>(<span class="at">times =</span> res<span class="sc">$</span>arrival, <span class="at">parameters =</span> sv, <span class="at">marks =</span> res<span class="sc">$</span>mark)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     times marks
+1 1.510364     3
+2 1.573008     3
+3 2.089464     3
+4 2.354958     1
+5 3.206740     2
+6 3.733580     1</code></pre>
+</div>
+</div>
+<section id="fitting-the-model-using-stelfi" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="fitting-the-model-using-stelfi"><span class="header-section-number">3.2.1</span> Fitting the model using <code>stelfi</code></h3>
+<p>The marked model is fitted using <code>fit_hawkes()</code> exactly as in <a href="univariate-hawkes.html" class="quarto-xref"><span>Chapter 2</span></a>, with the extra argument <code>marks</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>sv <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">mu =</span> <span class="fl">0.5</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">beta =</span> <span class="dv">1</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_hawkes</span>(<span class="at">times =</span> sim<span class="sc">$</span>times, <span class="at">parameters =</span> sv, <span class="at">marks =</span> sim<span class="sc">$</span>marks)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>stelfi <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>stelfi</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       Estimate Std. Error
-mu    1.1741551 0.25195698
-alpha 0.1008830 0.06935281
-beta  0.8849185 0.50179668</code></pre>
+mu    0.4650937 0.03291345
+alpha 0.3147090 0.03355793
+beta  1.5362960 0.17481104</code></pre>
 </div>
 </div>
-<p>Note the estimated coefficient <span class="math inline">\(\alpha\)</span> from <code>stelfi</code> equates to <span class="math inline">\(\frac{\alpha}{\text{mark}}\)</span> from <code>emhawkes</code>.</p>
+</section>
+<section id="comparison-with-emhawkes" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="comparison-with-emhawkes"><span class="header-section-number">3.2.2</span> Comparison with <code>emhawkes</code></h3>
+<p><code>emhawkes</code> can fit marked Hawkes processes where the effect of the mark is specified through an <code>impact</code> function. Here the jump after an event with mark <span class="math inline">\(m\)</span> is <span class="math inline">\(\alpha + \eta (m - 1)\)</span>, which is a little more general than the <code>stelfi</code> model (the two are the same when <span class="math inline">\(\eta = \alpha\)</span>), so <code>emhawkes</code> estimates one extra parameter, <span class="math inline">\(\eta\)</span>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">## benchmark emhawkes</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>emhawkes<span class="sc">::</span><span class="fu">hfit</span>(h1, <span class="at">inter_arrival =</span> res<span class="sc">$</span>inter_arrival, <span class="at">mark =</span> res<span class="sc">$</span>mark) <span class="sc">|&gt;</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>impact <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">param =</span> <span class="fu">c</span>(<span class="at">eta1 =</span> <span class="fl">0.2</span>), alpha, n, mark, ...) {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">matrix</span>(param[<span class="st">"eta1"</span>] <span class="sc">*</span> (mark[n] <span class="sc">-</span> <span class="dv">1</span>), <span class="at">nrow =</span> <span class="dv">1</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">new</span>(<span class="st">"hspec"</span>, <span class="at">mu =</span> <span class="fl">0.5</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">beta =</span> <span class="dv">1</span>, <span class="at">impact =</span> impact)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>fit_em <span class="ot">&lt;-</span> <span class="fu">hfit</span>(h, <span class="at">inter_arrival =</span> res<span class="sc">$</span>inter_arrival, <span class="at">mark =</span> res<span class="sc">$</span>mark,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">lambda_component0 =</span> <span class="fu">matrix</span>(<span class="fl">0.5</span>))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>em <span class="ot">&lt;-</span> <span class="fu">summary</span>(fit_em)<span class="sc">$</span>estimate</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>em</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>--------------------------------------------
-Maximum Likelihood estimation
-BFGS maximization, 43 iterations
-Return code 0: successful convergence 
-Log-Likelihood: -51.99802 
-3  free parameters
-Estimates:
-       Estimate Std. error t value Pr(&gt; t)    
-mu1      1.1106     0.2888   3.845 0.00012 ***
-alpha1   0.2787     0.1903   1.464 0.14309    
-beta1    0.9277     0.5693   1.629 0.10321    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
---------------------------------------------</code></pre>
+<pre><code>        Estimate Std. error   t value      Pr(&gt; t)
+mu1    0.4646897 0.03307648 14.048944 7.819128e-45
+alpha1 0.3124154 0.10329883  3.024384 2.491396e-03
+beta1  1.5327715 0.17365521  8.826522 1.079815e-18
+eta1   0.3152552 0.05962909  5.286936 1.243820e-07</code></pre>
 </div>
 </div>
-<p>The fitted model and diagnostic plots are plotted using <code>show_hawkes()</code> and <code>show_hawkes_GOF()</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_hawkes</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details class="code-fold">
+<summary>Code for this table</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>fmt <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">paste0</span>(<span class="fu">round</span>(x[<span class="dv">1</span>], <span class="dv">3</span>), <span class="st">" ("</span>, <span class="fu">round</span>(x[<span class="dv">2</span>], <span class="dv">3</span>), <span class="st">")"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Truth =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">1.5</span>, <span class="fl">0.3</span>),</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">stelfi =</span> <span class="fu">c</span>(<span class="fu">apply</span>(stelfi, <span class="dv">1</span>, fmt), <span class="st">"-"</span>),</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">emhawkes =</span> <span class="fu">apply</span>(em[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], <span class="dv">1</span>, fmt))</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">t</span>(params), <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">mu$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">alpha$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">beta$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">eta$"</span>), <span class="at">escape =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
-<p><img src="marked-hawkes_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="864"></p>
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><span class="math inline">\(\mu\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\alpha\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\beta\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\eta\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Truth</td>
+<td style="text-align: left;">0.5</td>
+<td style="text-align: left;">0.3</td>
+<td style="text-align: left;">1.5</td>
+<td style="text-align: left;">0.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stelfi</td>
+<td style="text-align: left;">0.465 (0.033)</td>
+<td style="text-align: left;">0.315 (0.034)</td>
+<td style="text-align: left;">1.536 (0.175)</td>
+<td style="text-align: left;">-</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">emhawkes</td>
+<td style="text-align: left;">0.465 (0.033)</td>
+<td style="text-align: left;">0.312 (0.103)</td>
+<td style="text-align: left;">1.533 (0.174)</td>
+<td style="text-align: left;">0.315 (0.06)</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
+<p>The two packages agree closely and both recover the true values. The <code>emhawkes</code> estimate of <span class="math inline">\(\eta\)</span> is close to its estimate of <span class="math inline">\(\alpha\)</span>, which supports the simpler <code>stelfi</code> model where the jump is proportional to the mark. Note that the <code>stelfi</code> standard error for <span class="math inline">\(\alpha\)</span> is smaller because it estimates one fewer parameter.</p>
+<p>The fitted intensity is shown using <code>show_hawkes()</code>. Compared to <a href="univariate-hawkes.html" class="quarto-xref"><span>Chapter 2</span></a> the jumps now differ in size depending on the mark of the event.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_hawkes_GOF</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_hawkes</span>(fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="marked-hawkes_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-marked-hawkes-applied" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="sec-marked-hawkes-applied"><span class="header-section-number">3.3</span> An applied example: Canterbury earthquakes</h2>
+<p>The <code>nz_earthquakes</code> data (see <a href="data.html" class="quarto-xref"><span>Chapter 10</span></a>) are the times, locations, and magnitudes of 3,824 earthquakes of magnitude 3 and above in the Canterbury region of New Zealand between 2010 and 2014. This period includes the 2010 Darfield (magnitude 7.1) and 2011 Christchurch earthquakes and their many aftershocks. Here only the times and magnitudes are used (the locations are used in <a href="stelfi.html" class="quarto-xref"><span>Chapter 8</span></a>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(nz_earthquakes, <span class="at">package =</span> <span class="st">"stelfi"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(nz_earthquakes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 6 features and 3 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: 172.3641 ymin: -43.63492 xmax: 172.7936 ymax: -43.42493
+Geodetic CRS:  +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0
+           origintime magnitude     depth                   geometry
+1 2014-12-24 07:46:00  3.208996 13.671875 POINT (172.7133 -43.57944)
+2 2014-12-24 06:43:00  4.109075  5.820312 POINT (172.7204 -43.55752)
+3 2014-12-14 08:53:00  3.240377  5.058594 POINT (172.3641 -43.62563)
+4 2014-12-12 13:37:00  4.459034  9.394531  POINT (172.368 -43.63492)
+5 2014-11-20 08:24:00  3.116447 10.039062 POINT (172.7836 -43.42493)
+6 2014-11-18 14:19:00  3.158710 11.269531  POINT (172.7936 -43.4897)</code></pre>
+</div>
+</div>
+<section id="preparing-the-data" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="preparing-the-data"><span class="header-section-number">3.3.1</span> Preparing the data</h3>
+<p>The times are converted to days since the first earthquake. The times are recorded to the nearest minute and some earthquakes share the same minute, so a small random amount of time (up to one minute) is added to each one. This keeps every earthquake, which is preferable to dropping tied events (<a href="univariate-hawkes.html#sec-hawkes-data" class="quarto-xref"><span>Section 2.1.1</span></a>). The data are then sorted by time, keeping each magnitude with its time.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>eq <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">time =</span> nz_earthquakes<span class="sc">$</span>origintime, <span class="at">magnitude =</span> nz_earthquakes<span class="sc">$</span>magnitude)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>eq<span class="sc">$</span>days <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">difftime</span>(eq<span class="sc">$</span>time, <span class="fu">min</span>(eq<span class="sc">$</span>time), <span class="at">units =</span> <span class="st">"days"</span>))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">duplicated</span>(eq<span class="sc">$</span>days)) <span class="do">## number of tied times</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 185</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>eq<span class="sc">$</span>days <span class="ot">&lt;-</span> eq<span class="sc">$</span>days <span class="sc">+</span> <span class="fu">runif</span>(<span class="fu">nrow</span>(eq), <span class="dv">0</span>, <span class="dv">1</span> <span class="sc">/</span> (<span class="dv">24</span> <span class="sc">*</span> <span class="dv">60</span>)) <span class="do">## jitter by up to one minute</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>eq <span class="ot">&lt;-</span> eq[<span class="fu">order</span>(eq<span class="sc">$</span>days), ]</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>eq<span class="sc">$</span>days <span class="ot">&lt;-</span> eq<span class="sc">$</span>days <span class="sc">-</span> eq<span class="sc">$</span>days[<span class="dv">1</span>] <span class="do">## start at t = 0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The catalogue only includes earthquakes of magnitude 3 and above. Seismologists usually assume that the number of aftershocks triggered by an earthquake grows exponentially with magnitude, so the mark is taken to be <span class="math inline">\(m = \text{exp}(\text{magnitude} - 3)\)</span>: an earthquake of magnitude 3 has mark 1, and one of magnitude 7.1 has mark <span class="math inline">\(e^{4.1} \approx 60\)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>eq<span class="sc">$</span>mark <span class="ot">&lt;-</span> <span class="fu">exp</span>(eq<span class="sc">$</span>magnitude <span class="sc">-</span> <span class="dv">3</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(eq<span class="sc">$</span>mark)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  1.000   1.150   1.397   1.781   1.916  66.686 </code></pre>
+</div>
+</div>
+</section>
+<section id="fitting-the-model" class="level3" data-number="3.3.2">
+<h3 data-number="3.3.2" class="anchored" data-anchor-id="fitting-the-model"><span class="header-section-number">3.3.2</span> Fitting the model</h3>
+<p>For comparison, both an unmarked model (every earthquake triggers equally) and the marked model are fitted.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>sv <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">mu =</span> <span class="fl">0.3</span>, <span class="at">alpha =</span> <span class="dv">1</span>, <span class="at">beta =</span> <span class="dv">2</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>fit_unmarked <span class="ot">&lt;-</span> <span class="fu">fit_hawkes</span>(<span class="at">times =</span> eq<span class="sc">$</span>days, <span class="at">parameters =</span> sv)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>fit_marked <span class="ot">&lt;-</span> <span class="fu">fit_hawkes</span>(<span class="at">times =</span> eq<span class="sc">$</span>days, <span class="at">parameters =</span> sv, <span class="at">marks =</span> eq<span class="sc">$</span>mark)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit_unmarked)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       Estimate Std. Error
+mu    0.3330085 0.01849029
+alpha 3.5500691 0.20235170
+beta  4.2095632 0.24807221</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_coefs</span>(fit_marked)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       Estimate Std. Error
+mu    0.3165789 0.01831468
+alpha 1.5257779 0.09103272
+beta  3.1923044 0.19626381</code></pre>
+</div>
+</div>
+<p>The two models can be compared using AIC (twice the negative log-likelihood, stored as <code>fit$objective</code>, plus twice the number of parameters). Since the marks are treated as known, both models have three parameters.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">unmarked =</span> <span class="dv">2</span> <span class="sc">*</span> fit_unmarked<span class="sc">$</span>objective <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> <span class="dv">3</span>,</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">marked =</span> <span class="dv">2</span> <span class="sc">*</span> fit_marked<span class="sc">$</span>objective <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> unmarked    marked 
+-12882.68 -13315.46 </code></pre>
+</div>
+</div>
+<p>The marked model has a much lower AIC, so allowing larger earthquakes to trigger more aftershocks gives a substantially better description of the data. From the marked model:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">get_coefs</span>(fit_marked)[, <span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<ul>
+<li>background earthquakes occur at around 0.32 per day, i.e., about 571 of the 3824 earthquakes were not triggered by an earlier earthquake;</li>
+<li>a magnitude 3 earthquake (mark 1) directly triggers on average <span class="math inline">\(\hat{\alpha}/\hat{\beta} =\)</span> 0.48 further earthquakes, whereas a magnitude 5 earthquake (mark <span class="math inline">\(e^2 \approx 7.4\)</span>) triggers around 3.5; and</li>
+<li>the influence of an earthquake decays with a time scale of <span class="math inline">\(1/\hat{\beta} =\)</span> 7.5 hours.</li>
+</ul>
+<p>The fitted intensity shows the huge spikes in activity following the largest earthquakes.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_hawkes</span>(fit_marked, <span class="at">type =</span> <span class="st">"both"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="marked-hawkes_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-marked-hawkes-gof" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="sec-marked-hawkes-gof"><span class="header-section-number">3.4</span> Goodness-of-fit</h2>
+<p>The goodness-of-fit procedures for the marked model are exactly those described in <a href="univariate-hawkes.html#sec-gof-hawkes" class="quarto-xref"><span>Section 2.4</span></a>: the compensator now includes the marks, but <code>show_hawkes_GOF()</code> takes care of this. For the simulated example (where the model is correct) there is no evidence of lack of fit:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_hawkes_GOF</span>(fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-    Exact one-sample Kolmogorov-Smirnov test
+    Asymptotic one-sample Kolmogorov-Smirnov test
 
 data:  interarrivals
-D = 0.09164, p-value = 0.355
+D = 0.021269, p-value = 0.7573
 alternative hypothesis: two-sided
 
 
     Box-Ljung test
 
 data:  interarrivals
-X-squared = 0.38285, df = 1, p-value = 0.5361</code></pre>
+X-squared = 0.19825, df = 1, p-value = 0.6561</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="marked-hawkes_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="864"></p>
+<div>
+<figure class="figure">
+<p><img src="marked-hawkes_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
 </div>
 </div>
-</section>
-<section id="sec-simulate-marked-hawkes" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="sec-simulate-marked-hawkes"><span class="header-section-number">3.2</span> Simulating a marked process</h2>
-<p>TODO</p>
-</section>
-<section id="sec-hawkesnll" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="sec-hawkesnll"><span class="header-section-number">3.3</span> The negative log-likelihood</h2>
-<p>Below the negative log-likelihood of a univariate marked Hawkes process used by <code>stelfi</code> is written using <code>R</code>/<code>RTMB</code> <span class="citation" data-cites="RTMB">(<a href="references.html#ref-RTMB" role="doc-biblioref">Kristensen 2024</a>)</span> syntax. The function below returns the negative log-likelihood of a univariate marked Hawkes process, <code>RTMB</code> is used to automatically calculate the gradient and then the function is minimised via <code>nlminb()</code>. <a href="https://cran.r-project.org/web/packages/RTMB/vignettes/RTMB-introduction.html">See here for and overview</a> of <code>RTMB</code>. This section is for demonstration only, feel free to modify the function as desired. Note that this can be used to fit an unmarked model by setting the vector of marks to be <span class="math inline">\(\boldsymbol{1}\)</span>.</p>
+</div>
+<p>For the earthquake data the two models can be compared:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RTMB)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>univariate_marked_hawkes <span class="ot">&lt;-</span> <span class="cf">function</span>(params){</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">getAll</span>(data, params)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> <span class="fu">exp</span>(log_mu)</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    beta <span class="ot">&lt;-</span> <span class="fu">exp</span>(log_beta)</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    alpha <span class="ot">&lt;-</span> <span class="fu">exp</span>(logit_abratio) <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(logit_abratio)) <span class="sc">*</span> (beta<span class="sc">/</span><span class="fu">mean</span>(marks))</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    n <span class="ot">&lt;-</span> <span class="fu">length</span>(times)</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    last <span class="ot">&lt;-</span> times[n]</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    nll <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    A <span class="ot">&lt;-</span> <span class="fu">advector</span>(<span class="fu">numeric</span>(n)) </span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n){</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        A[i] <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">exp</span>(<span class="sc">-</span>beta <span class="sc">*</span> (times[i] <span class="sc">-</span> times[i <span class="sc">-</span> <span class="dv">1</span>])) <span class="sc">*</span> (marks[i <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">+</span> A[i <span class="sc">-</span> <span class="dv">1</span>]))</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    term_3vec <span class="ot">&lt;-</span> <span class="fu">log</span>(mu <span class="sc">+</span> alpha <span class="sc">*</span> A)</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    nll <span class="ot">&lt;-</span> (mu <span class="sc">*</span> last) <span class="sc">+</span> ((alpha<span class="sc">/</span>beta) <span class="sc">*</span> (<span class="fu">sum</span>(marks) <span class="sc">-</span> marks[n] <span class="sc">-</span> A[n])) <span class="sc">-</span> <span class="fu">sum</span>(term_3vec)</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ADREPORT</span>(mu)</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ADREPORT</span>(alpha)</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ADREPORT</span>(beta)</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(nll)</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">times =</span> res<span class="sc">$</span>arrival, <span class="at">marks =</span> res<span class="sc">$</span>mark)</span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">log_mu =</span> <span class="fu">log</span>(<span class="fl">1.3</span>), <span class="at">logit_abratio =</span> <span class="fl">0.6</span>, <span class="at">log_beta =</span> <span class="fu">log</span>(<span class="fl">1.5</span>))</span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>obj <span class="ot">&lt;-</span> <span class="fu">MakeADFun</span>(univariate_marked_hawkes, params, <span class="at">silent =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>opt <span class="ot">&lt;-</span> <span class="fu">nlminb</span>(obj<span class="sc">$</span>par, obj<span class="sc">$</span>fn, obj<span class="sc">$</span>gr)</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">sdreport</span>(obj), <span class="st">"report"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_hawkes_GOF</span>(fit_unmarked)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>       Estimate Std. Error
-mu    1.1742764 0.25196080
-alpha 0.1008268 0.06934413
-beta  0.8846088 0.50173890</code></pre>
-</div>
-</div>
+<pre><code>
+    Asymptotic one-sample Kolmogorov-Smirnov test
+
+data:  interarrivals
+D = 0.049534, p-value = 1.425e-08
+alternative hypothesis: two-sided
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
-<div id="ref-RTMB" class="csl-entry" role="doc-biblioentry">
-Kristensen, Kasper. 2024. <em><span>RTMB</span>: <span>R</span> Bindings for <span>TMB</span></em>. <a href="https://CRAN.R-project.org/package=RTMB">https://CRAN.R-project.org/package=RTMB</a>.
+    Box-Ljung test
+
+data:  interarrivals
+X-squared = 179.35, df = 1, p-value &lt; 2.2e-16</code></pre>
 </div>
-<div id="ref-emhawkes" class="csl-entry" role="doc-biblioentry">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="marked-hawkes_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_hawkes_GOF</span>(fit_marked)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Asymptotic one-sample Kolmogorov-Smirnov test
+
+data:  interarrivals
+D = 0.045449, p-value = 2.767e-07
+alternative hypothesis: two-sided
+
+
+    Box-Ljung test
+
+data:  interarrivals
+X-squared = 292.25, df = 1, p-value &lt; 2.2e-16</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="marked-hawkes_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>For both models the tests give very small p-values, and the plots show where the models fall short. Before the first large earthquake (around day 230) the compensator lies <em>above</em> the observed number of earthquakes, so the background rate is overestimated in this quiet period, while after each large earthquake the compensator lags <em>below</em> the observed count, so the models underpredict the number of aftershocks. The cluster of points in the bottom left corner of the consecutive compensator differences plot shows that short gaps tend to be followed by short gaps, which is the correlation picked up by the Ljung-Box test. Including the magnitudes improves the likelihood considerably (see the AIC above), but the diagnostic plots for the two models look similar, and neither model is fully adequate.</p>
+<p>This is a well known feature of earthquake data: aftershock activity decays like a <em>power law</em> in time (the Omori-Utsu law) rather than exponentially, so an exponential kernel cannot capture both the very intense activity immediately after a large earthquake and the long tail of aftershocks that follows. Models designed specifically for earthquakes (e.g., the ETAS model) use a power law kernel. The background rate is also unlikely to be constant over the whole period. The marked Hawkes model is still useful, for example for quantifying how much more a large earthquake triggers than a small one, but its estimates should be interpreted with these limitations in mind.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-emhawkes" class="csl-entry" role="listitem">
 Lee, Kyungsub. 2023. <em><span class="nocase">emhawkes</span>: Exponential Multivariate Hawkes Model</em>. <a href="https://CRAN.R-project.org/package=emhawkes">https://CRAN.R-project.org/package=emhawkes</a>.
 </div>
 </div>
@@ -442,151 +656,419 @@ Lee, Kyungsub. 2023. <em><span class="nocase">emhawkes</span>: Exponential Multi
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  const toggleBodyColorMode = (bsSheetEl) => {
-    const mode = bsSheetEl.getAttribute("data-mode");
-    const bodyEl = window.document.querySelector("body");
-    if (mode === "dark") {
-      bodyEl.classList.add("quarto-dark");
-      bodyEl.classList.remove("quarto-light");
-    } else {
-      bodyEl.classList.add("quarto-light");
-      bodyEl.classList.remove("quarto-dark");
-    }
-  }
-  const toggleBodyColorPrimary = () => {
-    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-    if (bsSheetEl) {
-      toggleBodyColorMode(bsSheetEl);
-    }
-  }
-  toggleBodyColorPrimary();  
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
-    }
-  });
-  clipboard.on('success', function(e) {
-    // button target
-    const button = e.trigger;
-    // don't keep focus
-    button.blur();
-    // flash "checked"
-    button.classList.add('code-copy-button-checked');
-    var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "Copied!");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "Copied!");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
-    setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
-      }
-      button.setAttribute("title", currentTitle);
-      button.classList.remove('code-copy-button-checked');
-    }, 1000);
-    // clear code selection
-    e.clearSelection();
-  });
-  function tippyHover(el, contentFn) {
-    const config = {
-      allowHTML: true,
-      content: contentFn,
-      maxWidth: 500,
-      delay: 100,
-      arrow: false,
-      appendTo: function(el) {
-          return el.parentElement;
-      },
-      interactive: true,
-      interactiveBorder: 10,
-      theme: 'quarto',
-      placement: 'bottom-start'
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
     };
-    window.tippy(el, config); 
-  }
-  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-  for (var i=0; i<noterefs.length; i++) {
-    const ref = noterefs[i];
-    tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      return note.innerHTML;
-    });
-  }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
       }
-    } else {
-      return undefined;
+      return false;
     }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
           }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
       });
     }
-  }
-});
-</script>
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./univariate-hawkes.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes</span></span>
+      <a href="./univariate-hawkes.html" class="pagination-link" aria-label="Univariate Hawkes process">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Univariate Hawkes process</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./multi-hawkes.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./multi-hawkes.html" class="pagination-link" aria-label="Multivariate Hawkes process">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Multivariate Hawkes process</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
+
 
 
 
